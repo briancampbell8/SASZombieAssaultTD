@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net10.0-windows</TargetFramework>
+
+		<!-- Required for System.Drawing on Windows -->
+		<UseWindowsForms>true</UseWindowsForms>
+		<UseSystemDrawing>true</UseSystemDrawing>
+		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+
+		<!-- Needed for PNG loader -->
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+		<!-- Recommended defaults -->
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+
+		<!-- Disable SDK auto-includes -->
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+		<!-- Disable auto-generated AssemblyInfo -->
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	</PropertyGroup>
+
+	<!-- Compile ALL .cs files in ALL directories -->
+	<ItemGroup>
+		<Compile Include="**\*.cs" Exclude="obj\**\*.cs" />
+	</ItemGroup>
+
+	<!-- Copy all assets to output -->
+	<ItemGroup>
+		<Content Include="Assets\**\*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<!-- Logo handling -->
+	<ItemGroup>
+		<None Remove="Assets\logo.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Assets\logo.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include=".github\copilot-instructions.md" />
+	</ItemGroup>
+
+</Project>

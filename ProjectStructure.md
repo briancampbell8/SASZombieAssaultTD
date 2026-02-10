@@ -1,0 +1,463 @@
+# Project Structure Snapshot (Auto-Generated)
+Generated: 2026-02-02 16:38:06
+
+## Directory Tree
+- .config/
+- Assets/
+  - AtlasSource/
+    - PremiumItems/
+      - cryo.png
+      - healthup.png
+      - incendiary.png
+      - longbow.png
+      - mines.png
+      - necro.png
+      - nuke.png
+      - typhoon.png
+  - Audio/
+  - Battlefields/
+    - CleanupOnAisle13.png
+    - DeadWarehouse.png
+    - Killtop.png
+    - MeanStreets.png
+    - OutbreakMansion.png
+    - ShopTilYouDrop.png
+    - SubZero.png
+    - Touchdown.png
+  - Bullets/
+    - Assault/
+    - Flamethrower/
+    - Rocket/
+    - Sniper/
+  - Effects/
+    - Blood/
+    - Explosions/
+    - HitEffects/
+    - MuzzleFlashes/
+  - FlashExtract/
+    - PremiumItems/
+      - cryo.png
+      - healthup.png
+      - incendiary.png
+      - longbow.png
+      - mines.png
+      - necro.png
+      - nuke.png
+      - typhoon.png
+  - Fonts/
+  - Sprites/
+    - PremiumItems/
+      - B-52.png
+      - cryo.png
+      - healthup.png
+      - incendiary.png
+      - longbow.png
+      - mines.png
+      - necro.png
+      - nuke.png
+      - typhoon.png
+    - Soldiers/
+      - grenadier.png
+      - medic.png
+      - rifleman.png
+      - sawgunner.png
+      - sniper.png
+  - Textures/
+  - Tiles/
+  - Towers/
+    - Assault/
+    - Flamethrower/
+    - Rocket/
+    - Sniper/
+    - Support/
+  - UI/
+    - AbilitySymbols/
+    - Buttons/
+    - HUD/
+    - Icons/
+  - Zombies/
+    - Runner/
+      - Attack/
+      - Death/
+      - Walk/
+    - Special/
+      - Attack/
+      - Death/
+      - Walk/
+    - Tank/
+      - Attack/
+      - Death/
+      - Walk/
+    - Walker/
+      - Attack/
+      - Death/
+      - Walk/
+  - logo.png
+- Automation/
+  - Automation/
+    - Logs/
+      - Change0021_BraceRepair.md
+      - Change0022_ReconstructEngineFiles.md
+      - Change0023_RemoveLegacyChangeCsFiles.md
+  - Changes/
+    - _DISABLED/
+      - Change0010.ps1
+      - Change0011.ps1
+    - Change0001-Fix.ps1
+    - Change0001.ps1
+    - Change0002.ps1
+    - Change0003.ps1
+    - Change0004.ps1
+    - Change0005-Fix.ps1
+    - Change0005.ps1
+    - Change0006.ps1
+    - Change0007.ps1
+    - Change0008.ps1
+    - Change0009-Fix.ps1
+    - Change0009-SubsystemPrep.ps1
+    - Change0009.ps1
+    - Change0010-Fix.ps1
+    - Change0010.ps1
+    - Change0011-Fix.ps1
+    - Change0011.ps1
+    - Change0012_RepairCorruption.ps1
+    - Change0013.ps1
+    - Change0014.ps1
+    - Change0015.ps1
+    - Change0016.ps1
+    - Change0017.ps1
+    - Change0018-Fix.ps1
+    - Change0018.ps1
+    - Change0019-Fix.ps1
+    - Change0019.ps1
+    - Change0020-Fix.ps1
+    - Change0020.ps1
+    - Change0021_FixAndNormalize_BraceStructure.ps1
+    - Change0021-Fix.ps1
+    - Change0021.ps1
+    - Change0022_ReconstructEngineFiles.ps1
+    - Change0022-Fix.ps1
+    - Change0022.ps1
+    - Change0023.ps1
+    - Change0024.ps1
+    - DisableLog.txt
+    - Verify-Change0001.ps1
+    - Verify-Change0009.ps1
+    - Verify-Change0010.ps1
+    - Verify-Change0011.ps1
+    - Verify-Change0015.ps1
+    - Verify-Change0016.ps1
+    - Verify-Change0017.ps1
+    - Verify-Change0018.ps1
+    - Verify-Change0019.ps1
+    - Verify-Change0020.ps1
+    - Verify-Change0021.ps1
+    - Verify-Change0022.ps1
+  - Docs/
+    - AssetPipelineInit.md
+    - DebugDiagnostics.md
+    - RenderingSystem.md
+    - SceneSystem.md
+  - Engine/
+    - Systems/
+      - Diagnostics/
+        - Change0019Marker.cs.bak_Change0021
+        - Change0019Marker.cs.bak_Change0022
+        - Change0019Marker.cs.bak_Change0023
+  - Logs/
+  - Modules/
+  - Templates/
+  - AppendixScripts-Build.ps1
+  - AssetDiscovery-Build.ps1
+  - AssetRegistry-Build.ps1
+  - AutomationEnhancements-Build.ps1
+  - Build-AssetDocs.ps1
+  - Build-DebugOverlay.ps1
+  - Build-DiagnosticsSubsystem.ps1
+  - Build-GameScene.ps1
+  - Build-IntegrateAtlasIntoGameScene.ps1
+  - Build-MainMenuScene.ps1
+  - Build-PauseScene.ps1
+  - Build-RenderingHost.ps1
+  - Build-SceneTransitionSystem.ps1
+  - Build-TextureAtlasSystem.ps1
+  - Build-UIFramework.ps1
+  - Change0003.ps1
+  - Cleanup-NonCSharpBak.md
+  - Cleanup-NonCSharpBak.ps1
+  - CleanupScripts-Build.ps1
+  - Create-AutomationStubs.ps1
+  - DamageResolver-Build.ps1
+  - DataLoader-Build.ps1
+  - DebugRepairReview.ps1
+  - DebugRepairRun.ps1
+  - DebugRepairVerify.ps1
+  - EmptyFileFixLog.md
+  - EnemyBase-Build.ps1
+  - EngineCore.ps1
+  - EventDispatcher-Build.ps1
+  - ExtractionValidator.ps1
+  - FileAndDirectory-Builder.ps1
+  - Fix-EmptyFiles.ps1
+  - Fix-Namespaces.ps1
+  - GameLoop-Build.ps1
+  - GameStateManager-Build.ps1
+  - Generate-ProjectStructure.ps1
+  - Harry_AddLesson.ps1
+  - Harry_NewChangeFile.ps1
+  - Harry_PostReview.ps1
+  - HUD-Build.ps1
+  - InputRouter-Build.ps1
+  - invoke-Change.ps1
+  - LayoutSystem-Build.ps1
+  - LoggingSystem-Build.ps1
+  - Menus-Build.ps1
+  - NamespaceFixLog.md
+  - New-Change.ps1
+  - Next-Subsystem.ps1
+  - Phase1_VerifyCsFiles.ps1
+  - Phase1_VerifyEngineStructure.ps1
+  - PremiumItems-Import.ps1
+  - ProjectileSystem-Build.ps1
+  - ProjectValidator.ps1
+  - ReadMeReview.ps1
+  - ReadmeUpdateLog.md
+  - RenderingEnhancements-Build.ps1
+  - RenderQueue-Build.ps1
+  - Repair-PowerShellFiles.ps1
+  - Repair-PowerShellFilesReview.ps1
+  - StructureGenerator-Build.ps1
+  - tasklist.ps1
+  - TextureLoader-Build.ps1
+  - TimingController-Build.ps1
+  - Toggle-DebugLoop.ps1
+  - TowerBase-Build.ps1
+  - TreeToMarkdown.ps1
+  - UIElementBase-Build.ps1
+  - VerificationLog.md
+  - WaveController-Build.ps1
+- Core/
+  - Config/
+  - Managers/
+  - Utilities/
+- Docs/
+  - Decompiled/
+  - AnimationSystem.md
+  - AssetPipelineInit.md
+  - AudioPlan.md
+  - BossLogic.md
+  - CameraSystem.md
+  - DebugDiagnostics.md
+  - DeployableLogic.md
+  - EnemyRoster.md
+  - EntityManager.md
+  - FieldNotes.md
+  - MapFlow.md
+  - OperatorScript.md
+  - PathfindingSystem.md
+  - PremiumItemEffects.md
+  - PremiumItems.md
+  - ProjectileSystem.md
+  - RenderingSystem.md
+  - SaveSystem.md
+  - SceneArchitecture.md
+  - SceneSystem.md
+  - SpriteAtlasPlan.md
+  - TileSystem.md
+  - TurretBehavior.md
+  - UI_Design.md
+  - UpgradeSystem.md
+  - WaveConfig.md
+- Engine/
+  - Core/
+    - GameLoop.cs
+    - GameRoot.cs
+    - TimingController.cs
+  - Entities/
+    - Enemy.cs
+    - Projectile.cs
+    - Soldier.cs
+    - Turret.cs
+  - Managers/
+    - EnemyManager.cs
+    - EntityManager.cs
+    - ProjectileManager.cs
+    - WaveManager.cs
+  - Platform/
+    - Win32Window.cs
+  - Rendering/
+    - Debug/
+      - PathDebugRenderer.cs
+    - Zombies/
+      - ZombieRenderer.cs
+    - Class1.cs
+    - DebugOverlay.cs
+    - Framebuffer.cs
+    - IRenderContext.cs
+    - RenderQueue.cs
+    - RenderSurface.cs
+    - TextRenderer.cs
+    - Texture2D.cs
+    - WindowHost.cs
+  - Scenes/
+    - GameScene.cs
+    - IScene.cs
+    - MainMenuScene.cs
+    - PauseScene.cs
+    - Scene.cs
+    - SceneManager.cs
+  - Systems/
+    - Assets/
+      - AssetBundle.cs
+      - AssetDiscovery.cs
+      - AssetInitializer.cs
+      - AssetPipeline.cs
+      - AssetRegistry.cs
+      - DataLoader.cs
+      - TextureLoader.cs
+    - Diagnostics/
+      - DebugLogger.cs
+      - FrameStats.cs
+      - HeartbeatMonitor.cs
+      - Timing.cs
+    - Gameplay/
+      - Animation/
+        - AnimationClip.cs
+        - AnimationFrame.cs
+        - AnimationPlayer.cs
+      - Zombies/
+        - BasicZombie.cs
+        - ZombieBase.cs
+        - ZombieController.cs
+      - DamageResolver.cs
+      - EnemyBase.cs
+      - ProjectileSystem.cs
+      - TowerBase.cs
+      - WaveController.cs
+    - UI/
+      - Button.cs
+      - HUD.cs
+      - LayoutSystem.cs
+      - Menus.cs
+      - Panel.cs
+      - UIElementBase.cs
+    - AnimationSystem.cs
+    - CameraSystem.cs
+    - EventDispatcher.cs
+    - GameStateManager.cs
+    - InputRouter.cs
+    - LoggingSystem.cs
+    - PathfindingSystem.cs
+    - RenderQueue.cs
+  - Tools/
+    - AppendixScripts.cs
+    - AutomationEnhancements.cs
+    - CleanupScripts.cs
+    - StructureGenerator.cs
+  - UI/
+- Entities/
+  - Abilities/
+  - AirSupport/
+  - Environment/
+  - Graphics/
+    - Animations/
+    - Backgrounds/
+    - Particles/
+    - Sprites/
+    - UIArt/
+  - Projectiles/
+  - Soldiers/
+  - Towers/
+  - Zombies/
+- GameData/
+  - AI/
+  - Paths/
+- LogAnalysisReports/
+  - Category_Statistics.csv
+  - Daily_Summary.csv
+  - Detailed_Events.csv
+- Logs/
+  - Change0012_RepairCorruption.md
+- Maps/
+- OriginalSWF/
+  - Backup/
+  - SWF_Backup/
+  - SWF_Working/
+- SASZombieAssaultTD/
+- Scenes/
+  - Game/
+  - MainMenu/
+  - Pause/
+  - Shared/
+- Scripts/
+  - AI/
+    - Behaviors/
+      - BasicChaseBehavior.cs
+    - Blackboard/
+      - Blackboard.cs
+    - AIController.cs
+  - Paths/
+    - PathLoader.cs
+  - TestScenes/
+    - MeanStreetsTest.cs
+  - Zombies/
+    - ZombieMovement.cs
+    - ZombieSpawner.cs
+- Systems/
+  - AI/
+  - Collision/
+  - Combat/
+  - Economy/
+  - Placement/
+  - Survival/
+  - Upgrades/
+  - Waves/
+- Tools/
+  - Harry/
+    - Changes/
+      - Change_0001.md
+    - Harry_Context.md
+    - Harry_Foundation.md
+    - Harry_LessonsLearned.md
+    - Harry_NewChangeFile.ps1
+    - Harry_TrainingLog.md
+    - Harry_Workflow.md
+    - Notes.md
+- UI/
+  - Components/
+  - HUD/
+  - Layouts/
+  - Menus/
+- .gitattributes
+- .gitignore
+- app.manifest
+- BootStrap.ps1
+- Disable-AutomationChanges.ps1
+- FileCleanup.ps1
+- Fix‑AssetSubsystem.ps1
+- FreePremiumItems.md
+- Generate-PowerShellScripts.ps1
+- Icon.ico
+- Inject-InfantryManager-Into-GameScene.ps1
+- IProgram.cs
+- Normalize-AssetSubsystem.ps1
+- Patch-EngineFiles.ps1
+- Phases.md
+- PowerShellLog-Analyzer.ps1
+- PowerShellLog.md
+- Program.cs
+- ProgramInjectionRun.ps1
+- ProjectStructure.md
+- README_appendix.ps1
+- README.md
+- ReadMeSource.txt
+- Safe-ACL-Reset.ps1
+- SASZombieAssaultTD.csproj
+- SASZombieAssaultTD.slnx
+- Steve.md
+- SteveScript.ps1
+- Storytelling_Engine_Workflow.md
+- Tasklist.md
+- Tree-F.md
+- TreeToMarkdown.ps1
+- UpgradeLog.htm

@@ -1,0 +1,116 @@
+Folder PATH listing
+Volume serial number is 1096-EFE4
+E:.
+¦   engine-tree.txt
+¦   
++---Core
+¦       GameLoop.cs
+¦       GameRoot.cs
+¦       TimingController.cs
+¦       
++---Entities
+¦       Enemy.cs
+¦       Projectile.cs
+¦       Soldier.cs
+¦       Turret.cs
+¦       
++---Managers
+¦       EnemyManager.cs
+¦       EntityManager.cs
+¦       ProjectileManager.cs
+¦       WaveManager.cs
+¦       
++---Platform
+¦       Win32Window.cs
+¦       
++---Rendering
+¦   ¦   DebugOverlay.cs
+¦   ¦   Framebuffer.cs
+¦   ¦   IRenderContext.cs
+¦   ¦   RenderQueue.cs
+¦   ¦   RenderSurface.cs
+¦   ¦   TextRenderer.cs
+¦   ¦   Texture2D.cs
+¦   ¦   WindowHost.cs
+¦   ¦   
+¦   +---Debug
+¦   ¦       PathDebugRenderer.cs
+¦   ¦       
+¦   +---Zombies
+¦           ZombieRenderer.cs
+¦           
++---Scenes
+¦       GameScene.cs
+¦       IScene.cs
+¦       MainMenuScene.cs
+¦       PauseScene.cs
+¦       Scene.cs
+¦       SceneManager.cs
+¦       
++---Systems
+¦   ¦   AnimationSystem.cs
+¦   ¦   CameraSystem.cs
+¦   ¦   EventDispatcher.cs
+¦   ¦   GameStateManager.cs
+¦   ¦   InputRouter.cs
+¦   ¦   LoggingSystem.cs
+¦   ¦   PathfindingSystem.cs
+¦   ¦   RenderQueue.cs
+¦   ¦   
+¦   +---Assets
+¦   ¦       AssetBatchLoadResult.cs
+¦   ¦       AssetBundle.cs
+¦   ¦       AssetDiscovery.cs
+¦   ¦       AssetHandle.cs
+¦   ¦       AssetInitializer.cs
+¦   ¦       AssetKey.cs
+¦   ¦       AssetLoadContext.cs
+¦   ¦       AssetLoadResult.cs
+¦   ¦       AssetMetadata.cs
+¦   ¦       AssetPipeline.cs
+¦   ¦       AssetRegistry.cs
+¦   ¦       AssetSource.cs
+¦   ¦       AssetType.cs
+¦   ¦       AssetUtils.cs
+¦   ¦       AssetValidation.cs
+¦   ¦       DataLoader.cs
+¦   ¦       TextureLoader.cs
+¦   ¦       
+¦   +---Diagnostics
+¦   ¦       DebugLogger.cs
+¦   ¦       FrameStats.cs
+¦   ¦       HeartbeatMonitor.cs
+¦   ¦       Timing.cs
+¦   ¦       
+¦   +---Gameplay
+¦   ¦   ¦   DamageResolver.cs
+¦   ¦   ¦   EnemyBase.cs
+¦   ¦   ¦   ProjectileSystem.cs
+¦   ¦   ¦   TowerBase.cs
+¦   ¦   ¦   WaveController.cs
+¦   ¦   ¦   
+¦   ¦   +---Animation
+¦   ¦   ¦       AnimationClip.cs
+¦   ¦   ¦       AnimationFrame.cs
+¦   ¦   ¦       AnimationPlayer.cs
+¦   ¦   ¦       
+¦   ¦   +---Zombies
+¦   ¦           BasicZombie.cs
+¦   ¦           ZombieBase.cs
+¦   ¦           ZombieController.cs
+¦   ¦           
+¦   +---UI
+¦           Button.cs
+¦           HUD.cs
+¦           LayoutSystem.cs
+¦           Menus.cs
+¦           Panel.cs
+¦           UIElementBase.cs
+¦           
++---Tools
+¦       AppendixScripts.cs
+¦       AutomationEnhancements.cs
+¦       CleanupScripts.cs
+¦       StructureGenerator.cs
+¦       
++---UI

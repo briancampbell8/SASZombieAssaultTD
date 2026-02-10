@@ -1,0 +1,60 @@
+Category,#,Check Item,Status,Evidence,File,Lines
+1. Subsystem Readiness,1.1,AnimationSystem has Initialize(),PASS,Idempotent guard on _initialized clears state Phase5 log,AnimationSystem.cs,81-91
+1. Subsystem Readiness,1.2,AnimationSystem has Update(float),PASS,Signature Update(float deltaSeconds) matches ProjectileSystem.Update(float),AnimationSystem.cs,116-133
+1. Subsystem Readiness,1.3,AnimationSystem has Shutdown(),PASS,Clears transforms resets _initialized Phase5 log,AnimationSystem.cs,167-174
+1. Subsystem Readiness,1.4,AnimationSystem has Register/Unregister,PASS,Register(int float float) and Unregister(int) matches InputRouter pattern,AnimationSystem.cs,96-110
+1. Subsystem Readiness,1.5,CameraSystem has Initialize(),PASS,Idempotent guard centers camera calls RebuildMatrices() Phase5 log,CameraSystem.cs,80-97
+1. Subsystem Readiness,1.6,CameraSystem has Update(float),PASS,Signature Update(float deltaSeconds) matches subsystem pattern,CameraSystem.cs,138-144
+1. Subsystem Readiness,1.7,CameraSystem has Shutdown(),PASS,Resets _initialized Phase5 log,CameraSystem.cs,174-180
+1. Subsystem Readiness,1.8,PathfindingSystem has Initialize(),PASS,Idempotent guard clears agents/outputs Phase5 log,PathfindingSystem.cs,110-121
+1. Subsystem Readiness,1.9,PathfindingSystem has Update(float),PASS,Signature Update(float deltaSeconds) matches subsystem pattern,PathfindingSystem.cs,166-227
+1. Subsystem Readiness,1.10,PathfindingSystem has Shutdown(),PASS,Clears agents/outputs resets _initialized Phase5 log,PathfindingSystem.cs,241-249
+1. Subsystem Readiness,1.11,PathfindingSystem has Register/Unregister,PASS,Register(int float float float) and Unregister(int),PathfindingSystem.cs,126-142
+1. Subsystem Readiness,1.12,Init order: Path > Anim > Camera,PASS,GameRoot.Initialize() calls in correct producer-first order,GameRoot.cs,99-101
+1. Subsystem Readiness,1.13,Update order: Path > Anim > Camera,PASS,UpdateSubsystems() enforces order with bridging between each,GameRoot.cs,185-209
+1. Subsystem Readiness,1.14,Shutdown order: Camera > Anim > Path,PASS,Reverse of init executed after RunMainLoop() exits,GameRoot.cs,175-177
+2. Data Flow Integrity,2.1,PathfindingSystem outputs MovementOutput,PASS,IReadOnlyDictionary<int MovementOutput> MovementOutputs with DeltaX DeltaY State,PathfindingSystem.cs,105
+2. Data Flow Integrity,2.2,Bridge: Pathfinding > Animation,PASS,foreach over MovementOutputs calls ApplyMovement(key dx dy state),GameRoot.cs,191-195
+2. Data Flow Integrity,2.3,AnimationSystem accepts MovementState,PASS,ApplyMovement(int float float MovementState) cross-type in same namespace,AnimationSystem.cs,140
+2. Data Flow Integrity,2.4,AnimationSystem outputs AnimationTransform,PASS,IReadOnlyDictionary<int AnimationTransform> Transforms with X Y Rotation State,AnimationSystem.cs,76
+2. Data Flow Integrity,2.5,Bridge: Animation > Camera,PASS,GetFollowTargetId() then Transforms.TryGetValue then ApplyFollowTarget(X Y),GameRoot.cs,201-206
+2. Data Flow Integrity,2.6,CameraSystem outputs matrices,PASS,ViewMatrix[6] and ProjectionMatrix[6] rebuilt each frame via RebuildMatrices(),CameraSystem.cs,59 65 187-210
+2. Data Flow Integrity,2.7,Both update paths use UpdateSubsystems,PASS,Update() line 143 and RunMainLoop() line 164 both call identical bridging method,GameRoot.cs,143 164
+3. Engine Lifecycle Stability,3.1,InitializeAllAssets() wrapped,PASS,try/catch with DebugLogger.Log(Phase5) and early return,GameRoot.cs,56-65
+3. Engine Lifecycle Stability,3.2,AssetPipeline.LoadAll() wrapped,PASS,try/catch with Phase5 log and early return,GameRoot.cs,68-85
+3. Engine Lifecycle Stability,3.3,ValidateRuntimeReadiness() gated,PASS,Returns early if false with Phase5 log,GameRoot.cs,88-93
+3. Engine Lifecycle Stability,3.4,Subsystem init wrapped,PASS,try/catch with Phase5 log and early return,GameRoot.cs,97-108
+3. Engine Lifecycle Stability,3.5,Win32Window.Create() wrapped,PASS,try/catch with Phase5 log and early return,GameRoot.cs,111-121
+3. Engine Lifecycle Stability,3.6,GameScene.Initialize() wrapped,PASS,try/catch with Phase5 log and early return,GameRoot.cs,124-134
+3. Engine Lifecycle Stability,3.7,RunMainLoop controls render cycle,PASS,Pump > Delta > UpdateSubsystems > Scene.Update > Scene.Render > Present,GameRoot.cs,148-178
+3. Engine Lifecycle Stability,3.8,No lifecycle drift between Update/RunMainLoop,PASS,Both paths route through single UpdateSubsystems(float) method,GameRoot.cs,143 164 185
+4. Scene System Stability,4.1,Scene base defines all lifecycle hooks,PASS,Initialize() Update(TimeSpan) Render(IRenderContext) Shutdown() all virtual,Scene.cs,16-22
+4. Scene System Stability,4.2,GameScene follows lifecycle,PASS,All 4 overrides present consistent with base signatures,GameScene.cs,37 51 57 66
+4. Scene System Stability,4.3,MainMenuScene follows lifecycle,PASS,All 4 overrides: Init resets flag Update checks input Render draws UI Shutdown cleans up,MainMenuScene.cs,33 39 50 58
+4. Scene System Stability,4.4,PauseScene follows lifecycle,PASS,All 4 overrides: Init resets flag Update checks input Render draws overlay Shutdown cleans up,PauseScene.cs,33 39 49 58
+4. Scene System Stability,4.5,PauseScene intentionally skips ClearScreen,PASS,Overlay behavior only draws text game scene remains visible beneath,PauseScene.cs,49-55
+4. Scene System Stability,4.6,Scene signatures consistent,PASS,All scenes use Update(TimeSpan) and Render(IRenderContext) matching base class,All scene files,-
+5. Rendering Pipeline Stability,5.1,Framebuffer implements IRenderContext,PASS,DrawTexture DrawText ClearScreen all implemented with pixel-level rendering,Framebuffer.cs,23 81 103 130
+5. Rendering Pipeline Stability,5.2,DrawTexture implemented,PASS,Null guard plus magenta bounding-rect blit via SetPixel plus Info log,Framebuffer.cs,81-101
+5. Rendering Pipeline Stability,5.3,DrawText implemented,PASS,Null/empty guard plus 6x8 white glyph rectangles via SetPixel plus Info log,Framebuffer.cs,103-128
+5. Rendering Pipeline Stability,5.4,RenderSurface.Bind implemented,PASS,Null check plus off-screen ClearScreen() plus Info log,RenderSurface.cs,37-49
+5. Rendering Pipeline Stability,5.5,RenderSurface.Dispose implemented,PASS,Disposed guard plus buffer nullification plus Info log,RenderSurface.cs,51-62
+5. Rendering Pipeline Stability,5.6,WindowHost.CreateRenderContext implemented,PASS,Returns new Framebuffer(Width Height) plus Info log,WindowHost.cs,31-41
+5. Rendering Pipeline Stability,5.7,WindowHost.PumpEvents implemented,PASS,Documented no-op Win32 backend delegates to Win32Window.PumpMessages(),WindowHost.cs,43-51
+5. Rendering Pipeline Stability,5.8,WindowHost.Dispose implemented,PASS,Disposed guard plus buffer nullification plus Info log,WindowHost.cs,53-64
+5. Rendering Pipeline Stability,5.9,TextRenderer.DrawString implemented,PASS,Null guard plus 6x8 glyph rects via Framebuffer.SetPixel dimensions match Framebuffer.DrawText,TextRenderer.cs,27-50
+5. Rendering Pipeline Stability,5.10,Glyph dimension consistency,PASS,Both Framebuffer.DrawText and TextRenderer.DrawString use identical 6x8 glyph size,Framebuffer.cs / TextRenderer.cs,110-111 / 35-36
+6. Asset Pipeline Stability,6.1,AssetRegistry.Register guards non-null,PASS,string.IsNullOrWhiteSpace on key and relativePath throws ArgumentException,AssetRegistry.cs,26-30
+6. Asset Pipeline Stability,6.2,AssetInitializer stale log removed,PASS,Section 4 now contains only summary counts no pending reference,AssetInitializer.cs,94-100
+6. Asset Pipeline Stability,6.3,AssetInitializer doc updated,PASS,XML doc reads Loading is handled by AssetPipeline.LoadAll in GameRoot,AssetInitializer.cs,22
+6. Asset Pipeline Stability,6.4,AssetPipeline.LoadAll deterministic,PASS,OrderBy(Type).ThenBy(Key StringComparer.Ordinal) plus Phase5 begin/completed logs,AssetPipeline.cs,38-40 32 72
+6. Asset Pipeline Stability,6.5,ValidateRuntimeReadiness intact,PASS,Count > 0 plus null/empty scan plus try/catch with Phase5 log,AssetPipeline.cs,80-109
+6. Asset Pipeline Stability,6.6,GameRoot wiring intact,PASS,InitializeAllAssets then LoadAll then ValidateRuntimeReadiness each gated,GameRoot.cs,56-93
+7. Namespace and Inclusion,7.1,AnimationSystem namespace,PASS,SASZombieAssaultTD.Engine.Systems.Gameplay matches ProjectileSystem,AnimationSystem.cs,20
+7. Namespace and Inclusion,7.2,CameraSystem namespace,PASS,SASZombieAssaultTD.Engine.Systems.Gameplay matches ProjectileSystem,CameraSystem.cs,19
+7. Namespace and Inclusion,7.3,PathfindingSystem namespace,PASS,SASZombieAssaultTD.Engine.Systems.Gameplay matches ProjectileSystem,PathfindingSystem.cs,20
+7. Namespace and Inclusion,7.4,RenderQueueFrontend rename isolated,PASS,Class renamed at line 13 no other files reference old Rendering.RenderQueue name,RenderQueue.cs,13
+7. Namespace and Inclusion,7.5,Systems.RenderQueue untouched,PASS,Canonical RenderQueue remains in Engine.Systems namespace with no changes,Systems\RenderQueue.cs,9
+7. Namespace and Inclusion,7.6,Update signature alignment,PASS,All 3 subsystems Update(float deltaSeconds) matches ProjectileSystem GameStateManager,All 3 subsystem files,-
+7. Namespace and Inclusion,7.7,.csproj auto-includes all files,PASS,Compile Include **\*.cs Exclude obj\**\*.cs glob covers all new files,SASZombieAssaultTD.csproj,28
+7. Namespace and Inclusion,7.8,GameRoot using directive present,PASS,using SASZombieAssaultTD.Engine.Systems.Gameplay resolves all 3 subsystems plus data types,GameRoot.cs,20

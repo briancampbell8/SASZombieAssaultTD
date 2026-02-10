@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Appendix F — Engine Architecture Verification Map</title>
+    <style>
+        body {
+            font-family: Consolas, "Segoe UI", monospace;
+            background: #f9f9f9;
+            color: #222;
+            margin: 40px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            font-weight: 600;
+        }
+        pre, code {
+            background: #eee;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        section {
+            margin-bottom: 40px;
+        }
+        .pass { color: #0a7f00; font-weight: bold; }
+        .fail { color: #b30000; font-weight: bold; }
+        details {
+            margin: 12px 0;
+            padding: 8px;
+            background: #f0f0f0;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Appendix F — Engine Architecture Verification Map</h1>
+<p>
+This appendix contains the full-engine review results, subsystem analysis, dependency map, and startup sequence verification.
+It represents a complete architectural map of the engine as validated by the full-system review.
+</p>
+
+<section id="startup-sequence">
+    <h2>1. Startup Sequence Review</h2>
+    <p class="pass">PASS — Startup sequence is correct and deterministic.</p>
+    <details>
+        <summary>Details</summary>
+        <pre><code>
+- GameRoot.Initialize() performs:
+  ✔ Asset discovery via AssetInitializer
+  ✔ Asset validation via AssetInitializer
+  ✔ Asset registration via AssetInitializer
+  ✔ Asset loading via AssetPipeline.LoadAll()
+  ✔ Readiness gating via ValidateRuntimeReadiness()
+  ✔ Window creation only after readiness passes
+  ✔ Scene initialization only after readiness passes
+- No fallback or alternate startup paths exist.
+- No exceptions escape during startup.
+        </code></pre>
+    </details>
+</section>
+
+<section id="asset-subsystem">
+    <h2>2. Asset Subsystem Review</h2>
+    <p class="pass">PASS — Asset subsystem is synchronized and drift-free.</p>
+    <details>
+        <summary>Details</summary>
+        <pre><code>
+- AssetDiscovery, AssetValidation, AssetRegistry, AssetPipeline, DataLoader, TextureLoader:
+  ✔ No circular dependencies
+  ✔ Deterministic ordering in LoadAll()
+  ✔ Registry keys and values always non-null
+  ✔ ValidateRuntimeReadiness is side-effect free
+  ✔ No unreachable or unused code paths
+        </code></pre>
+    </details>
+</section>
+
+<section id="rendering-subsystem">
+    <h2>3. Rendering Subsystem Review</h2>
+    <p class="pass">PASS — Rendering subsystem initializes correctly and respects readiness.</p>
+    <details>
+        <summary>Details</summary>
+        <pre><code>
+- WindowHost, Framebuffer, RenderQueue, Texture2D, TextRenderer, RenderSurface, IRenderContext:
+  ✔ No rendering before readiness
+  ✔ No GPU calls before window creation
+  ✔ No exceptions escape render loop initialization
+  ✔ No asset loading performed by rendering code
+        </code></pre>
+    </details>
+</section>
+
+<section id="scene-system">
+    <h2>4. Scene System Review</h2>
+    <p class="pass">PASS — Scene system is correctly isolated and synchronized.</p>
+    <details>
+        <summary>Details</summary>
+        <pre><code>
+- SceneManager, GameScene, MainMenuScene, PauseScene:
+  ✔ No scene loads assets directly
+  ✔ No scene initializes before readiness
+  ✔ No blocking operations in Initialize()
+  ✔ All scenes assume assets are ready
+        </code></pre>
+    </details>
+</section>
+
+<section id="systems-layer">
+    <h2>5. Systems Layer Review</h2>
+    <p class="pass">PASS — Systems layer is stable and respects subsystem boundaries.</p>
+    <details>
+        <summary>Details</summary>
+        <pre><code>
+- AnimationSystem, CameraSystem, EventDispatcher, GameStateManager, InputRouter,
+  LoggingSystem, PathfindingSystem, UI Systems:
+  ✔ No premature asset usage
+  ✔ No window or GPU creation
+  ✔ No modification of AssetRegistry
+  ✔ No dependency on uninitialized subsystems
+        </code></pre>
+    </details>
+</section>
+
+<section id="diagnostics">
+    <h2>6. Diagnostics Subsystem Review</h2>
+    <p class="pass">PASS — Diagnostics are safe, isolated, and side-effect free.</p>
+    <details>
+        <summary>Details</summary>
+        <pre><code>
+- DebugLogger, FrameStats, HeartbeatMonitor, Timing:
+  ✔ No modification of engine state
+  ✔ No dependency on assets or rendering
+  ✔ DebugLogger.Phase5 used only in Phase 5 paths
+        </code></pre>
+    </details>
+</section>
+
+<section id="gameplay">
+    <h2>7. Gameplay Subsystems Review</h2>
+    <p class="pass">PASS — Gameplay systems are correctly isolated from asset loading.</p>
+    <details>
+        <summary>Details</summary>
+        <pre><code>
+- Enemy, Projectile, Soldier, Turret, Gameplay Systems:
+  ✔ No direct asset loading
+  ✔ No assumptions about textures before readiness
+  ✔ No modification of AssetRegistry
+  ✔ No window or rendering context creation
+        </code></pre>
+    </details>
+</section>
+
+<section id="tools">
+    <h2>8. Tools Subsystem Review</h2>
+    <p class="pass">PASS — Tools subsystem is isolated and does not affect runtime.</p>
+    <details>
+        <summary>Details</summary>
+        <pre><code>
+- AppendixScripts, AutomationEnhancements, CleanupScripts, StructureGenerator:
+  ✔ Do not run automatically
+  ✔ Do not modify runtime behavior
+  ✔ Do not alter AssetRegistry
+  ✔ Fully isolated from runtime systems
+        </code></pre>
+    </details>
+</section>
+
+<section id="platform">
+    <h2>9. Platform Layer Review</h2>
+    <p class="pass">PASS — Platform layer is correctly sequenced and isolated.</p>
+    <details>
+        <summary>Details</summary>
+        <pre><code>
+- Win32Window:
+  ✔ Created only after readiness passes
+  ✔ Does not load assets
+  ✔ Does not initialize scenes
+  ✔ Does not modify engine state outside windowing
+        </code></pre>
+    </details>
+</section>
+
+<section id="core">
+    <h2>10. Core Layer Review</h2>
+    <p class="pass">PASS — Core loop and root systems are stable and deterministic.</p>
+    <details>
+        <summary>Details</summary>
+        <pre><code>
+- GameLoop, GameRoot, TimingController:
+  ✔ Do not load assets directly
+  ✔ Do not bypass readiness gating
+  ✔ Do not initialize scenes early
+  ✔ Do not create windows early
+        </code></pre>
+    </details>
+</section>
+
+<section id="namespace-api">
+    <h2>11. Namespace & API Stability</h2>
+    <p class="pass">PASS — No drift detected in public API or namespaces.</p>
+    <details>
+        <summary>Details</summary>
+        <pre><code>
+✔ No public signatures changed
+✔ No classes renamed
+✔ No namespaces changed
+✔ No new files created
+✔ No files deleted
+✔ No TODO or placeholder comments exist
+        </code></pre>
+    </details>
+</section>
+
+<section id="cross-subsystem">
+    <h2>12. Cross-Subsystem Synchronization</h2>
+    <p class="pass">PASS — All subsystems are synchronized and correctly ordered.</p>
+    <details>
+        <summary>Details</summary>
+        <pre><code>
+✔ No subsystem initializes out of order
+✔ No subsystem depends on uninitialized data
+✔ No circular dependencies exist
+✔ No subsystem bypasses GameRoot startup sequence
+        </code></pre>
+    </details>
+</section>
+
+</body>
+</html>

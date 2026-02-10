@@ -1,0 +1,31 @@
+Phase,Task ID,Category,Severity,Action,File,Lines,Description
+7,P7-01,Rendering,Critical,FIX,Engine\Rendering\Framebuffer.cs,100 127,Remove DebugLogger.Log from DrawTexture and DrawText — per-frame file I/O at 60fps
+7,P7-02,Engine Lifecycle,Critical,FIX,Engine\Core\GameRoot.cs,174-177,Add _activeScene?.Shutdown() before subsystem shutdown in RunMainLoop exit path
+7,P7-03,Subsystem,Critical,FIX,Engine\Systems\Gameplay\CameraSystem.cs,150-161,Replace hardcoded 1f/60f in ApplyFollowTarget with actual deltaSeconds parameter
+7,P7-04,Asset Pipeline,Critical,FIX,Engine\Systems\Assets\AssetPipeline.cs,46-61,Add Sound and Music case handlers to LoadAll switch to prevent false failure counts
+7,P7-05,Scene System,Critical,FIX,Engine\Scenes\SceneManager.cs,16-66,Remove all BREAKPOINT DebugLogger.Log calls from constructor SetScene Update and Render — per-frame file I/O
+7,P7-06,Rendering,Important,REMOVE,Engine\Rendering\Framebuffer.cs,136+,Remove dead FramebufferCS BREAKPOINT-only class
+7,P7-07,Rendering,Important,REMOVE,Engine\Rendering\IRenderContext.cs,13-30,Remove dead IRenderContextCS BREAKPOINT-only class
+7,P7-08,Rendering,Important,REMOVE,Engine\Rendering\RenderQueue.cs,21-45,Remove dead RenderQueueCS BREAKPOINT-only inner class
+7,P7-09,Rendering,Important,FIX,Engine\Rendering\TextRenderer.cs,9-23,Remove BREAKPOINT logging from constructor and remove empty Update() method
+7,P7-10,Subsystem,Important,FIX,Engine\Systems\Gameplay\AnimationSystem.cs,69 121,Remove unused _removeList field and its Clear() call in Update
+7,P7-11,Subsystem,Important,FIX,Engine\Systems\Gameplay\ProjectileSystem.cs,9-34,Add Initialize() and Shutdown() lifecycle methods to match subsystem standard
+7,P7-12,Subsystem,Important,FIX,Engine\Core\GameRoot.cs,—,Wire ProjectileSystem into GameRoot: construct + Initialize + Update + Shutdown
+7,P7-13,Subsystem,Important,FIX,Engine\Systems\GameStateManager.cs,58 65 72 80,Replace Console.WriteLine and Debug.WriteLine calls with DebugLogger.Log
+7,P7-14,Subsystem,Important,FIX,Engine\Systems\EventDispatcher.cs,60,Copy handler list to array before iterating in Publish to prevent modification during enumeration
+7,P7-15,Scene System,Important,FIX,Engine\Scenes\IScene.cs,10-15,Add Shutdown() method to IScene interface to align with Scene base class
+7,P7-16,Scene System,Important,REMOVE,Engine\Scenes\SceneManager.cs,70-86,Remove dead SampleScene test stub class
+7,P7-17,Data Flow,Important,FIX,Engine\Core\GameRoot.cs,78,Capture and log AssetPipeline.LoadAll return value instead of discarding it
+7,P7-18,Subsystem,Important,FIX,Engine\Systems\Gameplay\PathfindingSystem.cs,126,Add speed > 0 validation in Register to prevent zero/negative speed edge cases
+7,P7-19,Subsystem,Minor,FIX,Engine\Systems\GameStateManager.cs,35,Add sealed keyword to GameStateManager class declaration
+7,P7-20,Subsystem,Minor,FIX,Engine\Systems\GameStateManager.cs,39 74,Remove stale FIX 1 and FIX 2 development comments
+7,P7-21,Subsystem,Minor,FIX,Engine\Systems\InputRouter.cs,35,Add sealed keyword to InputRouter class declaration
+7,P7-22,Namespace,Minor,FIX,Engine\Systems\GameStateManager.cs,all,Fix extra indentation level wrapping entire file content
+7,P7-23,Namespace,Minor,FIX,Engine\Systems\InputRouter.cs,all,Fix extra indentation level wrapping entire file content
+7,P7-24,Namespace,Minor,FIX,Engine\Systems\LoggingSystem.cs,all,Fix extra indentation level wrapping entire file content
+7,P7-25,Namespace,Minor,FIX,Engine\Scenes\SceneManager.cs,7,Remove meaningless using static IScene directive
+7,P7-26,Namespace,Minor,FIX,Engine\Systems\GameStateManager.cs,84,Rename parameter deltaTime to deltaSeconds for consistency with other subsystems
+7,P7-27,Data Flow,Minor,FIX,Engine\Core\GameRoot.cs,31 43,Either wire _frameStats.OnFrame into RunMainLoop or remove the unused field
+7,P7-28,Rendering,Minor,FIX,Engine\Rendering\Texture2D.cs,19-22,Remove BREAKPOINT logging from Texture2D constructor
+7,P7-29,Rendering,Minor,FIX,Engine\Rendering\WindowHost.cs,49-50,Remove per-call DebugLogger.Log from PumpEvents
+7,P7-30,Engine Lifecycle,Minor,FIX,Engine\Core\GameLoop.cs,35-37 40,Remove BREAKPOINT logging and increase iteration count or document single-frame intent
