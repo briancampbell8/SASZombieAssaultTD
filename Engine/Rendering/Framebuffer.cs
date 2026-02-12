@@ -7,8 +7,9 @@
         Minimal framebuffer implementing IRenderContext with a raw pixel buffer.
 
     Notes:
-        <Any architectural notes, constraints, or special behaviors.>
-
+        Pixel buffer is stored in BGRA byte order for Win32 StretchDIBits (BI_RGB, 32bpp).
+        Public API accepts colors as uint in 0xRRGGBBAA format; conversion happens internally.
+        DrawText uses 6x8 glyphs; encoding artifact fixed.
 */
 using System;
 
@@ -23,7 +24,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public int Height { get; }
 
         /// <summary>
-        /// Raw pixel buffer (RGBA).
+        /// Raw pixel buffer (BGRA byte order for Win32 presentation).
         /// </summary>
         public byte[] Pixels { get; }
 
@@ -35,12 +36,12 @@ namespace SASZombieAssaultTD.Engine.Rendering
             Width = width;
             Height = height;
 
-            // 4 bytes per pixel (RGBA)
+            // 4 bytes per pixel (BGRA)
             Pixels = new byte[Width * Height * 4];
         }
 
         /// <summary>
-        /// Fills the entire framebuffer with a single RGBA color.
+        /// Fills the entire framebuffer with a single color (input: 0xRRGGBBAA).
         /// </summary>
         public void Clear(uint rgba)
         {
@@ -51,15 +52,15 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
             for (int i = 0; i < Pixels.Length; i += 4)
             {
-                Pixels[i + 0] = r;
-                Pixels[i + 1] = g;
-                Pixels[i + 2] = b;
-                Pixels[i + 3] = a;
+                Pixels[i + 0] = b; // B
+                Pixels[i + 1] = g; // G
+                Pixels[i + 2] = r; // R
+                Pixels[i + 3] = a; // A
             }
         }
 
         /// <summary>
-        /// Writes a single pixel to the framebuffer.
+        /// Writes a single pixel to the framebuffer (input: 0xRRGGBBAA).
         /// </summary>
         public void SetPixel(int x, int y, uint rgba)
         {
@@ -68,9 +69,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
             int index = (y * Width + x) * 4;
 
-            Pixels[index + 0] = (byte)((rgba >> 24) & 0xFF); // R
+            Pixels[index + 0] = (byte)((rgba >> 8) & 0xFF);  // B
             Pixels[index + 1] = (byte)((rgba >> 16) & 0xFF); // G
-            Pixels[index + 2] = (byte)((rgba >> 8) & 0xFF);  // B
+            Pixels[index + 2] = (byte)((rgba >> 24) & 0xFF); // R
             Pixels[index + 3] = (byte)(rgba & 0xFF);         // A
         }
 

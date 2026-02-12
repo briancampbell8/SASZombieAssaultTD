@@ -5,6 +5,7 @@
     Purpose: Scans asset directories and produces discovered asset entries
              including keys, sources, and metadata.
     Notes:   Stateless. First step in the asset pipeline.
+             Discover method returns empty list on error and logs details.
 */
 
 using SASZombieAssaultTD.Engine.Rendering;
@@ -22,6 +23,7 @@ namespace SASZombieAssaultTD.Engine.Systems.Assets
     {
         /// <summary>
         /// Scans the root directory and returns discovered assets.
+        /// Returns empty list on error; logs error details.
         /// </summary>
         public IReadOnlyList<DiscoveredAsset> Discover(AssetLoadContext context)
         {

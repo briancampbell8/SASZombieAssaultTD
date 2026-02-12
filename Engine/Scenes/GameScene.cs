@@ -9,8 +9,9 @@ Purpose:
 
 Notes:
     Overwrites previous version. No framebuffer ownership here.
+    Asset loading is handled by AssetPipeline; this scene only reads from AssetRegistry.
+    AssetRegistry.All() returns a snapshot for safe iteration outside locks.
 */
-
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.Systems.Assets;
 using SASZombieAssaultTD.Engine.Systems.Diagnostics;
@@ -22,16 +23,12 @@ namespace SASZombieAssaultTD.Engine.Scenes
     public sealed class GameScene : Scene
     {
         // AssetRegistry exposes a dictionary via All(); store that directly.
-        private IReadOnlyDictionary<string, string> _assets;
-        private FrameStats _frameStats;
+        private IReadOnlyDictionary<string, string> _assets = null!;
+        private FrameStats _frameStats = null!;
 
         public GameScene() : base()
         {
             DebugLogger.Log("Info", "[GameScene] Constructor reached.");
-
-            // Initialize non-nullable fields with safe defaults
-            _assets = new Dictionary<string, string>();
-            _frameStats = new FrameStats();
         }
 
         public override void Initialize()

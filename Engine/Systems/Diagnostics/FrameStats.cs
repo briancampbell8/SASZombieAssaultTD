@@ -4,18 +4,20 @@
     Created: 2026-02-10
 
     Purpose:
-        Tracks frame timing metrics such as frame count and FPS.
+        Tracks frame timing and statistics for diagnostics.
 
     Notes:
-        <Any architectural notes, constraints, or special behaviors.>
-
+        Example usage: GameScene uses FrameStats to track FPS and frame times.
+        Call OnFrame() once per frame; use FramesPerSecond for diagnostics.
 */
-using System;
-
 namespace SASZombieAssaultTD.Engine.Systems.Diagnostics
 {
     /// <summary>
-    /// Tracks basic frame statistics such as FPS and frame count.
+    /// Tracks frame timing and statistics for diagnostics.
+    /// Example usage: 
+    ///   var stats = new FrameStats();
+    ///   stats.OnFrame(deltaSeconds);
+    ///   float fps = stats.FramesPerSecond;
     /// </summary>
     public sealed class FrameStats
     {

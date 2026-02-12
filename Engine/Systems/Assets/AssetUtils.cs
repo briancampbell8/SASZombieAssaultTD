@@ -18,7 +18,7 @@ namespace SASZombieAssaultTD.Engine.Systems.Assets
     {
         /// <summary>
         /// Normalizes a file path by converting backslashes to forward slashes
-        /// and removing duplicate separators.
+        /// and removing duplicate separators. Thread-safe and stateless.
         /// </summary>
         public static string NormalizePath(string path)
         {
@@ -35,6 +35,7 @@ namespace SASZombieAssaultTD.Engine.Systems.Assets
         /// <summary>
         /// Attempts to read all bytes from a file.
         /// Returns null if the file does not exist or cannot be read.
+        /// Thread-safe and stateless.
         /// </summary>
         public static byte[]? TryReadFile(string path)
         {

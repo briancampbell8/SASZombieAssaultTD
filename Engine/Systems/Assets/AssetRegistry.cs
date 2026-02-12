@@ -10,7 +10,7 @@
         All public members lock on _syncRoot for thread safety.
         Dictionary<string, string> is not safe for concurrent read/write;
         consistent locking is required.
-
+        All() returns a snapshot for safe iteration outside the lock.
 */
 using SASZombieAssaultTD.Engine.Systems.Diagnostics;
 using System;

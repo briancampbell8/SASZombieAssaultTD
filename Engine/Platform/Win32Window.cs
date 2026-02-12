@@ -7,8 +7,8 @@
         Manages Win32 window creation, message pumping, and presenting the framebuffer.
 
     Notes:
-        <Any architectural notes, constraints, or special behaviors.>
-
+        Implements IDisposable to release the native window handle.
+        BITMAPINFO struct is private and used internally for Win32 presentation.
 */
 using SASZombieAssaultTD.Engine.Rendering;
 using System;
@@ -16,8 +16,11 @@ using System.Runtime.InteropServices;
 
 namespace SASZombieAssaultTD.Engine.Platform
 {
-    public sealed class Win32Window
+    public sealed class Win32Window : IDisposable
     {
+        // BITMAPINFO struct is private and used internally.
+        // See Dispose() for resource cleanup.
+
         private readonly int _width;
         private readonly int _height;
         private readonly string _title;
@@ -26,6 +29,7 @@ namespace SASZombieAssaultTD.Engine.Platform
         private readonly WndProcDelegate _wndProcDelegate;
 
         private IntPtr _hwnd;
+        private bool _disposed;
 
         public Win32Window(int width, int height, string title, Framebuffer fb)
         {
@@ -120,6 +124,20 @@ namespace SASZombieAssaultTD.Engine.Platform
             ReleaseDC(_hwnd, hdc);
         }
 
+        public void Dispose()
+        {
+            if (_disposed)
+                return;
+
+            if (_hwnd != IntPtr.Zero)
+            {
+                DestroyWindow(_hwnd);
+                _hwnd = IntPtr.Zero;
+            }
+
+            _disposed = true;
+        }
+
         private IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
         {
             if (msg == WM_DESTROY)
@@ -164,7 +182,7 @@ namespace SASZombieAssaultTD.Engine.Platform
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct BITMAPINFO
+        private struct BITMAPINFO
         {
             public int biSize;
             public int biWidth;
@@ -213,6 +231,9 @@ namespace SASZombieAssaultTD.Engine.Platform
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern void PostQuitMessage(int exitCode);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern bool DestroyWindow(IntPtr hWnd);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern IntPtr GetDC(IntPtr hWnd);
