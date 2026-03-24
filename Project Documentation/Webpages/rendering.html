@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rendering System - SAS Zombie Assault TD</title>
+    <link rel="stylesheet" href="../assets/css/docs.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="btn btn-back">← Back to Table of Contents</a>
+        
+        <header class="header">
+            <h1>Rendering System</h1>
+            <h2>High-Performance Graphics Pipeline</h2>
+        </header>
+
+        <div class="content-section">
+            <h2>System Overview</h2>
+            
+            <div class="alert alert-info">
+                <strong>Note:</strong> The rendering system provides high-performance graphics capabilities with support for 2D and 3D rendering, advanced lighting, and visual effects.
+            </div>
+
+            <h3>Core Features</h3>
+            <ul>
+                <li><strong>Multi-threaded Rendering:</strong> Parallel rendering for optimal performance</li>
+                <li><strong>Batch Rendering:</strong> Efficient draw call batching</li>
+                <li><strong>LOD System:</strong> Level of detail for performance optimization</li>
+                <li><strong>Lighting System:</strong> Dynamic lighting and shadows</li>
+                <li><strong>Particle Effects:</strong> Advanced particle system</li>
+                <li><strong>Post Processing:</strong> Screen-space effects and filters</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>Rendering Pipeline</h2>
+            
+            <h3>Render Pipeline Architecture</h3>
+            <div class="code-block">
+// Main render pipeline
+public class RenderPipeline {
+    private readonly List&lt;IRenderPass&gt; _passes = new();
+    private readonly RenderTarget _mainTarget;
+    private readonly GraphicsDevice _graphicsDevice;
+    
+    public RenderPipeline(GraphicsDevice graphicsDevice) {
+        _graphicsDevice = graphicsDevice;
+        _mainTarget = new RenderTarget(graphicsDevice, graphicsDevice.Width, graphicsDevice.Height);
+        
+        InitializePasses();
+    }
+    
+    private void InitializePasses() {
+        // Add render passes in order
+        _passes.Add(new ShadowPass());
+        _passes.Add(new GeometryPass());
+        _passes.Add(new LightingPass());
+        _passes.Add(new PostProcessPass());
+        _passes.Add(new UIPass());
+    }
+    
+    public void Render(RenderContext context) {
+        // Set render targets
+        _graphicsDevice.SetRenderTarget(_mainTarget);
+        _graphicsDevice.Clear(Color.CornflowerBlue);
+        
+        // Execute render passes
+        foreach (var pass in _passes) {
+            pass.Execute(context);
+        }
+        
+        // Present to screen
+        _graphicsDevice.Present();
+    }
+    
+    public void AddPass(IRenderPass pass) {
+        _passes.Add(pass);
+    }
+    
+    public void RemovePass&lt;T&gt;() where T : IRenderPass {
+        _passes.RemoveAll(p => p is T);
+    }
+}
+
+// Render pass interface
+public interface IRenderPass {
+    void Execute(RenderContext context);
+    void SetEnabled(bool enabled);
+    bool IsEnabled { get; }
+}
+
+// Render context
+public struct RenderContext {
+    public Matrix4x4 ViewMatrix;
+    public Matrix4x4 ProjectionMatrix;
+    public Matrix4x4 ViewProjectionMatrix;
+    public Vector3 CameraPosition;
+    public float DeltaTime;
+    public float TotalTime;
+    public RenderTarget CurrentTarget;
+}
+            </div>
+
+            <h3>Geometry Pass</h3>
+            <div class="code-block">
+// Geometry rendering pass
+public class GeometryPass : IRenderPass {
+    private readonly GraphicsDevice _graphicsDevice;
+    private readonly Shader _geometryShader;
+    private readonly Dictionary&lt;Material, List&lt;RenderItem&gt;&gt; _renderBatches = new();
+    
+    public bool IsEnabled { get; private set; } = true;
+    
+    public GeometryPass(GraphicsDevice graphicsDevice) {
+        _graphicsDevice = graphicsDevice;
+        _geometryShader = graphicsDevice.LoadShader("geometry.hlsl");
+    }
+    
+    public void Execute(RenderContext context) {
+        if (!IsEnabled) return;
+        
+        // Collect render items
+        CollectRenderItems(context);
+        
+        // Render batches
+        RenderBatches(context);
+    }
+    
+    private void CollectRenderItems(RenderContext context) {
+        _renderBatches.Clear();
+        
+        // Query for renderable entities
+        var query = new EntityQuery(EntityManager.Instance)
+            .Include&lt;Mesh&gt;()
+            .Include&lt;Transform&gt;();
+        
+        foreach (var entity in query.Execute()) {
+            ref var mesh = ref ComponentManager.GetComponent&lt;Mesh&gt;(entity);
+            ref var transform = ref ComponentManager.GetComponent&lt;Transform&gt;(entity);
+            
+            if (!mesh.Visible) continue;
+            
+            var material = MaterialManager.GetMaterial(mesh.MaterialId);
+            var renderItem = new RenderItem {
+                Entity = entity,
+                MeshId = mesh.MeshId,
+                Transform = transform.GetMatrix(),
+                Material = material,
+                Distance = Vector3.Distance(context.CameraPosition, transform.Position.ToVector3())
+            };
+            
+            if (!_renderBatches.ContainsKey(material)) {
+                _renderBatches[material] = new List&lt;RenderItem&gt;();
+            }
+            
+            _renderBatches[material].Add(renderItem);
+        }
+    }
+    
+    private void RenderBatches(RenderContext context) {
+        _graphicsDevice.SetShader(_geometryShader);
+        _graphicsDevice.SetConstantBuffer("ViewProjection", context.ViewProjectionMatrix);
+        
+        foreach (var batch in _renderBatches) {
+            var material = batch.Key;
+            var renderItems = batch.Value;
+            
+            // Sort by distance (front to back for opaque, back to front for transparent)
+            renderItems.Sort((a, b) => {
+                if (material.IsTransparent) {
+                    return b.Distance.CompareTo(a.Distance); // Back to front
+                } else {
+                    return a.Distance.CompareTo(b.Distance); // Front to back
+                }
+            });
+            
+            // Set material properties
+            _graphicsDevice.SetTexture("AlbedoTexture", material.AlbedoTexture);
+            _graphicsDevice.SetTexture("NormalTexture", material.NormalTexture);
+            _graphicsDevice.SetConstantBuffer("MaterialProperties", material.Properties);
+            
+            // Render batch
+            foreach (var item in renderItems) {
+                _graphicsDevice.SetConstantBuffer("World", item.Transform);
+                RenderMesh(item.MeshId);
+            }
+        }
+    }
+    
+    private void RenderMesh(int meshId) {
+        var mesh = MeshManager.GetMesh(meshId);
+        _graphicsDevice.SetVertexBuffer(mesh.VertexBuffer);
+        _graphicsDevice.SetIndexBuffer(mesh.IndexBuffer);
+        _graphicsDevice.DrawIndexed(mesh.IndexCount);
+    }
+    
+    public void SetEnabled(bool enabled) {
+        IsEnabled = enabled;
+    }
+}
+
+// Render item structure
+public struct RenderItem {
+    public Entity Entity;
+    public int MeshId;
+    public Matrix4x4 Transform;
+    public Material Material;
+    public float Distance;
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Lighting System</h2>
+            
+            <h3>Light Components</h3>
+            <div class="code-block">
+// Light component base
+public interface ILight {
+    Color Color { get; set; }
+    float Intensity { get; set; }
+    bool Enabled { get; set; }
+}
+
+// Directional light
+public struct DirectionalLight : IComponent, ILight {
+    public Color Color;
+    public float Intensity;
+    public Vector3 Direction;
+    public bool Enabled;
+    public bool CastsShadows;
+    
+    Color ILight.Color { get => Color; set => Color = value; }
+    float ILight.Intensity { get => Intensity; set => Intensity = value; }
+    bool ILight.Enabled { get => Enabled; set => Enabled = value; }
+}
+
+// Point light
+public struct PointLight : IComponent, ILight {
+    public Color Color;
+    public float Intensity;
+    public Vector3 Position;
+    public float Range;
+    public bool Enabled;
+    public bool CastsShadows;
+    
+    Color ILight.Color { get => Color; set => Color = value; }
+    float ILight.Intensity { get => Intensity; set => Intensity = value; }
+    bool ILight.Enabled { get => Enabled; set => Enabled = value; }
+}
+
+// Spot light
+public struct SpotLight : IComponent, ILight {
+    public Color Color;
+    public float Intensity;
+    public Vector3 Position;
+    public Vector3 Direction;
+    public float Range;
+    public float InnerConeAngle;
+    public float OuterConeAngle;
+    public bool Enabled;
+    public bool CastsShadows;
+    
+    Color ILight.Color { get => Color; set => Color = value; }
+    float ILight.Intensity { get => Intensity; set => Intensity = value; }
+    bool ILight.Enabled { get => Enabled; set => Enabled = value; }
+}
+
+// Area light
+public struct AreaLight : IComponent, ILight {
+    public Color Color;
+    public float Intensity;
+    public Vector3 Position;
+    public Vector3 Right;
+    public Vector3 Up;
+    public Vector2 Size;
+    public bool Enabled;
+    public bool CastsShadows;
+    
+    Color ILight.Color { get => Color; set => Color = value; }
+    float ILight.Intensity { get => Intensity; set => Intensity = value; }
+    bool ILight.Enabled { get => Enabled; set => Enabled = value; }
+}
+            </div>
+
+            <h3>Lighting Pass</h3>
+            <div class="code-block">
+// Lighting render pass
+public class LightingPass : IRenderPass {
+    private readonly GraphicsDevice _graphicsDevice;
+    private readonly Shader _lightingShader;
+    private readonly RenderTarget _lightingTarget;
+    private readonly List&lt;ILight&gt; _lights = new();
+    
+    public bool IsEnabled { get; private set; } = true;
+    
+    public LightingPass(GraphicsDevice graphicsDevice) {
+        _graphicsDevice = graphicsDevice;
+        _lightingShader = graphicsDevice.LoadShader("lighting.hlsl");
+        _lightingTarget = new RenderTarget(graphicsDevice, graphicsDevice.Width, graphicsDevice.Height);
+    }
+    
+    public void Execute(RenderContext context) {
+        if (!IsEnabled) return;
+        
+        // Collect lights
+        CollectLights();
+        
+        // Set render target
+        _graphicsDevice.SetRenderTarget(_lightingTarget);
+        _graphicsDevice.Clear(Color.Black);
+        
+        // Set shader and constants
+        _graphicsDevice.SetShader(_lightingShader);
+        _graphicsDevice.SetConstantBuffer("CameraPosition", context.CameraPosition);
+        _graphicsDevice.SetTexture("GeometryBuffer", GetGeometryBuffer());
+        
+        // Render lights
+        RenderLights(context);
+    }
+    
+    private void CollectLights() {
+        _lights.Clear();
+        
+        // Collect directional lights
+        var directionalQuery = new EntityQuery(EntityManager.Instance)
+            .Include&lt;DirectionalLight&gt;();
+        
+        foreach (var entity in directionalQuery.Execute()) {
+            ref var light = ref ComponentManager.GetComponent&lt;DirectionalLight&gt;(entity);
+            if (light.Enabled) {
+                _lights.Add(light);
+            }
+        }
+        
+        // Collect point lights
+        var pointQuery = new EntityQuery(EntityManager.Instance)
+            .Include&lt;PointLight&gt;();
+        
+        foreach (var entity in pointQuery.Execute()) {
+            ref var light = ref ComponentManager.GetComponent&lt;PointLight&gt;(entity);
+            if (light.Enabled) {
+                _lights.Add(light);
+            }
+        }
+        
+        // Collect spot lights
+        var spotQuery = new EntityQuery(EntityManager.Instance)
+            .Include&lt;SpotLight&gt;();
+        
+        foreach (var entity in spotQuery.Execute()) {
+            ref var light = ref ComponentManager.GetComponent&lt;SpotLight&gt;(entity);
+            if (light.Enabled) {
+                _lights.Add(light);
+            }
+        }
+    }
+    
+    private void RenderLights(RenderContext context) {
+        foreach (var light in _lights) {
+            RenderLight(light, context);
+        }
+    }
+    
+    private void RenderLight(ILight light, RenderContext context) {
+        // Set light properties
+        _graphicsDevice.SetConstantBuffer("LightColor", light.Color.ToVector4());
+        _graphicsDevice.SetConstantBuffer("LightIntensity", light.Intensity);
+        
+        switch (light) {
+            case DirectionalLight directional:
+                RenderDirectionalLight(directional, context);
+                break;
+            case PointLight point:
+                RenderPointLight(point, context);
+                break;
+            case SpotLight spot:
+                RenderSpotLight(spot, context);
+                break;
+            case AreaLight area:
+                RenderAreaLight(area, context);
+                break;
+        }
+    }
+    
+    private void RenderDirectionalLight(DirectionalLight light, RenderContext context) {
+        _graphicsDevice.SetConstantBuffer("LightDirection", light.Direction);
+        _graphicsDevice.SetConstantBuffer("LightType", 0); // Directional
+        
+        // Render full screen quad
+        RenderFullScreenQuad();
+    }
+    
+    private void RenderPointLight(PointLight light, RenderContext context) {
+        _graphicsDevice.SetConstantBuffer("LightPosition", light.Position);
+        _graphicsDevice.SetConstantBuffer("LightRange", light.Range);
+        _graphicsDevice.SetConstantBuffer("LightType", 1); // Point
+        
+        // Render light volume (sphere)
+        RenderLightVolume(LightVolume.Sphere, light.Range, light.Position);
+    }
+    
+    private void RenderSpotLight(SpotLight light, RenderContext context) {
+        _graphicsDevice.SetConstantBuffer("LightPosition", light.Position);
+        _graphicsDevice.SetConstantBuffer("LightDirection", light.Direction);
+        _graphicsDevice.SetConstantBuffer("LightRange", light.Range);
+        _graphicsDevice.SetConstantBuffer("LightInnerConeAngle", light.InnerConeAngle);
+        _graphicsDevice.SetConstantBuffer("LightOuterConeAngle", light.OuterConeAngle);
+        _graphicsDevice.SetConstantBuffer("LightType", 2); // Spot
+        
+        // Render light volume (cone)
+        RenderLightVolume(LightVolume.Cone, light.Range, light.Position);
+    }
+    
+    private void RenderFullScreenQuad() {
+        _graphicsDevice.SetVertexBuffer(_fullscreenQuad.VertexBuffer);
+        _graphicsDevice.Draw(6); // 2 triangles
+    }
+    
+    private void RenderLightVolume(LightVolume volume, float range, Vector3 position) {
+        var mesh = LightVolumeManager.GetVolume(volume, range);
+        _graphicsDevice.SetVertexBuffer(mesh.VertexBuffer);
+        _graphicsDevice.SetIndexBuffer(mesh.IndexBuffer);
+        _graphicsDevice.SetConstantBuffer("LightWorld", Matrix4x4.CreateTranslation(position));
+        _graphicsDevice.DrawIndexed(mesh.IndexCount);
+    }
+    
+    public void SetEnabled(bool enabled) {
+        IsEnabled = enabled;
+    }
+}
+
+// Light volume types
+public enum LightVolume {
+    Sphere,
+    Cone,
+    Box
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Shadow Mapping</h2>
+            
+            <h3>Shadow Pass</h3>
+            <div class="code-block">
+// Shadow mapping pass
+public class ShadowPass : IRenderPass {
+    private readonly GraphicsDevice _graphicsDevice;
+    private readonly Shader _shadowShader;
+    private readonly Dictionary&lt;int, RenderTarget&gt; _shadowMaps = new();
+    private readonly int _shadowMapSize = 2048;
+    
+    public bool IsEnabled { get; private set; } = true;
+    
+    public ShadowPass(GraphicsDevice graphicsDevice) {
+        _graphicsDevice = graphicsDevice;
+        _shadowShader = graphicsDevice.LoadShader("shadow.hlsl");
+    }
+    
+    public void Execute(RenderContext context) {
+        if (!IsEnabled) return;
+        
+        // Render shadows for all lights that cast shadows
+        RenderDirectionalLightShadows(context);
+        RenderPointLightShadows(context);
+        RenderSpotLightShadows(context);
+    }
+    
+    private void RenderDirectionalLightShadows(RenderContext context) {
+        var query = new EntityQuery(EntityManager.Instance)
+            .Include&lt;DirectionalLight&gt;();
+        
+        foreach (var entity in query.Execute()) {
+            ref var light = ref ComponentManager.GetComponent&lt;DirectionalLight&gt;(entity);
+            
+            if (light.Enabled && light.CastsShadows) {
+                RenderDirectionalLightShadow(entity, light, context);
+            }
+        }
+    }
+    
+    private void RenderDirectionalLightShadow(Entity lightEntity, DirectionalLight light, RenderContext context) {
+        // Get or create shadow map
+        if (!_shadowMaps.ContainsKey(lightEntity.Id)) {
+            _shadowMaps[lightEntity.Id] = new RenderTarget(_graphicsDevice, _shadowMapSize, _shadowMapSize, 
+                PixelFormat.R32_Float, true);
+        }
+        
+        var shadowMap = _shadowMaps[lightEntity.Id];
+        
+        // Set render target
+        _graphicsDevice.SetRenderTarget(shadowMap);
+        _graphicsDevice.Clear(Color.White);
+        
+        // Calculate shadow matrix
+        var shadowMatrix = CalculateShadowMatrix(light, context);
+        
+        // Set shader and constants
+        _graphicsDevice.SetShader(_shadowShader);
+        _graphicsDevice.SetConstantBuffer("ShadowMatrix", shadowMatrix);
+        
+        // Render geometry
+        RenderGeometryForShadows();
+    }
+    
+    private Matrix4x4 CalculateShadowMatrix(DirectionalLight light, RenderContext context) {
+        // Calculate light view matrix
+        var lightPosition = context.CameraPosition - light.Direction * 50f;
+        var lightView = Matrix4x4.CreateLookAt(lightPosition, lightPosition + light.Direction, Vector3.Up);
+        
+        // Calculate light projection matrix (orthographic)
+        var lightProjection = Matrix4x4.CreateOrthographic(100f, 100f, 1f, 200f);
+        
+        return lightView * lightProjection;
+    }
+    
+    private void RenderGeometryForShadows() {
+        var query = new EntityQuery(EntityManager.Instance)
+            .Include&lt;Mesh&gt;()
+            .Include&lt;Transform&gt;();
+        
+        foreach (var entity in query.Execute()) {
+            ref var mesh = ref ComponentManager.GetComponent&lt;Mesh&gt;(entity);
+            ref var transform = ref ComponentManager.GetComponent&lt;Transform&gt;(entity);
+            
+            if (!mesh.Visible) continue;
+            
+            _graphicsDevice.SetConstantBuffer("World", transform.GetMatrix());
+            RenderMesh(mesh.MeshId);
+        }
+    }
+    
+    private void RenderMesh(int meshId) {
+        var mesh = MeshManager.GetMesh(meshId);
+        _graphicsDevice.SetVertexBuffer(mesh.VertexBuffer);
+        _graphicsDevice.SetIndexBuffer(mesh.IndexBuffer);
+        _graphicsDevice.DrawIndexed(mesh.IndexCount);
+    }
+    
+    public void SetEnabled(bool enabled) {
+        IsEnabled = enabled;
+    }
+    
+    public RenderTarget GetShadowMap(int lightEntityId) {
+        return _shadowMaps.TryGetValue(lightEntityId, out var shadowMap) ? shadowMap : null;
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Post Processing</h2>
+            
+            <h3>Post Process Effects</h3>
+            <div class="code-block">
+// Post process pass
+public class PostProcessPass : IRenderPass {
+    private readonly GraphicsDevice _graphicsDevice;
+    private readonly Shader _postProcessShader;
+    private readonly List&lt;IPostProcessEffect&gt; _effects = new();
+    private readonly RenderTarget _intermediateTarget;
+    
+    public bool IsEnabled { get; private set; } = true;
+    
+    public PostProcessPass(GraphicsDevice graphicsDevice) {
+        _graphicsDevice = graphicsDevice;
+        _postProcessShader = graphicsDevice.LoadShader("postprocess.hlsl");
+        _intermediateTarget = new RenderTarget(graphicsDevice, graphicsDevice.Width, graphicsDevice.Height);
+        
+        // Add default effects
+        AddEffect(new ToneMappingEffect());
+        AddEffect(new VignetteEffect());
+        AddEffect(new BloomEffect());
+    }
+    
+    public void Execute(RenderContext context) {
+        if (!IsEnabled) return;
+        
+        var sourceTarget = GetPreviousPassTarget();
+        var currentTarget = _intermediateTarget;
+        
+        // Apply effects in sequence
+        for (int i = 0; i &lt; _effects.Count; i++) {
+            var effect = _effects[i];
+            
+            if (!effect.IsEnabled) continue;
+            
+            // Set render target
+            _graphicsDevice.SetRenderTarget(currentTarget);
+            
+            // Set shader and constants
+            _graphicsDevice.SetShader(_postProcessShader);
+            _graphicsDevice.SetTexture("SourceTexture", sourceTarget);
+            effect.SetShaderConstants(_graphicsDevice);
+            
+            // Render full screen quad
+            RenderFullScreenQuad();
+            
+            // Swap targets for next effect
+            (sourceTarget, currentTarget) = (currentTarget, sourceTarget);
+        }
+    }
+    
+    public void AddEffect(IPostProcessEffect effect) {
+        _effects.Add(effect);
+        _effects.Sort((a, b) => a.Order.CompareTo(b.Order));
+    }
+    
+    public void RemoveEffect&lt;T&gt;() where T : IPostProcessEffect {
+        _effects.RemoveAll(e => e is T);
+    }
+    
+    public T GetEffect&lt;T&gt;() where T : class, IPostProcessEffect {
+        return _effects.OfType&lt;T&gt;().FirstOrDefault();
+    }
+    
+    private void RenderFullScreenQuad() {
+        _graphicsDevice.SetVertexBuffer(_fullscreenQuad.VertexBuffer);
+        _graphicsDevice.Draw(6);
+    }
+    
+    private RenderTarget GetPreviousPassTarget() {
+        // Return the target from the previous pass (lighting pass)
+        return _lightingPassTarget;
+    }
+    
+    public void SetEnabled(bool enabled) {
+        IsEnabled = enabled;
+    }
+}
+
+// Post process effect interface
+public interface IPostProcessEffect {
+    void SetShaderConstants(GraphicsDevice graphicsDevice);
+    bool IsEnabled { get; set; }
+    int Order { get; }
+}
+
+// Tone mapping effect
+public class ToneMappingEffect : IPostProcessEffect {
+    public bool IsEnabled { get; set; } = true;
+    public int Order => 0;
+    
+    public float Exposure { get; set; } = 1.0f;
+    public ToneMappingMethod Method { get; set; } = ToneMappingMethod.ACES;
+    
+    public void SetShaderConstants(GraphicsDevice graphicsDevice) {
+        graphicsDevice.SetConstantBuffer("ToneMappingExposure", Exposure);
+        graphicsDevice.SetConstantBuffer("ToneMappingMethod", (int)Method);
+    }
+}
+
+// Bloom effect
+public class BloomEffect : IPostProcessEffect {
+    public bool IsEnabled { get; set; } = true;
+    public int Order => 1;
+    
+    public float Threshold { get; set; } = 1.0f;
+    public float Intensity { get; set; } = 0.5f;
+    public int BlurIterations { get; set; } = 4;
+    
+    public void SetShaderConstants(GraphicsDevice graphicsDevice) {
+        graphicsDevice.SetConstantBuffer("BloomThreshold", Threshold);
+        graphicsDevice.SetConstantBuffer("BloomIntensity", Intensity);
+        graphicsDevice.SetConstantBuffer("BloomBlurIterations", BlurIterations);
+    }
+}
+
+// Vignette effect
+public class VignetteEffect : IPostProcessEffect {
+    public bool IsEnabled { get; set; } = true;
+    public int Order => 2;
+    
+    public float Intensity { get; set; } = 0.5f;
+    public float Smoothness { get; set; } = 0.5f;
+    public Color Color { get; set; } = Color.Black;
+    
+    public void SetShaderConstants(GraphicsDevice graphicsDevice) {
+        graphicsDevice.SetConstantBuffer("VignetteIntensity", Intensity);
+        graphicsDevice.SetConstantBuffer("VignetteSmoothness", Smoothness);
+        graphicsDevice.SetConstantBuffer("VignetteColor", Color.ToVector4());
+    }
+}
+
+// Tone mapping methods
+public enum ToneMappingMethod {
+    Linear,
+    Reinhard,
+    ACES,
+    Filmic
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Particle System</h2>
+            
+            <h3>Particle Components</h3>
+            <div class="code-block">
+// Particle system component
+public struct ParticleSystem : IComponent {
+    public int ParticleCount;
+    public int MaxParticles;
+    public float EmissionRate;
+    public float EmissionTimer;
+    public ParticleSettings Settings;
+    public bool IsPlaying;
+    public bool Loops;
+    public float Duration;
+    public float CurrentTime;
+}
+
+// Particle settings
+public struct ParticleSettings {
+    public Color StartColor;
+    public Color EndColor;
+    public float StartSize;
+    public float EndSize;
+    public float StartSpeed;
+    public float EndSpeed;
+    public Vector3 StartAcceleration;
+    public Vector3 EndAcceleration;
+    public float StartLifetime;
+    public float EndLifetime;
+    public Texture2D Texture;
+    public BlendMode BlendMode;
+    public bool WorldSpace;
+    public SimulationSpace SimulationSpace;
+}
+
+// Individual particle data
+public struct Particle {
+    public Vector3 Position;
+    public Vector3 Velocity;
+    public Vector3 Acceleration;
+    public Color Color;
+    public float Size;
+    public float Lifetime;
+    public float MaxLifetime;
+    public bool IsAlive;
+}
+
+// Simulation space
+public enum SimulationSpace {
+    Local,
+    World
+}
+
+// Blend mode
+public enum BlendMode {
+    Alpha,
+    Additive,
+    Multiply
+}
+            </div>
+
+            <h3>Particle System Manager</h3>
+            <div class="code-block">
+// Particle system manager
+public class ParticleSystemManager : SystemBase {
+    private readonly Dictionary&lt;Entity, Particle[]&gt; _particleArrays = new();
+    private readonly Dictionary&lt;Entity, int&gt; _aliveParticleCounts = new();
+    
+    protected override void OnInitialize() {
+        // Initialize particle system
+    }
+    
+    protected override void OnUpdate(float deltaTime) {
+        var query = new EntityQuery(EntityManager)
+            .Include&lt;ParticleSystem&gt;()
+            .Include&lt;Transform&gt;();
+        
+        foreach (var entity in query.Execute()) {
+            ref var particleSystem = ref ComponentManager.GetComponent&lt;ParticleSystem&gt;(entity);
+            ref var transform = ref ComponentManager.GetComponent&lt;Transform&gt;(entity);
+            
+            UpdateParticleSystem(entity, ref particleSystem, ref transform, deltaTime);
+        }
+    }
+    
+    private void UpdateParticleSystem(Entity entity, ref ParticleSystem particleSystem, 
+                                    ref Transform transform, float deltaTime) {
+        // Ensure particle array exists
+        if (!_particleArrays.ContainsKey(entity)) {
+            _particleArrays[entity] = new Particle[particleSystem.MaxParticles];
+            _aliveParticleCounts[entity] = 0;
+        }
+        
+        var particles = _particleArrays[entity];
+        ref var aliveCount = ref _aliveParticleCounts[entity];
+        
+        // Update system time
+        if (particleSystem.IsPlaying) {
+            particleSystem.CurrentTime += deltaTime;
+            
+            if (particleSystem.Duration > 0 && particleSystem.CurrentTime >= particleSystem.Duration) {
+                if (particleSystem.Loops) {
+                    particleSystem.CurrentTime = 0;
+                } else {
+                    particleSystem.IsPlaying = false;
+                }
+            }
+        }
+        
+        // Emit new particles
+        if (particleSystem.IsPlaying) {
+            EmitParticles(ref particleSystem, particles, ref aliveCount, deltaTime, transform);
+        }
+        
+        // Update existing particles
+        UpdateParticles(particles, ref aliveCount, deltaTime, particleSystem.Settings, transform);
+        
+        // Render particles
+        RenderParticles(particles, aliveCount, particleSystem.Settings);
+    }
+    
+    private void EmitParticles(ref ParticleSystem particleSystem, Particle[] particles, 
+                              ref int aliveCount, float deltaTime, Transform transform) {
+        var particlesToEmit = (int)(particleSystem.EmissionRate * deltaTime);
+        
+        for (int i = 0; i &lt; particlesToEmit && aliveCount &lt; particleSystem.MaxParticles; i++) {
+            var particle = CreateParticle(particleSystem.Settings, transform);
+            particles[aliveCount] = particle;
+            aliveCount++;
+        }
+    }
+    
+    private Particle CreateParticle(ParticleSettings settings, Transform transform) {
+        var lifetime = Random.Range(settings.StartLifetime, settings.EndLifetime);
+        var speed = Random.Range(settings.StartSpeed, settings.EndSpeed);
+        var direction = Random.UnitVector3();
+        var velocity = direction * speed;
+        
+        return new Particle {
+            Position = settings.WorldSpace ? transform.Position.ToVector3() : Vector3.Zero,
+            Velocity = velocity,
+            Acceleration = settings.StartAcceleration,
+            Color = settings.StartColor,
+            Size = settings.StartSize,
+            Lifetime = lifetime,
+            MaxLifetime = lifetime,
+            IsAlive = true
+        };
+    }
+    
+    private void UpdateParticles(Particle[] particles, ref int aliveCount, float deltaTime, 
+                               ParticleSettings settings, Transform transform) {
+        for (int i = aliveCount - 1; i >= 0; i--) {
+            ref var particle = ref particles[i];
+            
+            if (!particle.IsAlive) continue;
+            
+            // Update lifetime
+            particle.Lifetime -= deltaTime;
+            
+            if (particle.Lifetime <= 0) {
+                particle.IsAlive = false;
+                // Swap with last alive particle
+                particles[i] = particles[aliveCount - 1];
+                particles[aliveCount - 1] = particle;
+                aliveCount--;
+                continue;
+            }
+            
+            // Update physics
+            particle.Velocity += particle.Acceleration * deltaTime;
+            particle.Position += particle.Velocity * deltaTime;
+            
+            // Update appearance
+            var t = 1.0f - (particle.Lifetime / particle.MaxLifetime);
+            particle.Color = Color.Lerp(settings.StartColor, settings.EndColor, t);
+            particle.Size = MathHelper.Lerp(settings.StartSize, settings.EndSize, t);
+            
+            // Update acceleration
+            particle.Acceleration = Vector3.Lerp(settings.StartAcceleration, settings.EndAcceleration, t);
+        }
+    }
+    
+    private void RenderParticles(Particle[] particles, int aliveCount, ParticleSettings settings) {
+        // Set particle rendering state
+        GraphicsDevice.SetBlendMode(settings.BlendMode);
+        GraphicsDevice.SetTexture(settings.Texture);
+        
+        // Render particles
+        for (int i = 0; i &lt; aliveCount; i++) {
+            ref var particle = ref particles[i];
+            if (!particle.IsAlive) continue;
+            
+            RenderParticle(particle, settings);
+        }
+        
+        // Reset rendering state
+        GraphicsDevice.SetBlendMode(BlendMode.Alpha);
+    }
+    
+    private void RenderParticle(Particle particle, ParticleSettings settings) {
+        // Calculate particle transform
+        var worldMatrix = Matrix4x4.CreateScale(particle.Size) *
+                         Matrix4x4.CreateTranslation(particle.Position);
+        
+        // Set shader constants
+        GraphicsDevice.SetConstantBuffer("World", worldMatrix);
+        GraphicsDevice.SetConstantBuffer("Color", particle.Color.ToVector4());
+        
+        // Render particle quad
+        GraphicsDevice.SetVertexBuffer(_particleQuad.VertexBuffer);
+        GraphicsDevice.Draw(6);
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Performance Optimization</h2>
+            
+            <h3>Batch Rendering</h3>
+            <div class="code-block">
+// Render batch manager
+public class RenderBatchManager {
+    private readonly Dictionary&lt;Material, RenderBatch&gt; _batches = new();
+    private readonly GraphicsDevice _graphicsDevice;
+    
+    public RenderBatchManager(GraphicsDevice graphicsDevice) {
+        _graphicsDevice = graphicsDevice;
+    }
+    
+    public void AddRenderItem(RenderItem item) {
+        var material = item.Material;
+        
+        if (!_batches.ContainsKey(material)) {
+            _batches[material] = new RenderBatch(material, _graphicsDevice);
+        }
+        
+        _batches[material].AddItem(item);
+    }
+    
+    public void Render(RenderContext context) {
+        foreach (var batch in _batches.Values) {
+            batch.Render(context);
+        }
+        
+        _batches.Clear();
+    }
+    
+    public void Clear() {
+        _batches.Clear();
+    }
+}
+
+// Render batch
+public class RenderBatch {
+    private readonly Material _material;
+    private readonly GraphicsDevice _graphicsDevice;
+    private readonly List&lt;RenderItem&gt; _items = new();
+    private readonly DynamicVertexBuffer _instanceBuffer;
+    
+    public RenderBatch(Material material, GraphicsDevice graphicsDevice) {
+        _material = material;
+        _graphicsDevice = graphicsDevice;
+        _instanceBuffer = new DynamicVertexBuffer(graphicsDevice, typeof(InstanceData), 1000);
+    }
+    
+    public void AddItem(RenderItem item) {
+        _items.Add(item);
+    }
+    
+    public void Render(RenderContext context) {
+        if (_items.Count == 0) return;
+        
+        // Sort items
+        _items.Sort((a, b) => {
+            if (_material.IsTransparent) {
+                return b.Distance.CompareTo(a.Distance); // Back to front
+            } else {
+                return a.Distance.CompareTo(b.Distance); // Front to back
+            }
+        });
+        
+        // Update instance buffer
+        UpdateInstanceBuffer();
+        
+        // Set material
+        _graphicsDevice.SetShader(_material.Shader);
+        _graphicsDevice.SetTexture("AlbedoTexture", _material.AlbedoTexture);
+        _graphicsDevice.SetConstantBuffer("MaterialProperties", _material.Properties);
+        
+        // Set instance buffer
+        _graphicsDevice.SetInstanceBuffer(_instanceBuffer);
+        
+        // Render
+        RenderGeometry();
+        
+        _items.Clear();
+    }
+    
+    private void UpdateInstanceBuffer() {
+        var instanceData = new InstanceData[_items.Count];
+        
+        for (int i = 0; i &lt; _items.Count; i++) {
+            instanceData[i] = new InstanceData {
+                World = _items[i].Transform,
+                Color = _items[i].Material.DiffuseColor.ToVector4()
+            };
+        }
+        
+        _instanceBuffer.SetData(instanceData, 0, _items.Count);
+    }
+    
+    private void RenderGeometry() {
+        // Group by mesh
+        var meshGroups = _items.GroupBy(item => item.MeshId);
+        
+        foreach (var group in meshGroups) {
+            var meshId = group.Key;
+            var mesh = MeshManager.GetMesh(meshId);
+            
+            _graphicsDevice.SetVertexBuffer(mesh.VertexBuffer);
+            _graphicsDevice.SetIndexBuffer(mesh.IndexBuffer);
+            _graphicsDevice.DrawIndexedInstanced(mesh.IndexCount, group.Count());
+        }
+    }
+}
+
+// Instance data structure
+public struct InstanceData {
+    public Matrix4x4 World;
+    public Vector4 Color;
+}
+            </div>
+
+            <h3>LOD System</h3>
+            <div class="code-block">
+// LOD system
+public class LODSystem : SystemBase {
+    private readonly Dictionary&lt;int, LODMesh[]&gt; _lodMeshes = new();
+    private readonly Camera _mainCamera;
+    
+    protected override void OnInitialize() {
+        _mainCamera = CameraManager.MainCamera;
+    }
+    
+    protected override void OnUpdate(float deltaTime) {
+        var query = new EntityQuery(EntityManager)
+            .Include&lt;Mesh&gt;()
+            .Include&lt;Transform&gt;()
+            .Include&lt;LODComponent&gt;();
+        
+        foreach (var entity in query.Execute()) {
+            ref var mesh = ref ComponentManager.GetComponent&lt;Mesh&gt;(entity);
+            ref var transform = ref ComponentManager.GetComponent&lt;Transform&gt;(entity);
+            ref var lod = ref ComponentManager.GetComponent&lt;LODComponent&gt;(entity);
+            
+            UpdateLOD(entity, ref mesh, ref transform, ref lod);
+        }
+    }
+    
+    private void UpdateLOD(Entity entity, ref Mesh mesh, ref Transform transform, ref LODComponent lod) {
+        var distance = Vector3.Distance(_mainCamera.Position, transform.Position.ToVector3());
+        var lodLevel = CalculateLODLevel(distance, lod);
+        
+        if (lodLevel != lod.CurrentLevel) {
+            lod.CurrentLevel = lodLevel;
+            mesh.MeshId = lod.MeshIds[lodLevel];
+        }
+    }
+    
+    private int CalculateLODLevel(float distance, LODComponent lod) {
+        for (int i = lod.DistanceThresholds.Length - 1; i >= 0; i--) {
+            if (distance >= lod.DistanceThresholds[i]) {
+                return i;
+            }
+        }
+        
+        return 0;
+    }
+}
+
+// LOD component
+public struct LODComponent : IComponent {
+    public int[] MeshIds;
+    public float[] DistanceThresholds;
+    public int CurrentLevel;
+    
+    public LODComponent(int[] meshIds, float[] distanceThresholds) {
+        MeshIds = meshIds;
+        DistanceThresholds = distanceThresholds;
+        CurrentLevel = 0;
+    }
+}
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>SAS Zombie Assault TD Documentation - Rendering System</p>
+            <p class="footer-note">High-Performance Graphics Pipeline</p>
+        </footer>
+    </div>
+</body>
+</html>

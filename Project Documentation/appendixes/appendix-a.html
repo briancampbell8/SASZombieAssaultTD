@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix A: API Reference - SAS Zombie Assault TD</title>
+    <link rel="stylesheet" href="../assets/css/docs.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="btn btn-back">← Back to Table of Contents</a>
+        
+        <header class="header">
+            <h1>Appendix A: API Reference</h1>
+            <h2>Complete API Documentation</h2>
+        </header>
+
+        <div class="content-section">
+            <h2>Core Engine APIs</h2>
+            
+            <h3>Entity Manager</h3>
+            <div class="code-block">
+public class EntityManager {
+    // Create a new entity
+    public Entity CreateEntity()
+    
+    // Destroy an entity
+    public void DestroyEntity(Entity entity)
+    
+    // Check if entity exists
+    public bool Exists(Entity entity)
+    
+    // Get all entities with specific components
+    public NativeArray&lt;Entity&gt; GetAllEntities()
+}
+            </div>
+
+            <h3>Component Manager</h3>
+            <div class="code-block">
+public class ComponentManager&lt;T&gt; where T : struct {
+    // Add component to entity
+    public void AddComponent(Entity entity, T component)
+    
+    // Remove component from entity
+    public void RemoveComponent(Entity entity)
+    
+    // Get component from entity
+    public ref T GetComponent(Entity entity)
+    
+    // Check if entity has component
+    public bool HasComponent(Entity entity)
+}
+            </div>
+
+            <h3>System Base</h3>
+            <div class="code-block">
+public abstract class SystemBase {
+    // Called every frame
+    public abstract void Update()
+    
+    // Called when system is created
+    public virtual void OnCreate() {}
+    
+    // Called when system is destroyed
+    public virtual void OnDestroy() {}
+    
+    // Get entity query
+    protected EntityQuery GetQuery&lt;T&gt;()
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Animation System APIs</h2>
+            
+            <h3>Animation Controller</h3>
+            <div class="code-block">
+public class AnimationController {
+    // Play animation
+    public void PlayAnimation(string animationName, bool loop = false)
+    
+    // Stop current animation
+    public void StopAnimation()
+    
+    // Set animation speed
+    public void SetAnimationSpeed(float speed)
+    
+    // Check if animation is playing
+    public bool IsPlaying(string animationName)
+    
+    // Animation complete event
+    public event Action&lt;string&gt; OnAnimationComplete;
+}
+            </div>
+
+            <h3>Blend Tree</h3>
+            <div class="code-block">
+public class BlendTree {
+    // Add blend node
+    public void AddNode(AnimationNode node, float weight)
+    
+    // Set blend parameter
+    public void SetParameter(string name, float value)
+    
+    // Update blend weights
+    public void UpdateBlendWeights()
+    
+    // Get current animation clip
+    public AnimationClip GetCurrentClip()
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Audio System APIs</h2>
+            
+            <h3>Audio Manager</h3>
+            <div class="code-block">
+public class AudioManager {
+    // Play sound at position
+    public void PlaySound(string soundName, Vector3 position, float volume = 1.0f)
+    
+    // Play background music
+    public void PlayMusic(string musicName, float volume = 0.5f, bool loop = true)
+    
+    // Stop all sounds
+    public void StopAllSounds()
+    
+    // Set master volume
+    public void SetMasterVolume(float volume)
+    
+    // Set audio listener position
+    public void SetListenerPosition(Vector3 position)
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Particle System APIs</h2>
+            
+            <h3>Particle Emitter</h3>
+            <div class="code-block">
+public class ParticleEmitter {
+    // Spawn particles
+    public void SpawnParticles(int count, ParticleSettings settings)
+    
+    // Set emission rate
+    public void SetEmissionRate(float particlesPerSecond)
+    
+    // Set particle lifetime
+    public void SetParticleLifetime(float minLifetime, float maxLifetime)
+    
+    // Set particle color over lifetime
+    public void SetColorOverLifetime(Gradient gradient)
+    
+    // Stop emission
+    public void StopEmission()
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Physics System APIs</h2>
+            
+            <h3>Physics World</h3>
+            <div class="code-block">
+public class PhysicsWorld {
+    // Add collider
+    public void AddCollider(ColliderComponent collider)
+    
+    // Remove collider
+    public void RemoveCollider(ColliderComponent collider)
+    
+    // Raycast
+    public bool Raycast(Vector3 origin, Vector3 direction, out RaycastHit hit, float maxDistance)
+    
+    // Sphere cast
+    public bool SphereCast(Vector3 center, float radius, out RaycastHit[] hits)
+    
+    // Update physics simulation
+    public void Update(float deltaTime)
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>AI System APIs</h2>
+            
+            <h3>Pathfinding</h3>
+            <div class="code-block">
+public class PathfindingSystem {
+    // Find path between points
+    public Path FindPath(Vector3 start, Vector3 end)
+    
+    // Set navigation mesh
+    public void SetNavigationMesh(NavigationMesh navMesh)
+    
+    // Check if point is reachable
+    public bool IsReachable(Vector3 start, Vector3 end)
+    
+    // Get nearest valid position
+    public Vector3 GetNearestValidPosition(Vector3 position)
+}
+            </div>
+
+            <h3>Behavior Tree</h3>
+            <div class="code-block">
+public abstract class BehaviorNode {
+    // Execute behavior
+    public abstract BehaviorStatus Execute()
+    
+    // Reset node state
+    public virtual void Reset() {}
+}
+
+public enum BehaviorStatus {
+    Success,
+    Failure,
+    Running
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Utility APIs</h2>
+            
+            <h3>Math Utilities</h3>
+            <div class="code-block">
+public static class MathUtils {
+    // Clamp value between min and max
+    public static float Clamp(float value, float min, float max)
+    
+    // Linear interpolation
+    public static float Lerp(float a, float b, float t)
+    
+    // Distance between points
+    public static float Distance(Vector3 a, Vector3 b)
+    
+    // Normalize vector
+    public static Vector3 Normalize(Vector3 vector)
+    
+    // Random range
+    public static float RandomRange(float min, float max)
+}
+            </div>
+
+            <h3>Time Manager</h3>
+            <div class="code-block">
+public static class Time {
+    // Current time
+    public static float Time { get; }
+    
+    // Delta time
+    public static float DeltaTime { get; }
+    
+    // Fixed delta time
+    public static float FixedDeltaTime { get; }
+    
+    // Time scale
+    public static float TimeScale { get; set; }
+    
+    // Frame count
+    public static int FrameCount { get; }
+}
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>SAS Zombie Assault TD Documentation - Appendix A</p>
+            <p class="footer-note">API Reference Guide</p>
+        </footer>
+    </div>
+</body>
+</html>

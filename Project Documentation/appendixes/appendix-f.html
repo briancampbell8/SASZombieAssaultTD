@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix F: Testing Framework - SAS Zombie Assault TD</title>
+    <link rel="stylesheet" href="../assets/css/docs.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="btn btn-back">← Back to Table of Contents</a>
+        
+        <header class="header">
+            <h1>Appendix F: Testing Framework</h1>
+            <h2>Comprehensive Testing Strategy & Implementation</h2>
+        </header>
+
+        <div class="content-section">
+            <h2>Testing Framework Overview</h2>
+            
+            <div class="alert alert-info">
+                <strong>Note:</strong> The testing framework provides comprehensive coverage for all game systems with automated and manual testing capabilities.
+            </div>
+
+            <h3>Testing Pyramid</h3>
+            <ul>
+                <li><strong>Unit Tests:</strong> Individual component and system testing</li>
+                <li><strong>Integration Tests:</strong> System interaction testing</li>
+                <li><strong>System Tests:</strong> End-to-end game system testing</li>
+                <li><strong>Performance Tests:</strong> Load and stress testing</li>
+                <li><strong>Manual Tests:</strong> User experience and gameplay testing</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>Unit Testing Framework</h2>
+            
+            <h3>Test Structure</h3>
+            <div class="code-block">
+// Base test class
+public abstract class GameTestBase {
+    protected TestContext Context { get; set; }
+    protected EntityManager EntityManager { get; set; }
+    protected SystemManager SystemManager { get; set; }
+    
+    [SetUp]
+    public virtual void Setup() {
+        Context = new TestContext();
+        EntityManager = new EntityManager();
+        SystemManager = new SystemManager();
+        SetupTestEnvironment();
+    }
+    
+    [TearDown]
+    public virtual void TearDown() {
+        CleanupTestEnvironment();
+        SystemManager?.Dispose();
+        EntityManager?.Dispose();
+        Context?.Dispose();
+    }
+    
+    protected virtual void SetupTestEnvironment() { }
+    protected virtual void CleanupTestEnvironment() { }
+}
+
+// Example unit test
+[TestFixture]
+public class EntityComponentTests : GameTestBase {
+    [Test]
+    public void CreateEntity_ShouldReturnValidEntity() {
+        // Arrange
+        var expectedEntityCount = EntityManager.EntityCount + 1;
+        
+        // Act
+        var entity = EntityManager.CreateEntity();
+        
+        // Assert
+        Assert.IsTrue(entity.IsValid);
+        Assert.AreEqual(expectedEntityCount, EntityManager.EntityCount);
+    }
+    
+    [Test]
+    public void AddComponent_ShouldAttachToEntity() {
+        // Arrange
+        var entity = EntityManager.CreateEntity();
+        var component = new Position { X = 10, Y = 20 };
+        
+        // Act
+        EntityManager.AddComponent(entity, component);
+        
+        // Assert
+        Assert.IsTrue(EntityManager.HasComponent&lt;Position&gt;(entity));
+        var retrievedComponent = EntityManager.GetComponent&lt;Position&gt;(entity);
+        Assert.AreEqual(10, retrievedComponent.X);
+        Assert.AreEqual(20, retrievedComponent.Y);
+    }
+}
+            </div>
+
+            <h3>Component Testing</h3>
+            <div class="code-block">
+[TestFixture]
+public class ComponentTests : GameTestBase {
+    [Test]
+    public void HealthComponent_ShouldClampValues() {
+        // Arrange
+        var health = new Health { Current = 150, Max = 100 };
+        
+        // Act
+        health.ClampValues();
+        
+        // Assert
+        Assert.AreEqual(100, health.Current);
+        Assert.AreEqual(100, health.Max);
+    }
+    
+    [Test]
+    public void VelocityComponent_ShouldCalculateSpeed() {
+        // Arrange
+        var velocity = new Velocity { X = 3, Y = 4 };
+        
+        // Act
+        var speed = velocity.GetSpeed();
+        
+        // Assert
+        Assert.AreEqual(5, speed, 0.001); // 3-4-5 triangle
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>System Testing Framework</h2>
+            
+            <h3>System Test Base</h3>
+            <div class="code-block">
+public abstract class SystemTestBase : GameTestBase {
+    protected T CreateSystem&lt;T&gt;() where T : SystemBase, new() {
+        var system = new T();
+        SystemManager.RegisterSystem(system);
+        return system;
+    }
+    
+    protected void UpdateSystems(float deltaTime = 0.016f) {
+        SystemManager.Update(deltaTime);
+    }
+    
+    protected Entity CreateTestEntity&lt;T&gt;(T component) where T : struct {
+        var entity = EntityManager.CreateEntity();
+        EntityManager.AddComponent(entity, component);
+        return entity;
+    }
+}
+
+// Movement system tests
+[TestFixture]
+public class MovementSystemTests : SystemTestBase {
+    private MovementSystem movementSystem;
+    
+    [SetUp]
+    public override void Setup() {
+        base.Setup();
+        movementSystem = CreateSystem&lt;MovementSystem&gt;();
+    }
+    
+    [Test]
+    public void Update_ShouldMoveEntityWithVelocity() {
+        // Arrange
+        var position = new Position { X = 0, Y = 0 };
+        var velocity = new Velocity { X = 10, Y = 5 };
+        var entity = CreateTestEntity(position);
+        EntityManager.AddComponent(entity, velocity);
+        
+        // Act
+        UpdateSystems(1.0f); // 1 second
+        
+        // Assert
+        var updatedPosition = EntityManager.GetComponent&lt;Position&gt;(entity);
+        Assert.AreEqual(10, updatedPosition.X);
+        Assert.AreEqual(5, updatedPosition.Y);
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Integration Testing</h2>
+            
+            <h3>System Integration Tests</h3>
+            <div class="code-block">
+[TestFixture]
+public class SystemIntegrationTests : SystemTestBase {
+    [Test]
+    public void AnimationAndPhysics_ShouldWorkTogether() {
+        // Arrange
+        var animationSystem = CreateSystem&lt;AnimationSystem&gt;();
+        var physicsSystem = CreateSystem&lt;PhysicsSystem&gt;();
+        
+        var entity = CreateTestEntity(new Position { X = 0, Y = 0 });
+        EntityManager.AddComponent(entity, new Velocity { X = 1, Y = 0 });
+        EntityManager.AddComponent(entity, new AnimationComponent { CurrentAnimation = "walk" });
+        
+        // Act
+        UpdateSystems(0.016f);
+        
+        // Assert
+        var position = EntityManager.GetComponent&lt;Position&gt;(entity);
+        var animation = EntityManager.GetComponent&lt;AnimationComponent&gt;(entity);
+        
+        Assert.IsTrue(position.X > 0); // Entity moved
+        Assert.AreEqual("walk", animation.CurrentAnimation); // Animation playing
+    }
+    
+    [Test]
+    public void CombatSystem_ShouldIntegrateWithScoring() {
+        // Arrange
+        var combatSystem = CreateSystem&lt;CombatSystem&gt;();
+        var scoringSystem = CreateSystem&lt;ScoringSystem&gt;();
+        
+        var attacker = CreateTestEntity(new Health { Current = 100, Max = 100 });
+        var target = CreateTestEntity(new Health { Current = 50, Max = 50 });
+        
+        // Act
+        combatSystem.DealDamage(attacker, target, 25);
+        
+        // Assert
+        var targetHealth = EntityManager.GetComponent&lt;Health&gt;(target);
+        Assert.AreEqual(25, targetHealth.Current);
+        
+        var score = scoringSystem.GetScore(attacker);
+        Assert.IsTrue(score > 0);
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Performance Testing</h2>
+            
+            <h3>Performance Test Framework</h3>
+            <div class="code-block">
+public class PerformanceTest {
+    public delegate void TestAction();
+    
+    public static PerformanceResult MeasurePerformance(TestAction action, int iterations = 1000) {
+        var stopwatch = new Stopwatch();
+        var memoryBefore = GC.GetTotalMemory(true);
+        
+        stopwatch.Start();
+        
+        for (int i = 0; i &lt; iterations; i++) {
+            action();
+        }
+        
+        stopwatch.Stop();
+        
+        var memoryAfter = GC.GetTotalMemory(true);
+        
+        return new PerformanceResult {
+            TotalTime = stopwatch.Elapsed,
+            AverageTime = stopwatch.Elapsed.TotalMilliseconds / iterations,
+            MemoryUsed = memoryAfter - memoryBefore,
+            Iterations = iterations
+        };
+    }
+}
+
+// Performance tests
+[TestFixture]
+public class PerformanceTests : SystemTestBase {
+    [Test]
+    public void EntityCreation_ShouldBeFast() {
+        // Act
+        var result = PerformanceTest.MeasurePerformance(() => {
+            var entity = EntityManager.CreateEntity();
+            EntityManager.DestroyEntity(entity);
+        }, 10000);
+        
+        // Assert
+        Assert.Less(result.AverageTime, 0.001); // Less than 1ms per operation
+        Assert.Less(result.MemoryUsed, 1024 * 1024); // Less than 1MB memory
+    }
+    
+    [Test]
+    public void SystemUpdate_ShouldMeetPerformanceTargets() {
+        // Arrange
+        var movementSystem = CreateSystem&lt;MovementSystem&gt;();
+        
+        // Create many entities
+        for (int i = 0; i &lt; 1000; i++) {
+            var entity = CreateTestEntity(new Position { X = i, Y = i });
+            EntityManager.AddComponent(entity, new Velocity { X = 1, Y = 1 });
+        }
+        
+        // Act
+        var result = PerformanceTest.MeasurePerformance(() => {
+            UpdateSystems(0.016f);
+        }, 60); // 1 second of game time
+        
+        // Assert
+        Assert.Less(result.AverageTime, 16.67); // 60 FPS target
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Automated Testing Pipeline</h2>
+            
+            <h3>Test Runner Configuration</h3>
+            <div class="code-block">
+// Test runner configuration
+public class TestRunnerConfig {
+    public string TestAssemblyPath { get; set; }
+    public string OutputDirectory { get; set; }
+    public bool RunParallel { get; set; } = true;
+    public int MaxParallelThreads { get; set; } = Environment.ProcessorCount;
+    public TestFilter Filter { get; set; }
+    public ReportingSettings Reporting { get; set; }
+}
+
+// Automated test runner
+public class AutomatedTestRunner {
+    public TestRunResult RunTests(TestRunnerConfig config) {
+        var results = new List&lt;TestResult&gt;();
+        var stopwatch = Stopwatch.StartNew();
+        
+        // Load test assembly
+        var assembly = Assembly.LoadFrom(config.TestAssemblyPath);
+        
+        // Discover tests
+        var tests = DiscoverTests(assembly, config.Filter);
+        
+        // Run tests
+        if (config.RunParallel) {
+            results = RunTestsParallel(tests, config);
+        } else {
+            results = RunTestsSequential(tests, config);
+        }
+        
+        stopwatch.Stop();
+        
+        // Generate report
+        var report = GenerateTestReport(results, stopwatch.Elapsed);
+        
+        return new TestRunResult {
+            Results = results,
+            TotalTime = stopwatch.Elapsed,
+            Report = report,
+            Success = results.All(r => r.Status == TestStatus.Passed)
+        };
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Mock Framework</h2>
+            
+            <h3>Mock Objects for Testing</h3>
+            <div class="code-block">
+// Mock entity manager for testing
+public class MockEntityManager : IEntityManager {
+    private readonly Dictionary&lt;Entity, Dictionary&lt;Type, object&gt;&gt; _components = new();
+    private int _nextEntityId = 1;
+    
+    public Entity CreateEntity() {
+        var entity = new Entity(_nextEntityId++);
+        _components[entity] = new Dictionary&lt;Type, object&gt;();
+        return entity;
+    }
+    
+    public void AddComponent&lt;T&gt;(Entity entity, T component) where T : struct {
+        _components[entity][typeof(T)] = component;
+    }
+    
+    public ref T GetComponent&lt;T&gt;(Entity entity) where T : struct {
+        if (_components[entity].TryGetValue(typeof(T), out var component)) {
+            return ref (T)component;
+        }
+        throw new ComponentNotFoundException(entity, typeof(T));
+    }
+    
+    public bool HasComponent&lt;T&gt;(Entity entity) where T : struct {
+        return _components[entity].ContainsKey(typeof(T));
+    }
+}
+
+// Mock system for testing
+public class MockSystem : SystemBase {
+    public bool Updated { get; private set; }
+    public float LastDeltaTime { get; private set; }
+    
+    public override void Update() {
+        Updated = true;
+        LastDeltaTime = Time.DeltaTime;
+    }
+    
+    public void Reset() {
+        Updated = false;
+        LastDeltaTime = 0;
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Test Data Management</h2>
+            
+            <h3>Test Data Providers</h3>
+            <div class="code-block">
+// Test data provider
+public class TestDataProvider {
+    public static IEnumerable&lt;TestCaseData&gt; EntityCountTestCases() {
+        yield return new TestCaseData(100).Returns(true);
+        yield return new TestCaseData(1000).Returns(true);
+        yield return new TestCaseData(10000).Returns(true);
+    }
+    
+    public static IEnumerable&lt;TestCaseData&gt; ComponentTestCases() {
+        yield return new TestCaseData(new Position { X = 0, Y = 0 });
+        yield return new TestCaseData(new Position { X = 10, Y = 20 });
+        yield return new TestCaseData(new Position { X = -5, Y = 15 });
+    }
+    
+    public static IEnumerable&lt;TestCaseData&gt; PerformanceTestCases() {
+        yield return new TestCaseData(100, 0.001); // entities, max time
+        yield return new TestCaseData(1000, 0.01);
+        yield return new TestCaseData(10000, 0.1);
+    }
+}
+
+// Parameterized tests
+[TestFixture]
+public class ParameterizedTests : SystemTestBase {
+    [Test]
+    [TestCaseSource(typeof(TestDataProvider), nameof(TestDataProvider.EntityCountTestCases))]
+    public bool EntityManager_ShouldHandleEntityCount(int entityCount) {
+        // Arrange & Act
+        var entities = new List&lt;Entity&gt;();
+        for (int i = 0; i &lt; entityCount; i++) {
+            entities.Add(EntityManager.CreateEntity());
+        }
+        
+        // Assert
+        return entities.Count == entityCount && entities.All(e => e.IsValid);
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Test Reporting</h2>
+            
+            <h3>Test Report Generation</h3>
+            <div class="code-block">
+// Test report generator
+public class TestReportGenerator {
+    public string GenerateReport(TestRunResult result) {
+        var report = new StringBuilder();
+        
+        // Header
+        report.AppendLine("# Test Execution Report");
+        report.AppendLine($"Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+        report.AppendLine($"Total Tests: {result.Results.Count}");
+        report.AppendLine($"Passed: {result.Results.Count(r => r.Status == TestStatus.Passed)}");
+        report.AppendLine($"Failed: {result.Results.Count(r => r.Status == TestStatus.Failed)}");
+        report.AppendLine($"Skipped: {result.Results.Count(r => r.Status == TestStatus.Skipped)}");
+        report.AppendLine($"Total Time: {result.TotalTime.TotalSeconds:F2}s");
+        report.AppendLine();
+        
+        // Test results
+        report.AppendLine("## Test Results");
+        foreach (var testResult in result.Results) {
+            report.AppendLine($"- {testResult.TestName}: {testResult.Status}");
+            if (testResult.Status == TestStatus.Failed) {
+                report.AppendLine($"  Error: {testResult.ErrorMessage}");
+            }
+            report.AppendLine($"  Time: {testResult.ExecutionTime.TotalMilliseconds:F2}ms");
+        }
+        
+        // Performance summary
+        report.AppendLine();
+        report.AppendLine("## Performance Summary");
+        var performanceTests = result.Results.Where(r => r.IsPerformanceTest);
+        foreach (var perfTest in performanceTests) {
+            report.AppendLine($"- {perfTest.TestName}: {perfTest.AverageTime:F4}ms avg");
+        }
+        
+        return report.ToString();
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Continuous Integration</h2>
+            
+            <h3>CI Pipeline Configuration</h3>
+            <div class="code-block">
+# CI pipeline for automated testing
+name: SAS Zombie Assault TD - Test Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore
+    
+    - name: Run Unit Tests
+      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=unit_tests.trx"
+    
+    - name: Run Integration Tests
+      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=integration_tests.trx"
+    
+    - name: Run Performance Tests
+      run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=performance_tests.trx"
+    
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results
+        path: '**/*.trx'
+    
+    - name: Generate Test Report
+      run: |
+        dotnet run --project Tools/TestReporter --args "output=test_report.md"
+    
+    - name: Upload Test Report
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-report
+        path: test_report.md
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>SAS Zombie Assault TD Documentation - Appendix F</p>
+            <p class="footer-note">Testing Framework Guide</p>
+        </footer>
+    </div>
+</body>
+</html>

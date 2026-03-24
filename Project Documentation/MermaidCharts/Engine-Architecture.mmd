@@ -1,0 +1,349 @@
+%%{init: {"flowchart": {"curve": "monotoneY", "htmlLabels": true}, "theme": "base", "themeVariables": {"primaryColor": "#1a1a2e", "primaryTextColor": "#fff", "primaryBorderColor": "#e94560", "lineColor": "#a0a0a0", "fontSize": "14px"}}}%%
+flowchart TD
+
+    classDef root        fill:#e94560,color:#fff,stroke:#c73652,stroke-width:3px,font-weight:bold
+    classDef foundation  fill:#c0392b,color:#fff,stroke:#922b21,stroke-width:2px
+    classDef fndLight    fill:#fadbd8,color:#000,stroke:#c0392b,stroke-width:1px
+    classDef driver      fill:#d35400,color:#fff,stroke:#a04000,stroke-width:2px
+    classDef drvLight    fill:#fdebd0,color:#000,stroke:#d35400,stroke-width:1px
+    classDef stateScene  fill:#7d3c98,color:#fff,stroke:#5b2c6f,stroke-width:2px
+    classDef stsLight    fill:#e8daef,color:#000,stroke:#7d3c98,stroke-width:1px
+    classDef ecs         fill:#1a5276,color:#fff,stroke:#154360,stroke-width:2px
+    classDef ecsLight    fill:#d6eaf8,color:#000,stroke:#1a5276,stroke-width:1px
+    classDef render      fill:#0e6655,color:#fff,stroke:#0b5345,stroke-width:2px
+    classDef renLight    fill:#d1f2eb,color:#000,stroke:#0e6655,stroke-width:1px
+    classDef gameplay    fill:#1e8449,color:#fff,stroke:#196f3d,stroke-width:2px
+    classDef gplLight    fill:#d5f5e3,color:#000,stroke:#1e8449,stroke-width:1px
+    classDef physics     fill:#b7950b,color:#fff,stroke:#9a7d0a,stroke-width:2px
+    classDef phyLight    fill:#fef9e7,color:#000,stroke:#b7950b,stroke-width:1px
+    classDef ui          fill:#922b21,color:#fff,stroke:#7b241c,stroke-width:2px
+    classDef uiLight     fill:#fadbd8,color:#000,stroke:#922b21,stroke-width:1px
+    classDef progress    fill:#9a7d0a,color:#fff,stroke:#7d6608,stroke-width:2px
+    classDef prgLight    fill:#fef9e7,color:#000,stroke:#9a7d0a,stroke-width:1px
+    classDef infra       fill:#566573,color:#fff,stroke:#424949,stroke-width:2px
+    classDef infLight    fill:#eaecee,color:#000,stroke:#566573,stroke-width:1px
+
+    ENGINE([ENGINE ROOT]):::root
+
+    subgraph SG1 ["GROUP 1 - FOUNDATION"]
+        direction TB
+        CORE([Core]):::foundation
+        UTILITY([Utility]):::foundation
+        VECMATH([VectorMath]):::foundation
+        BOOTSTRAP[EngineBootstrap]:::fndLight
+        EMATH[EngineMath]:::fndLight
+        CORE --> CORE1[EngineCore]:::fndLight
+        CORE --> CORE2[CoreTransform]:::fndLight
+        CORE --> CORE3[CoreColor]:::fndLight
+        CORE --> CORE4[CoreRectangle]:::fndLight
+        CORE --> CORE5[CoreTimeStep]:::fndLight
+        CORE --> CORE6[ModernLoggingSystem]:::fndLight
+        CORE --> CORE7[LoggingSystemMonitor]:::fndLight
+        UTILITY --> UT1[MathHelper]:::fndLight
+        UTILITY --> UT2[Randomizer]:::fndLight
+        UTILITY --> UT3[Time]:::fndLight
+        UTILITY --> UT4[ILogger]:::fndLight
+        VECMATH --> VM1[Vector3Extensions]:::fndLight
+        VECMATH --> VM2[Vector3Int]:::fndLight
+        VECMATH --> VM3[Vector3Types]:::fndLight
+    end
+
+    subgraph SG2 ["GROUP 2 - GAME DRIVER"]
+        direction TB
+        GAMEROOT([GameRoot Driver]):::driver
+        GAMELOOP([GameLoop]):::driver
+        GAMEROOT --> GR1[GameRootMain]:::drvLight
+        GR1 --> GR2[Initialization]:::drvLight
+        GR1 --> GR3[UpdateLoop]:::drvLight
+        GR1 --> GR4[SceneFlow]:::drvLight
+        GR1 --> GR5[EventRouting]:::drvLight
+        GR1 --> GR6[SystemRegistration]:::drvLight
+        GR1 --> GR7[GRState]:::drvLight
+        GR1 --> GR8[GRDebug]:::drvLight
+        GAMELOOP --> GL1[GameLoopMain]:::drvLight
+        GL1 --> GL2[GLTiming]:::drvLight
+        GL1 --> GL3[GLInput]:::drvLight
+        GL1 --> GL4[GLState]:::drvLight
+        GL1 --> GL5[ErrorHandling]:::drvLight
+        GL1 --> GL6[Helpers]:::drvLight
+        GL1 --> GL7[GLDiagnostics]:::drvLight
+    end
+
+    subgraph SG3 ["GROUP 3 - STATE AND SCENE"]
+        direction TB
+        STATE([State Machine]):::stateScene
+        GAMESTATE([GameState]):::stateScene
+        SCENES([Scenes]):::stateScene
+        STATE --> ST1[StateMachine]:::stsLight
+        ST1 --> ST2[AdvancedStateMachine]:::stsLight
+        ST1 --> ST3[EnhancedStateMachine]:::stsLight
+        ST1 --> ST4[BootState]:::stsLight
+        ST1 --> ST5[GameplayState]:::stsLight
+        ST1 --> ST6[STMainMenuState]:::stsLight
+        ST1 --> ST7[STPausedState]:::stsLight
+        ST1 --> ST8[StateTransition]:::stsLight
+        ST1 --> ST9[StateMachineProfiler]:::stsLight
+        ST1 --> ST10[StateFactory]:::stsLight
+        GAMESTATE --> GS1[GameStateMachine]:::stsLight
+        GS1 --> GS2[PlayingState]:::stsLight
+        GS1 --> GS3[GameOverState]:::stsLight
+        GS1 --> GS4[VictoryState]:::stsLight
+        GS1 --> GS5[GSMainMenuState]:::stsLight
+        GS1 --> GS6[GSPausedState]:::stsLight
+        GS1 --> GS7[SettingsState]:::stsLight
+        GS1 --> DIFF([Difficulty]):::stateScene
+        DIFF --> D1[DifficultyController]:::stsLight
+        DIFF --> D2[DifficultyDatabase]:::stsLight
+        DIFF --> D3[DifficultySettings]:::stsLight
+        SCENES --> SCN1[SceneManager]:::stsLight
+        SCN1 --> SCN2[BaseScene]:::stsLight
+        SCN2 --> SCN3[GameScene]:::stsLight
+        SCN2 --> SCN4[MainMenuScene]:::stsLight
+        SCN2 --> SCN5[LoadingScene]:::stsLight
+        SCN2 --> SCN6[PauseScene]:::stsLight
+    end
+
+    subgraph SG4 ["GROUP 4 - ECS"]
+        direction TB
+        ECS([ECS World]):::ecs
+        COMPONENTS([Components]):::ecs
+        ECS --> ECS1[ECSWorld]:::ecsLight
+        ECS1 --> ECS2[ECSManager]:::ecsLight
+        ECS1 --> ECS3[ECSEntity]:::ecsLight
+        ECS1 --> ECS4[ECSSystem]:::ecsLight
+        ECS1 --> ECS5[EntityManager]:::ecsLight
+        ECS1 --> ECS6[EntityFactory]:::ecsLight
+        ECS1 --> ECS7[EventManager]:::ecsLight
+        ECS1 --> ECS8[ECSComponent]:::ecsLight
+        ECS1 --> ECS9[ECSDebugInspector]:::ecsLight
+        ECS1 --> ECS10[ECSVerificationReport]:::ecsLight
+        COMPONENTS --> CM1[TransformComponent]:::ecsLight
+        COMPONENTS --> CM2[HealthComponent]:::ecsLight
+        COMPONENTS --> CM3[MovementComponent]:::ecsLight
+        COMPONENTS --> CM4[CollisionComponent]:::ecsLight
+        COMPONENTS --> CM5[RenderableComponent]:::ecsLight
+        COMPONENTS --> CM6[SpriteComponent]:::ecsLight
+        COMPONENTS --> CM7[DamageComponent]:::ecsLight
+        COMPONENTS --> CM8[InventoryComponent]:::ecsLight
+        COMPONENTS --> CM9[StatsComponent]:::ecsLight
+        COMPONENTS --> CM10[ScoreComponent]:::ecsLight
+    end
+
+    subgraph SG5 ["GROUP 5 - RENDERING AND ANIMATION"]
+        direction TB
+        RENDERING([Rendering]):::render
+        ANIMATION([Animation]):::render
+        RENDERING --> R1[Renderer]:::renLight
+        R1 --> R2[SpriteBatch]:::renLight
+        R1 --> R3[SpriteBatchRenderer]:::renLight
+        R1 --> R4[RenderCommandQueue]:::renLight
+        R1 --> R5[ParticleSystem]:::renLight
+        R1 --> R6[TextRenderer]:::renLight
+        R1 --> R7[Texture2D]:::renLight
+        R1 --> R8[RenderDiagnostics]:::renLight
+        R1 --> RZOM[ZombieRenderer]:::renLight
+        ANIMATION --> ANSYS([AnimationSystems]):::render
+        ANSYS --> AN1[AnimationSystem]:::renLight
+        ANSYS --> AN2[AnimationTriggerSystem]:::renLight
+        ANIMATION --> ANCOMP([AnimComponents]):::render
+        ANCOMP --> AC1[AnimationStateMachine]:::renLight
+        ANCOMP --> AC2[AnimationPlayer]:::renLight
+        ANCOMP --> AC3[IAnimationState]:::renLight
+        ANCOMP --> AC4[IdleState]:::renLight
+        ANCOMP --> AC5[MoveState]:::renLight
+        ANCOMP --> AC6[AttackState]:::renLight
+        ANCOMP --> AC7[JumpState]:::renLight
+        ANIMATION --> ANBT([BlendTree]):::render
+        ANBT --> BT1[BlendTreeMain]:::renLight
+        ANBT --> BT2[IBlendNode]:::renLight
+        ANBT --> BT3[LinearBlendNode]:::renLight
+        ANBT --> BT4[TwoDBlendNode]:::renLight
+        ANBT --> BT5[BlendTreeValidator]:::renLight
+        ANIMATION --> ANEV([AnimEvents]):::render
+        ANEV --> AE1[AnimationEvent]:::renLight
+        ANEV --> AE2[AnimationEventDispatcher]:::renLight
+        ANEV --> AE3[AnimationEventTrack]:::renLight
+        ANIMATION --> ANINT([ECSIntegration]):::render
+        ANINT --> AI1[AnimationECSIntegration]:::renLight
+        ANINT --> AI2[AnimationEventECSIntegration]:::renLight
+    end
+
+    subgraph SG6 ["GROUP 6 - GAMEPLAY SYSTEMS"]
+        direction TB
+        AIGRP([AI]):::gameplay
+        ENEMIES([Enemies]):::gameplay
+        WAVES([Waves]):::gameplay
+        TOWERS([Towers]):::gameplay
+        PROJECTILES([Projectiles]):::gameplay
+        COMBAT([Combat]):::gameplay
+        HAZARDS([Hazards]):::gameplay
+        AIGRP --> AICTRL[AIController]:::gplLight
+        AICTRL --> AIB1[BasicChaseBehavior]:::gplLight
+        AICTRL --> AIBB1[Blackboard]:::gplLight
+        ENEMIES --> EN1[EnemyManager]:::gplLight
+        EN1 --> EN2[Enemy]:::gplLight
+        EN1 --> EN3[EnemySystem]:::gplLight
+        EN1 --> EN4[EnemyDefinitionRegistry]:::gplLight
+        EN1 --> EN5[EnemyDefinitionValidator]:::gplLight
+        EN1 --> EN6[EnemyBehaviorModifier]:::gplLight
+        EN1 --> ZOMBIE([ZombieAI]):::gameplay
+        ZOMBIE --> Z1[ZombieAIMain]:::gplLight
+        ZOMBIE --> Z2[ZombieMovement]:::gplLight
+        ZOMBIE --> Z3[ZombieSpawner]:::gplLight
+        ZOMBIE --> Z4[ZombieType]:::gplLight
+        WAVES --> W1[WaveDirector]:::gplLight
+        W1 --> W2[WaveScript]:::gplLight
+        W1 --> W3[WaveLoader]:::gplLight
+        W1 --> W4[WaveSpawnGroup]:::gplLight
+        W1 --> W5[SpawnPattern]:::gplLight
+        W1 --> W6[DifficultyMultiplier]:::gplLight
+        TOWERS --> T1[Tower]:::gplLight
+        T1 --> T2[TowerData]:::gplLight
+        T1 --> T3[TowerRegistry]:::gplLight
+        T1 --> T4[TowerUpgrade]:::gplLight
+        T1 --> T5[PlacementValidator]:::gplLight
+        T1 --> T6[PlacementRenderer]:::gplLight
+        T1 --> TCTRL([TowerControlNeural]):::gameplay
+        TCTRL --> TC1[NeuralNet]:::gplLight
+        TCTRL --> TC2[NeuralManager]:::gplLight
+        TCTRL --> TC3[NeuralDatabase]:::gplLight
+        PROJECTILES --> PR1[ProjectileSystem]:::gplLight
+        PR1 --> PR2[Projectile]:::gplLight
+        PR1 --> PR3[ProjectileFactory]:::gplLight
+        PR1 --> PR4[ProjectileType]:::gplLight
+        COMBAT --> CB1[KillFeedSystem]:::gplLight
+        CB1 --> CB2[KillFeedStatistics]:::gplLight
+        HAZARDS --> HZ1[HazardsMain]:::gplLight
+        HZ1 --> HZ2[Hazard]:::gplLight
+        HZ1 --> HZ3[HazardLifecycle]:::gplLight
+        HZ1 --> HZ4[HazardAnalytics]:::gplLight
+        HZ1 --> HZ5[HazardKillAttribution]:::gplLight
+        HZ1 --> HZ6[HazardCleanup]:::gplLight
+    end
+
+    subgraph SG7 ["GROUP 7 - PHYSICS AND NAVIGATION"]
+        direction TB
+        PHYSICS([Physics]):::physics
+        NAVIGATION([Navigation]):::physics
+        PHYSICS --> PH1[PhysicsSystem]:::phyLight
+        PH1 --> PH2[CollisionSystem]:::phyLight
+        PH1 --> PH3[TriggerSystem]:::phyLight
+        PH1 --> PH4[SpatialPartitionGrid]:::phyLight
+        PH1 --> PH5[AABBShape]:::phyLight
+        PH1 --> PH6[CircleShape]:::phyLight
+        PH1 --> PH7[CapsuleShape]:::phyLight
+        NAVIGATION --> NAV1[AStarPathfinder]:::phyLight
+        NAV1 --> NAV2[FlowField]:::phyLight
+        NAV1 --> NAV3[NavigationGrid]:::phyLight
+        NAV1 --> NAV4[NavigationDebugRenderer]:::phyLight
+    end
+
+    subgraph SG8 ["GROUP 8 - UI"]
+        direction TB
+        UIGRP([UI]):::ui
+        UIGRP --> UI1[UISystem]:::uiLight
+        UI1 --> UI2[UIRoot]:::uiLight
+        UI1 --> UI3[LayoutSystem]:::uiLight
+        UI1 --> HUDUI([HUD]):::ui
+        HUDUI --> H1[HUDController]:::uiLight
+        HUDUI --> H2[CashDisplay]:::uiLight
+        HUDUI --> H3[LivesDisplay]:::uiLight
+        HUDUI --> H4[WaveDisplay]:::uiLight
+        HUDUI --> H5[TowerInfoPanel]:::uiLight
+        HUDUI --> H6[UpgradePanel]:::uiLight
+        UI1 --> UIRENDER([UIRendering]):::ui
+        UIRENDER --> UR1[UIRenderer]:::uiLight
+        UIRENDER --> UR2[UIBatcher]:::uiLight
+        UIRENDER --> UR3[UIRenderContext]:::uiLight
+        UI1 --> UIWIDGETS([Widgets]):::ui
+        UIWIDGETS --> UW1[UIButton]:::uiLight
+        UIWIDGETS --> UW2[UIPanel]:::uiLight
+        UIWIDGETS --> UW3[UIText]:::uiLight
+        UI1 --> UIINPUT([UIInput]):::ui
+        UIINPUT --> UIN1[UIInputRouter]:::uiLight
+        UIINPUT --> UIN2[UIFocusManager]:::uiLight
+        UI1 --> UISTYLES([Styles]):::ui
+        UISTYLES --> US1[UIStyle]:::uiLight
+        UISTYLES --> US2[UIStyleSheet]:::uiLight
+        UI1 --> SCREENS([Screens]):::ui
+        SCREENS --> SC1[MainMenuUI]:::uiLight
+        SCREENS --> SC2[PauseMenuUI]:::uiLight
+        SCREENS --> SC3[GameOverUI]:::uiLight
+    end
+
+    subgraph SG9 ["GROUP 9 - PLAYER PROGRESSION"]
+        direction TB
+        AUDIO([Audio]):::progress
+        ECONOMY([Economy]):::progress
+        ACHIEVEMENTS([Achievements]):::progress
+        LEVELUP([LevelUp]):::progress
+        AUDIO --> AU1[CoreAudioEngine]:::prgLight
+        AU1 --> AU2[ModernAudioSubsystem]:::prgLight
+        AU1 --> AU3[CoreSoundEffect]:::prgLight
+        AU1 --> AU4[AudioSettings]:::prgLight
+        ECONOMY --> EC1[EconomyManager]:::prgLight
+        EC1 --> EC2[ShopSystem]:::prgLight
+        EC1 --> EC3[RewardCalculator]:::prgLight
+        EC1 --> EC4[Transaction]:::prgLight
+        EC1 --> EC5[PlayerLives]:::prgLight
+        ACHIEVEMENTS --> ACH1[AchievementDefinition]:::prgLight
+        ACH1 --> ACH2[AchievementInstance]:::prgLight
+        ACH1 --> ACH3[AchievementRarity]:::prgLight
+        ACH1 --> ACH4[AchievementListRenderer]:::prgLight
+        ACH1 --> CHAL([Challenges]):::progress
+        CHAL --> CH1[ChallengeDefinition]:::prgLight
+        CHAL --> CH2[ChallengeInstance]:::prgLight
+        LEVELUP --> LU1[LevelUpController]:::prgLight
+        LU1 --> LU2[LevelProgression]:::prgLight
+        LU1 --> LU3[PlayerLevel]:::prgLight
+    end
+
+    subgraph SG10 ["GROUP 10 - INFRASTRUCTURE"]
+        direction TB
+        SAVE([Save]):::infra
+        RESOURCES([Resources]):::infra
+        MEMORY([Memory]):::infra
+        PERF([Performance]):::infra
+        DIAGNOSTICS([Diagnostics]):::infra
+        SYSTEMS([Systems]):::infra
+        SAVE --> SAV1[SaveSystem]:::infLight
+        SAV1 --> SAV2[SaveData]:::infLight
+        SAV1 --> SS1[SASGameSaveManager]:::infra
+        SS1 --> SS2[EnemySaveData]:::infLight
+        SS1 --> SS3[TowerSaveData]:::infLight
+        RESOURCES --> RS1[RSManager]:::infLight
+        RS1 --> RS2[RSPipeline]:::infLight
+        RS1 --> RS3[RSRegistry]:::infLight
+        RS1 --> RS4[ModernResourcePipeline]:::infLight
+        RS1 --> RS5[TextureLoader]:::infLight
+        RS1 --> RS6[DataLoader]:::infLight
+        MEMORY --> MEM1[ObjectPool]:::infLight
+        MEMORY --> MEM2[MemoryTracker]:::infLight
+        PERF --> PF1[PerformanceManager]:::infLight
+        PF1 --> PF2[PerformanceProfiler]:::infLight
+        PF1 --> PF3[FramePacer]:::infLight
+        DIAGNOSTICS --> DG1[DebugLogger]:::infLight
+        DG1 --> DG2[DebugOverlay]:::infLight
+        DG1 --> DG3[FrameDiagnostics]:::infLight
+        DG1 --> DG4[HeartbeatMonitor]:::infLight
+        DG1 --> DG5[ManagerDiagnostics]:::infLight
+        SYSTEMS --> SYS1[SystemManager]:::infLight
+        SYS1 --> SYS2[AudioSystem]:::infLight
+        SYS1 --> SYS3[RenderManager]:::infLight
+        SYS1 --> SYS4[UpdateManager]:::infLight
+        SYS1 --> SYS5[EventRouter]:::infLight
+        SYS1 --> SYS6[SystemRegistry]:::infLight
+    end
+
+    ENGINE -->|Foundation| SG1
+    ENGINE -->|Game Driver| SG2
+    ENGINE -->|State and Scene| SG3
+    ENGINE -->|ECS| SG4
+    ENGINE -->|Rendering and Animation| SG5
+    ENGINE -->|Gameplay Systems| SG6
+    ENGINE -->|Physics and Navigation| SG7
+    ENGINE -->|UI| SG8
+    ENGINE -->|Player Progression| SG9
+    ENGINE -->|Infrastructure| SG10
+
+    linkStyle default stroke:#a0a0a0,stroke-width:1.5px

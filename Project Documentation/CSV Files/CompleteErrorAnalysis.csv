@@ -1,0 +1,51 @@
+ErrorID,ErrorCode,Systems,FilePath,Line,Column,MissingType,ProgramStatus,FixRequired,Priority
+22,CS0234,Analytics Namespace,Engine\Systems\Hazards\Core\HazardManager.cs,5,49,Analytics,Existing,Fix namespace to SASZombieAssaultTD.Engine.Systems.Hazards.Analytics,High
+2,CS0234,Animation System,Engine\GameRoot.cs,20,59,Animation,Missing,Create AnimationSystem.cs or fix namespace,High
+3,CS0234,Animation System,Engine\GameRoot.cs,14,41,Animation,Missing,Create AnimationSystem.cs or fix namespace,High
+4,CS0234,Animation System,Engine\Managers\EntityManager.cs,13,41,Animation,Missing,Create AnimationSystem.cs or fix namespace,High
+5,CS0234,Animation System,Engine\Managers\EntityManager.cs,14,41,Animation,Missing,Create AnimationSystem.cs or fix namespace,High
+6,CS0234,Animation System,Engine\Scenes\BaseScene.cs,7,41,Animation,Missing,Create AnimationSystem.cs or fix namespace,High
+7,CS0234,Animation System,Engine\Scenes\BaseScene.cs,8,41,Animation,Missing,Create AnimationSystem.cs or fix namespace,High
+8,CS0234,Core Namespace,Engine\Systems\Events\AchievementUnlockedEvent.cs,6,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+9,CS0234,Core Namespace,Engine\Systems\Events\ChallengeCompletedEvent.cs,6,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+10,CS0234,Core Namespace,Engine\Systems\Events\LevelUpEvent.cs,6,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+11,CS0234,Core Namespace,Engine\Systems\Gameplay\AchievementSystem.cs,4,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+13,CS0234,Core Namespace,Engine\Systems\Gameplay\ChallengeSystem.cs,4,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+17,CS0234,Core Namespace,Engine\Systems\Gameplay\MetaProgressionSystem.cs,5,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+20,CS0234,Core Namespace,Engine\Systems\Hazards\Analytics\HazardAnalyticsValidator.cs,4,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+21,CS0234,Core Namespace,Engine\Systems\Hazards\Core\HazardEffect.cs,3,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+23,CS0234,Core Namespace,Engine\Systems\Hazards\Nuke\RadiationExposure.cs,2,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+25,CS0234,Core Namespace,Engine\Systems\Rendering\RenderSystem.cs,16,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+26,CS0234,Core Namespace,Engine\Systems\WaveAnalyticsSummary.cs,4,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+27,CS0234,Core Namespace,Engine\Systems\WaveSystem.cs,10,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+28,CS0234,Core Namespace,Engine\Systems\WaveSystem.cs,11,14,Core,Existing,Fix namespace to SASZombieAssaultTD.Engine.Core,High
+12,CS0234,Entities Namespace,Engine\Systems\Gameplay\AchievementSystem.cs,5,14,Entities,Existing,Fix namespace to SASZombieAssaultTD.Engine.Entities,High
+14,CS0234,Entities Namespace,Engine\Systems\Gameplay\ChallengeSystem.cs,5,14,Entities,Existing,Fix namespace to SASZombieAssaultTD.Engine.Entities,High
+15,CS0234,Entities Namespace,Engine\Systems\Gameplay\InventorySystem.cs,4,14,Entities,Existing,Fix namespace to SASZombieAssaultTD.Engine.Entities,High
+18,CS0234,Entities Namespace,Engine\Systems\Gameplay\ResourceSystem.cs,4,14,Entities,Existing,Fix namespace to SASZombieAssaultTD.Engine.Entities,High
+45,CS0246,Entity,Engine\Systems\Gameplay\InventorySystem.cs,45,48,Entity,Existing,Add using SASZombieAssaultTD.Engine.Entities;,High
+46,CS0246,Entity,Engine\Systems\Gameplay\InventorySystem.cs,68,56,Entity,Existing,Add using SASZombieAssaultTD.Engine.Entities;,High
+49,CS0246,Entity,Engine\Systems\Gameplay\InventorySystem.cs,20,37,Entity,Existing,Add using SASZombieAssaultTD.Engine.Entities;,High
+47,CS0246,EntityManager,Engine\Systems\Gameplay\InventorySystem.cs,17,26,EntityManager,Existing,Add using SASZombieAssaultTD.Engine.Managers;,High
+48,CS0246,EventManager,Engine\Systems\Gameplay\InventorySystem.cs,18,26,EventManager,Existing,Add using SASZombieAssaultTD.Engine.Systems.Events;,High
+31,CS0246,IEventBus,Engine\Systems\Gameplay\AchievementSystem.cs,19,26,IEventBus,Existing,Add using SASZombieAssaultTD.Engine.Core.UnityTypes;,High
+38,CS0246,IEventBus,Engine\Systems\Gameplay\ChallengeSystem.cs,21,26,IEventBus,Existing,Add using SASZombieAssaultTD.Engine.Core.UnityTypes;,High
+29,CS0246,IGameEvent,Engine\Systems\Events\AchievementUnlockedEvent.cs,16,45,IGameEvent,Existing,Add using SASZombieAssaultTD.Engine.Core.UnityTypes;,High
+43,CS0246,IGameEvent,Engine\Systems\Events\ChallengeCompletedEvent.cs,16,44,IGameEvent,Existing,Add using SASZombieAssaultTD.Engine.Core.UnityTypes;,High
+44,CS0246,IGameEvent,Engine\Systems\Events\LevelUpEvent.cs,16,33,IGameEvent,Existing,Add using SASZombieAssaultTD.Engine.Core.UnityTypes;,High
+30,CS0246,IGameSystem,Engine\Systems\Gameplay\AchievementSystem.cs,15,38,IGameSystem,Existing,Add using SASZombieAssaultTD.Engine.Core.UnityTypes;,High
+37,CS0246,IGameSystem,Engine\Systems\Gameplay\ChallengeSystem.cs,15,36,IGameSystem,Existing,Add using SASZombieAssaultTD.Engine.Core.UnityTypes;,High
+50,CS0246,IGameSystem,Engine\Systems\Gameplay\MetaProgressionSystem.cs,14,42,IGameSystem,Existing,Add using SASZombieAssaultTD.Engine.Core.UnityTypes;,High
+32,CS0246,ILogger,Engine\Systems\Gameplay\AchievementSystem.cs,20,26,ILogger,Existing,Add using SASZombieAssaultTD.Engine.Core.UnityTypes;,High
+39,CS0246,ILogger,Engine\Systems\Gameplay\ChallengeSystem.cs,22,26,ILogger,Existing,Add using SASZombieAssaultTD.Engine.Core.UnityTypes;,High
+33,CS0246,KillAttributedEvent,Engine\Systems\Gameplay\AchievementSystem.cs,140,39,KillAttributedEvent,Existing,Add using SASZombieAssaultTD.Engine.Systems.Events;,High
+40,CS0246,KillAttributedEvent,Engine\Systems\Gameplay\ChallengeSystem.cs,340,39,KillAttributedEvent,Existing,Add using SASZombieAssaultTD.Engine.Systems.Events;,High
+16,CS0234,Managers Namespace,Engine\Systems\Gameplay\InventorySystem.cs,5,14,Managers,Existing,Fix namespace to SASZombieAssaultTD.Engine.Managers,High
+19,CS0234,Managers Namespace,Engine\Systems\Gameplay\ResourceSystem.cs,5,14,Managers,Existing,Fix namespace to SASZombieAssaultTD.Engine.Managers,High
+24,CS0234,ParticleSystem,Engine\Systems\Hazards\Visual\HazardVisualSystem.cs,5,33,ParticleSystem,Existing,Add using SASZombieAssaultTD.Engine.Systems;,High
+34,CS0246,RoundCompletedEvent,Engine\Systems\Gameplay\AchievementSystem.cs,164,39,RoundCompletedEvent,Existing,Add using SASZombieAssaultTD.Engine.Systems.Events;,High
+41,CS0246,RoundCompletedEvent,Engine\Systems\Gameplay\ChallengeSystem.cs,366,39,RoundCompletedEvent,Existing,Add using SASZombieAssaultTD.Engine.Systems.Events;,High
+35,CS0246,ScoreUpdatedEvent,Engine\Systems\Gameplay\AchievementSystem.cs,221,37,ScoreUpdatedEvent,Existing,Add using SASZombieAssaultTD.Engine.Systems.Events;,High
+42,CS0246,ScoreUpdatedEvent,Engine\Systems\Gameplay\ChallengeSystem.cs,429,37,ScoreUpdatedEvent,Existing,Add using SASZombieAssaultTD.Engine.Systems.Events;,High
+36,CS0246,Vector3,Engine\Systems\WaveSystem.cs,1326,43,Vector3,Existing,Add using SASZombieAssaultTD.Engine.Core.UnityTypes;,High
+1,CS0101,WaveSystem,Engine\Systems\WaveSystem.cs,1020,18,WaveSystem,Existing,Remove duplicate class definition,High

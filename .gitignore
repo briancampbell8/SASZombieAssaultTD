@@ -1,0 +1,33 @@
+.aider*
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+*.db
+
+# Build artifacts
+bin/
+obj/
+Temp/
+*.log
+
+# Node
+node_modules/
+npm-debug.log
+package-lock.json
+
+# PowerShell temp
+*.ps1xml
+
+# Error dumps
+*errors*.txt
+*error*.txt
+Tidy.Error.log
+build_output.txt
+build_errors.txt
+build_errors_current.txt
+
+# Misc
+.settings/
+*.tmp

@@ -1,0 +1,598 @@
+E:\BDC\Projects\SASZombieAssaultTD\Engine
+    GameRoot.cs
+E:\BDC\Projects\SASZombieAssaultTD\Tools
+    AnimationSystemTest.cs
+E:\BDC\Projects\SASZombieAssaultTD\BDC\Projects\SASZombieAssaultTD\Engine\Core\Input
+    InputModule.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Animation
+    AnimationClip.cs
+    AnimationConditionOperator.cs
+    AnimationController.cs
+    AnimationDebugTools.cs
+    AnimationParameters.cs
+    AnimationPerformanceAnalyzer.cs
+    AnimationStateInspector.cs
+    AnimationStateMachine.cs
+    AnimationTrack.cs
+    AnimationTransition.cs
+    AnimationTransitionDebug.cs
+    AnimationTypes.cs
+    IAnimationState.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Audio
+    AudioEngine.cs
+    AudioSystem.cs
+    AudioTypes.cs
+    MusicTrack.cs
+    SoundEffect.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Components
+    AnimationComponent.cs
+    ColliderShapes.cs
+    CollisionComponent.cs
+    ComponentTypes.cs
+    InventoryComponent.cs
+    ParticleEmitterComponent.cs
+    PhysicsComponent.cs
+    PlayerStatsData.cs
+    SpriteComponent.cs
+    StatsComponent.cs
+    TriggerComponent.cs
+    UIComponent.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Core
+    Compatibility.cs
+    ComponentTypes.cs
+    GameLoop.cs
+    GameObject.cs
+    IProgram.cs
+    SystemInterfaces.cs
+    TimingController.cs
+    Transform.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\ECS
+    BaseComponent.cs
+    CollisionTypes.cs
+    ECSDebugInspector.cs
+    ECSVerificationReport.cs
+    ECSVerificationSuite.cs
+    ECSWorld.cs
+    Entity.cs
+    EntityFactory.cs
+    EntityManager.cs
+    IComponent.cs
+    IEntityComponent.cs
+    IGameSystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Entities
+    Enemy.cs
+    EnemyData.cs
+    Entity.cs
+    Projectile.cs
+    Soldier.cs
+    Turret.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Events
+    EnemyDeathEvent.cs
+    EventTypes.cs
+    PlayerDeathEvent.cs
+    WaveEndEvent.cs
+    WaveStartEvent.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Managers
+    EnemyManager.cs
+    ProjectileManager.cs
+    WaveManager.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Memory
+    MemoryTracker.cs
+    ObjectPool.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Navigation
+    AStarPathfinder.cs
+    FlowField.cs
+    NavigationDebugRenderer.cs
+    NavigationGrid.cs
+    NavigationMigrationHelper.cs
+    NavigationVerificationSuite.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Pathfinding
+    PathfindingOptimizer.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Performance
+    DebugOverlay.cs
+    FramePacer.cs
+    PerformanceProfiler.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Persistence
+    SaveDataTypes.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Physics
+    AABBShape.cs
+    CapsuleShape.cs
+    CircleShape.cs
+    ColliderComponent.cs
+    CollisionDebugRenderer.cs
+    CollisionEvent.cs
+    CollisionShape.cs
+    CollisionVerificationSuite.cs
+    PhysicsTuning.cs
+    SpatialPartitionGrid.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Platform
+    Win32Window.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Rendering
+    Color.cs
+    DebugOverlay.cs
+    Framebuffer.cs
+    IPlatformRenderer.cs
+    IRenderContext.cs
+    Rectangle.cs
+    RenderCommandQueue.cs
+    RenderDiagnostics.cs
+    Renderer.cs
+    RenderInitValidator.cs
+    RenderPipelineConfig.cs
+    RenderQueue.cs
+    RenderSurface.cs
+    Sprite.cs
+    SpriteBatch.cs
+    SpriteBatchOptimizer.cs
+    SpriteBatchRenderer.cs
+    TextRenderer.cs
+    Texture2D.cs
+    TextureCache.cs
+    WindowHost.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Save
+    SaveData.cs
+    SaveSystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Scene
+    Entity.cs
+    GameplayScene.cs
+    MainMenuScene.cs
+    Scene.cs
+    SceneManager.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Scenes
+    BaseScene.cs
+    GameScene.cs
+    LoadingScene.cs
+    MainMenuScene.cs
+    PauseScene.cs
+    SceneManager.cs
+    SceneTransitionTest.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\State
+    AdvancedStateMachine.cs
+    BootState.cs
+    EnhancedStateMachine.cs
+    GameEvent.cs
+    GameplayState.cs
+    GameStateType.cs
+    IGameState.cs
+    MainMenuState.cs
+    PausedState.cs
+    StateBuilder.cs
+    StateDebugger.cs
+    StateFactory.cs
+    StateMachine.cs
+    StateMachineExtensions.cs
+    StateMachineIntegration.cs
+    StateMachineProfiler.cs
+    StateMachineTest.cs
+    StateTransition.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems
+    AnimationSystem.cs
+    CameraSystem.cs
+    CollisionSystem.cs
+    DefaultPlatformRenderer.cs
+    EventLogSystem.cs
+    GameStateManager.cs
+    InputRouter.cs
+    LoggingSystem.cs
+    ParticleSystem.cs
+    PathfindingSystem.cs
+    PhysicsSystem.cs
+    RenderingSystem.cs
+    RenderQueue.cs
+    TriggerSystem.cs
+    UISystem.cs
+    WaveAnalyticsSummary.cs
+    WaveSystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Tools
+    AppendixScripts.cs
+    AutomationEnhancements.cs
+    CleanupScripts.cs
+    StructureGenerator.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\UI
+    Label.cs
+    Panel.cs
+    UIElement.cs
+    UIManager.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Utility
+    Logger.cs
+    MathHelper.cs
+    Randomizer.cs
+    Time.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Window
+    Window.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Animation\BlendTrees
+    BlendParameters.cs
+    BlendTree.cs
+    BlendTreeSerializer.cs
+    BlendTreeTypes.cs
+    BlendTreeValidator.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Animation\Diagnostics
+    AnimationDiagnostics.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Animation\Events
+    AnimationEvent.cs
+    AnimationEventContext.cs
+    AnimationEventDispatcher.cs
+    AnimationEventECSIntegration.cs
+    AnimationEventSerializer.cs
+    AnimationEventTrack.cs
+    AnimationEventValidator.cs
+    IAnimationEventReceiver.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Animation\States
+    AttackState.cs
+    IdleState.cs
+    JumpState.cs
+    MoveState.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Animation\Visualization
+    AnimationStateVisualization.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Animation\BlendTrees\Nodes
+    BlendTreeValidationResult.cs
+    IBlendNode.cs
+    LinearBlendNode.cs
+    SingleClipNode.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Core\Diagnostics
+    ManagerDiagnostics.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Core\Input
+    GamepadAxis.cs
+    GamepadButton.cs
+    GamepadDevice.cs
+    IInputDevice.cs
+    IInputHandler.cs
+    IInputSource.cs
+    InputDeviceType.cs
+    InputEvent.cs
+    InputEventType.cs
+    InputEventTypes.cs
+    InputInterfaces.cs
+    InputManager.cs
+    InputModule.cs
+    InputModuleTest.cs
+    InputPerformanceMetrics.cs
+    InputPlayback.cs
+    InputRecorder.cs
+    InputState.cs
+    InputSystem.cs
+    InputTypes.cs
+    KeyboardDevice.cs
+    KeyboardInputSource.cs
+    MouseDevice.cs
+    MouseInputSource.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Core\Interfaces
+    IDebugRenderer.cs
+    IGameStateMachine.cs
+    IManager.cs
+    ISystemRegistry.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Core\Logging
+    DebugLogger.cs
+    ILogger.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Core\Managers
+    BaseManager.cs
+    IManagedSystem.cs
+    InputDeviceType.cs
+    IRenderableSystem.cs
+    IUpdatableSystem.cs
+    RenderManager.cs
+    SystemManager.cs
+    UpdateManager.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Core\Math
+    Clamp.cs
+    VectorTypes.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Core\Registry
+    SystemRegistry.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Core\Timing
+    FrameDiagnostics.cs
+    TimingModule.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\ECS\Components
+    ActiveComponent.cs
+    AnimationControllerComponent.cs
+    DamageComponent.cs
+    EnemyTypeComponent.cs
+    HealthComponent.cs
+    MovementComponent.cs
+    NavAgentComponent.cs
+    RenderableComponent.cs
+    ScoreComponent.cs
+    TransformComponent.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\ECS\Systems
+    AISystem.cs
+    AnimationSystem.cs
+    CollisionDebugRenderer.cs
+    CollisionSystem.cs
+    CombatSystem.cs
+    ISystem.cs
+    NavigationSystem.cs
+    RenderSystem.cs
+    ScoringSystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\ECS\Testing
+    ECSTestSuite.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Rendering\Debug
+    PathDebugRenderer.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Rendering\Zombies
+    ZombieRenderer.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Scenes\TestScenes
+    MeanStreetsTest.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Achievements
+    AchievementDefinition.cs
+    AchievementInstance.cs
+    AchievementListRenderer.cs
+    AchievementPopupRenderer.cs
+    AchievementRarity.cs
+    ChallengeDefinition.cs
+    ChallengeInstance.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\AI
+    AIController.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Assets
+    AssetBatchLoadResult.cs
+    AssetBundle.cs
+    AssetDiscovery.cs
+    AssetHandle.cs
+    AssetInitializer.cs
+    AssetKey.cs
+    AssetLoadContext.cs
+    AssetLoadResult.cs
+    AssetManager.cs
+    AssetMetadata.cs
+    AssetPipeline.cs
+    AssetRegistry.cs
+    AssetSource.cs
+    AssetType.cs
+    AssetUtils.cs
+    AssetValidation.cs
+    DataLoader.cs
+    TextureLoader.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Audio
+    AudioSystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Challenges
+    ChallengeDifficulty.cs
+    ChallengeListRenderer.cs
+    ChallengeTrackerRenderer.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Combat
+    KillFeedSystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Diagnostics
+    DebugLogger.cs
+    FrameStats.cs
+    HeartbeatMonitor.cs
+    Timing.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Enemies
+    EnemyDefinition.cs
+    EnemyDefinitionRegistry.cs
+    EnemyDefinitionValidator.cs
+    EnemySystem.cs
+    ZombieAI.cs
+    ZombieMovement.cs
+    ZombieSpawner.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Events
+    AchievementUnlockedEvent.cs
+    ChallengeCompletedEvent.cs
+    EntityDiedEvent.cs
+    EntityRespawnedEvent.cs
+    EventBus.cs
+    EventManager.cs
+    GameLoadedEvent.cs
+    GameOverEvent.cs
+    IEventBus.cs
+    IEventListener.cs
+    IGameEvent.cs
+    ItemAddedEvent.cs
+    ItemPickupEvent.cs
+    ItemRemovedEvent.cs
+    ItemUseEvent.cs
+    KillAttributedEvent.cs
+    LevelUpEvent.cs
+    ResourceChangedEvent.cs
+    RoundCompletedEvent.cs
+    ScoreUpdatedEvent.cs
+    TriggerEnterEvent.cs
+    TriggerExitEvent.cs
+    ZoneEnteredEvent.cs
+    ZoneExitedEvent.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Gameplay
+    AchievementSystem.cs
+    AnimationSystem.cs
+    AnimationTriggerSystem.cs
+    CameraSystem.cs
+    ChallengeSystem.cs
+    DamageSystem.cs
+    DeathEffectSystem.cs
+    DeathSystem.cs
+    EnemyBase.cs
+    EntityRemovalSystem.cs
+    GameOverSystem.cs
+    InventorySystem.cs
+    KillAttributionSystem.cs
+    MetaProgressionSystem.cs
+    PathfindingSystem.cs
+    PickupSystem.cs
+    PlayerMovementConfig.cs
+    PlayerSystem.cs
+    ProjectileSystem.cs
+    ResourceSystem.cs
+    ResourceType.cs
+    RespawnSystem.cs
+    RoundResetSystem.cs
+    ScoreSystem.cs
+    StatsTrackerSystem.cs
+    TowerBase.cs
+    TowerSystem.cs
+    WaveController.cs
+    ZoneTriggerSystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Inventory
+    ItemDatabase.cs
+    ItemDefinition.cs
+    ItemInstance.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Meta
+    MetaProgressionRenderer.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Pathfinding
+    Pathfinder.cs
+    PathLoader.cs
+    PathNetwork.cs
+    PathNode.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Persistence
+    LoadSystem.cs
+    SaveGameData.cs
+    SaveManager.cs
+    SaveSerializer.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Player
+    PlayerStatsData.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Rendering
+    RenderContext.cs
+    RenderSettings.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Resources
+    ResourceSystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Save
+    SaveFileInfo.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\SaveLoad
+    FileUtils.cs
+    JsonUtils.cs
+    SaveData.cs
+    SaveManager.cs
+    SaveVersioning.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Settings
+    SettingsSystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\UI
+    AchievementListRenderer.cs
+    AchievementPopupRenderer.cs
+    Button.cs
+    ChallengeListRenderer.cs
+    ChallengeTrackerRenderer.cs
+    GameOverScreenRenderer.cs
+    GameOverScreenStatistics.cs
+    HealthBarRenderer.cs
+    HUD.cs
+    InventoryPanelRenderer.cs
+    ItemTooltipRenderer.cs
+    KillFeedSystem.cs
+    LayoutSystem.cs
+    Menus.cs
+    MetaProgressionRenderer.cs
+    Panel.cs
+    PointF.cs
+    ResourceDisplayRenderer.cs
+    RespawnCountdownRenderer.cs
+    RespawnCountdownStatistics.cs
+    RoundCompleteNotificationRenderer.cs
+    RoundCompleteStatistics.cs
+    ScoreDisplayStatistics.cs
+    ScoreDisplaySystem.cs
+    UIElement.cs
+    UIElementBase.cs
+    UIRoot.cs
+    UISystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\World
+    WorldStateSystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Achievements\UI
+    AchievementListRenderer.cs
+    AchievementPopupRenderer.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\AI\Behaviors
+    BasicChaseBehavior.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\AI\Blackboard
+    Blackboard.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Combat\Statistics
+    KillFeedStatistics.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Enemies\Tests
+    EnemyDefinitionRegistryTests.cs
+    EnemyDefinitionValidatorTests.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Enemies\Tests\obj\Debug\net10.0-windows
+    .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
+    SASZombieAssaultTD.Engine.Systems.Enemies.Tests.AssemblyInfo.cs
+    SASZombieAssaultTD.Engine.Systems.Enemies.Tests.GlobalUsings.g.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Gameplay\Animation
+    AnimationClip.cs
+    AnimationFrame.cs
+    AnimationPlayer.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Gameplay\Events
+    GameplayEventRouter.cs
+    GameplayEventType.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Gameplay\Interaction
+    IInteractable.cs
+    InteractionSystem.cs
+    InteractionType.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Gameplay\Inventory
+    InventorySystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Gameplay\Weapons
+    WeaponSystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Gameplay\Zombies
+    BasicZombie.cs
+    ZombieBase.cs
+    ZombieController.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Hazards\Analytics
+    AnalyticsValidationReport.cs
+    Bounds.cs
+    DensityAnalysis.cs
+    DensityAnalysisValidationResult.cs
+    DensityHotspot.cs
+    EffectivenessScoringValidationResult.cs
+    HazardAnalytics.cs
+    HazardAnalyticsValidator.cs
+    HazardCleanupReason.cs
+    HazardDebugOverlay.cs
+    HazardEffectResult.cs
+    HazardEventLog.cs
+    HazardEventLogStats.cs
+    HazardEventType.cs
+    HazardInfo.cs
+    HazardInteractionType.cs
+    HazardOverlapDetail.cs
+    HazardPerformanceOperationType.cs
+    HazardPerformanceSample.cs
+    HazardPerformanceStats.cs
+    HazardStressTestConfig.cs
+    HazardStressTestSession.cs
+    HazardUpdateType.cs
+    HazardValidationHealth.cs
+    HazardValidationResult.cs
+    KillAttributionValidationResult.cs
+    OccupancyTrackingValidationResult.cs
+    SpatialCluster.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Hazards\Core
+    HazardEffect.cs
+    HazardManager.cs
+    HazardTypes.cs
+    HazardZone.cs
+    StandardHazardZone.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Hazards\Nuke
+    NukeBlast.cs
+    NukeCloud.cs
+    RadiationExposure.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\Hazards\Visual
+    HazardVisualSystem.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\UI\Assets
+    UIAssetLoader.cs
+    UIFont.cs
+    UISprite.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\UI\Debug
+    UIDebugInspector.cs
+    UIDebugOverlay.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\UI\Input
+    UIFocusManager.cs
+    UIInputRouter.cs
+    UIInputState.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\UI\Layout
+    UILayoutSystem.cs
+    UILayoutTypes.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\UI\Rendering
+    UIBatcher.cs
+    UIRenderContext.cs
+    UIRenderer.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\UI\Statistics
+    HealthBarRendererStatistics.cs
+    KillFeedStatistics.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\UI\Styles
+    UIStyle.cs
+    UIStyleResolver.cs
+    UIStyleSheet.cs
+E:\BDC\Projects\SASZombieAssaultTD\Engine\Systems\UI\Widgets
+    UIButton.cs
+    UIPanel.cs
+    UIText.cs
+    UIWidgetBase.cs
+E:\BDC\Projects\SASZombieAssaultTD\obj\Debug\net10.0
+    .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
+    SASZombieAssaultTD.AssemblyInfo.cs
+    SASZombieAssaultTD.GlobalUsings.g.cs
+E:\BDC\Projects\SASZombieAssaultTD\obj\Release\net10.0
+    .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
+    SASZombieAssaultTD.AssemblyInfo.cs
+    SASZombieAssaultTD.GlobalUsings.g.cs
+E:\BDC\Projects\SASZombieAssaultTD\Tools\Animation
+    AnimationEventValidationReport.cs
+    BlendTreeValidationReport.cs

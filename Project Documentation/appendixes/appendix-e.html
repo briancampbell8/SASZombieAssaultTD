@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix E: Asset Pipeline - SAS Zombie Assault TD</title>
+    <link rel="stylesheet" href="../assets/css/docs.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="btn btn-back">← Back to Table of Contents</a>
+        
+        <header class="header">
+            <h1>Appendix E: Asset Pipeline</h1>
+            <h2>Asset Management & Processing Workflow</h2>
+        </header>
+
+        <div class="content-section">
+            <h2>Asset Pipeline Overview</h2>
+            
+            <div class="alert alert-info">
+                <strong>Note:</strong> The asset pipeline processes all game assets from source files to optimized runtime formats.
+            </div>
+
+            <h3>Pipeline Stages</h3>
+            <ol>
+                <li><strong>Asset Import:</strong> Load source files from disk</li>
+                <li><strong>Asset Processing:</strong> Convert and optimize assets</li>
+                <li><strong>Asset Validation:</strong> Verify asset integrity</li>
+                <li><strong>Asset Packaging:</strong> Bundle assets for runtime</li>
+                <li><strong>Asset Loading:</strong> Load assets at runtime</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>Asset Types & Formats</h2>
+            
+            <h3>Supported Asset Types</h3>
+            <div class="code-block">
+// Asset type definitions
+public enum AssetType {
+    Model,          // 3D models (.fbx, .obj, .gltf)
+    Texture,        // Textures (.png, .jpg, .tga, .dds)
+    Audio,          // Audio files (.wav, .mp3, .ogg)
+    Animation,      // Animation clips (.fbx, .anim)
+    Material,       // Material definitions (.mat)
+    Shader,         // Shader files (.hlsl, .glsl)
+    Font,           // Font files (.ttf, .otf)
+    UI,             // UI assets (.ui, .atlas)
+    Level,          // Level data (.level)
+    Config          // Configuration files (.json, .xml)
+}
+
+// Asset format specifications
+public class AssetFormats {
+    public static readonly Dictionary&lt;AssetType, string[]&gt; SupportedFormats = new() {
+        [AssetType.Model] = new[] { ".fbx", ".obj", ".gltf", ".glb" },
+        [AssetType.Texture] = new[] { ".png", ".jpg", ".jpeg", ".tga", ".dds", ".bmp" },
+        [AssetType.Audio] = new[] { ".wav", ".mp3", ".ogg", ".flac" },
+        [AssetType.Animation] = new[] { ".fbx", ".anim", ".gltf" },
+        [AssetType.Material] = new[] { ".mat", ".material" },
+        [AssetType.Shader] = new[] { ".hlsl", ".glsl", ".cg" },
+        [AssetType.Font] = new[] { ".ttf", ".otf", ".woff", ".woff2" },
+        [AssetType.UI] = new[] { ".ui", ".atlas", ".psd" },
+        [AssetType.Level] = new[] { ".level", ".scene", ".map" },
+        [AssetType.Config] = new[] { ".json", ".xml", ".yaml", ".ini" }
+    };
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Model Asset Pipeline</h2>
+            
+            <h3>Model Processing</h3>
+            <div class="code-block">
+// Model asset processor
+public class ModelProcessor : AssetProcessor&lt;ModelAsset&gt; {
+    public override ModelAsset Process(string sourcePath) {
+        // Load source model
+        var sourceModel = LoadModel(sourcePath);
+        
+        // Optimize geometry
+        var optimizedModel = OptimizeGeometry(sourceModel);
+        
+        // Generate LODs
+        var lods = GenerateLODs(optimizedModel);
+        
+        // Process animations
+        var animations = ProcessAnimations(sourceModel);
+        
+        // Generate collision data
+        var collision = GenerateCollision(optimizedModel);
+        
+        return new ModelAsset {
+            Geometry = optimizedModel,
+            LODs = lods,
+            Animations = animations,
+            Collision = collision,
+            Materials = ProcessMaterials(sourceModel.Materials)
+        };
+    }
+    
+    private ModelData OptimizeGeometry(ModelData model) {
+        // Remove duplicate vertices
+        model = RemoveDuplicateVertices(model);
+        
+        // Optimize index buffers
+        model = OptimizeIndices(model);
+        
+        // Generate tangents and normals
+        model = GenerateTangents(model);
+        
+        // Compress vertex data
+        model = CompressVertices(model);
+        
+        return model;
+    }
+}
+            </div>
+
+            <h3>LOD Generation</h3>
+            <div class="code-block">
+// LOD generation settings
+public class LODSettings {
+    public float[] Distances = { 10f, 25f, 50f, 100f };
+    public float[] ReductionRatios = { 1.0f, 0.75f, 0.5f, 0.25f };
+    public bool MergeVertices = true;
+    public bool PreserveUVs = true;
+    public bool PreserveNormals = true;
+}
+
+// Generate LOD levels
+public LODLevel[] GenerateLODs(ModelData model, LODSettings settings) {
+    var lods = new LODLevel[settings.Distances.Length];
+    
+    for (int i = 0; i &lt; settings.Distances.Length; i++) {
+        lods[i] = new LODLevel {
+            Distance = settings.Distances[i],
+            Model = SimplifyModel(model, settings.ReductionRatios[i]),
+            Material = model.Material
+        };
+    }
+    
+    return lods;
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Texture Asset Pipeline</h2>
+            
+            <h3>Texture Processing</h3>
+            <div class="code-block">
+// Texture asset processor
+public class TextureProcessor : AssetProcessor&lt;TextureAsset&gt; {
+    public override TextureAsset Process(string sourcePath) {
+        // Load source texture
+        var sourceTexture = LoadTexture(sourcePath);
+        
+        // Resize to power of 2
+        var resizedTexture = ResizeToPowerOfTwo(sourceTexture);
+        
+        // Generate mipmaps
+        var mipmaps = GenerateMipmaps(resizedTexture);
+        
+        // Compress texture
+        var compressedTexture = CompressTexture(resizedTexture);
+        
+        return new TextureAsset {
+            Data = compressedTexture.Data,
+            Width = compressedTexture.Width,
+            Height = compressedTexture.Height,
+            Format = compressedTexture.Format,
+            Mipmaps = mipmaps,
+            Type = DetermineTextureType(sourcePath)
+        };
+    }
+    
+    private TextureData CompressTexture(TextureData texture) {
+        // Choose compression format based on texture type
+        var format = ChooseCompressionFormat(texture);
+        
+        // Compress using appropriate algorithm
+        return CompressWithFormat(texture, format);
+    }
+}
+            </div>
+
+            <h3>Texture Compression Formats</h3>
+            <div class="code-block">
+// Texture compression formats
+public enum TextureCompressionFormat {
+    DXT1,       // RGB, no alpha (1bpp)
+    DXT3,       // RGB, explicit alpha (2bpp)
+    DXT5,       // RGB, interpolated alpha (2bpp)
+    BC5,        // Normal maps (1bpp)
+    BC7,        // High quality (1bpp)
+    ETC2,       // Mobile format
+    ASTC        // Adaptive scalable texture compression
+}
+
+// Compression format selection
+public TextureCompressionFormat ChooseCompressionFormat(TextureData texture) {
+    return texture.Type switch {
+        TextureType.Diffuse => HasAlpha(texture) ? TextureCompressionFormat.DXT5 : TextureCompressionFormat.DXT1,
+        TextureType.Normal => TextureCompressionFormat.BC5,
+        TextureType.Metallic => TextureCompressionFormat.DXT1,
+        TextureType.Roughness => TextureCompressionFormat.DXT1,
+        TextureType.UI => TextureCompressionFormat.BC7,
+        _ => TextureCompressionFormat.DXT1
+    };
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Audio Asset Pipeline</h2>
+            
+            <h3>Audio Processing</h3>
+            <div class="code-block">
+// Audio asset processor
+public class AudioProcessor : AssetProcessor&lt;AudioAsset&gt; {
+    public override AudioAsset Process(string sourcePath) {
+        // Load source audio
+        var sourceAudio = LoadAudio(sourcePath);
+        
+        // Normalize audio levels
+        var normalizedAudio = NormalizeAudio(sourceAudio);
+        
+        // Convert to target format
+        var convertedAudio = ConvertAudioFormat(normalizedAudio);
+        
+        // Generate audio metadata
+        var metadata = GenerateAudioMetadata(convertedAudio);
+        
+        return new AudioAsset {
+            Data = convertedAudio.Data,
+            SampleRate = convertedAudio.SampleRate,
+            Channels = convertedAudio.Channels,
+            BitDepth = convertedAudio.BitDepth,
+            Duration = convertedAudio.Duration,
+            Metadata = metadata
+        };
+    }
+    
+    private AudioData ConvertAudioFormat(AudioData audio) {
+        // Convert to 16-bit PCM for sound effects
+        if (audio.Type == AudioType.SoundEffect) {
+            return ConvertToPCM16(audio);
+        }
+        
+        // Convert to OGG Vorbis for music
+        if (audio.Type == AudioType.Music) {
+            return ConvertToOGG(audio);
+        }
+        
+        return audio;
+    }
+}
+            </div>
+
+            <h3>Audio Optimization</h3>
+            <div class="code-block">
+// Audio optimization settings
+public class AudioOptimizationSettings {
+    public int TargetSampleRate = 44100;
+    public int TargetBitDepth = 16;
+    public float CompressionQuality = 0.8f;
+    public bool NormalizeAudio = true;
+    public bool TrimSilence = true;
+    public float SilenceThreshold = -60.0f; // dB
+}
+
+// Optimize audio for runtime
+public AudioData OptimizeAudio(AudioData audio, AudioOptimizationSettings settings) {
+    // Normalize audio levels
+    if (settings.NormalizeAudio) {
+        audio = NormalizeAudio(audio);
+    }
+    
+    // Trim silence
+    if (settings.TrimSilence) {
+        audio = TrimSilence(audio, settings.SilenceThreshold);
+    }
+    
+    // Resample if needed
+    if (audio.SampleRate != settings.TargetSampleRate) {
+        audio = ResampleAudio(audio, settings.TargetSampleRate);
+    }
+    
+    // Convert bit depth
+    if (audio.BitDepth != settings.TargetBitDepth) {
+        audio = ConvertBitDepth(audio, settings.TargetBitDepth);
+    }
+    
+    return audio;
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Animation Asset Pipeline</h2>
+            
+            <h3>Animation Processing</h3>
+            <div class="code-block">
+// Animation asset processor
+public class AnimationProcessor : AssetProcessor&lt;AnimationAsset&gt; {
+    public override AnimationAsset Process(string sourcePath) {
+        // Load source animation
+        var sourceAnimation = LoadAnimation(sourcePath);
+        
+        // Optimize keyframes
+        var optimizedAnimation = OptimizeKeyframes(sourceAnimation);
+        
+        // Generate animation events
+        var events = GenerateAnimationEvents(optimizedAnimation);
+        
+        // Create animation clips
+        var clips = CreateAnimationClips(optimizedAnimation);
+        
+        return new AnimationAsset {
+            Clips = clips,
+            Events = events,
+            Skeleton = optimizedAnimation.Skeleton,
+            Metadata = GenerateAnimationMetadata(optimizedAnimation)
+        };
+    }
+    
+    private AnimationData OptimizeKeyframes(AnimationData animation) {
+        // Remove redundant keyframes
+        animation = RemoveRedundantKeyframes(animation);
+        
+        // Compress animation curves
+        animation = CompressAnimationCurves(animation);
+        
+        // Optimize bone hierarchy
+        animation = OptimizeBoneHierarchy(animation);
+        
+        return animation;
+    }
+}
+            </div>
+
+            <h3>Animation Compression</h3>
+            <div class="code-block">
+// Animation compression settings
+public class AnimationCompressionSettings {
+    public float PositionTolerance = 0.001f;
+    public float RotationTolerance = 0.001f;
+    public float ScaleTolerance = 0.001f;
+    public bool UseQuaternionCompression = true;
+    public bool UseCurveOptimization = true;
+    public int KeyframeReductionRatio = 50; // percentage
+}
+
+// Compress animation data
+public AnimationData CompressAnimation(AnimationData animation, AnimationCompressionSettings settings) {
+    var compressedAnimation = animation.Clone();
+    
+    // Reduce keyframes
+    if (settings.UseCurveOptimization) {
+        compressedAnimation = ReduceKeyframes(compressedAnimation, settings.KeyframeReductionRatio);
+    }
+    
+    // Compress rotations to quaternions
+    if (settings.UseQuaternionCompression) {
+        compressedAnimation = CompressRotations(compressedAnimation, settings.RotationTolerance);
+    }
+    
+    // Optimize position tracks
+    compressedAnimation = OptimizePositionTracks(compressedAnimation, settings.PositionTolerance);
+    
+    // Optimize scale tracks
+    compressedAnimation = OptimizeScaleTracks(compressedAnimation, settings.ScaleTolerance);
+    
+    return compressedAnimation;
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Asset Bundle Management</h2>
+            
+            <h3>Bundle Creation</h3>
+            <div class="code-block">
+// Asset bundle system
+public class AssetBundle {
+    public string Name { get; set; }
+    public List&lt;AssetReference&gt; Assets { get; set; }
+    public BundleSettings Settings { get; set; }
+    public BundleMetadata Metadata { get; set; }
+}
+
+// Bundle creation process
+public AssetBundle CreateBundle(string bundleName, List&lt;string&gt; assetPaths, BundleSettings settings) {
+    var bundle = new AssetBundle {
+        Name = bundleName,
+        Settings = settings,
+        Assets = new List&lt;AssetReference&gt;()
+    };
+    
+    // Process each asset
+    foreach (var assetPath in assetPaths) {
+        var asset = ProcessAsset(assetPath);
+        var reference = CreateAssetReference(asset, settings);
+        bundle.Assets.Add(reference);
+    }
+    
+    // Optimize bundle
+    bundle = OptimizeBundle(bundle);
+    
+    // Generate bundle metadata
+    bundle.Metadata = GenerateBundleMetadata(bundle);
+    
+    return bundle;
+}
+            </div>
+
+            <h3>Bundle Loading</h3>
+            <div class="code-block">
+// Bundle loading system
+public class BundleLoader {
+    public AssetBundle LoadBundle(string bundlePath) {
+        // Load bundle file
+        var bundleData = File.ReadAllBytes(bundlePath);
+        
+        // Decompress bundle
+        var decompressedData = DecompressBundle(bundleData);
+        
+        // Parse bundle metadata
+        var metadata = ParseBundleMetadata(decompressedData);
+        
+        // Load assets
+        var assets = LoadAssets(decompressedData, metadata);
+        
+        return new AssetBundle {
+            Name = metadata.Name,
+            Assets = assets,
+            Metadata = metadata
+        };
+    }
+    
+    private Dictionary&lt;string, object&gt; LoadAssets(byte[] bundleData, BundleMetadata metadata) {
+        var assets = new Dictionary&lt;string, object&gt;();
+        
+        foreach (var assetInfo in metadata.AssetInfos) {
+            var assetData = ExtractAssetData(bundleData, assetInfo);
+            var asset = DeserializeAsset(assetData, assetInfo.Type);
+            assets[assetInfo.Name] = asset;
+        }
+        
+        return assets;
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Asset Validation</h2>
+            
+            <h3>Validation Rules</h3>
+            <div class="code-block">
+// Asset validation system
+public class AssetValidator {
+    public ValidationResult ValidateAsset(Asset asset) {
+        var result = new ValidationResult();
+        
+        // Check file format
+        result.Merge(ValidateFileFormat(asset));
+        
+        // Check asset integrity
+        result.Merge(ValidateIntegrity(asset));
+        
+        // Check performance requirements
+        result.Merge(ValidatePerformance(asset));
+        
+        // Check compatibility
+        result.Merge(ValidateCompatibility(asset));
+        
+        return result;
+    }
+    
+    private ValidationResult ValidateFileFormat(Asset asset) {
+        var result = new ValidationResult();
+        
+        // Check if file format is supported
+        if (!IsFormatSupported(asset.Format)) {
+            result.AddError($"Unsupported format: {asset.Format}");
+        }
+        
+        // Check file size
+        if (asset.Size > MaxAssetSize) {
+            result.AddWarning($"Asset size exceeds recommended limit: {asset.Size} bytes");
+        }
+        
+        return result;
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Pipeline Configuration</h2>
+            
+            <h3>Configuration File</h3>
+            <div class="code-block">
+{
+  "assetPipeline": {
+    "inputDirectory": "Assets/Source",
+    "outputDirectory": "Assets/Processed",
+    "tempDirectory": "Assets/Temp",
+    "parallelProcessing": true,
+    "maxConcurrentJobs": 4,
+    "cacheEnabled": true,
+    "cacheDirectory": "Assets/Cache"
+  },
+  "processing": {
+    "models": {
+      "generateLODs": true,
+      "lodDistances": [10, 25, 50, 100],
+      "compressionEnabled": true,
+      "generateCollision": true
+    },
+    "textures": {
+      "generateMipmaps": true,
+      "compressionFormat": "auto",
+      "maxTextureSize": 2048,
+      "powerOfTwo": true
+    },
+    "audio": {
+      "normalizeAudio": true,
+      "targetSampleRate": 44100,
+      "compressionFormat": "ogg",
+      "trimSilence": true
+    },
+    "animations": {
+      "optimizeKeyframes": true,
+      "compressionEnabled": true,
+      "generateEvents": true
+    }
+  },
+  "bundles": [
+    {
+      "name": "core",
+      "assets": ["models/player.fbx", "textures/player.png"],
+      "compression": true,
+      "priority": "high"
+    },
+    {
+      "name": "level1",
+      "assets": ["levels/level1.level", "models/zombie.fbx"],
+      "compression": true,
+      "priority": "medium"
+    }
+  ]
+}
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>SAS Zombie Assault TD Documentation - Appendix E</p>
+            <p class="footer-note">Asset Pipeline Guide</p>
+        </footer>
+    </div>
+</body>
+</html>

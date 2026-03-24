@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix C: Debugging Guide - SAS Zombie Assault TD</title>
+    <link rel="stylesheet" href="../assets/css/docs.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="btn btn-back">← Back to Table of Contents</a>
+        
+        <header class="header">
+            <h1>Appendix C: Debugging Guide</h1>
+            <h2>Comprehensive Debugging Techniques</h2>
+        </header>
+
+        <div class="content-section">
+            <h2>Debugging Tools Overview</h2>
+            
+            <div class="alert alert-info">
+                <strong>Pro Tip:</strong> Enable debug mode in configuration to access all debugging features and logging levels.
+            </div>
+
+            <h3>Available Debug Tools</h3>
+            <ul>
+                <li><strong>Console Logger:</strong> Real-time logging system with multiple levels</li>
+                <li><strong>Performance Profiler:</strong> Frame rate and memory usage tracking</li>
+                <li><strong>Entity Inspector:</strong> Live entity component viewing</li>
+                <li><strong>Physics Debugger:</strong> Collision shape and force visualization</li>
+                <li><strong>AI Behavior Tracer:</strong> Pathfinding and decision tree debugging</li>
+                <li><strong>Animation Debugger:</strong> State machine and blend tree visualization</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>Logging System</h2>
+            
+            <h3>Log Levels</h3>
+            <div class="code-block">
+// Log levels in order of severity
+public enum LogLevel {
+    Trace,    // Detailed information for debugging
+    Debug,    // Debug information
+    Info,     // General information
+    Warning,  // Warning messages
+    Error,    // Error messages
+    Critical  // Critical errors
+}
+
+// Usage examples
+Logger.Trace("Entering Update method");
+Logger.Debug($"Entity {entity.Id} position updated");
+Logger.Info("Game started successfully");
+Logger.Warning("Low memory detected");
+Logger.Error("Failed to load asset");
+Logger.Critical("System crash detected");
+            </div>
+
+            <h3>Structured Logging</h3>
+            <div class="code-block">
+// Structured logging with context
+Logger.Info("Entity spawned", new {
+    EntityId = entity.Id,
+    EntityType = entity.Type,
+    Position = entity.Position,
+    Timestamp = DateTime.UtcNow
+});
+
+// Performance logging
+using var timer = Logger.StartTimer("EntityUpdate");
+// ... entity update logic
+timer.Stop();
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Performance Debugging</h2>
+            
+            <h3>Frame Rate Analysis</h3>
+            <div class="code-block">
+// Enable performance profiling
+Debug.EnableProfiling();
+
+// Monitor specific systems
+Debug.ProfileSystem("AnimationSystem", () => {
+    animationSystem.Update(deltaTime);
+});
+
+// Custom performance markers
+Debug.BeginSample("EnemyAI");
+aiSystem.Update();
+Debug.EndSample();
+
+// Get performance report
+var report = Debug.GetPerformanceReport();
+Console.WriteLine($"Average FPS: {report.AverageFPS}");
+Console.WriteLine($"Frame Time: {report.AverageFrameTime}ms");
+            </div>
+
+            <h3>Memory Debugging</h3>
+            <div class="code-block">
+// Memory tracking
+Debug.EnableMemoryTracking();
+
+// Take memory snapshot
+var snapshot = Debug.TakeMemorySnapshot();
+
+// Analyze memory usage
+var analysis = Debug.AnalyzeMemory(snapshot);
+foreach (var category in analysis.Categories) {
+    Console.WriteLine($"{category.Name}: {category.Size} bytes");
+}
+
+// Detect memory leaks
+var leaks = Debug.DetectMemoryLeaks();
+if (leaks.Count > 0) {
+    Logger.Warning($"Memory leaks detected: {leaks.Count}");
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Entity System Debugging</h2>
+            
+            <h3>Entity Inspector</h3>
+            <div class="code-block">
+// Get all entities
+var entities = entityManager.GetAllEntities();
+
+// Inspect specific entity
+var entity = entityManager.GetEntity(entityId);
+Console.WriteLine($"Entity {entity.Id}:");
+Console.WriteLine($"  Components: {entity.ComponentCount}");
+
+// List all components
+foreach (var component in entity.Components) {
+    Console.WriteLine($"  - {component.Type}: {component.Value}");
+}
+
+// Watch entity changes
+Debug.WatchEntity(entityId, (entity, change) => {
+    Logger.Debug($"Entity {entity.Id} changed: {change}");
+});
+            </div>
+
+            <h3>System Debugging</h3>
+            <div class="code-block">
+// Enable system debugging
+Debug.EnableSystemDebugging();
+
+// Trace system execution
+Debug.TraceSystem("MovementSystem");
+
+// Get system statistics
+var stats = Debug.GetSystemStats("MovementSystem");
+Console.WriteLine($"Processed entities: {stats.EntityCount}");
+Console.WriteLine($"Execution time: {stats.ExecutionTime}ms");
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Physics Debugging</h2>
+            
+            <h3>Collision Visualization</h3>
+            <div class="code-block">
+// Enable physics debug drawing
+Debug.EnablePhysicsDebug();
+
+// Draw collision shapes
+Debug.DrawColliders(true);
+
+// Draw collision contacts
+Debug.DrawContacts(true);
+
+// Draw forces and velocities
+Debug.DrawForces(true);
+
+// Custom debug drawing
+Debug.DrawSphere(position, radius, Color.Red);
+Debug.DrawLine(start, end, Color.Green);
+Debug.DrawBox(center, size, Color.Blue);
+            </div>
+
+            <h3>Raycast Debugging</h3>
+            <div class="code-block">
+// Debug raycast with visualization
+var hit = Debug.Raycast(origin, direction, maxDistance);
+if (hit.HasValue) {
+    Debug.DrawHitPoint(hit.Value.Point, Color.Red);
+    Debug.DrawHitNormal(hit.Value.Point, hit.Value.Normal, Color.Yellow);
+}
+
+// Continuous raycast debugging
+Debug.ContinuousRaycast(origin, direction, maxDistance, (hit) => {
+    Logger.Debug($"Raycast hit: {hit.EntityId} at {hit.Point}");
+});
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>AI Debugging</h2>
+            
+            <h3>Pathfinding Visualization</h3>
+            <div class="code-block">
+// Enable AI debugging
+Debug.EnableAIDebugging();
+
+// Draw navigation mesh
+Debug.DrawNavigationMesh(true);
+
+// Draw paths
+Debug.DrawPaths(true);
+
+// Trace pathfinding
+Debug.TracePathfinding(entityId);
+
+// Get pathfinding statistics
+var stats = Debug.GetPathfindingStats();
+Console.WriteLine($"Path calculations: {stats.PathCalculations}");
+Console.WriteLine($"Average path length: {stats.AveragePathLength}");
+            </div>
+
+            <h3>Behavior Tree Debugging</h3>
+            <div class="code-block">
+// Enable behavior tree debugging
+Debug.EnableBehaviorTreeDebugging();
+
+// Trace behavior execution
+Debug.TraceBehavior(entityId);
+
+// Get behavior tree state
+var state = Debug.GetBehaviorTreeState(entityId);
+Console.WriteLine($"Current node: {state.CurrentNode}");
+Console.WriteLine($"Node stack: {string.Join(" -> ", state.NodeStack)}");
+
+// Visualize behavior tree
+Debug.DrawBehaviorTree(entityId);
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Animation Debugging</h2>
+            
+            <h3>Animation State Visualization</h3>
+            <div class="code-block">
+// Enable animation debugging
+Debug.EnableAnimationDebugging();
+
+// Draw animation states
+Debug.DrawAnimationStates(true);
+
+// Draw blend trees
+Debug.DrawBlendTrees(true);
+
+// Trace animation events
+Debug.TraceAnimationEvents(entityId);
+
+// Get animation statistics
+var stats = Debug.GetAnimationStats(entityId);
+Console.WriteLine($"Current animation: {stats.CurrentAnimation}");
+Console.WriteLine($"Playback time: {stats.PlaybackTime}");
+Console.WriteLine($"Is looping: {stats.IsLooping}");
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Common Debugging Scenarios</h2>
+            
+            <h3>Performance Issues</h3>
+            <div class="alert alert-warning">
+                <strong>Symptoms:</strong> Low frame rate, stuttering, memory leaks
+            </div>
+            
+            <h4>Debugging Steps:</h4>
+            <ol>
+                <li>Enable performance profiling</li>
+                <li>Check system execution times</li>
+                <li>Analyze memory usage patterns</li>
+                <li>Identify bottleneck systems</li>
+                <li>Optimize hot paths</li>
+            </ol>
+
+            <h3>Entity Issues</h3>
+            <div class="alert alert-warning">
+                <strong>Symptoms:</strong> Missing entities, incorrect component data
+            </div>
+            
+            <h4>Debugging Steps:</h4>
+            <ol>
+                <li>Use entity inspector to verify entity state</li>
+                <li>Check component data integrity</li>
+                <li>Verify system execution order</li>
+                <li>Trace entity lifecycle events</li>
+            </ol>
+
+            <h3>Physics Issues</h3>
+            <div class="alert alert-warning">
+                <strong>Symptoms:</strong> Objects passing through walls, incorrect collisions
+            </div>
+            
+            <h4>Debugging Steps:</h4>
+            <ol>
+                <li>Enable physics debug drawing</li>
+                <li>Verify collision layers and matrices</li>
+                <li>Check collider shapes and positions</li>
+                <li>Analyze collision contact points</li>
+            </ol>
+
+            <h3>AI Issues</h3>
+            <div class="alert alert-warning">
+                <strong>Symptoms:</strong> Enemies not moving, incorrect pathfinding
+            </div>
+            
+            <h4>Debugging Steps:</h4>
+            <ol>
+                <li>Enable AI debugging visualization</li>
+                <li>Check navigation mesh integrity</li>
+                <li>Trace pathfinding calculations</li>
+                <li>Analyze behavior tree execution</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>Debug Commands</h2>
+            
+            <h3>Console Commands</h3>
+            <div class="code-block">
+// Performance commands
+debug.profile.start
+debug.profile.stop
+debug.memory.snapshot
+debug.memory.analyze
+
+// Entity commands
+debug.entity.list
+debug.entity.inspect [id]
+debug.entity.watch [id]
+
+// Physics commands
+debug.physics.colliders on/off
+debug.physics.contacts on/off
+debug.physics.raycast [x] [y] [z] [dx] [dy] [dz]
+
+// AI commands
+debug.ai.navmesh on/off
+debug.ai.paths on/off
+debug.ai.behavior [id]
+
+// Animation commands
+debug.animation.states on/off
+debug.animation.blends on/off
+debug.animation.events [id]
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>SAS Zombie Assault TD Documentation - Appendix C</p>
+            <p class="footer-note">Debugging Guide</p>
+        </footer>
+    </div>
+</body>
+</html>

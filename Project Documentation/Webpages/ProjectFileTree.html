@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAS Zombie Assault TD - Project File Tree</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .tree {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre;
+            overflow-x: auto;
+            background: #f8f9fa;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+        }
+        .folder {
+            color: #3498db;
+            font-weight: bold;
+        }
+        .file {
+            color: #27ae60;
+        }
+        .cs-file {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+        .summary {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SAS Zombie Assault TD - Project File Tree</h1>
+        
+        <div class="summary">
+            <strong>Generated:</strong> February 17, 2026<br>
+            <strong>Purpose:</strong> Complete directory structure showing all folders containing C# files<br>
+            <strong>Project Root:</strong> e:\BDC\Projects\SASZombieAssaultTD\
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">61</div>
+                <div class="stat-label">Total C# Files</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">35</div>
+                <div class="stat-label">Directories with C# Files</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Main Engine Categories</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Build Errors</div>
+            </div>
+        </div>
+
+        <div class="tree">SASZombieAssaultTD/
+├── 📁 <span class="folder">Archive/</span>
+│   └── 📄 <span class="cs-file">WaveSystem_P11_05_Snapshot.cs</span>
+│
+├── 📁 <span class="folder">Engine/</span>
+│   ├── 📁 <span class="folder">Compatibility/</span>
+│   │   ├── 📄 <span class="cs-file">GameplayStubs.cs</span>
+│   │   ├── 📄 <span class="cs-file">LegacyCompatibilityLayer.cs</span>
+│   │   ├── 📄 <span class="cs-file">QuickFixes.cs</span>
+│   │   └── 📁 <span class="folder">UnityStubs/</span>
+│   │       └── 📄 <span class="cs-file">UnityEngine.cs</span>
+│   │
+│   ├── 📁 <span class="folder">Components/</span>
+│   │   ├── 📄 <span class="cs-file">AnimationComponent.cs</span>
+│   │   ├── 📄 <span class="cs-file">ColliderShapes.cs</span>
+│   │   ├── 📄 <span class="cs-file">CollisionComponent.cs</span>
+│   │   ├── 📄 <span class="cs-file">HealthComponent.cs</span>
+│   │   ├── 📄 <span class="cs-file">InventoryComponent.cs</span>
+│   │   ├── 📄 <span class="cs-file">ParticleEmitterComponent.cs</span>
+│   │   ├── 📄 <span class="cs-file">PhysicsComponent.cs</span>
+│   │   ├── 📄 <span class="cs-file">SpriteComponent.cs</span>
+│   │   ├── 📄 <span class="cs-file">StatsComponent.cs</span>
+│   │   ├── 📄 <span class="cs-file">TransformComponent.cs</span>
+│   │   ├── 📄 <span class="cs-file">TriggerComponent.cs</span>
+│   │   └── 📄 <span class="cs-file">UIComponent.cs</span>
+│   │
+│   ├── 📁 <span class="folder">Core/</span>
+│   │   ├── 📁 <span class="folder">Logging/</span>
+│   │   │   └── 📄 <span class="cs-file">ILogger.cs</span>
+│   │   ├── 📄 <span class="cs-file">IProgram.cs</span>
+│   │   └── 📄 <span class="cs-file">TimingController.cs</span>
+│   │
+│   ├── 📁 <span class="folder">ECS/</span>
+│   │   ├── 📄 <span class="cs-file">Entity.cs</span>
+│   │   ├── 📄 <span class="cs-file">EntityManager.cs</span>
+│   │   ├── 📄 <span class="cs-file">IComponent.cs</span>
+│   │   └── 📄 <span class="cs-file">IGameSystem.cs</span>
+│   │
+│   ├── 📁 <span class="folder">Entities/</span>
+│   │   ├── 📄 <span class="cs-file">Enemy.cs</span>
+│   │   ├── 📄 <span class="cs-file">EnemyData.cs</span>
+│   │   ├── 📄 <span class="cs-file">Entity.cs</span>
+│   │   ├── 📄 <span class="cs-file">Projectile.cs</span>
+│   │   ├── 📄 <span class="cs-file">Soldier.cs</span>
+│   │   └── 📄 <span class="cs-file">Turret.cs</span>
+│   │
+│   ├── 📄 <span class="cs-file">GameRoot.cs</span>
+│   │
+│   ├── 📁 <span class="folder">Managers/</span>
+│   │   ├── 📄 <span class="cs-file">EnemyManager.cs</span>
+│   │   ├── 📄 <span class="cs-file">EntityManager.cs</span>
+│   │   ├── 📄 <span class="cs-file">ProjectileManager.cs</span>
+│   │   └── 📄 <span class="cs-file">WaveManager.cs</span>
+│   │
+│   ├── 📁 <span class="folder">Platform/</span>
+│   │   └── 📄 <span class="cs-file">Win32Window.cs</span>
+│   │
+│   ├── 📁 <span class="folder">Rendering/</span>
+│   │   ├── 📁 <span class="folder">Debug/</span>
+│   │   │   └── 📄 <span class="cs-file">PathDebugRenderer.cs</span>
+│   │   ├── 📁 <span class="folder">Zombies/</span>
+│   │   │   └── 📄 <span class="cs-file">ZombieRenderer.cs</span>
+│   │   ├── 📄 <span class="cs-file">DebugOverlay.cs</span>
+│   │   ├── 📄 <span class="cs-file">Framebuffer.cs</span>
+│   │   ├── 📄 <span class="cs-file">IRenderContext.cs</span>
+│   │   ├── 📄 <span class="cs-file">RenderQueue.cs</span>
+│   │   ├── 📄 <span class="cs-file">RenderSurface.cs</span>
+│   │   ├── 📄 <span class="cs-file">SpriteBatchRenderer.cs</span>
+│   │   ├── 📄 <span class="cs-file">TextRenderer.cs</span>
+│   │   ├── 📄 <span class="cs-file">Texture2D.cs</span>
+│   │   └── 📄 <span class="cs-file">WindowHost.cs</span>
+│   │
+│   ├── 📁 <span class="folder">Scenes/</span>
+│   │   ├── 📁 <span class="folder">TestScenes/</span>
+│   │   │   └── 📄 <span class="cs-file">MeanStreetsTest.cs</span>
+│   │   ├── 📄 <span class="cs-file">BaseScene.cs</span>
+│   │   ├── 📄 <span class="cs-file">GameScene.cs</span>
+│   │   ├── 📄 <span class="cs-file">IScene.cs</span>
+│   │   ├── 📄 <span class="cs-file">MainMenuScene.cs</span>
+│   │   ├── 📄 <span class="cs-file">PauseScene.cs</span>
+│   │   ├── 📄 <span class="cs-file">Scene.cs</span>
+│   │   └── 📄 <span class="cs-file">SceneManager.cs</span>
+│   │
+│   └── 📁 <span class="folder">Systems/</span>
+│       ├── 📁 <span class="folder">AI/</span>
+│       │   ├── 📁 <span class="folder">Behaviors/</span>
+│       │   │   └── 📄 <span class="cs-file">BasicChaseBehavior.cs</span>
+│       │   ├── 📁 <span class="folder">Blackboard/</span>
+│       │   │   └── 📄 <span class="cs-file">Blackboard.cs</span>
+│       │   └── 📄 <span class="cs-file">AIController.cs</span>
+│       │
+│       ├── 📁 <span class="folder">Achievements/</span>
+│       │   ├── 📄 <span class="cs-file">AchievementDefinition.cs</span>
+│       │   ├── 📄 <span class="cs-file">AchievementSystem.cs</span>
+│       │   ├── 📄 <span class="cs-file">ChallengeDefinition.cs</span>
+│       │   ├── 📄 <span class="cs-file">ChallengeSystem.cs</span>
+│       │   ├── 📄 <span class="cs-file">ChallengeTracker.cs</span>
+│       │   ├── 📄 <span class="cs-file">IChallenge.cs</span>
+│       │   ├── 📄 <span class="cs-file">ScoreSystem.cs</span>
+│       │   └── 📄 <span class="cs-file">StatsTrackerSystem.cs</span>
+│       │
+│       ├── 📁 <span class="folder">Assets/</span>
+│       │   ├── 📄 <span class="cs-file">AssetLoader.cs</span>
+│       │   ├── 📄 <span class="cs-file">AssetManager.cs</span>
+│       │   ├── 📄 <span class="cs-file">AssetRegistry.cs</span>
+│       │   ├── 📄 <span class="cs-file">IAssetLoader.cs</span>
+│       │   ├── 📄 <span class="cs-file">IAssetProvider.cs</span>
+│       │   ├── 📄 <span class="cs-file">ResourceManager.cs</span>
+│       │   ├── 📄 <span class="cs-file">SceneAssetLoader.cs</span>
+│       │   ├── 📄 <span class="cs-file">TextureAssetLoader.cs</span>
+│       │   ├── 📄 <span class="cs-file">TextureCache.cs</span>
+│       │   └── 📄 <span class="cs-file">TextureResource.cs</span>
+│       │
+│       ├── 📁 <span class="folder">Audio/</span>
+│       │   ├── 📄 <span class="cs-file">AudioClip.cs</span>
+│       │   ├── 📄 <span class="cs-file">AudioSystem.cs</span>
+│       │   └── 📄 <span class="cs-file">SoundEffect.cs</span>
+│       │
+│       ├── 📁 <span class="folder">Challenges/</span>
+│       │   ├── 📄 <span class="cs-file">ChallengeManager.cs</span>
+│       │   ├── 📄 <span class="cs-file">ChallengeValidator.cs</span>
+│       │   └── 📄 <span class="cs-file">ChallengeWatcher.cs</span>
+│       │
+│       ├── 📁 <span class="folder">Combat/</span>
+│       │   ├── 📄 <span class="cs-file">DamageSystem.cs</span>
+│       │   └── 📄 <span class="cs-file">KillAttributionSystem.cs</span>
+│       │
+│       ├── 📄 <span class="cs-file">AnimationSystem.cs</span>
+│       ├── 📄 <span class="cs-file">CameraSystem.cs</span>
+│       ├── 📄 <span class="cs-file">CollisionSystem.cs</span>
+│       ├── 📄 <span class="cs-file">DefaultPlatformRenderer.cs</span>
+│       ├── 📄 <span class="cs-file">EventLogSystem.cs</span>
+│       ├── 📄 <span class="cs-file">GameStateManager.cs</span>
+│       ├── 📄 <span class="cs-file">InputRouter.cs</span>
+│       ├── 📄 <span class="cs-file">LoggingSystem.cs</span>
+│       ├── 📄 <span class="cs-file">ParticleSystem.cs</span>
+│       ├── 📄 <span class="cs-file">PathfindingSystem.cs</span>
+│       ├── 📄 <span class="cs-file">PhysicsSystem.cs</span>
+│       ├── 📄 <span class="cs-file">RenderQueue.cs</span>
+│       ├── 📄 <span class="cs-file">RenderingSystem.cs</span>
+│       ├── 📄 <span class="cs-file">TriggerSystem.cs</span>
+│       ├── 📄 <span class="cs-file">UISystem.cs</span>
+│       ├── 📄 <span class="cs-file">WaveAnalyticsSummary.cs</span>
+│       └── 📄 <span class="cs-file">WaveSystem.cs</span>
+│
+├── 📄 <span class="cs-file">Program.cs</span>
+│
+└── 📁 <span class="folder">[Additional Directories]</span>
+    ├── 📁 <span class="folder">Core/</span> (empty)
+    ├── 📁 <span class="folder">Entities/</span> (empty)
+    ├── 📁 <span class="folder">GameData/</span> (empty)
+    ├── 📁 <span class="folder">Maps/</span> (empty)
+    ├── 📁 <span class="folder">Scenes/</span> (empty)
+    ├── 📁 <span class="folder">Systems/</span> (empty)
+    ├── 📁 <span class="folder">Tools/</span> (empty)
+    ├── 📁 <span class="folder">UI/</span> (empty)
+    └── 📁 <span class="folder">SASZombieAssaultTD/</span> (empty)
+
+</div>
+
+        <div class="summary">
+            <h3>Directory Breakdown:</h3>
+            <ul>
+                <li><strong>Engine/Compatibility/</strong> - Unity compatibility and stub implementations</li>
+                <li><strong>Engine/Components/</strong> - ECS component definitions (11 files)</li>
+                <li><strong>Engine/Core/</strong> - Core engine interfaces and utilities</li>
+                <li><strong>Engine/ECS/</strong> - Entity-Component-System framework</li>
+                <li><strong>Engine/Entities/</strong> - Game entity definitions (6 files)</li>
+                <li><strong>Engine/Managers/</strong> - High-level system managers</li>
+                <li><strong>Engine/Platform/</strong> - Platform-specific implementations</li>
+                <li><strong>Engine/Rendering/</strong> - Rendering pipeline and graphics</li>
+                <li><strong>Engine/Scenes/</strong> - Scene management and definitions</li>
+                <li><strong>Engine/Systems/</strong> - Core game systems and logic</li>
+                <li><strong>Archive/</strong> - Archived/snapshot files</li>
+                <li><strong>Root/</strong> - Application entry point (Program.cs)</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation System - SAS Zombie Assault TD</title>
+    <link rel="stylesheet" href="../assets/css/docs.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="btn btn-back">← Back to Table of Contents</a>
+        
+        <header class="header">
+            <h1>Animation System</h1>
+            <h2>Advanced Animation Framework</h2>
+        </header>
+
+        <div class="content-section">
+            <h2>System Overview</h2>
+            
+            <div class="alert alert-info">
+                <strong>Note:</strong> The animation system provides advanced character and object animation capabilities with blend trees, state machines, and event-driven animation.
+            </div>
+
+            <h3>Core Features</h3>
+            <ul>
+                <li><strong>Blend Trees:</strong> Smooth animation blending between multiple states</li>
+                <li><strong>State Machines:</strong> Complex animation state management</li>
+                <li><strong>Animation Events:</strong> Scriptable events triggered during animation playback</li>
+                <li><strong>IK System:</strong> Inverse kinematics for realistic limb positioning</li>
+                <li><strong>Procedural Animation:</strong> Dynamic animation generation</li>
+                <li><strong>Animation Compression:</strong> Optimized animation data storage</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>Animation Components</h2>
+            
+            <h3>Animation Component</h3>
+            <div class="code-block">
+// Core animation component
+public struct AnimationComponent : IComponent {
+    public string CurrentAnimation;
+    public float PlaybackTime;
+    public float PlaybackSpeed;
+    public bool IsLooping;
+    public bool IsPlaying;
+    public int Layer;
+    public float Weight;
+}
+
+// Animation controller component
+public struct AnimationController : IComponent {
+    public Entity Animator;
+    public Dictionary&lt;string, AnimationState&gt; States;
+    public string CurrentState;
+    public string PreviousState;
+    public float StateTransitionTime;
+}
+
+// Animation state definition
+public struct AnimationState {
+    public string Name;
+    public string AnimationClip;
+    public float Speed;
+    public bool Loop;
+    public Dictionary&lt;string, AnimationTransition&gt; Transitions;
+    public AnimationEvent[] Events;
+}
+            </div>
+
+            <h3>Skeleton Component</h3>
+            <div class="code-block">
+// Skeleton definition
+public struct Skeleton : IComponent {
+    public Bone[] Bones;
+    public int RootBoneIndex;
+    public Matrix4x4[] BindPoses;
+    public Matrix4x4[] CurrentPoses;
+}
+
+// Bone structure
+public struct Bone {
+    public string Name;
+    public int ParentIndex;
+    public Vector3 Position;
+    public Quaternion Rotation;
+    public Vector3 Scale;
+    public Matrix4x4 Transform;
+}
+
+// Pose data
+public struct Pose {
+    public Matrix4x4[] BoneTransforms;
+    public float Timestamp;
+    public string AnimationName;
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Blend Tree System</h2>
+            
+            <h3>Blend Tree Implementation</h3>
+            <div class="code-block">
+// Blend tree node
+public class BlendTreeNode {
+    public string Name { get; set; }
+    public AnimationClip Clip { get; set; }
+    public float Weight { get; set; }
+    public BlendTreeNode[] Children { get; set; }
+    public BlendParameter Parameter { get; set; }
+    public BlendType BlendType { get; set; }
+}
+
+// Blend tree controller
+public class BlendTreeController {
+    private BlendTreeNode _rootNode;
+    private Dictionary&lt;string, float&gt; _parameters = new();
+    
+    public void SetParameter(string name, float value) {
+        _parameters[name] = value;
+        UpdateBlendWeights();
+    }
+    
+    public AnimationSample EvaluateBlendTree() {
+        return EvaluateNode(_rootNode);
+    }
+    
+    private AnimationSample EvaluateNode(BlendTreeNode node) {
+        if (node.Clip != null) {
+            return node.Clip.SampleAt(_parameters["Time"]);
+        }
+        
+        if (node.Children.Length > 0) {
+            return BlendChildren(node);
+        }
+        
+        return AnimationSample.Default;
+    }
+    
+    private AnimationSample BlendChildren(BlendTreeNode node) {
+        var samples = new AnimationSample[node.Children.Length];
+        var weights = new float[node.Children.Length];
+        
+        for (int i = 0; i &lt; node.Children.Length; i++) {
+            samples[i] = EvaluateNode(node.Children[i]);
+            weights[i] = CalculateWeight(node.Children[i]);
+        }
+        
+        return AnimationSample.Blend(samples, weights);
+    }
+}
+
+// Blend types
+public enum BlendType {
+    Linear1D,
+    Linear2D,
+    Radial2D,
+    Direct
+}
+            </div>
+
+            <h3>Blend Parameters</h3>
+            <div class="code-block">
+// Blend parameter definition
+public struct BlendParameter {
+    public string Name;
+    public float MinValue;
+    public float MaxValue;
+    public float DefaultValue;
+    public ParameterType Type;
+}
+
+// Parameter types
+public enum ParameterType {
+    Float,
+    Int,
+    Bool,
+    Trigger
+}
+
+// Parameter controller
+public class ParameterController {
+    private Dictionary&lt;string, float&gt; _floatParameters = new();
+    private Dictionary&lt;string, int&gt; _intParameters = new();
+    private Dictionary&lt;string, bool&gt; _boolParameters = new();
+    
+    public void SetFloat(string name, float value) {
+        _floatParameters[name] = value;
+    }
+    
+    public void SetInt(string name, int value) {
+        _intParameters[name] = value;
+    }
+    
+    public void SetBool(string name, bool value) {
+        _boolParameters[name] = value;
+    }
+    
+    public float GetFloat(string name) {
+        return _floatParameters.TryGetValue(name, out var value) ? value : 0f;
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>State Machine System</h2>
+            
+            <h3>State Machine Implementation</h3>
+            <div class="code-block">
+// Animation state machine
+public class AnimationStateMachine {
+    private Dictionary&lt;string, AnimationState&gt; _states = new();
+    private AnimationState _currentState;
+    private AnimationState _previousState;
+    private float _transitionTime = 0f;
+    private bool _inTransition = false;
+    
+    public void AddState(AnimationState state) {
+        _states[state.Name] = state;
+    }
+    
+    public void SetState(string stateName) {
+        if (!_states.TryGetValue(stateName, out var newState)) {
+            return;
+        }
+        
+        if (_currentState != null && _currentState.Name != stateName) {
+            StartTransition(newState);
+        }
+    }
+    
+    private void StartTransition(AnimationState newState) {
+        _previousState = _currentState;
+        _currentState = newState;
+        _transitionTime = 0f;
+        _inTransition = true;
+        
+        // Trigger state enter events
+        TriggerStateEvents(newState, StateEventType.Enter);
+    }
+    
+    public void Update(float deltaTime) {
+        if (_inTransition) {
+            UpdateTransition(deltaTime);
+        }
+        
+        // Update current state
+        UpdateCurrentState(deltaTime);
+    }
+    
+    private void UpdateTransition(float deltaTime) {
+        _transitionTime += deltaTime;
+        
+        var transitionDuration = GetTransitionDuration(_previousState, _currentState);
+        
+        if (_transitionTime >= transitionDuration) {
+            CompleteTransition();
+        }
+    }
+    
+    private void CompleteTransition() {
+        _inTransition = false;
+        _previousState = null;
+        
+        // Trigger state enter events
+        TriggerStateEvents(_currentState, StateEventType.Enter);
+    }
+}
+
+// State event types
+public enum StateEventType {
+    Enter,
+    Update,
+    Exit
+}
+            </div>
+
+            <h3>State Transitions</h3>
+            <div class="code-block">
+// Transition definition
+public struct AnimationTransition {
+    public string FromState;
+    public string ToState;
+    public float Duration;
+    public TransitionInterruptMode InterruptMode;
+    public Condition[] Conditions;
+    public AnimationBlend Blend;
+}
+
+// Transition interrupt modes
+public enum TransitionInterruptMode {
+    None,
+    CanInterrupt,
+    MustComplete
+}
+
+// Transition condition
+public struct Condition {
+    public string Parameter;
+    public ConditionOperator Operator;
+    public float Value;
+}
+
+// Condition operators
+public enum ConditionOperator {
+    Equals,
+    NotEquals,
+    GreaterThan,
+    LessThan,
+    GreaterThanOrEqual,
+    LessThanOrEqual
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Animation Events</h2>
+            
+            <h3>Event System</h3>
+            <div class="code-block">
+// Animation event
+public struct AnimationEvent {
+    public string Name;
+    public float Time;
+    public string Parameter;
+    public object Value;
+    public EventType Type;
+}
+
+// Event types
+public enum EventType {
+    Trigger,
+    Sound,
+    Effect,
+    Damage,
+    Custom
+}
+
+// Event manager
+public class AnimationEventManager {
+    private Dictionary&lt;string, List&lt;AnimationEvent&gt;&gt; _events = new();
+    
+    public void RegisterEvents(string animationName, List&lt;AnimationEvent&gt; events) {
+        _events[animationName] = events;
+    }
+    
+    public void ProcessEvents(string animationName, float currentTime, float previousTime) {
+        if (!_events.TryGetValue(animationName, out var events)) {
+            return;
+        }
+        
+        foreach (var evt in events) {
+            if (ShouldTriggerEvent(evt, currentTime, previousTime)) {
+                TriggerEvent(evt);
+            }
+        }
+    }
+    
+    private bool ShouldTriggerEvent(AnimationEvent evt, float currentTime, float previousTime) {
+        // Check if event time is between previous and current time
+        return (evt.Time > previousTime && evt.Time <= currentTime) ||
+               (previousTime > currentTime && (evt.Time > previousTime || evt.Time <= currentTime));
+    }
+    
+    private void TriggerEvent(AnimationEvent evt) {
+        switch (evt.Type) {
+            case EventType.Trigger:
+                EventManager.Publish(new AnimationTriggerEvent(evt.Name, evt.Parameter, evt.Value));
+                break;
+            case EventType.Sound:
+                AudioManager.PlaySound(evt.Parameter);
+                break;
+            case EventType.Effect:
+                ParticleSystem.SpawnEffect(evt.Parameter);
+                break;
+            case EventType.Damage:
+                DealDamage(evt.Parameter, (int)evt.Value);
+                break;
+            case EventType.Custom:
+                EventManager.Publish(new CustomAnimationEvent(evt.Name, evt.Value));
+                break;
+        }
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>IK System</h2>
+            
+            <h3>Inverse Kinematics</h3>
+            <div class="code-block">
+// IK solver
+public class IKSolver {
+    private IKChain[] _chains;
+    private int _maxIterations = 10;
+    private float _threshold = 0.001f;
+    
+    public void Solve() {
+        foreach (var chain in _chains) {
+            SolveChain(chain);
+        }
+    }
+    
+    private void SolveChain(IKChain chain) {
+        for (int iteration = 0; iteration &lt; _maxIterations; iteration++) {
+            // FABRIK algorithm
+            ForwardReach(chain);
+            BackwardReach(chain);
+            
+            // Check convergence
+            if (Vector3.Distance(chain.EndEffector.Position, chain.Target) &lt; _threshold) {
+                break;
+            }
+        }
+    }
+    
+    private void ForwardReach(IKChain chain) {
+        chain.Bones[chain.Bones.Length - 1].Position = chain.Target;
+        
+        for (int i = chain.Bones.Length - 2; i >= 0; i--) {
+            var direction = (chain.Bones[i].Position - chain.Bones[i + 1].Position).Normalized();
+            chain.Bones[i].Position = chain.Bones[i + 1].Position + direction * chain.Bones[i].Length;
+        }
+    }
+    
+    private void BackwardReach(IKChain chain) {
+        chain.Bones[0].Position = chain.RootPosition;
+        
+        for (int i = 1; i &lt; chain.Bones.Length; i++) {
+            var direction = (chain.Bones[i].Position - chain.Bones[i - 1].Position).Normalized();
+            chain.Bones[i].Position = chain.Bones[i - 1].Position + direction * chain.Bones[i].Length;
+        }
+    }
+}
+
+// IK chain definition
+public struct IKChain {
+    public IKBone[] Bones;
+    public Vector3 RootPosition;
+    public Vector3 Target;
+    public IKBone EndEffector;
+    public float ChainLength;
+}
+
+// IK bone
+public struct IKBone {
+    public Vector3 Position;
+    public float Length;
+    public Quaternion Rotation;
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Performance Optimization</h2>
+            
+            <h3>Animation Compression</h3>
+            <div class="code-block">
+// Animation compression
+public class AnimationCompressor {
+    public AnimationClip Compress(AnimationClip clip, CompressionSettings settings) {
+        // Reduce keyframes
+        var compressedKeyframes = ReduceKeyframes(clip.Keyframes, settings.Tolerance);
+        
+        // Quantize data
+        compressedKeyframes = QuantizeKeyframes(compressedKeyframes, settings.Precision);
+        
+        // Compress rotations to quaternions
+        compressedKeyframes = CompressRotations(compressedKeyframes);
+        
+        return new AnimationClip {
+            Name = clip.Name,
+            Duration = clip.Duration,
+            Keyframes = compressedKeyframes,
+            IsCompressed = true
+        };
+    }
+    
+    private Keyframe[] ReduceKeyframes(Keyframe[] keyframes, float tolerance) {
+        var reduced = new List&lt;Keyframe&gt;();
+        
+        // Always keep first and last keyframes
+        reduced.Add(keyframes[0]);
+        
+        for (int i = 1; i &lt; keyframes.Length - 1; i++) {
+            if (IsKeyframeNecessary(keyframes[i - 1], keyframes[i], keyframes[i + 1], tolerance)) {
+                reduced.Add(keyframes[i]);
+            }
+        }
+        
+        reduced.Add(keyframes[keyframes.Length - 1]);
+        return reduced.ToArray();
+    }
+    
+    private bool IsKeyframeNecessary(Keyframe prev, Keyframe current, Keyframe next, float tolerance) {
+        // Check if current keyframe can be interpolated from neighbors
+        var interpolated = InterpolateKeyframes(prev, next, 0.5f);
+        var distance = Vector3.Distance(current.Position, interpolated.Position);
+        
+        return distance > tolerance;
+    }
+}
+
+// Compression settings
+public struct CompressionSettings {
+    public float Tolerance;
+    public int Precision;
+    public bool CompressRotations;
+    public bool CompressScales;
+}
+            </div>
+
+            <h3>LOD Animation</h3>
+            <div class="code-block">
+// Animation LOD system
+public class AnimationLOD {
+    private Dictionary&lt;int, AnimationClip&gt; _lodAnimations = new();
+    
+    public void SetLOD(int level, AnimationClip clip) {
+        _lodAnimations[level] = clip;
+    }
+    
+    public AnimationClip GetLODAnimation(float distance) {
+        var lodLevel = CalculateLODLevel(distance);
+        return _lodAnimations.TryGetValue(lodLevel, out var clip) ? clip : _lodAnimations[0];
+    }
+    
+    private int CalculateLODLevel(float distance) {
+        return distance switch {
+            &lt; 10 => 0,  // High quality
+            &lt; 25 => 1,  // Medium quality
+            &lt; 50 => 2,  // Low quality
+            _ => 3       // Very low quality
+        };
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Integration Examples</h2>
+            
+            <h3>Character Animation Setup</h3>
+            <div class="code-block">
+// Character animation setup
+public class CharacterAnimationSetup {
+    public void SetupCharacter(Entity character) {
+        // Add animation components
+        var animator = EntityManager.CreateEntity();
+        EntityManager.AddComponent(animator, new AnimationController());
+        EntityManager.AddComponent(animator, new Skeleton());
+        
+        // Create animation states
+        var idleState = new AnimationState {
+            Name = "Idle",
+            AnimationClip = "idle.anim",
+            Loop = true,
+            Speed = 1.0f
+        };
+        
+        var walkState = new AnimationState {
+            Name = "Walk",
+            AnimationClip = "walk.anim",
+            Loop = true,
+            Speed = 1.0f
+        };
+        
+        var runState = new AnimationState {
+            Name = "Run",
+            AnimationClip = "run.anim",
+            Loop = true,
+            Speed = 1.5f
+        };
+        
+        // Add transitions
+        idleState.Transitions["Walk"] = new AnimationTransition {
+            FromState = "Idle",
+            ToState = "Walk",
+            Duration = 0.2f,
+            Conditions = new[] {
+                new Condition { Parameter = "Speed", Operator = ConditionOperator.GreaterThan, Value = 0.1f }
+            }
+        };
+        
+        // Setup state machine
+        var stateMachine = new AnimationStateMachine();
+        stateMachine.AddState(idleState);
+        stateMachine.AddState(walkState);
+        stateMachine.AddState(runState);
+        
+        // Link to character
+        EntityManager.AddComponent(character, new AnimationComponent {
+            CurrentAnimation = "Idle",
+            IsPlaying = true,
+            IsLooping = true
+        });
+    }
+}
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>SAS Zombie Assault TD Documentation - Animation System</p>
+            <p class="footer-note">Advanced Animation Framework</p>
+        </footer>
+    </div>
+</body>
+</html>

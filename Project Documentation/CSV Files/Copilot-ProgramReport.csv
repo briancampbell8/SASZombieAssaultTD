@@ -1,0 +1,16 @@
+Program,Created,Why Created,What It Does,What It Fixes
+HazardInfo.cs,2025-02-25,Missing analytics data structure,Basic hazard information container for analytics system,HazardManager.cs missing HazardInfo type references
+HazardValidationResult.cs,2025-02-25,Missing validation result structure,Result container for hazard validation operations,HazardManager.cs missing HazardValidationResult type references  
+HazardPerformanceStats.cs,2025-02-25,Missing performance statistics,Performance statistics for hazard operations,HazardManager.cs missing HazardPerformanceStats type references
+DensityAnalysis.cs,2025-02-25,Missing density analysis structure,Density analysis for hazard zones,HazardManager.cs missing DensityAnalysis type references
+HazardEventLog.cs,2025-02-25,Missing event logging system,Hazard event logging for analytics,HazardManager.cs missing HazardEventLog type references
+AnalyticsValidationReport.cs,2025-02-25,Missing validation report,Analytics validation report container,HazardAnalyticsValidator.cs missing AnalyticsValidationReport type references
+KillAttributionValidationResult.cs,2025-02-25,Missing validation result,Kill attribution validation result,HazardAnalyticsValidator.cs missing KillAttributionValidationResult type references
+OccupancyTrackingValidationResult.cs,2025-02-25,Missing validation result,Occupancy tracking validation result,HazardAnalyticsValidator.cs missing OccupancyTrackingValidationResult type references
+EffectivenessScoringValidationResult.cs,2025-02-25,Missing validation result,Effectiveness scoring validation result,HazardAnalyticsValidator.cs missing EffectivenessScoringValidationResult type references
+DensityAnalysisValidationResult.cs,2025-02-25,Missing validation result,Density analysis validation result,HazardAnalyticsValidator.cs missing DensityAnalysisValidationResult type references
+HazardAnalyticsData.cs,2025-02-25,Missing analytics data,Hazard analytics data container,HazardAnalyticsValidator.cs missing HazardAnalyticsData type references
+Quaternion.cs,2025-02-25,Missing 3D rotation type,Basic quaternion for 3D rotations,HazardVisualSystem.cs missing Quaternion type references
+Mesh.cs,2025-02-25,Missing 3D mesh type,Basic mesh for 3D rendering,HazardVisualSystem.cs missing Mesh type references  
+Light.cs,2025-02-25,Missing 3D light type,Basic light for 3D rendering,HazardVisualSystem.cs missing Light type references
+Replace-Vector2-With-Vector3.ps1,2025-02-25,Systematic Vector2 replacement,PowerShell script to replace all Vector2 with Vector3,Eliminates Vector2 dependency across entire codebase

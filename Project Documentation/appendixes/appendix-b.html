@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix B: Configuration - SAS Zombie Assault TD</title>
+    <link rel="stylesheet" href="../assets/css/docs.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="btn btn-back">← Back to Table of Contents</a>
+        
+        <header class="header">
+            <h1>Appendix B: Configuration</h1>
+            <h2>System Configuration Guide</h2>
+        </header>
+
+        <div class="content-section">
+            <h2>Engine Configuration</h2>
+            
+            <h3>Game Settings</h3>
+            <div class="code-block">
+{
+  "engine": {
+    "targetFrameRate": 60,
+    "vsyncEnabled": true,
+    "fullscreen": false,
+    "resolution": {
+      "width": 1920,
+      "height": 1080
+    },
+    "rendering": {
+      "antiAliasing": 4,
+      "shadows": true,
+      "particleQuality": "High"
+    }
+  }
+}
+            </div>
+
+            <h3>Audio Configuration</h3>
+            <div class="code-block">
+{
+  "audio": {
+    "masterVolume": 1.0,
+    "musicVolume": 0.7,
+    "sfxVolume": 0.8,
+    "voiceVolume": 0.9,
+    "maxConcurrentSounds": 32,
+    "audioPoolSize": 128,
+    "spatialAudio": true,
+    "dopplerEffect": true
+  }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Gameplay Configuration</h2>
+            
+            <h3>Tower Defense Settings</h3>
+            <div class="code-block">
+{
+  "gameplay": {
+    "startingResources": 500,
+    "resourcePerWave": 100,
+    "maxTowers": 20,
+    "towerUpgradeCostMultiplier": 1.5,
+    "enemyHealthMultiplier": 1.1,
+    "waveDelay": 30.0,
+    "difficultyScaling": {
+      "healthIncrease": 0.15,
+      "speedIncrease": 0.05,
+      "spawnRateIncrease": 0.1
+    }
+  }
+}
+            </div>
+
+            <h3>Hazard System Configuration</h3>
+            <div class="code-block">
+{
+  "hazards": {
+    "nuke": {
+      "cooldown": 60.0,
+      "maxUsagePerWave": 3,
+      "maxUsagePerMatch": 10,
+      "resourceCost": 1000,
+      "damage": 1000,
+      "radius": 15.0,
+      "duration": 5.0
+    },
+    "otherHazards": {
+      "airStrikeCooldown": 45.0,
+      "airStrikeCost": 500,
+      "barrierCooldown": 30.0,
+      "barrierCost": 200
+    }
+  }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Animation Configuration</h2>
+            
+            <h3>Animation Settings</h3>
+            <div class="code-block">
+{
+  "animation": {
+    "defaultFrameRate": 30,
+    "animationCompression": true,
+    "rootMotion": false,
+    "animationEvents": true,
+    "blendTreeSmoothing": 0.1,
+    "transitionDuration": 0.2,
+    "maxConcurrentAnimations": 16
+  }
+}
+            </div>
+
+            <h3>Blend Tree Configuration</h3>
+            <div class="code-block">
+{
+  "blendTrees": {
+    "zombieMovement": {
+      "parameters": ["speed", "direction"],
+      "animations": [
+        {
+          "name": "idle",
+          "threshold": 0.0,
+          "weight": 1.0
+        },
+        {
+          "name": "walk",
+          "threshold": 2.0,
+          "weight": 0.8
+        },
+        {
+          "name": "run",
+          "threshold": 5.0,
+          "weight": 1.0
+        }
+      ]
+    }
+  }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Physics Configuration</h2>
+            
+            <h3>Physics Settings</h3>
+            <div class="code-block">
+{
+  "physics": {
+    "gravity": {
+      "x": 0.0,
+      "y": -9.81,
+      "z": 0.0
+    },
+    "timeStep": 0.016,
+    "maxSubSteps": 3,
+    "solverIterations": 6,
+    "solverVelocityIterations": 1,
+    "defaultMaterial": {
+      "friction": 0.6,
+      "restitution": 0.3,
+      "density": 1.0
+    }
+  }
+}
+            </div>
+
+            <h3>Collision Layers</h3>
+            <div class="code-block">
+{
+  "collisionLayers": [
+    "Default",
+    "Player",
+    "Enemy",
+    "Projectile",
+    "Environment",
+    "Trigger",
+    "UI"
+  ],
+  "collisionMatrix": {
+    "Player": ["Enemy", "Environment"],
+    "Enemy": ["Player", "Projectile", "Environment"],
+    "Projectile": ["Enemy", "Environment"],
+    "Trigger": ["Player", "Enemy"]
+  }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>AI Configuration</h2>
+            
+            <h3>Pathfinding Settings</h3>
+            <div class="code-block">
+{
+  "ai": {
+    "pathfinding": {
+      "cellSize": 1.0,
+      "maxPathLength": 1000,
+      "heuristicWeight": 1.0,
+      "pathSmoothing": true,
+      "recalculateThreshold": 0.5,
+      "maxSearchNodes": 10000
+    },
+    "behavior": {
+      "updateInterval": 0.1,
+      "sightRange": 10.0,
+      "attackRange": 2.0,
+      "reactionTime": 0.5,
+      "decisionTimeout": 2.0
+    }
+  }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Performance Configuration</h2>
+            
+            <h3>Rendering Settings</h3>
+            <div class="code-block">
+{
+  "performance": {
+    "rendering": {
+      "drawDistance": 100.0,
+      "lodDistance": 50.0,
+      "maxParticles": 10000,
+      "particleCulling": true,
+      "occlusionCulling": true,
+      "frustumCulling": true
+    },
+    "memory": {
+      "maxMemoryUsage": 2048,
+      "garbageCollectionInterval": 30.0,
+      "objectPooling": true,
+      "poolSize": 1000
+    }
+  }
+}
+            </div>
+
+            <h3>Debug Configuration</h3>
+            <div class="code-block">
+{
+  "debug": {
+    "logLevel": "Info",
+    "enableProfiling": false,
+    "enableMemoryTracking": false,
+    "enablePhysicsDebug": false,
+    "enableAINavigation": false,
+    "logToFile": true,
+    "maxLogFileSize": 10,
+    "logRotation": true
+  }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Input Configuration</h2>
+            
+            <h3>Control Settings</h3>
+            <div class="code-block">
+{
+  "input": {
+    "keyboard": {
+      "moveUp": "W",
+      "moveDown": "S",
+      "moveLeft": "A",
+      "moveRight": "D",
+      "attack": "Space",
+      "reload": "R",
+      "pause": "Escape"
+    },
+    "mouse": {
+      "sensitivity": 1.0,
+      "invertY": false,
+      "smoothMouse": true
+    },
+    "gamepad": {
+      "deadzone": 0.1,
+      "vibration": true,
+      "vibrationIntensity": 0.5
+    }
+  }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Network Configuration</h2>
+            
+            <h3>Multiplayer Settings</h3>
+            <div class="code-block">
+{
+  "network": {
+    "maxPlayers": 4,
+    "port": 7777,
+    "tickRate": 60,
+    "timeout": 30.0,
+    "compression": true,
+    "encryption": true,
+    "latencyCompensation": true,
+    "interpolationDelay": 0.1
+  }
+}
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>SAS Zombie Assault TD Documentation - Appendix B</p>
+            <p class="footer-note">Configuration Reference</p>
+        </footer>
+    </div>
+</body>
+</html>

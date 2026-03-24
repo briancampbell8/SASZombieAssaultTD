@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECS Architecture - SAS Zombie Assault TD</title>
+    <link rel="stylesheet" href="../assets/css/docs.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="btn btn-back">← Back to Table of Contents</a>
+        
+        <header class="header">
+            <h1>ECS Architecture</h1>
+            <h2>Entity Component System Framework</h2>
+        </header>
+
+        <div class="content-section">
+            <h2>System Overview</h2>
+            
+            <div class="alert alert-info">
+                <strong>Note:</strong> The ECS architecture provides high-performance, data-oriented design for optimal game performance and scalability.
+            </div>
+
+            <h3>Core Principles</h3>
+            <ul>
+                <li><strong>Entities:</strong> Unique identifiers representing game objects</li>
+                <li><strong>Components:</strong> Data containers attached to entities</li>
+                <li><strong>Systems:</strong> Logic processors operating on entities with specific components</li>
+                <li><strong>Data-Oriented:</strong> Optimized for cache-friendly memory access patterns</li>
+                <li><strong>Performance:</strong> Designed for high entity counts and efficient processing</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>Entity Management</h2>
+            
+            <h3>Entity Manager</h3>
+            <div class="code-block">
+// Core entity manager implementation
+public class EntityManager {
+    private readonly Dictionary&lt;int, Entity&gt; _entities = new();
+    private readonly Queue&lt;int&gt; _availableIds = new();
+    private readonly List&lt;int&gt; _activeEntities = new();
+    private int _nextId = 1;
+    private int _generation = 0;
+    
+    public Entity CreateEntity() {
+        int id;
+        
+        if (_availableIds.Count > 0) {
+            id = _availableIds.Dequeue();
+        } else {
+            id = _nextId++;
+        }
+        
+        var entity = new Entity(id, _generation);
+        _entities[id] = entity;
+        _activeEntities.Add(id);
+        
+        Logger.Debug($"Created entity {entity}");
+        EventManager.Publish(new EntityCreatedEvent(entity));
+        
+        return entity;
+    }
+    
+    public void DestroyEntity(Entity entity) {
+        if (!_entities.ContainsKey(entity.Id)) {
+            return;
+        }
+        
+        _entities.Remove(entity.Id);
+        _activeEntities.Remove(entity.Id);
+        _availableIds.Enqueue(entity.Id);
+        _generation++;
+        
+        // Remove all components
+        ComponentManager.RemoveAllComponents(entity);
+        
+        Logger.Debug($"Destroyed entity {entity}");
+        EventManager.Publish(new EntityDestroyedEvent(entity));
+    }
+    
+    public bool IsAlive(Entity entity) {
+        return _entities.TryGetValue(entity.Id, out var stored) && stored.Generation == entity.Generation;
+    }
+    
+    public ReadOnlySpan&lt;int&gt; GetActiveEntities() {
+        return _activeEntities.ToArray();
+    }
+    
+    public int EntityCount => _activeEntities.Count;
+}
+
+// Entity structure
+public struct Entity : IEquatable&lt;Entity&gt; {
+    public readonly int Id;
+    public readonly int Generation;
+    
+    public Entity(int id, int generation) {
+        Id = id;
+        Generation = generation;
+    }
+    
+    public bool IsValid => Id != 0;
+    
+    public bool Equals(Entity other) {
+        return Id == other.Id && Generation == other.Generation;
+    }
+    
+    public override bool Equals(object obj) {
+        return obj is Entity other && Equals(other);
+    }
+    
+    public override int GetHashCode() {
+        return HashCode.Combine(Id, Generation);
+    }
+    
+    public static bool operator ==(Entity left, Entity right) {
+        return left.Equals(right);
+    }
+    
+    public static bool operator !=(Entity left, Entity right) {
+        return !left.Equals(right);
+    }
+    
+    public static readonly Entity Invalid = new Entity(0, 0);
+}
+            </div>
+
+            <h3>Entity Queries</h3>
+            <div class="code-block">
+// Entity query system
+public class EntityQuery {
+    private readonly HashSet&lt;Type&gt; _includeTypes = new();
+    private readonly HashSet&lt;Type&gt; _excludeTypes = new();
+    private readonly EntityManager _entityManager;
+    
+    public EntityQuery(EntityManager entityManager) {
+        _entityManager = entityManager;
+    }
+    
+    public EntityQuery Include&lt;T&gt;() where T : struct, IComponent {
+        _includeTypes.Add(typeof(T));
+        return this;
+    }
+    
+    public EntityQuery Exclude&lt;T&gt;() where T : struct, IComponent {
+        _excludeTypes.Add(typeof(T));
+        return this;
+    }
+    
+    public IEnumerable&lt;Entity&gt; Execute() {
+        foreach (var entityId in _entityManager.GetActiveEntities()) {
+            var entity = new Entity(entityId, 0); // Generation not needed for queries
+            
+            if (MatchesQuery(entity)) {
+                yield return entity;
+            }
+        }
+    }
+    
+    private bool MatchesQuery(Entity entity) {
+        // Check include conditions
+        foreach (var includeType in _includeTypes) {
+            if (!ComponentManager.HasComponent(entity, includeType)) {
+                return false;
+            }
+        }
+        
+        // Check exclude conditions
+        foreach (var excludeType in _excludeTypes) {
+            if (ComponentManager.HasComponent(entity, excludeType)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Component Management</h2>
+            
+            <h3>Component Manager</h3>
+            <div class="code-block">
+// Component manager implementation
+public class ComponentManager {
+    private static readonly Dictionary&lt;Type, IComponentArray&gt; _componentArrays = new();
+    private static readonly Dictionary&lt;Type, int&gt; _componentTypeIds = new();
+    private static int _nextComponentTypeId = 0;
+    
+    public static int RegisterComponentType&lt;T&gt;() where T : struct, IComponent {
+        var type = typeof(T);
+        
+        if (_componentTypeIds.ContainsKey(type)) {
+            return _componentTypeIds[type];
+        }
+        
+        var typeId = _nextComponentTypeId++;
+        _componentTypeIds[type] = typeId;
+        _componentArrays[type] = new ComponentArray&lt;T&gt;();
+        
+        Logger.Debug($"Registered component type {type.Name} with ID {typeId}");
+        return typeId;
+    }
+    
+    public static void AddComponent&lt;T&gt;(Entity entity, T component) where T : struct, IComponent {
+        var array = GetComponentArray&lt;T&gt;();
+        array.AddComponent(entity, component);
+        
+        Logger.Debug($"Added component {typeof(T).Name} to entity {entity}");
+        EventManager.Publish(new ComponentAddedEvent(entity, typeof(T)));
+    }
+    
+    public static ref T GetComponent&lt;T&gt;(Entity entity) where T : struct, IComponent {
+        var array = GetComponentArray&lt;T&gt;();
+        return ref array.GetComponent(entity);
+    }
+    
+    public static bool HasComponent&lt;T&gt;(Entity entity) where T : struct, IComponent {
+        var array = GetComponentArray&lt;T&gt;();
+        return array.HasComponent(entity);
+    }
+    
+    public static void RemoveComponent&lt;T&gt;(Entity entity) where T : struct, IComponent {
+        var array = GetComponentArray&lt;T&gt;();
+        array.RemoveComponent(entity);
+        
+        Logger.Debug($"Removed component {typeof(T).Name} from entity {entity}");
+        EventManager.Publish(new ComponentRemovedEvent(entity, typeof(T)));
+    }
+    
+    public static bool HasComponent(Entity entity, Type componentType) {
+        if (_componentArrays.TryGetValue(componentType, out var array)) {
+            return array.HasComponent(entity);
+        }
+        return false;
+    }
+    
+    public static void RemoveAllComponents(Entity entity) {
+        foreach (var array in _componentArrays.Values) {
+            if (array.HasComponent(entity)) {
+                array.RemoveComponent(entity);
+            }
+        }
+    }
+    
+    private static ComponentArray&lt;T&gt; GetComponentArray&lt;T&gt;() where T : struct, IComponent {
+        var type = typeof(T);
+        
+        if (!_componentArrays.TryGetValue(type, out var array)) {
+            array = new ComponentArray&lt;T&gt;();
+            _componentArrays[type] = array;
+            _componentTypeIds[type] = _nextComponentTypeId++;
+        }
+        
+        return (ComponentArray&lt;T&gt;)array;
+    }
+}
+
+// Component array interface
+public interface IComponentArray {
+    bool HasComponent(Entity entity);
+    void RemoveComponent(Entity entity);
+}
+
+// Generic component array
+public class ComponentArray&lt;T&gt; : IComponentArray where T : struct, IComponent {
+    private readonly Dictionary&lt;int, int&gt; _entityToIndex = new();
+    private readonly Dictionary&lt;int, int&gt; _indexToEntity = new();
+    private readonly T[] _components = new T[4096]; // Initial capacity
+    private int _size = 0;
+    
+    public void AddComponent(Entity entity, T component) {
+        if (_entityToIndex.ContainsKey(entity.Id)) {
+            throw new InvalidOperationException($"Entity {entity} already has component {typeof(T).Name}");
+        }
+        
+        // Resize if needed
+        if (_size >= _components.Length) {
+            Array.Resize(ref _components, _components.Length * 2);
+        }
+        
+        var index = _size++;
+        _entityToIndex[entity.Id] = index;
+        _indexToEntity[index] = entity.Id;
+        _components[index] = component;
+    }
+    
+    public ref T GetComponent(Entity entity) {
+        if (!_entityToIndex.TryGetValue(entity.Id, out var index)) {
+            throw new InvalidOperationException($"Entity {entity} does not have component {typeof(T).Name}");
+        }
+        
+        return ref _components[index];
+    }
+    
+    public bool HasComponent(Entity entity) {
+        return _entityToIndex.ContainsKey(entity.Id);
+    }
+    
+    public void RemoveComponent(Entity entity) {
+        if (!_entityToIndex.TryGetValue(entity.Id, out var removeIndex)) {
+            return;
+        }
+        
+        var lastIndex = _size - 1;
+        var lastEntityId = _indexToEntity[lastIndex];
+        
+        // Move last component to removed position
+        _components[removeIndex] = _components[lastIndex];
+        
+        // Update mappings
+        _entityToIndex[lastEntityId] = removeIndex;
+        _indexToEntity[removeIndex] = lastEntityId;
+        
+        // Remove old mappings
+        _entityToIndex.Remove(entity.Id);
+        _indexToEntity.Remove(lastIndex);
+        
+        _size--;
+    }
+    
+    public ReadOnlySpan&lt;T&gt; GetAllComponents() {
+        return _components.AsSpan(0, _size);
+    }
+    
+    public int Count => _size;
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>System Architecture</h2>
+            
+            <h3>System Base Classes</h3>
+            <div class="code-block">
+// Base system interface
+public interface ISystem {
+    void Initialize();
+    void Update(float deltaTime);
+    void Shutdown();
+}
+
+// System base class
+public abstract class SystemBase : ISystem {
+    protected EntityManager EntityManager { get; private set; }
+    protected ComponentManager ComponentManager { get; private set; }
+    
+    public virtual void Initialize() {
+        EntityManager = ServiceLocator.GetService&lt;EntityManager&gt;();
+        ComponentManager = ServiceLocator.GetService&lt;ComponentManager&gt;();
+        
+        OnInitialize();
+    }
+    
+    public virtual void Update(float deltaTime) {
+        OnUpdate(deltaTime);
+    }
+    
+    public virtual void Shutdown() {
+        OnShutdown();
+    }
+    
+    protected virtual void OnInitialize() { }
+    protected virtual void OnUpdate(float deltaTime) { }
+    protected virtual void OnShutdown() { }
+}
+
+// Entity system base class
+public abstract class EntitySystem : SystemBase {
+    private EntityQuery _query;
+    
+    protected EntityQuery Query => _query ??= CreateQuery();
+    
+    protected abstract EntityQuery CreateQuery();
+    
+    public override void Update(float deltaTime) {
+        foreach (var entity in Query.Execute()) {
+            ProcessEntity(entity, deltaTime);
+        }
+    }
+    
+    protected abstract void ProcessEntity(Entity entity, float deltaTime);
+}
+
+// Component system base class
+public abstract class ComponentSystem&lt;T&gt; : SystemBase where T : struct, IComponent {
+    public override void Update(float deltaTime) {
+        var query = new EntityQuery(EntityManager).Include&lt;T&gt;();
+        
+        foreach (var entity in query.Execute()) {
+            ref var component = ref ComponentManager.GetComponent&lt;T&gt;(entity);
+            ProcessComponent(entity, ref component, deltaTime);
+        }
+    }
+    
+    protected abstract void ProcessComponent(Entity entity, ref T component, float deltaTime);
+}
+            </div>
+
+            <h3>System Manager</h3>
+            <div class="code-block">
+// System manager implementation
+public class SystemManager {
+    private readonly List&lt;ISystem&gt; _systems = new();
+    private readonly Dictionary&lt;Type, ISystem&gt; _systemLookup = new();
+    private readonly EntityManager _entityManager;
+    private readonly ComponentManager _componentManager;
+    
+    public SystemManager(EntityManager entityManager, ComponentManager componentManager) {
+        _entityManager = entityManager;
+        _componentManager = componentManager;
+    }
+    
+    public void RegisterSystem&lt;T&gt;() where T : ISystem, new() {
+        var systemType = typeof(T);
+        
+        if (_systemLookup.ContainsKey(systemType)) {
+            throw new InvalidOperationException($"System {systemType.Name} already registered");
+        }
+        
+        var system = new T();
+        _systems.Add(system);
+        _systemLookup[systemType] = system;
+        
+        // Initialize system
+        system.Initialize();
+        
+        Logger.Info($"Registered system {systemType.Name}");
+    }
+    
+    public void RegisterSystem(ISystem system) {
+        var systemType = system.GetType();
+        
+        if (_systemLookup.ContainsKey(systemType)) {
+            throw new InvalidOperationException($"System {systemType.Name} already registered");
+        }
+        
+        _systems.Add(system);
+        _systemLookup[systemType] = system;
+        
+        system.Initialize();
+        
+        Logger.Info($"Registered system {systemType.Name}");
+    }
+    
+    public T GetSystem&lt;T&gt;() where T : class, ISystem {
+        var systemType = typeof(T);
+        
+        if (_systemLookup.TryGetValue(systemType, out var system)) {
+            return (T)system;
+        }
+        
+        throw new InvalidOperationException($"System {systemType.Name} not found");
+    }
+    
+    public void Update(float deltaTime) {
+        foreach (var system in _systems) {
+            try {
+                system.Update(deltaTime);
+            } catch (Exception ex) {
+                Logger.Error($"System {system.GetType().Name} update failed: {ex.Message}");
+            }
+        }
+    }
+    
+    public void Shutdown() {
+        foreach (var system in _systems) {
+            try {
+                system.Shutdown();
+            } catch (Exception ex) {
+                Logger.Error($"System {system.GetType().Name} shutdown failed: {ex.Message}");
+            }
+        }
+        
+        _systems.Clear();
+        _systemLookup.Clear();
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Core Components</h2>
+            
+            <h3>Transform Components</h3>
+            <div class="code-block">
+// Position component
+public struct Position : IComponent {
+    public float X;
+    public float Y;
+    public float Z;
+    
+    public Position(float x, float y, float z = 0f) {
+        X = x;
+        Y = y;
+        Z = z;
+    }
+    
+    public Vector3 ToVector3() => new Vector3(X, Y, Z);
+    
+    public static implicit operator Vector3(Position pos) => pos.ToVector3();
+    public static implicit operator Position(Vector3 vec) => new Position(vec.X, vec.Y, vec.Z);
+}
+
+// Rotation component
+public struct Rotation : IComponent {
+    public float X;
+    public float Y;
+    public float Z;
+    public float W;
+    
+    public Rotation(float x, float y, float z, float w) {
+        X = x;
+        Y = y;
+        Z = z;
+        W = w;
+    }
+    
+    public Rotation(Quaternion quaternion) {
+        X = quaternion.X;
+        Y = quaternion.Y;
+        Z = quaternion.Z;
+        W = quaternion.W;
+    }
+    
+    public Quaternion ToQuaternion() => new Quaternion(X, Y, Z, W);
+    
+    public static implicit operator Quaternion(Rotation rot) => rot.ToQuaternion();
+    public static implicit operator Rotation(Quaternion quat) => new Rotation(quat);
+}
+
+// Scale component
+public struct Scale : IComponent {
+    public float X;
+    public float Y;
+    public float Z;
+    
+    public Scale(float x, float y, float z = 1f) {
+        X = x;
+        Y = y;
+        Z = z;
+    }
+    
+    public Scale(float uniformScale) {
+        X = uniformScale;
+        Y = uniformScale;
+        Z = uniformScale;
+    }
+    
+    public Vector3 ToVector3() => new Vector3(X, Y, Z);
+    
+    public static implicit operator Vector3(Scale scale) => scale.ToVector3();
+    public static implicit operator Scale(Vector3 vec) => new Scale(vec.X, vec.Y, vec.Z);
+}
+
+// Transform component (combined)
+public struct Transform : IComponent {
+    public Position Position;
+    public Rotation Rotation;
+    public Scale Scale;
+    
+    public Transform(Position position, Rotation rotation, Scale scale) {
+        Position = position;
+        Rotation = rotation;
+        Scale = scale;
+    }
+    
+    public Matrix4x4 GetMatrix() {
+        return Matrix4x4.CreateScale(Scale.ToVector3()) *
+               Matrix4x4.CreateFromQuaternion(Rotation.ToQuaternion()) *
+               Matrix4x4.CreateTranslation(Position.ToVector3());
+    }
+}
+            </div>
+
+            <h3>Physics Components</h3>
+            <div class="code-block">
+// Velocity component
+public struct Velocity : IComponent {
+    public float X;
+    public float Y;
+    public float Z;
+    
+    public Velocity(float x, float y, float z = 0f) {
+        X = x;
+        Y = y;
+        Z = z;
+    }
+    
+    public Vector3 ToVector3() => new Vector3(X, Y, Z);
+    public float GetSpeed() => MathF.Sqrt(X * X + Y * Y + Z * Z);
+    
+    public static implicit operator Vector3(Velocity vel) => vel.ToVector3();
+    public static implicit operator Velocity(Vector3 vec) => new Velocity(vec.X, vec.Y, vec.Z);
+}
+
+// Acceleration component
+public struct Acceleration : IComponent {
+    public float X;
+    public float Y;
+    public float Z;
+    
+    public Acceleration(float x, float y, float z = 0f) {
+        X = x;
+        Y = y;
+        Z = z;
+    }
+    
+    public Vector3 ToVector3() => new Vector3(X, Y, Z);
+    
+    public static implicit operator Vector3(Acceleration acc) => acc.ToVector3();
+    public static implicit operator Acceleration(Vector3 vec) => new Acceleration(vec.X, vec.Y, vec.Z);
+}
+
+// Mass component
+public struct Mass : IComponent {
+    public float Value;
+    
+    public Mass(float value) {
+        Value = value;
+    }
+    
+    public static implicit operator float(Mass mass) => mass.Value;
+    public static implicit operator Mass(float value) => new Mass(value);
+}
+
+// Rigidbody component
+public struct Rigidbody : IComponent {
+    public Velocity Velocity;
+    public Acceleration Acceleration;
+    public Mass Mass;
+    public bool IsKinematic;
+    public float Drag;
+    public float AngularDrag;
+}
+            </div>
+
+            <h3>Rendering Components</h3>
+            <div class="code-block">
+// Mesh component
+public struct Mesh : IComponent {
+    public int MeshId;
+    public int MaterialId;
+    public bool Visible;
+    public int RenderLayer;
+    
+    public Mesh(int meshId, int materialId) {
+        MeshId = meshId;
+        MaterialId = materialId;
+        Visible = true;
+        RenderLayer = 0;
+    }
+}
+
+// Sprite component
+public struct Sprite : IComponent {
+    public int TextureId;
+    public Rectangle SourceRect;
+    public Color Color;
+    public bool Visible;
+    public int RenderLayer;
+    
+    public Sprite(int textureId, Rectangle sourceRect) {
+        TextureId = textureId;
+        SourceRect = sourceRect;
+        Color = Color.White;
+        Visible = true;
+        RenderLayer = 0;
+    }
+}
+
+// Camera component
+public struct Camera : IComponent {
+    public float FieldOfView;
+    public float NearPlane;
+    public float FarPlane;
+    public bool IsOrthographic;
+    public float OrthographicSize;
+    public Viewport Viewport;
+    
+    public Camera(float fieldOfView = 60f, float nearPlane = 0.1f, float farPlane = 1000f) {
+        FieldOfView = fieldOfView;
+        NearPlane = nearPlane;
+        FarPlane = farPlane;
+        IsOrthographic = false;
+        OrthographicSize = 10f;
+        Viewport = new Viewport(0, 0, 1, 1);
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Performance Optimization</h2>
+            
+            <h3>Memory Management</h3>
+            <div class="code-block">
+// Entity pool for memory efficiency
+public class EntityPool {
+    private readonly Stack&lt;Entity&gt; _pool = new();
+    private readonly int _maxPoolSize;
+    private int _totalCreated = 0;
+    
+    public EntityPool(int initialSize = 1000, int maxPoolSize = 10000) {
+        _maxPoolSize = maxPoolSize;
+        
+        // Pre-allocate entities
+        for (int i = 0; i &lt; initialSize; i++) {
+            _pool.Push(new Entity(_totalCreated++, 0));
+        }
+    }
+    
+    public Entity Get() {
+        if (_pool.Count > 0) {
+            return _pool.Pop();
+        }
+        
+        return new Entity(_totalCreated++, 0);
+    }
+    
+    public void Return(Entity entity) {
+        if (_pool.Count &lt; _maxPoolSize) {
+            _pool.Push(entity);
+        }
+    }
+    
+    public int AvailableCount => _pool.Count;
+    public int TotalCreated => _totalCreated;
+}
+
+// Component data optimization
+public struct ComponentData&lt;T&gt; where T : struct {
+    private readonly T[] _data;
+    private readonly BitArray _active;
+    private int _count = 0;
+    
+    public ComponentData(int capacity) {
+        _data = new T[capacity];
+        _active = new BitArray(capacity);
+    }
+    
+    public int Add(T component) {
+        if (_count >= _data.Length) {
+            throw new InvalidOperationException("Component data array is full");
+        }
+        
+        var index = _count++;
+        _data[index] = component;
+        _active[index] = true;
+        return index;
+    }
+    
+    public ref T Get(int index) {
+        if (index >= _count || !_active[index]) {
+            throw new InvalidOperationException("Invalid component index");
+        }
+        
+        return ref _data[index];
+    }
+    
+    public void Remove(int index) {
+        if (index &lt; _count && _active[index]) {
+            _active[index] = false;
+            
+            // Move last element to removed position
+            if (index != _count - 1) {
+                _data[index] = _data[_count - 1];
+                _active[index] = true;
+                _active[_count - 1] = false;
+            }
+            
+            _count--;
+        }
+    }
+    
+    public int Count => _count;
+    
+    public ReadOnlySpan&lt;T&gt; GetAll() {
+        return _data.AsSpan(0, _count);
+    }
+}
+            </div>
+
+            <h3>Query Optimization</h3>
+            <div class="code-block">
+// Optimized entity query with caching
+public class OptimizedEntityQuery {
+    private readonly EntityManager _entityManager;
+    private readonly ComponentManager _componentManager;
+    private readonly HashSet&lt;Type&gt; _includeTypes = new();
+    private readonly HashSet&lt;Type&gt; _excludeTypes = new();
+    private readonly List&lt;int&gt; _cachedResults = new();
+    private bool _isDirty = true;
+    
+    public OptimizedEntityQuery(EntityManager entityManager, ComponentManager componentManager) {
+        _entityManager = entityManager;
+        _componentManager = componentManager;
+    }
+    
+    public OptimizedEntityQuery Include&lt;T&gt;() where T : struct, IComponent {
+        _includeTypes.Add(typeof(T));
+        _isDirty = true;
+        return this;
+    }
+    
+    public OptimizedEntityQuery Exclude&lt;T&gt;() where T : struct, IComponent {
+        _excludeTypes.Add(typeof(T));
+        _isDirty = true;
+        return this;
+    }
+    
+    public ReadOnlySpan&lt;int&gt; Execute() {
+        if (_isDirty) {
+            UpdateCache();
+            _isDirty = false;
+        }
+        
+        return _cachedResults.ToArray();
+    }
+    
+    private void UpdateCache() {
+        _cachedResults.Clear();
+        
+        foreach (var entityId in _entityManager.GetActiveEntities()) {
+            var entity = new Entity(entityId, 0);
+            
+            if (MatchesQuery(entity)) {
+                _cachedResults.Add(entityId);
+            }
+        }
+    }
+    
+    private bool MatchesQuery(Entity entity) {
+        // Check include conditions
+        foreach (var includeType in _includeTypes) {
+            if (!_componentManager.HasComponent(entity, includeType)) {
+                return false;
+            }
+        }
+        
+        // Check exclude conditions
+        foreach (var excludeType in _excludeTypes) {
+            if (_componentManager.HasComponent(entity, excludeType)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    public void InvalidateCache() {
+        _isDirty = true;
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Usage Examples</h2>
+            
+            <h3>Creating a Simple System</h3>
+            <div class="code-block">
+// Movement system example
+public class MovementSystem : EntitySystem {
+    protected override EntityQuery CreateQuery() {
+        return new EntityQuery(EntityManager)
+            .Include&lt;Position&gt;()
+            .Include&lt;Velocity&gt;();
+    }
+    
+    protected override void ProcessEntity(Entity entity, float deltaTime) {
+        ref var position = ref ComponentManager.GetComponent&lt;Position&gt;(entity);
+        ref var velocity = ref ComponentManager.GetComponent&lt;Velocity&gt;(entity);
+        
+        position.X += velocity.X * deltaTime;
+        position.Y += velocity.Y * deltaTime;
+        position.Z += velocity.Z * deltaTime;
+    }
+}
+
+// Health system example
+public class HealthSystem : ComponentSystem&lt;Health&gt; {
+    protected override void ProcessComponent(Entity entity, ref Health health, float deltaTime) {
+        if (health.Current <= 0) {
+            // Entity is dead
+            EntityManager.DestroyEntity(entity);
+            
+            // Spawn death effects
+            SpawnDeathEffects(entity);
+        }
+    }
+    
+    private void SpawnDeathEffects(Entity entity) {
+        // Implementation for death effects
+    }
+}
+
+// Health component
+public struct Health : IComponent {
+    public int Current;
+    public int Max;
+    
+    public Health(int current, int max) {
+        Current = current;
+        Max = max;
+    }
+    
+    public float GetPercentage() => (float)Current / Max;
+    public bool IsAlive => Current > 0;
+    public bool IsFull => Current >= Max;
+}
+            </div>
+
+            <h3>System Registration and Usage</h3>
+            <div class="code-block">
+// ECS setup example
+public class ECSGame {
+    private EntityManager _entityManager;
+    private ComponentManager _componentManager;
+    private SystemManager _systemManager;
+    
+    public void Initialize() {
+        // Create managers
+        _entityManager = new EntityManager();
+        _componentManager = new ComponentManager();
+        _systemManager = new SystemManager(_entityManager, _componentManager);
+        
+        // Register component types
+        ComponentManager.RegisterComponentType&lt;Position&gt;();
+        ComponentManager.RegisterComponentType&lt;Velocity&gt;();
+        ComponentManager.RegisterComponentType&lt;Health&gt;();
+        ComponentManager.RegisterComponentType&lt;Mesh&gt;();
+        
+        // Register systems
+        _systemManager.RegisterSystem&lt;MovementSystem&gt;();
+        _systemManager.RegisterSystem&lt;HealthSystem&gt;();
+        _systemManager.RegisterSystem&lt;RenderingSystem&gt;();
+        
+        // Create initial entities
+        CreatePlayer();
+        CreateEnemies();
+    }
+    
+    public void Update(float deltaTime) {
+        _systemManager.Update(deltaTime);
+    }
+    
+    public void Shutdown() {
+        _systemManager.Shutdown();
+    }
+    
+    private void CreatePlayer() {
+        var player = _entityManager.CreateEntity();
+        
+        _componentManager.AddComponent(player, new Position(0, 0, 0));
+        _componentManager.AddComponent(player, new Velocity(0, 0, 0));
+        _componentManager.AddComponent(player, new Health(100, 100));
+        _componentManager.AddComponent(player, new Mesh(0, 0));
+    }
+    
+    private void CreateEnemies() {
+        for (int i = 0; i &lt; 10; i++) {
+            var enemy = _entityManager.CreateEntity();
+            
+            var position = new Position(
+                Random.Range(-10f, 10f),
+                Random.Range(-10f, 10f),
+                0
+            );
+            
+            _componentManager.AddComponent(enemy, position);
+            _componentManager.AddComponent(enemy, new Velocity(0, 0, 0));
+            _componentManager.AddComponent(enemy, new Health(50, 50));
+            _componentManager.AddComponent(enemy, new Mesh(1, 1));
+        }
+    }
+}
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>SAS Zombie Assault TD Documentation - ECS Architecture</p>
+            <p class="footer-note">Entity Component System Framework</p>
+        </footer>
+    </div>
+</body>
+</html>

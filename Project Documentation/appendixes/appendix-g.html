@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix G: Deployment Guide - SAS Zombie Assault TD</title>
+    <link rel="stylesheet" href="../assets/css/docs.css">
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="btn btn-back">← Back to Table of Contents</a>
+        
+        <header class="header">
+            <h1>Appendix G: Deployment Guide</h1>
+            <h2>Build, Package & Distribution</h2>
+        </header>
+
+        <div class="content-section">
+            <h2>Deployment Overview</h2>
+            
+            <div class="alert alert-info">
+                <strong>Note:</strong> This guide covers the complete deployment pipeline from development to distribution.
+            </div>
+
+            <h3>Deployment Targets</h3>
+            <ul>
+                <li><strong>Windows Desktop:</strong> Primary gaming platform</li>
+                <li><strong>Steam:</strong> Digital distribution platform</li>
+                <li><strong>GOG:</strong> Alternative digital distribution</li>
+                <li><strong>Direct Download:</strong> Standalone distribution</li>
+                <li><strong>Development Builds:</strong> Internal testing builds</li>
+            </ul>
+        </div>
+
+        <div class="content-section">
+            <h2>Build Configuration</h2>
+            
+            <h3>Build Types</h3>
+            <div class="code-block">
+// Build configuration definitions
+public enum BuildType {
+    Debug,          // Development build with full debugging
+    Release,        // Optimized release build
+    Distribution,   // Final distribution build
+    Testing         // Automated testing build
+}
+
+// Build settings per type
+public class BuildSettings {
+    public BuildType Type { get; set; }
+    public bool EnableDebugging { get; set; }
+    public bool EnableProfiling { get; set; }
+    public bool EnableLogging { get; set; }
+    public OptimizationLevel Optimization { get; set; }
+    public string OutputDirectory { get; set; }
+    public string[] IncludedAssets { get; set; }
+    public string[] ExcludedAssets { get; set; }
+}
+
+// Build configurations
+public static class BuildConfigurations {
+    public static readonly BuildSettings Debug = new() {
+        Type = BuildType.Debug,
+        EnableDebugging = true,
+        EnableProfiling = true,
+        EnableLogging = true,
+        Optimization = OptimizationLevel.None,
+        OutputDirectory = "Build/Debug",
+        IncludedAssets = new[] { "**/*" },
+        ExcludedAssets = new[] { "Tests/**/*", "Tools/**/*" }
+    };
+    
+    public static readonly BuildSettings Release = new() {
+        Type = BuildType.Release,
+        EnableDebugging = false,
+        EnableProfiling = false,
+        EnableLogging = true,
+        Optimization = OptimizationLevel.Speed,
+        OutputDirectory = "Build/Release",
+        IncludedAssets = new[] { "Assets/**/*", "Core/**/*" },
+        ExcludedAssets = new[] { "Tests/**/*", "Tools/**/*", "Docs/**/*" }
+    };
+    
+    public static readonly BuildSettings Distribution = new() {
+        Type = BuildType.Distribution,
+        EnableDebugging = false,
+        EnableProfiling = false,
+        EnableLogging = false,
+        Optimization = OptimizationLevel.Size,
+        OutputDirectory = "Build/Distribution",
+        IncludedAssets = new[] { "Assets/**/*", "Core/**/*" },
+        ExcludedAssets = new[] { "Tests/**/*", "Tools/**/*", "Docs/**/*", "**/*.cs" }
+    };
+}
+            </div>
+
+            <h3>Build Process</h3>
+            <div class="code-block">
+// Build pipeline
+public class BuildPipeline {
+    public BuildResult Build(BuildSettings settings) {
+        var result = new BuildResult();
+        
+        try {
+            // Clean output directory
+            CleanOutputDirectory(settings.OutputDirectory);
+            
+            // Compile source code
+            result.Merge(CompileSource(settings));
+            
+            // Process assets
+            result.Merge(ProcessAssets(settings));
+            
+            // Create asset bundles
+            result.Merge(CreateAssetBundles(settings));
+            
+            // Generate executable
+            result.Merge(GenerateExecutable(settings));
+            
+            // Create installer
+            result.Merge(CreateInstaller(settings));
+            
+            // Validate build
+            result.Merge(ValidateBuild(settings));
+            
+            result.Success = true;
+        } catch (Exception ex) {
+            result.Success = false;
+            result.Errors.Add($"Build failed: {ex.Message}");
+        }
+        
+        return result;
+    }
+    
+    private BuildResult CompileSource(BuildSettings settings) {
+        var result = new BuildResult();
+        
+        // Configure compiler
+        var compiler = new CSharpCompiler {
+            OptimizationLevel = settings.Optimization,
+            EnableDebugging = settings.EnableDebugging,
+            OutputPath = Path.Combine(settings.OutputDirectory, "bin")
+        };
+        
+        // Compile assemblies
+        var compileResult = compiler.CompileProject("SASZombieAssaultTD.csproj");
+        result.Merge(compileResult);
+        
+        return result;
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Asset Packaging</h2>
+            
+            <h3>Asset Bundle Creation</h3>
+            <div class="code-block">
+// Asset bundling system
+public class AssetBundler {
+    public BundleResult CreateBundles(BuildSettings settings) {
+        var result = new BundleResult();
+        
+        // Create core bundle
+        var coreBundle = CreateBundle("core", new[] {
+            "Assets/Models/Player/**/*",
+            "Assets/Textures/UI/**/*",
+            "Assets/Audio/UI/**/*"
+        }, settings);
+        result.Bundles.Add(coreBundle);
+        
+        // Create level bundles
+        var levelBundles = CreateLevelBundles(settings);
+        result.Bundles.AddRange(levelBundles);
+        
+        // Create asset bundles
+        var assetBundles = CreateAssetBundles(settings);
+        result.Bundles.AddRange(assetBundles);
+        
+        return result;
+    }
+    
+    private AssetBundle CreateBundle(string name, string[] assetPaths, BuildSettings settings) {
+        var bundle = new AssetBundle { Name = name };
+        
+        foreach (var assetPath in assetPaths) {
+            var asset = ProcessAsset(assetPath, settings);
+            bundle.Assets.Add(asset);
+        }
+        
+        // Compress bundle
+        bundle = CompressBundle(bundle, settings);
+        
+        // Save bundle
+        var outputPath = Path.Combine(settings.OutputDirectory, "Bundles", $"{name}.bundle");
+        SaveBundle(bundle, outputPath);
+        
+        return bundle;
+    }
+}
+            </div>
+
+            <h3>Bundle Optimization</h3>
+            <div class="code-block">
+// Bundle optimization strategies
+public class BundleOptimizer {
+    public AssetBundle OptimizeBundle(AssetBundle bundle, BuildSettings settings) {
+        // Remove unused assets
+        bundle = RemoveUnusedAssets(bundle);
+        
+        // Compress textures
+        bundle = CompressTextures(bundle, settings);
+        
+        // Optimize audio
+        bundle = OptimizeAudio(bundle, settings);
+        
+        // Merge similar assets
+        bundle = MergeSimilarAssets(bundle);
+        
+        // Generate bundle manifest
+        bundle.Manifest = GenerateBundleManifest(bundle);
+        
+        return bundle;
+    }
+    
+    private AssetBundle RemoveUnusedAssets(AssetBundle bundle) {
+        var usedAssets = GetUsedAssets(bundle);
+        var unusedAssets = bundle.Assets.Where(a => !usedAssets.Contains(a.Name)).ToList();
+        
+        foreach (var unusedAsset in unusedAssets) {
+            bundle.Assets.Remove(unusedAsset);
+        }
+        
+        return bundle;
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Installer Creation</h2>
+            
+            <h3>Windows Installer</h3>
+            <div class="code-block">
+// Installer configuration
+public class InstallerConfig {
+    public string ProductName { get; set; } = "SAS Zombie Assault TD";
+    public string ProductVersion { get; set; } = "1.0.0";
+    public string Manufacturer { get; set; } = "SAS Games";
+    public string InstallDirectory { get; set; } = "SASZombieAssaultTD";
+    public string ShortcutName { get; set; } = "SAS Zombie Assault TD";
+    public bool CreateDesktopShortcut { get; set; } = true;
+    public bool CreateStartMenuShortcut { get; set; } = true;
+    public long RequiredDiskSpace { get; set; } = 2L * 1024 * 1024 * 1024; // 2GB
+}
+
+// Installer creation
+public class InstallerCreator {
+    public void CreateInstaller(InstallerConfig config, string outputPath) {
+        // Create WiX script
+        var wixScript = GenerateWixScript(config);
+        
+        // Compile installer
+        var candleProcess = new Process {
+            StartInfo = new ProcessStartInfo {
+                FileName = "candle.exe",
+                Arguments = $"-out \"{outputPath}.wixobj\" \"{wixScript}\"",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            }
+        };
+        
+        candleProcess.Start();
+        candleProcess.WaitForExit();
+        
+        // Link installer
+        var lightProcess = new Process {
+            StartInfo = new ProcessStartInfo {
+                FileName = "light.exe",
+                Arguments = $"-out \"{outputPath}.msi\" \"{outputPath}.wixobj\"",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            }
+        };
+        
+        lightProcess.Start();
+        lightProcess.WaitForExit();
+    }
+    
+    private string GenerateWixScript(InstallerConfig config) {
+        return $@"
+&lt;Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'&gt;
+  &lt;Product Id='*' Name='{config.ProductName}' 
+           Version='{config.ProductVersion}' Manufacturer='{config.Manufacturer}'&gt;
+    &lt;Package InstallerVersion='200' Compressed='yes' /&gt;
+    
+    &lt;Media Id='1' Cabinet='SASZombieAssaultTD.cab' EmbedCab='yes' /&gt;
+    
+    &lt;Directory Id='TARGETDIR' Name='SourceDir'&gt;
+      &lt;Directory Id='ProgramFilesFolder'&gt;
+        &lt;Directory Id='INSTALLDIR' Name='{config.InstallDirectory}'&gt;
+          &lt;Component Id='MainExecutable' Guid='*'&gt;
+            &lt;File Id='SASZombieAssaultTD.exe' Source='Build\\Distribution\\bin\\SASZombieAssaultTD.exe' /&gt;
+          &lt;/Component&gt;
+        &lt;/Directory&gt;
+      &lt;/Directory&gt;
+    &lt;/Directory&gt;
+    
+    &lt;Feature Id='Complete' Title='Complete' Level='1'&gt;
+      &lt;ComponentRef Id='MainExecutable' /&gt;
+    &lt;/Feature&gt;
+  &lt;/Product&gt;
+&lt;/Wix&gt;";
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Distribution Channels</h2>
+            
+            <h3>Steam Integration</h3>
+            <div class="code-block">
+// Steam integration configuration
+public class SteamConfig {
+    public string AppId { get; set; } = "123456";
+    public string DeveloperName { get; set; } = "SAS Games";
+    public string PublisherName { get; set; } = "SAS Games";
+    public List&lt;string&gt; SupportedLanguages { get; set; } = new() { "english" };
+    public List&lt;SteamDLC&gt; DLC { get; set; } = new();
+    public SteamAchievements Achievements { get; set; } = new();
+}
+
+// Steam API integration
+public class SteamIntegration {
+    public void InitializeSteam() {
+        try {
+            // Initialize Steam API
+            if (!SteamAPI.Init()) {
+                throw new Exception("Failed to initialize Steam API");
+            }
+            
+            // Set app ID
+            Steamworks.SteamClient.Init(ulong.Parse(SteamConfig.AppId));
+            
+            // Enable features
+            EnableSteamFeatures();
+            
+        } catch (Exception ex) {
+            Logger.Error($"Steam initialization failed: {ex.Message}");
+        }
+    }
+    
+    private void EnableSteamFeatures() {
+        // Enable achievements
+        Steamworks.SteamClient.Achivements;
+        
+        // Enable stats
+        Steamworks.SteamClient.UserStats;
+        
+        // Enable cloud storage
+        Steamworks.SteamClient.RemoteStorage;
+        
+        // Enable workshop
+        Steamworks.SteamClient.Workshop;
+    }
+}
+            </div>
+
+            <h3>GOG Integration</h3>
+            <div class="code-block">
+// GOG Galaxy integration
+public class GOGIntegration {
+    public void InitializeGOG() {
+        try {
+            // Initialize GOG Galaxy API
+            GalaxyInstance.Init();
+            
+            // Set up authentication
+            SetupAuthentication();
+            
+            // Enable features
+            EnableGOGFeatures();
+            
+        } catch (Exception ex) {
+            Logger.Error($"GOG initialization failed: {ex.Message}");
+        }
+    }
+    
+    private void EnableGOGFeatures() {
+        // Enable achievements
+        GalaxyInstance.Achievements();
+        
+        // Enable stats
+        GalaxyInstance.Stats();
+        
+        // Enable cloud saves
+        GalaxyInstance.CloudStorage();
+        
+        // Enable leaderboards
+        GalaxyInstance.Leaderboards();
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Version Management</h2>
+            
+            <h3>Version Control Strategy</h3>
+            <div class="code-block">
+// Version management system
+public class VersionManager {
+    public string CurrentVersion { get; private set; }
+    public List&lt;Version&gt; VersionHistory { get; private set; }
+    
+    public VersionManager() {
+        LoadVersionHistory();
+        CurrentVersion = GetCurrentVersion();
+    }
+    
+    public string CreateNewVersion(VersionType type, string description) {
+        var newVersion = IncrementVersion(CurrentVersion, type);
+        
+        // Create version tag
+        CreateVersionTag(newVersion, description);
+        
+        // Update version history
+        VersionHistory.Add(new Version(newVersion, description, DateTime.Now));
+        
+        // Save version history
+        SaveVersionHistory();
+        
+        CurrentVersion = newVersion;
+        return newVersion;
+    }
+    
+    private string IncrementVersion(string currentVersion, VersionType type) {
+        var version = new Version(currentVersion);
+        
+        return type switch {
+            VersionType.Major =&gt; $"{version.Major + 1}.0.0",
+            VersionType.Minor =&gt; $"{version.Major}.{version.Minor + 1}.0",
+            VersionType.Patch =&gt; $"{version.Major}.{version.Minor}.{version.Build + 1}",
+            _ =&gt; currentVersion
+        };
+    }
+}
+
+// Version types
+public enum VersionType {
+    Major,  // Breaking changes
+    Minor,  // New features
+    Patch   // Bug fixes
+}
+            </div>
+
+            <h3>Patch Management</h3>
+            <div class="code-block">
+// Patch creation system
+public class PatchManager {
+    public Patch CreatePatch(string fromVersion, string toVersion) {
+        var patch = new Patch {
+            FromVersion = fromVersion,
+            ToVersion = toVersion,
+            CreatedAt = DateTime.Now
+        };
+        
+        // Compare versions
+        var differences = CompareVersions(fromVersion, toVersion);
+        
+        // Create patch files
+        patch.Files = CreatePatchFiles(differences);
+        
+        // Generate patch manifest
+        patch.Manifest = GeneratePatchManifest(patch);
+        
+        // Compress patch
+        patch = CompressPatch(patch);
+        
+        return patch;
+    }
+    
+    private List&lt;PatchFile&gt; CreatePatchFiles(List&lt;VersionDifference&gt; differences) {
+        var patchFiles = new List&lt;PatchFile&gt;();
+        
+        foreach (var difference in differences) {
+            var patchFile = new PatchFile {
+                Path = difference.FilePath,
+                Operation = difference.Type,
+                Checksum = CalculateChecksum(difference.NewFilePath),
+                Size = new FileInfo(difference.NewFilePath).Length
+            };
+            
+            if (difference.Type == FileOperation.Modified) {
+                patchFile.Diff = CreateFileDiff(difference.OldFilePath, difference.NewFilePath);
+            }
+            
+            patchFiles.Add(patchFile);
+        }
+        
+        return patchFiles;
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Quality Assurance</h2>
+            
+            <h3>Pre-Release Checklist</h3>
+            <div class="code-block">
+// QA checklist
+public class QAChecklist {
+    public List&lt;QACheckItem&gt; Items { get; private set; }
+    
+    public QAChecklist() {
+        Items = new List&lt;QACheckItem&gt; {
+            new QACheckItem {
+                Category = "Build",
+                Description = "Build compiles without errors",
+                Required = true,
+                Checked = false
+            },
+            new QACheckItem {
+                Category = "Performance",
+                Description = "Meets 60 FPS target on minimum hardware",
+                Required = true,
+                Checked = false
+            },
+            new QACheckItem {
+                Category = "Functionality",
+                Description = "All game systems work correctly",
+                Required = true,
+                Checked = false
+            },
+            new QACheckItem {
+                Category = "Compatibility",
+                Description = "Runs on target Windows versions",
+                Required = true,
+                Checked = false
+            },
+            new QACheckItem {
+                Category = "Localization",
+                Description = "Text displays correctly in all languages",
+                Required = false,
+                Checked = false
+            }
+        };
+    }
+    
+    public bool IsReadyForRelease() {
+        return Items.Where(i =&gt; i.Required).All(i =&gt; i.Checked);
+    }
+}
+
+// Quality assurance process
+public class QAProcess {
+    public QAResult RunQA(BuildSettings settings) {
+        var result = new QAResult();
+        
+        // Run automated tests
+        result.Merge(RunAutomatedTests());
+        
+        // Perform performance testing
+        result.Merge(RunPerformanceTests());
+        
+        // Check compatibility
+        result.Merge(CheckCompatibility());
+        
+        // Validate assets
+        result.Merge(ValidateAssets());
+        
+        // Security scan
+        result.Merge(RunSecurityScan());
+        
+        return result;
+    }
+}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Deployment Automation</h2>
+            
+            <h3>CI/CD Pipeline</h3>
+            <div class="code-block">
+# GitHub Actions deployment pipeline
+name: Deploy SAS Zombie Assault TD
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build Release
+      run: dotnet build -c Release --no-restore
+    
+    - name: Run Tests
+      run: dotnet test -c Release --no-build
+    
+    - name: Package Application
+      run: |
+        dotnet publish -c Release -o ./publish --self-contained true -r win-x64
+        Compress-Archive -Path ./publish/* -DestinationPath SASZombieAssaultTD.zip
+    
+    - name: Create Installer
+      run: |
+        # Run installer creation script
+        .\Scripts\CreateInstaller.ps1 -Version ${{ github.ref_name }}
+    
+    - name: Upload to Steam
+      run: |
+        # Upload to Steam using steamcmd
+        steamcmd +login ${{ secrets.STEAM_USERNAME }} ${{ secrets.STEAM_PASSWORD }} +run_app_build_http 123456 +quit
+    
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+        asset_path: SASZombieAssaultTD.zip
+        asset_name: SASZombieAssaultTD.zip
+        asset_content_type: application/zip
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Post-Release Monitoring</h2>
+            
+            <h3>Analytics & Telemetry</h3>
+            <div class="code-block">
+// Post-release monitoring
+public class ReleaseMonitor {
+    public void StartMonitoring() {
+        // Start performance monitoring
+        StartPerformanceMonitoring();
+        
+        // Start crash reporting
+        StartCrashReporting();
+        
+        // Start usage analytics
+        StartUsageAnalytics();
+        
+        // Start error tracking
+        StartErrorTracking();
+    }
+    
+    private void StartPerformanceMonitoring() {
+        // Monitor frame rates
+        PerformanceMonitor.StartMonitoring("FPS", 60, 30);
+        
+        // Monitor memory usage
+        PerformanceMonitor.StartMonitoring("Memory", 2L * 1024 * 1024 * 1024, 1L * 1024 * 1024 * 1024);
+        
+        // Monitor loading times
+        PerformanceMonitor.StartMonitoring("LoadingTime", 10.0f, 5.0f);
+    }
+    
+    private void StartCrashReporting() {
+        CrashReporter.Initialize(new CrashReporterConfig {
+            ServerUrl = "https://crash.sasgames.com/api/reports",
+            ApplicationVersion = VersionManager.CurrentVersion,
+            IncludeSystemInfo = true,
+            IncludeLogFiles = true
+        });
+    }
+}
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>SAS Zombie Assault TD Documentation - Appendix G</p>
+            <p class="footer-note">Deployment Guide</p>
+        </footer>
+    </div>
+</body>
+</html>
