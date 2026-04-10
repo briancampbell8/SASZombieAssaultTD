@@ -142,7 +142,12 @@ namespace SASZombieAssaultTD.Engine.VectorMath
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44);
+            var h1 = HashCode.Combine(M11, M12, M13, M14);
+            var h2 = HashCode.Combine(M21, M22, M23, M24);
+            var h3 = HashCode.Combine(M31, M32, M33, M34);
+            var h4 = HashCode.Combine(M41, M42, M43, M44);
+
+            return HashCode.Combine(h1, h2, h3, h4);
         }
 
         public override string ToString()

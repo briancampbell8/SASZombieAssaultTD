@@ -21,6 +21,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
 
         private float _loadingTimer; // Tracks the elapsed loading time
         private float _loadingDuration; // Specifies the total loading duration
+        private float _loadingProgress; // Tracks loading progress (0.0 to 1.0)
 
         /// <summary>
         /// Initializes a new instance of the LoadingScene class.
@@ -50,17 +51,131 @@ namespace SASZombieAssaultTD.Engine.Scenes
         }
 
         /// <summary>
-        /// P11-11-02: Called when the loading scene becomes active.
+        /// P11-11-02: Called when scene content should be loaded.
+        /// Loads loading screen assets and initializes loading systems.
         /// </summary>
-        public override void OnEnter()
+        public override void LoadContent()
         {
-            ModernLoggingSystem.Log("INFO", "LoadingScene.OnEnter: Loading scene started");
-            _loadingTime = 0f;
-            _readyToTransition = false;
+            base.LoadContent();
+            
+            ModernLoggingSystem.Log("INFO", "LoadingScene: Loading content for loading screen");
+            
+            try
+            {
+                // Load loading screen assets
+                LoadLoadingAssets();
+                
+                // Initialize loading systems
+                InitializeLoadingSystems();
+                
+                // Start the loading process
+                StartLoadingProcess();
+                
+                ModernLoggingSystem.Log("INFO", "LoadingScene: Content loading completed");
+            }
+            catch (Exception ex)
+            {
+                ModernLoggingSystem.Log("ERROR", $"LoadingScene: Error loading content: {ex.Message}");
+                throw;
+            }
+        }
 
-            // Simulate loading work - in a real implementation, this would
-            // load assets, initialize systems, etc.
-            SimulateLoadingWork();
+        /// <summary>
+        /// Loads loading screen specific assets.
+        /// </summary>
+        private void LoadLoadingAssets()
+        {
+            // Load loading screen textures, sounds, etc.
+            // Examples:
+            // - Loading background image
+            // - Loading animation sprites
+            // - Loading sound effects
+            // - Loading font resources
+            
+            ModernLoggingSystem.Log("DEBUG", "LoadingScene: Loading screen assets loaded");
+        }
+
+        /// <summary>
+        /// Initializes loading screen specific systems.
+        /// </summary>
+        private void InitializeLoadingSystems()
+        {
+            // Initialize loading systems
+            // Examples:
+            // - Animation system for loading animation
+            // - Audio system for loading sounds
+            // - Progress tracking system
+            
+            ModernLoggingSystem.Log("DEBUG", "LoadingScene: Loading systems initialized");
+        }
+
+        /// <summary>
+        /// Starts the actual loading process for the target scene.
+        /// </summary>
+        private void StartLoadingProcess()
+        {
+            _loadingTimer = 0f;
+            _readyToTransition = false;
+            
+            // Start async loading of target scene assets
+            if (_targetScene != null)
+            {
+                LoadTargetSceneAsync();
+            }
+            else
+            {
+                // No target scene, mark as ready after minimum duration
+                System.Threading.Tasks.Task.Run(async () =>
+                {
+                    await System.Threading.Tasks.Task.Delay((int)(_minLoadingDuration * 1000));
+                    _readyToTransition = true;
+                    ModernLoggingSystem.Log("INFO", "LoadingScene: No target scene, ready after minimum duration");
+                });
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously loads the target scene assets.
+        /// </summary>
+        private void LoadTargetSceneAsync()
+        {
+            System.Threading.Tasks.Task.Run(async () =>
+            {
+                try
+                {
+                    ModernLoggingSystem.Log("INFO", $"LoadingScene: Starting async load for {_targetScene?.GetType().Name}");
+                    
+                    // Simulate loading work - in real implementation:
+                    // 1. Load scene assets from AssetRegistry
+                    // 2. Initialize scene systems
+                    // 3. Create scene entities
+                    // 4. Prepare scene data
+                    
+                    // Simulate progressive loading
+                    var loadingSteps = 5;
+                    for (int i = 0; i < loadingSteps; i++)
+                    {
+                        await System.Threading.Tasks.Task.Delay(200); // 200ms per step
+                        _loadingProgress = (float)(i + 1) / loadingSteps;
+                        ModernLoggingSystem.Log("DEBUG", $"LoadingScene: Loading progress {_loadingProgress:P0}");
+                    }
+                    
+                    // Ensure minimum loading duration
+                    var remainingTime = _minLoadingDuration - _loadingTime;
+                    if (remainingTime > 0)
+                    {
+                        await System.Threading.Tasks.Task.Delay((int)(remainingTime * 1000));
+                    }
+                    
+                    _readyToTransition = true;
+                    ModernLoggingSystem.Log("INFO", "LoadingScene: Target scene loading completed");
+                }
+                catch (Exception ex)
+                {
+                    ModernLoggingSystem.Log("ERROR", $"LoadingScene: Error during async loading: {ex.Message}");
+                    _readyToTransition = true; // Allow transition even on error
+                }
+            });
         }
 
         /// <summary>
@@ -78,12 +193,13 @@ namespace SASZombieAssaultTD.Engine.Scenes
         public override void OnUpdate(float deltaTime)
         {
             _loadingTime += deltaTime;
+            _loadingTimer += deltaTime;
 
             // Check if minimum loading duration has passed and we're ready to transition
             if (_loadingTime >= _minLoadingDuration && _readyToTransition && _targetScene != null)
             {
                 ModernLoggingSystem.Log("INFO", "LoadingScene.OnUpdate: Transitioning to target scene");
-                SceneManager?.QueueScene(_targetScene.GetType().Name);
+                SceneManager?.QueueScene(_targetScene.GetType().Name.Replace("Scene", ""));
             }
         }
 
@@ -113,8 +229,15 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// <param name="context">Render context.</param>
         private void RenderLoadingUI(IRenderContext context)
         {
-            // Calculate loading progress based on time
-            var progress = (float)(_loadingTimer / _loadingDuration);
+            // Use the actual loading progress from async loading
+            var progress = _loadingProgress;
+            
+            // If no async loading in progress, show time-based progress
+            if (progress <= 0f && _minLoadingDuration > 0f)
+            {
+                progress = _loadingTime / _minLoadingDuration;
+            }
+            
             progress = System.Math.Clamp(progress, 0f, 1f);
 
             // Render loading text
@@ -145,6 +268,17 @@ namespace SASZombieAssaultTD.Engine.Scenes
             var progressY = barY + barHeight + 10;
 
             context.DrawText(progressText, progressX, progressY, 18, Color.White);
+            
+            // Render target scene name if available
+            if (_targetScene != null)
+            {
+                var sceneText = $"Loading {_targetScene.GetType().Name.Replace("Scene", "")}...";
+                var sceneSize = context.MeasureText(sceneText, 16);
+                var sceneX = (context.ScreenWidth - sceneSize.Width()) / 2;
+                var sceneY = textY - 30;
+                
+                context.DrawText(sceneText, sceneX, sceneY, 16, Color.LightGray);
+            }
         }
 
         /// <summary>

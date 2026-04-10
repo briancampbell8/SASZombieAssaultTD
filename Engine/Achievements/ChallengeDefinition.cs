@@ -1,3 +1,13 @@
+// ROLE: Defines daily/weekly challenge metadata structure.
+// RESPONSIBILITY: Store challenge objectives, rewards, and filtering criteria with 
+//                  time-based expiration support.
+// TRIGGERS: Loaded by ChallengeManager during challenge system initialization.
+// INPUTS: Challenge data from configuration files.
+// OUTPUTS: Provides challenge metadata for runtime tracking.
+// DEPENDENCIES: Uses ChallengeType and filtering enums.
+// CONTENTS: ChallengeDefinition class with Id, Name, Description, Type, XPReward, CurrencyReward, 
+//           EntityTypeFilter, DeathTypeFilter, MinimumLevel properties.
+
 using System;
 using System.Runtime.Serialization;
 

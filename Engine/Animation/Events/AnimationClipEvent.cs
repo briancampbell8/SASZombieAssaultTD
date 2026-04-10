@@ -12,6 +12,8 @@ Role:     Specific event subtype for clip-based animations in the animation syst
           Used by AnimationUpdateSystem to dispatch clip events with proper type safety.
 */
 
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 

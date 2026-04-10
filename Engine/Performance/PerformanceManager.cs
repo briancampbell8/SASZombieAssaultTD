@@ -1,9 +1,9 @@
+using SASZombieAssaultTD.Engine.Gameplay.Towers;
+using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Towers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using SASZombieAssaultTD.Engine.Towers;
-using SASZombieAssaultTD.Engine.Projectiles;
-using SASZombieAssaultTD.Engine.Rendering;
 
 namespace SASZombieAssaultTD.Engine.Performance
 {
@@ -13,16 +13,14 @@ namespace SASZombieAssaultTD.Engine.Performance
     /// </summary>
     public class PerformanceManager
     {
-        private readonly Dictionary<string, object> _pools = new();
-        private readonly PerformanceMetrics _metrics = new();
-        private readonly PerformanceBudget _budget = new();
-        private bool _isInitialized = false;
+        readonly Dictionary<string, object> _pools = new();
+        readonly PerformanceMetrics _metrics = new();
+        readonly PerformanceBudget _budget = new();
+        bool _isInitialized;
 
         // Performance targets
-        private const int TARGET_FPS = 60;
-        private const int MIN_ACCEPTABLE_FPS = 55;
-        private const int MAX_ENEMIES = 100;
-        private const int MAX_PROJECTILES = 200;
+        const int TARGET_FPS = 60;
+        const int MIN_ACCEPTABLE_FPS = 55, MAX_ENEMIES = 100, MAX_PROJECTILES = 200;
 
         /// <summary>
         /// Current performance metrics.
@@ -107,7 +105,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         /// </summary>
         /// <typeparam name="T">Type of object to get.</typeparam>
         /// <returns>Object from pool or new instance.</returns>
-        public T Get<T>() where T : class, new()
+        public T Get<T>() where T : class
         {
             var poolName = typeof(T).Name;
 
@@ -117,7 +115,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             }
 
             // Create pool if it doesn't exist
-            var newPool = new ObjectPool<T>();
+            var newPool = new ObjectPool<T>(() => Activator.CreateInstance<T>());
             _pools[poolName] = newPool;
             return newPool.Get();
         }
@@ -155,6 +153,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             stats += $"Render Time: {_metrics.AverageRenderTime:F2}ms\n";
 
             stats += "\nObject Pools:\n";
+
             foreach (var kvp in _pools)
             {
                 if (kvp.Value is ObjectPool<object> pool)
@@ -169,19 +168,19 @@ namespace SASZombieAssaultTD.Engine.Performance
         /// <summary>
         /// Initialize all object pools for SAS TD.
         /// </summary>
-        private void InitializeObjectPools()
+        void InitializeObjectPools()
         {
             Console.WriteLine("Initializing object pools");
 
             // Create specialized pools for common game objects
             _pools["Projectile"] = new ProjectilePool();
             _pools["Enemy"] = new EnemyPool();
-            _pools["Effect"] = new ObjectPool<object>();
+            _pools["Effect"] = new ObjectPool<object>(() => new object());
 
             // Create generic pools for other objects
-            _pools["Tower"] = new ObjectPool<Tower>();
-            _pools["Grenade"] = new ObjectPool<object>();
-            _pools["Particle"] = new ObjectPool<Particle>();
+            _pools["Tower"] = new ObjectPool<MGLTurret>(() => new MGLTurret());
+      //     _pools["Grenade"] = new ObjectPool<Grenade>()) => new Grenade());
+        //     _pools["Particle"] = new ObjectPool<Particle>();
 
             Console.WriteLine($"Initialized {_pools.Count} object pools");
         }
@@ -189,15 +188,12 @@ namespace SASZombieAssaultTD.Engine.Performance
         /// <summary>
         /// Initialize performance monitoring systems.
         /// </summary>
-        private void InitializeMonitoring()
-        {
-            _metrics.StartMonitoring();
-        }
+        void InitializeMonitoring() => _metrics.StartMonitoring();
 
         /// <summary>
         /// Set initial performance budget based on system capabilities.
         /// </summary>
-        private void SetInitialBudget()
+        void SetInitialBudget()
         {
             // Detect system capabilities and set budget accordingly
             var systemMemory = GC.GetTotalMemory(false) / (1024 * 1024); // MB
@@ -227,7 +223,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         /// <summary>
         /// Handle performance issues by reducing quality or pool sizes.
         /// </summary>
-        private void HandlePerformanceIssue()
+        void HandlePerformanceIssue()
         {
             Console.WriteLine("Performance issue detected, optimizing...");
 
@@ -252,7 +248,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         /// <summary>
         /// Optimize for better performance when FPS is high.
         /// </summary>
-        private void OptimizeForPerformance()
+        void OptimizeForPerformance()
         {
             // Gradually increase pool sizes if performance is good
             foreach (var kvp in _pools)
@@ -272,7 +268,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         /// <summary>
         /// Update object pools based on current usage.
         /// </summary>
-        private void UpdateObjectPools()
+        void UpdateObjectPools()
         {
             // Update metrics for active objects
             _metrics.ActiveEnemies = GetActiveCount<Enemy>();
@@ -282,7 +278,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         /// <summary>
         /// Get estimated count of active objects of type T.
         /// </summary>
-        private int GetActiveCount<T>() where T : class, new()
+        int GetActiveCount<T>() where T : class, new()
         {
             // This is a simplified estimate - in a real implementation,
             // you'd track actual active objects
@@ -300,11 +296,11 @@ namespace SASZombieAssaultTD.Engine.Performance
     /// </summary>
     public class PerformanceMetrics
     {
-        private readonly Queue<float> _fpsSamples = new(60);
-        private readonly Queue<float> _updateTimeSamples = new(60);
-        private readonly Queue<float> _renderTimeSamples = new(60);
-        private Stopwatch _frameTimer = new();
-        private float _lastFrameTime;
+        readonly Queue<float> _fpsSamples = new(60);
+        readonly Queue<float> _updateTimeSamples = new(60);
+        readonly Queue<float> _renderTimeSamples = new(60);
+        Stopwatch _frameTimer = new();
+        float _lastFrameTime;
 
         public float AverageFPS { get; private set; }
         public float MemoryUsageMB { get; private set; }
@@ -314,10 +310,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         public float AverageUpdateTime { get; private set; }
         public float AverageRenderTime { get; private set; }
 
-        public void StartMonitoring()
-        {
-            _frameTimer.Start();
-        }
+        public void StartMonitoring() => _frameTimer.Start();
 
         public void Update()
         {
@@ -330,8 +323,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             {
                 var fps = 1.0f / deltaTime;
                 _fpsSamples.Enqueue(fps);
-                if (_fpsSamples.Count > 60)
-                    _fpsSamples.Dequeue();
+                if (_fpsSamples.Count > 60) _fpsSamples.Dequeue();
 
                 AverageFPS = CalculateAverage(_fpsSamples);
             }
@@ -343,6 +335,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         public void RecordUpdateTime(float time)
         {
             _updateTimeSamples.Enqueue(time);
+
             if (_updateTimeSamples.Count > 60)
                 _updateTimeSamples.Dequeue();
 
@@ -352,17 +345,19 @@ namespace SASZombieAssaultTD.Engine.Performance
         public void RecordRenderTime(float time)
         {
             _renderTimeSamples.Enqueue(time);
+
             if (_renderTimeSamples.Count > 60)
                 _renderTimeSamples.Dequeue();
 
             AverageRenderTime = CalculateAverage(_renderTimeSamples);
         }
 
-        private float CalculateAverage(Queue<float> samples)
+        float CalculateAverage(Queue<float> samples)
         {
             if (samples.Count == 0) return 0f;
 
-            float sum = 0f;
+            var sum = 0f;
+
             foreach (var sample in samples)
                 sum += sample;
 

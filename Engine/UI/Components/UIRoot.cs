@@ -1,3 +1,4 @@
+using SASZombieAssaultTD.Engine.UI.Components;
 using System;
 using System.Collections.Generic;
 
@@ -247,6 +248,33 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 Console.WriteLine($"UIRoot: Error during shutdown - {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Dispose the UI root.
+        /// </summary>
+        public void Dispose()
+        {
+            // Dispose child systems (renderer, layout, input, focus, etc.) if owned here.
+            DisposeChildSystems();
+        }
+
+        private void DisposeChildSystems()
+        {
+            // Dispose all child elements
+            foreach (var element in _elements)
+            {
+                (element as IDisposable)?.Dispose();
+            }
+            _elements.Clear();
+            SetNeedsLayoutUpdate(false);
+            _isInitialized = false;
+            Console.WriteLine("UIRoot: Disposed child systems");
+        }
+
+        internal void AddChild<T>(T element) where T : UIElementBase, new()
+        {
+            throw new NotImplementedException();
         }
     }
 }

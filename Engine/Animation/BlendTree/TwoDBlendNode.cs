@@ -1,8 +1,12 @@
-// -----------------------------------------------------------------------------
-// Two-dimensional blend node for animation blend trees
-// Namespace: SASZombieAssaultTD.Engine.Animation.BlendTree
-// Implements: IBlendNode
-// -----------------------------------------------------------------------------
+// ROLE: 2D blend node for directional animation blending.
+// RESPONSIBILITY: Interpolate between four child animation nodes using bilinear interpolation.
+// TRIGGERS: Instantiated by BlendTree and BlendTreeSerializer for 2D parameter-based blending.
+// INPUTS: Receives two blend parameter values (X/Y) and four corner child nodes.
+// OUTPUTS: Returns bilinear interpolated blend result based on 2D parameter values.
+// DEPENDENCIES: Implements IBlendNode interface.
+// CONTENTS: TwoDBlendNode class with BottomLeft, BottomRight, TopLeft, TopRight children and 
+//           BlendParameterX, BlendParameterY properties plus Evaluate method.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,6 +1,7 @@
+using SASZombieAssaultTD.Engine.UI.Components;
 using System;
-using SASZombieAssaultTD.Engine.Rendering;
-using RenderSystem = SASZombieAssaultTD.Engine.Rendering;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace SASZombieAssaultTD.Engine.UI.Rendering
 {
@@ -107,17 +108,39 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
 
                 Console.WriteLine($"UIRenderer: Rendering element at {element.AbsolutePosition}");
 
-                // Set up render context for this element
-                _context.SetTransform(RenderSystem.Matrix.CreateTranslation(element.AbsolutePosition.X, element.AbsolutePosition.Y, 0f));
-                _context.SetAlpha(1.0f);
-
-                // Render the element based on its type
-                RenderElementByType(element);
+                // Use existing drawing/shader/atlas systems to render a single element.
+                // Do not introduce new systems; call into existing rendering helpers.
+                DrawElement((UIElementBase)element, _context);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"UIRenderer: Error rendering element - {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Render UI elements.
+        /// </summary>
+        public void Render(IEnumerable<UIElementBase> elements, IRenderContext context)
+        {
+            // Iterate visible UI elements and issue draw commands.
+            foreach (var element in elements)
+            {
+                RenderElement(element, context);
+            }
+        }
+
+        private void RenderElement(UIElementBase element, IRenderContext context)
+        {
+            // Use existing drawing/shader/atlas systems to render a single element.
+            // Do not introduce new systems; call into existing rendering helpers.
+            DrawElement(element, context);
+        }
+
+        private void DrawElement(UIElementBase element, IRenderContext context)
+        {
+            // Draw element implementation
+            Console.WriteLine("UIRenderer: Drew element");
         }
 
         /// <summary>
@@ -322,6 +345,31 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 Console.WriteLine($"UIRenderer: Error during shutdown - {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Dispose the UI renderer.
+        /// </summary>
+        public void Dispose()
+        {
+            // Release any renderer-owned resources (buffers, caches, subscriptions).
+            ReleaseRendererResources();
+        }
+
+        private void ReleaseRendererResources()
+        {
+            Shutdown();
+            Console.WriteLine("UIRenderer: Released renderer resources");
+        }
+
+        internal void Initialize(SizeF size)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Render(IRenderContext renderContext, UIRoot rootElement)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,8 +1,9 @@
-/*
-File:    IAnimationState.cs
-Purpose: P11-17-02 - Define interface for animation states including Enter, Exit, and Update methods with no assumptions or side effects.
-Provides deterministic state interface with explicit method contracts and no side effects.
-*/
+// FILE PATH: Engine/Animation/Components/IAnimationState.cs
+// EXECUTION TRIGGER: Implemented by all animation state classes during state machine construction
+// PROGRAM PURPOSE: Defines interface contract for all animation states in state machine providing deterministic state lifecycle methods
+// PROGRAM CALLS: AnimationClip, AnimationTransition
+// PROGRAM CONTENTS: IAnimationState interface with Name, Clip properties and Enter, Exit, Update, CheckTransitions, GetParameters, IsValid, GetDebugInfo methods
+
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Animation.Core;
 

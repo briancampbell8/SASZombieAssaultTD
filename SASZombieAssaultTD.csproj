@@ -27,6 +27,19 @@
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
+	  <EmbeddedResource Remove="Project Documentation\**" />
+	  <EmbeddedResource Remove="Tools\**" />
+	  <None Remove="Project Documentation\**" />
+	  <None Remove="Tools\**" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove=".aider.chat.history.md" />
+	  <None Remove=".aider.input.history" />
+	  <None Remove="build_errors.txt" />
+	  <None Remove="Engine\GhostDoc.log" />
+	  <None Remove="Engine\Player\PlayerSystemBlueprint.md" />
+	</ItemGroup>
+	<ItemGroup>
 	  <Folder Include="Engine\Player\" />
 	</ItemGroup>
 </Project>

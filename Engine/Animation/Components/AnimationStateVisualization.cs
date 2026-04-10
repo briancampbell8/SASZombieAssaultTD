@@ -1,8 +1,11 @@
-/*
-File:    AnimationStateVisualization.cs
-Path:    Engine/Animation/Visualization/AnimationStateVisualization.cs
-Purpose: P11-16-05 - Animation state visualization data and rendering.
-*/
+// ROLE: Animation state visualization for debugging.
+// RESPONSIBILITY: Render debug visualization of animation states with position, color, and effects.
+// TRIGGERS: Instantiated by debug systems for animation state visualization.
+// INPUTS: Receives entity ID, state name, position from debug tools.
+// OUTPUTS: Renders debug spheres, boxes, and state labels through IDebugRenderer.
+// DEPENDENCIES: Uses IDebugRenderer interface and Vector3 for positioning.
+// CONTENTS: AnimationStateVisualization class with EntityId, StateName, Position, Size, Color, 
+//           Opacity, IsVisible properties and Render, Update, SetVisibility methods.
 
 using System;
 using System.Collections.Generic;

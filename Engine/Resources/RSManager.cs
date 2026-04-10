@@ -310,17 +310,18 @@ namespace SASZombieAssaultTD.Engine.Resources
                     return LoadBinaryAsset(metadata);
 
                 default:
-                    // Fallback: determine type from file extension
-                    if (IsImageFile(extension))
-                        return LoadTextureAsset(metadata);
-                    else if (IsAudioFile(extension))
-                        return extension == ".wav" || metadata.Path.Contains("sfx_") || metadata.Path.Contains("sound_")
-                        ? LoadSoundAsset(metadata)
-                        : LoadMusicAsset(metadata);
-                    else if (extension == ".json")
-                        return LoadJsonAsset(metadata);
-                    else
-                        return LoadBinaryAsset(metadata);
+                    // Fallback: determine type from file extension using pattern matching
+                    return extension switch
+                    {
+                        var ext when IsImageFile(ext) => LoadTextureAsset(metadata),
+                        ".json" => LoadJsonAsset(metadata),
+                        var ext when IsAudioFile(ext) => (ext == ".wav" || 
+                            metadata.Path.Contains("sfx_") || 
+                            metadata.Path.Contains("sound_"))
+                            ? LoadSoundAsset(metadata)
+                            : LoadMusicAsset(metadata),
+                        _ => LoadBinaryAsset(metadata)
+                    };
             }
         }
 
@@ -589,6 +590,12 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
 
         
+        /// <summary>
+        /// Determines the resource type based on file extension and key patterns using pattern matching.
+        /// </summary>
+        /// <param name="key">The asset key.</param>
+        /// <param name="path">The asset file path.</param>
+        /// <returns>The determined resource type.</returns>
         private RSType DetermineRSType(string key, string path)
         {
             string extension = Path.GetExtension(path).ToLowerInvariant();
@@ -597,20 +604,28 @@ namespace SASZombieAssaultTD.Engine.Resources
             // Determine type based on key patterns and file extension
             if (IsImageFile(extension))
                 return RSType.Texture;
-            else if (extension == ".json")
+
+            if (extension == ".json")
                 return RSType.Json;
-            else if (IsAudioFile(extension))
+
+            if (IsAudioFile(extension))
             {
-                // Distinguish between sound effects and music
-                if (lowerKey.Contains("sfx_") || lowerKey.Contains("sound_") || lowerKey.Contains("effect_") ||
-                lowerKey.Contains("shoot") || lowerKey.Contains("explosion") || lowerKey.Contains("hit") ||
-                lowerKey.Contains("footstep") || key.Length < 15)
-                    return RSType.Sound;
-                else
-                    return RSType.Music;
+                // Distinguish between sound effects and music using pattern matching
+                return lowerKey switch
+                {
+                    var k when k.Contains("sfx_") || 
+                               k.Contains("sound_") || 
+                               k.Contains("effect_") ||
+                               k.Contains("shoot") || 
+                               k.Contains("explosion") || 
+                               k.Contains("hit") ||
+                               k.Contains("footstep") ||
+                               key.Length < 15 => RSType.Sound,
+                    _ => RSType.Music
+                };
             }
-            else
-                return RSType.Binary;
+
+            return RSType.Binary;
         }
 
         /// <summary>

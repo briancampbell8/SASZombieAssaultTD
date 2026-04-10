@@ -1,7 +1,7 @@
+using SASZombieAssaultTD.Engine.Core;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using SASZombieAssaultTD.Engine.Core;
 
 namespace SASZombieAssaultTD.Engine.Rendering
 {
@@ -26,7 +26,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         private bool _screenshotEnabled;
         private string _screenshotPath;
         private bool _gpuTimingEnabled;
-        private readonly List<long> _gpuFrameTimes;
+        private List<long> _gpuFrameTimes;
 
         /// <summary>
         /// Gets the GPU context handle.
@@ -544,7 +544,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         }
 
         // Missing rendering methods
-        public void DrawRectangle(Rectangle rect, Color color)
+        public void DrawRectangle(float x, Rectangle rect, Color color)
         {
             // Implementation would draw rectangle using GPU context
             // This is a placeholder for the missing method
@@ -560,6 +560,31 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             // Implementation would draw text using GPU context
             // This is a placeholder for the missing method
+        }
+
+        internal static void DrawRectangle(float x1, float y1, float x2, float y2, Color backgroundColor)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawRectangle(float x1, float y1, float x2, float y2, Color borderColor, float v)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawRectangle(VectorMath.Vector3 previewPosition1, VectorMath.Vector3 previewPosition2, VectorMath.Vector3 previewSize, Color towerColor, float v)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawSprite(string sprite, VectorMath.Vector3 previewPosition, VectorMath.Vector3 previewSize, Color towerColor, float v)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawString(string statusText, VectorMath.Vector3 statusPosition, Color statusTextColor, CachedFont statusFont)
+        {
+            throw new NotImplementedException();
         }
     }
 }

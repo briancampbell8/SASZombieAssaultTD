@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Towers;
 using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Rendering;
+using System.Linq;
 
 namespace SASZombieAssaultTD.Engine.Waves
 {
@@ -405,6 +406,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         public float ExperienceMultiplier { get; set; }
         public float TowerCostMultiplier { get; set; }
         public int StartingCash { get; set; }
+
         public int StartingLives { get; set; }
         public float WaveDelayMultiplier { get; set; }
         public List<string> SpecialAbilities { get; set; }
@@ -501,15 +503,16 @@ namespace SASZombieAssaultTD.Engine.Waves
             {
                 foreach (var ability in SpecialAbilities)
                 {
-                    if (!spawnGroup.EnemyModifiers.Any(mod => mod.ModifierType == ability))
+                    if (spawnGroup.BehaviorModifiers.Any(mod => mod.ModifierType == ability))
                     {
-                        spawnGroup.EnemyModifiers.Add(new EnemyBehaviorModifier
-                        {
-                            ModifierType = ability,
-                            Value = 1.0f,
-                            Duration = -1f // Permanent
-                        });
+                        continue;
                     }
+                    spawnGroup.BehaviorModifiers.Add(new EnemyBehaviorModifier
+                    {
+                        ModifierType = ability,
+                        Value = 1.0f,
+                        Duration = -1f // Permanent
+                    });
                 }
             }
         }

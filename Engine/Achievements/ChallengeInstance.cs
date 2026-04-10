@@ -1,3 +1,13 @@
+// ROLE: Tracks per-player challenge progress.
+// RESPONSIBILITY: Maintain challenge completion state with time-based expiration tracking 
+//                  and reward claiming status.
+// TRIGGERS: Instantiated by ChallengeManager when challenges become active.
+// INPUTS: Receives progress updates from gameplay systems.
+// OUTPUTS: Provides completion status and expiration data for UI and save systems.
+// DEPENDENCIES: References ChallengeDefinition for requirements.
+// CONTENTS: ChallengeInstance class with ChallengeId, CurrentProgress, TargetProgress, IsCompleted, 
+//           IsRewardClaimed, IsViewed, ExpirationDate, LastUpdated properties.
+
 using System;
 using System.Runtime.Serialization;
 

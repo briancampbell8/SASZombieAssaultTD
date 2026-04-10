@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.Gameplay;
 using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Waves;
 using SASZombieAssaultTD.Engine.Towers;
 using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Dictionary;
-using SASZombieAssaultTD.Engine.Gameplay;
-using Tower = SASZombieAssaultTD.Engine.Towers.Tower;
+using SASZombieAssaultTD.Engine.Waves;
+using System;
+using System.Collections.Generic;
 using PlacementInfo = SASZombieAssaultTD.Engine.Towers.PlacementInfo;
-using SASZombieAssaultTD.Engine.Extensions;
+using Tower = SASZombieAssaultTD.Engine.Towers.Tower;
 
 namespace SASZombieAssaultTD.Engine.UI.HUD
 {
@@ -19,19 +17,17 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
     /// </summary>
     public class HUDController
     {
-        private readonly Dictionary<string, HUDComponent> _components;
-        private readonly List<HUDNotification> _notifications;
-        private bool _isInitialized;
-        private bool _isVisible;
-        private bool _isPaused;
+        readonly Dictionary<string, HUDComponent> _components;
+        readonly List<HUDNotification> _notifications;
+        bool _isInitialized, _isVisible, _isPaused;
 
         // Core HUD components
-        private CashDisplay _cashDisplay;
-        private WaveDisplay _waveDisplay;
-        private LivesDisplay _livesDisplay;
-        private TowerInfoPanel _towerInfoPanel;
-        private UpgradePanel _upgradePanel;
-        private PlacementInfoDisplay _placementInfoDisplay;
+        CashDisplay _cashDisplay;
+        WaveDisplay _waveDisplay;
+        LivesDisplay _livesDisplay;
+        TowerInfoPanel _towerInfoPanel;
+        UpgradePanel _upgradePanel;
+        PlacementInfoDisplay _placementInfoDisplay;
 
         // Events
         public event Action<int> OnCashChanged;
@@ -48,7 +44,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         public bool IsInitialized => _isInitialized;
 
         // Singleton
-        private static HUDController _instance;
+        static HUDController _instance;
         public static HUDController Instance => _instance ??= new HUDController();
 
         private HUDController()
@@ -99,9 +95,8 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             {
                 // Update all components
                 foreach (var component in _components.Values)
-                {
                     component.Update(deltaTime);
-                }
+                
 
                 // Update notifications
                 UpdateNotifications(deltaTime);
@@ -123,10 +118,8 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             {
                 // Render all components
                 foreach (var component in _components.Values)
-                {
-                    if (component.IsVisible)
-                        component.Render();
-                }
+                    if (component.IsVisible) component.Render();
+                
 
                 // Render notifications
                 RenderNotifications();
@@ -146,9 +139,8 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _isVisible = visible;
 
             foreach (var component in _components.Values)
-            {
                 component.SetVisibility(visible);
-            }
+            
         }
 
         /// <summary>
@@ -160,9 +152,8 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _isPaused = paused;
 
             foreach (var component in _components.Values)
-            {
                 component.SetPaused(paused);
-            }
+            
         }
 
         /// <param name="name">Name of the component.</param>
@@ -303,10 +294,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Hide placement info display.
         /// </summary>
-        public void HidePlacementInfo()
-        {
-            _placementInfoDisplay?.SetVisibility(false);
-        }
+        public void HidePlacementInfo() => _placementInfoDisplay?.SetVisibility(false);
 
         /// <summary>
         /// Show minimap.
@@ -316,12 +304,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             try
             {
                 var waveDirector = WaveDirector.Instance;
+
                 if (waveDirector != null)
                 {
                     ShowWaveDisplay(waveDirector.CurrentWave, waveDirector.TotalWaves, waveDirector.WaveProgress);
                 }
 
                 var playerLives = ModernPlayerStateSystem.Instance;
+
                 if (playerLives != null)
                 {
                     ShowLivesDisplay(playerLives.CurrentLives, playerLives.MaxLives);
@@ -495,9 +485,8 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
 
             // Cleanup all components
             foreach (var component in _components.Values)
-            {
                 component.Cleanup();
-            }
+            
 
             _components.Clear();
             _notifications.Clear();
@@ -512,7 +501,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Initialize all HUD components.
         /// </summary>
-        private void InitializeComponents()
+        void InitializeComponents()
         {
             // Create core HUD components
             _cashDisplay = new CashDisplay();
@@ -536,20 +525,22 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Subscribe to game events.
         /// </summary>
-        private void SubscribeToEvents()
+        void SubscribeToEvents()
         {
             // Wave events
             var waveDirector = WaveDirector.Instance;
+
             if (waveDirector != null)
             {
                 waveDirector.OnWaveStarted += (wave) => ShowWaveDisplay(wave, waveDirector.TotalWaves, 0f);
                 waveDirector.OnWaveCompleted += (wave) => ShowSuccess($"Wave {wave} completed!");
                 waveDirector.OnWaveProgress += (progress) => UpdateWaveProgress(progress);
-                waveDirector.OnWaveProgress += (progress) => OnWaveProgress?.Invoke(progress);
+                waveDirector.OnWaveProgress += (progress) => OnWaveProgress?.Invoke((float)progress);
             }
 
             // Player lives events
             var playerLives = ModernPlayerStateSystem.Instance;
+
             if (playerLives != null)
             {
                 playerLives.OnLivesChanged += (lives, maxLives) => ShowLivesDisplay(lives, maxLives);
@@ -561,26 +552,30 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             TowerRegistry.Instance.OnTowerDeselected += () => HideTowerInfoPanel();
         }
 
+        private void ShowTowerInfoPanel(object tower)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void UpdateWaveProgress(object progress)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Update wave progress display.
         /// </summary>
-        private void UpdateWaveProgress(float progress)
-        {
-            _waveDisplay?.SetProgress(progress);
-        }
+        void UpdateWaveProgress(float progress) => _waveDisplay?.SetProgress(progress);
 
         /// <summary>
         /// Hide tower info panel.
         /// </summary>
-        private void HideTowerInfoPanel()
-        {
-            _towerInfoPanel?.SetVisibility(false);
-        }
+        void HideTowerInfoPanel() => _towerInfoPanel?.SetVisibility(false);
 
         /// <summary>
         /// Update notifications.
         /// </summary>
-        private void UpdateNotifications(float deltaTime)
+        void UpdateNotifications(float deltaTime)
         {
             for (int i = _notifications.Count - 1; i >= 0; i--)
             {
@@ -597,7 +592,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Render notifications.
         /// </summary>
-        private void RenderNotifications()
+        void RenderNotifications()
         {
             var yPosition = 100f; // Start from top
 
@@ -611,27 +606,28 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Get count of visible components.
         /// </summary>
-        private int GetVisibleComponentCount()
+        int GetVisibleComponentCount()
         {
             var count = 0;
+
             foreach (var component in _components.Values)
-            {
-                if (component.IsVisible)
-                    count++;
-            }
+                if (component.IsVisible) count++;
+            
+
             return count;
         }
 
         /// <summary>
         /// Get component states.
         /// </summary>
-        private Dictionary<string, bool> GetComponentStates()
+        Dictionary<string, bool> GetComponentStates()
         {
             var states = new Dictionary<string, bool>();
+
             foreach (var kvp in _components)
-            {
                 states[kvp.Key] = kvp.Value.IsVisible;
-            }
+            
+
             return states;
         }
 
@@ -672,7 +668,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         public string Icon { get; set; }
         public float Height { get; set; }
         public bool IsExpired { get; private set; }
-        private float _timer;
+        float _timer;
 
         public HUDNotification()
         {
@@ -705,6 +701,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             if (!string.IsNullOrEmpty(Icon))
             {
                 var iconSprite = SpriteCache.GetSprite(Icon);
+
                 if (iconSprite != null)
                 {
                     RenderSystem.DrawSprite(iconSprite, new Vector3(x + 10f, y + 10f, 0), 0.8f, Color.White);
@@ -713,6 +710,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
 
             // Render text
             var font = FontCache.GetFont("medium");
+
             var titleColor = Type switch
             {
                 NotificationType.Error => System.Drawing.Color.Red,

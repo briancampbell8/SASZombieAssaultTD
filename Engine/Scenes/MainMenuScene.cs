@@ -1,9 +1,10 @@
+using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.UI;
-using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.VectorMath;
+using SASZombieAssaultTD.Engine.UI.Components;
+using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Extensions;
 using System.Drawing;
 
 namespace SASZombieAssaultTD.Engine.Scenes
@@ -14,14 +15,13 @@ namespace SASZombieAssaultTD.Engine.Scenes
     /// </summary>
     public class MainMenuScene : BaseScene
     {
-        private readonly List<UIElementBase> _menuElements = new();
-        private int _selectedOption;
-        private bool _isInitialized;
+        readonly List<UIElementBase> _menuElements = new();
+        int _selectedOption;
+        bool _isInitialized;
 
         public override void Initialize()
         {
-            if (_isInitialized)
-                return;
+            if (_isInitialized) return;
 
             ModernLoggingSystem.Log("INFO", "MainMenuScene: Initializing main menu");
             CreateMenuElements();
@@ -30,8 +30,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
 
         public override void Update(float deltaTime)
         {
-            if (!_isInitialized)
-                return;
+            if (!_isInitialized) return;
 
             UpdateMenuAnimations(deltaTime);
             ProcessMenuInput();
@@ -39,16 +38,16 @@ namespace SASZombieAssaultTD.Engine.Scenes
 
         public override void Render(IRenderContext renderContext)
         {
-            if (!_isInitialized || renderContext == null)
-                return;
+            if (!_isInitialized || renderContext == null) return;
 
             RenderMenuBackground(renderContext);
             RenderMenuElements(renderContext);
         }
 
-        private void CreateMenuElements()
+        void CreateMenuElements()
         {
             _menuElements.Clear();
+            _selectedOption = 0;
 
             _menuElements.AddRange(new[]
             {
@@ -57,26 +56,35 @@ namespace SASZombieAssaultTD.Engine.Scenes
                     Text = "Start Game",
                     Position = new Point((int)new Vector3(400, 200, 0f).X, (int)new Vector3(400, 200, 0f).Y),
                     Size = new Core.Size((int)new Vector3(200, 50, 0f).X, (int)new Vector3(200, 50, 0f).Y),
-                    OnClick = OnStartGameClick
+                    OnClick = OnStartGameClick,
+                    BackgroundColor = GetFromArgb(System.Drawing.Color.FromArgb(50, 50, 100, 255))
+
                 },
                 new Button
                 {
                     Text = "Options",
                     Position = new Point((int)new Vector3(400, 270, 0f).X, (int)new Vector3(400, 270, 0f).Y),
                     Size = new Core.Size((int)new Vector3(200, 50, 0f).X, (int)new Vector3(200, 50, 0f).Y),
-                    OnClick = OnOptionsClick
+                    OnClick = OnOptionsClick,
+                    BackgroundColor = GetFromArgb(System.Drawing.Color.FromArgb(50, 50, 100, 255))
                 },
                 new Button
                 {
                     Text = "Quit",
                     Position = new Point((int)new Vector3(400, 340, 0f).X, (int)new Vector3(400, 340, 0f).Y),
                     Size = new Core.Size((int)new Vector3(200, 50, 0f).X, (int)new Vector3(200, 50, 0f).Y),
-                    OnClick = OnQuitClick
+                    OnClick = OnQuitClick,
+                    BackgroundColor = GetFromArgb(System.Drawing.Color.FromArgb(50, 50, 100, 255))
                 }
             });
+
+            ModernLoggingSystem.Log("INFO", $"MainMenuScene: Created {_menuElements.Count} menu elements");
         }
 
-        private void UpdateMenuAnimations(float deltaTime)
+           static Color GetFromArgb (System.Drawing.Color color) => new Color(color.R, color.G, color.B, color.A);
+
+
+        void UpdateMenuAnimations(float deltaTime)
         {
             foreach (var element in _menuElements)
             {
@@ -87,61 +95,104 @@ namespace SASZombieAssaultTD.Engine.Scenes
             }
         }
 
-        private void ProcessMenuInput()
+        void ProcessMenuInput()
         {
-            if (InputRouter == null)
-                return;
+            if (InputRouter == null || _menuElements.Count == 0) return;
 
-            object v = InputRouter.GetMenuInput();
-            var input = v;
+            try
+            {
+                var inputObj = InputRouter.GetMenuInput();
+                if (inputObj == null) return;
 
-            // TODO: Fix input property access - MenuInput may not have these properties
-            // if (input.IsUpPressed)
-            // {
-            //     _selectedOption = (_selectedOption - 1 + _menuElements.Count) % _menuElements.Count;
-            //     ModernLoggingSystem.Log("DEBUG", $"MainMenuScene: Selected option {_selectedOption}");
-            // }
-            // else if (input.IsDownPressed)
-            // {
-            //     _selectedOption = (_selectedOption + 1) % _menuElements.Count;
-            //     ModernLoggingSystem.Log("DEBUG", $"MainMenuScene: Selected option {_selectedOption}");
-            // }
-            // else if (input.IsSelectPressed && _selectedOption >= 0 && _selectedOption < _menuElements.Count)
-            // {
-            //     if (_menuElements[_selectedOption] is Button button)
-            //     {
-            //         button.OnClick?.Invoke();
-            //     }
-            // }
-            
-            // Placeholder implementation to prevent compilation errors
-            _selectedOption = 0;
+                // Check if input has the expected properties
+                var upPressed = false;
+                var downPressed = false;
+                var selectPressed = false;
+
+                // Try to get input properties using reflection or duck typing
+                var inputType = inputObj.GetType();
+                var upProperty = inputType.GetProperty("IsUpPressed");
+                var downProperty = inputType.GetProperty("IsDownPressed");
+                var selectProperty = inputType.GetProperty("IsSelectPressed");
+
+                if (upProperty != null && upProperty.PropertyType == typeof(bool))
+                    upPressed = (bool)upProperty.GetValue(inputObj);
+
+                if (downProperty != null && downProperty.PropertyType == typeof(bool))
+                    downPressed = (bool)downProperty.GetValue(inputObj);
+
+                if (selectProperty != null && selectProperty.PropertyType == typeof(bool))
+                    selectPressed = (bool)selectProperty.GetValue(inputObj);
+
+                // Handle menu navigation
+                if (upPressed)
+                {
+                    _selectedOption = (_selectedOption - 1 + _menuElements.Count) % _menuElements.Count;
+                    ModernLoggingSystem.Log("DEBUG", $"MainMenuScene: Selected option {_selectedOption}");
+                    UpdateMenuSelection();
+                }
+                else if (downPressed)
+                {
+                    _selectedOption = (_selectedOption + 1) % _menuElements.Count;
+                    ModernLoggingSystem.Log("DEBUG", $"MainMenuScene: Selected option {_selectedOption}");
+                    UpdateMenuSelection();
+                }
+                else if (selectPressed && _selectedOption >= 0 && _selectedOption < _menuElements.Count)
+                {
+                    if (_menuElements[_selectedOption] is Button button)
+                    {
+                        button.OnClick?.Invoke();
+                        ModernLoggingSystem.Log("DEBUG", $"MainMenuScene: Activated menu option {_selectedOption}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ModernLoggingSystem.Log("ERROR", $"MainMenuScene: Error processing menu input: {ex.Message}");
+                // Fallback: keep current selection
+            }
         }
 
-        private void RenderMenuBackground(IRenderContext renderContext)
+        /// <summary>
+        /// Updates the visual selection state of menu elements.
+        /// </summary>
+        void UpdateMenuSelection()
+        {
+            for (int i = 0; i < _menuElements.Count; i++)
+            {
+                if (_menuElements[i] is Button button)
+                {
+                    // Update button appearance based on selection
+                    button.BackgroundColor = i == _selectedOption ?
+                        System.Drawing.Color.FromArgb(100, 100, 200, 255) :
+                        System.Drawing.Color.FromArgb(50, 50, 100, 255);
+                }
+            }
+        }
+
+        void RenderMenuBackground(IRenderContext renderContext)
         {
             renderContext.Clear(new Color(20, 20, 40));
         }
 
-        private void RenderMenuElements(IRenderContext renderContext)
+        void RenderMenuElements(IRenderContext renderContext)
         {
             foreach (var element in _menuElements)
-            {
                 element.Render(renderContext);
-            }
+            
         }
 
-        private void OnStartGameClick()
+        void OnStartGameClick()
         {
             ModernLoggingSystem.Log("INFO", "MainMenuScene: Start Game clicked - transitioning to Gameplay");
         }
 
-        private void OnOptionsClick()
+        void OnOptionsClick()
         {
             ModernLoggingSystem.Log("INFO", "MainMenuScene: Options clicked - opening options menu");
         }
 
-        private void OnQuitClick()
+        void OnQuitClick()
         {
             ModernLoggingSystem.Log("INFO", "MainMenuScene: Quit clicked - initiating shutdown");
         }

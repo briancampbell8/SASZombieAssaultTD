@@ -119,9 +119,11 @@ namespace SASZombieAssaultTD.Engine.Enemies
             int EntityId = entityId;
             ZombieType Type = type;
             Vector3 Position = position;
-        }  
+        }
 
-
+        public EnemySystem()
+        {
+        }
 
         public void RemoveEnemy(Enemy enemy)
         {

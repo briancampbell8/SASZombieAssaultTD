@@ -66,6 +66,18 @@ namespace SASZombieAssaultTD.Engine.Rendering
             Pixels = pixels;
         }
 
+        public Texture2D(int v1, int v2, byte[] bytes1, byte[] bytes2)
+        {
+        }
+
+        public Texture2D()
+        {
+        }
+
+        public Texture2D(Texture2D texture2D)
+        {
+        }
+
         /// <summary>
         /// Loads a texture from file path with cache integration.
         /// </summary>

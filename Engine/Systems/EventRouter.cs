@@ -33,6 +33,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         public float X { get; set; }
         public float Y { get; set; }
         public float Z { get; set; }
+        public static object Zero { get; internal set; }
 
         public Vector3(float x, float y, float z)
         {

@@ -1,3 +1,12 @@
+// ROLE: 1D linear blend node for animation blending.
+// RESPONSIBILITY: Interpolate between two child animation nodes based on single float parameter.
+// TRIGGERS: Instantiated by BlendTree and BlendTreeSerializer for 1D parameter-based blending.
+// INPUTS: Receives blend parameter value and two child nodes.
+// OUTPUTS: Returns interpolated blend result based on parameter value.
+// DEPENDENCIES: Implements IBlendNode interface.
+// CONTENTS: LinearBlendNode class with ChildA, ChildB, BlendParameter properties and Evaluate, 
+//           GetRequiredParameters, Validate, GetDebugInfo methods.
+
 using System;
 using System.Collections.Generic;
 using System.Text;

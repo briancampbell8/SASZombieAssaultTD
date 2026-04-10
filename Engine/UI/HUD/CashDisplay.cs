@@ -1,7 +1,5 @@
-using System;
-using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Resources;
+using System;
 
 namespace SASZombieAssaultTD.Engine.UI.HUD
 {
@@ -40,6 +38,16 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         public static void DrawArrow(float x1, float y1, float x2, float y2, Color color, float width)
         {
             // Placeholder for arrow drawing
+        }
+
+        internal static void DrawSprite(object iconSprite, Vector3 vector3, float v, Color white)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawRectangle(Vector3 scaledPosition, Vector3 scaledSize, Color pulseColor, float v)
+        {
+            throw new NotImplementedException();
         }
     }
     /// <summary>
@@ -220,9 +228,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _size = new Vector3(200f, 40f, 0);
 
             // Load font
-            _font = new SASZombieAssaultTD.Engine.Rendering.Font(SASZombieAssaultTD.Engine.Rendering.FontCache.GetFont("large")) 
-        ?? new SASZombieAssaultTD.Engine.Rendering.Font(SASZombieAssaultTD.Engine.Rendering.FontCache.GetFont("default"));
-
+            _font = new SASZombieAssaultTD.Engine.Rendering.Font(SASZombieAssaultTD.Engine.Rendering.FontCache.GetFont("default"));
             // Set initial values
             UpdateCashColor();
         }

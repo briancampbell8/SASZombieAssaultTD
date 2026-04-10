@@ -49,22 +49,22 @@ namespace SASZombieAssaultTD.Engine.Economy
         /// <summary>
         /// Unique identifier for the transaction.
         /// </summary>
-        public string Id { get; }
+        public string Id { get; set; } // Added set;
 
         /// <summary>
         /// Type of transaction (income, expense, etc.).
         /// </summary>
-        public TransactionType Type { get; }
+        public TransactionType Type { get; set; }
 
         /// <summary>
         /// Resource type being transacted.
         /// </summary>
-        public ResourceType ResourceType { get; }
+        public ResourceType ResourceType { get; set; } // Added set;
 
         /// <summary>
         /// Amount of the transaction (can be negative for expenses).
         /// </summary>
-        public int Amount { get; }
+        public int Amount { get; set; } // Changed { get; } to { get; set; }
 
         /// <summary>
         /// Description of what the transaction was for.

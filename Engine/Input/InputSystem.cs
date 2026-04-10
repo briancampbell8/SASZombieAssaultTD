@@ -183,5 +183,10 @@ namespace SASZombieAssaultTD.Engine.Input
             }
             return pressedKeys.ToArray();
         }
+
+        internal static bool IsKeyPressed(KeyCode escape)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

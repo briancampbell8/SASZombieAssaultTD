@@ -1,3 +1,12 @@
+// ROLE: Render the achievement list UI.
+// RESPONSIBILITY: Maintain an internal list of AchievementItem objects and draw them each frame.
+// TRIGGERS: Invoked by AchievementUI and MenuUI during their render cycles.
+// INPUTS: Requires IRenderContext for drawing and Vector3 positions.
+// OUTPUTS: Produces all visual elements for the achievement list.
+// DEPENDENCIES: Relies on IRenderContext, Vector3, and AchievementItem definitions.
+// CONTENTS: AchievementListRenderer class with Width/Height properties, achievement list storage, 
+//           and methods for rendering, adding, removing, clearing, and loading placeholder data.
+
 using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Rendering;

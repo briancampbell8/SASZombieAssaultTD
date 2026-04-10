@@ -1,7 +1,12 @@
-/*
-File:    AnimationStateMachineComponent.cs
-Purpose: P11-16-03 - Animation state machine component for ECS entities.
-*/
+// ROLE: Animation state machine component for ECS.
+// RESPONSIBILITY: Manage animation states, transitions, and state-specific behavior for entities.
+// TRIGGERS: Added to entities by EntityManager during entity initialization.
+// INPUTS: Receives animation commands and state change requests.
+// OUTPUTS: Controls animation playback through state machine.
+// DEPENDENCIES: Extends BaseComponent, uses AnimationStateMachine and IAnimationState.
+// CONTENTS: AnimationStateMachineComponent class with Entity, StateMachine properties and 
+//           PlayAnimation, StopAnimation, Update methods.
+
 using SASZombieAssaultTD.Engine.Animation.Events;
 using SASZombieAssaultTD.Engine.Animation.Core;
 using SASZombieAssaultTD.Engine.VectorMath;

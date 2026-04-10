@@ -1,14 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SASZombieAssaultTD.Engine.Towers;
-using SASZombieAssaultTD.Engine.Audio;
-using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.LevelUpControl;
 using SASZombieAssaultTD.Engine.Managers;
-using System.Diagnostics;
+using SASZombieAssaultTD.Engine.Towers;
 using SASZombieAssaultTD.Engine.Towers.TowerControl;
-using SASZombieAssaultTD.Engine.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace SASZombieAssaultTD.Engine.Towers.TowerControl
 {
@@ -17,12 +15,9 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
     /// </summary>
     public class TowerUpgradeDatabase
     {
-        private readonly Dictionary<TowerType, List<TowerUpgrade>> _upgrades;
+        readonly Dictionary<TowerType, List<TowerUpgrade>> _upgrades;
 
-        public TowerUpgradeDatabase()
-        {
-            _upgrades = new Dictionary<TowerType, List<TowerUpgrade>>();
-        }
+        public TowerUpgradeDatabase() => _upgrades = new Dictionary<TowerType, List<TowerUpgrade>>();
 
         public List<TowerUpgrade> GetUpgrades(TowerType type)
         {
@@ -33,6 +28,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         {
             if (!_upgrades.ContainsKey(type))
                 _upgrades[type] = new List<TowerUpgrade>();
+
             _upgrades[type].Add(upgrade);
         }
     }
@@ -42,31 +38,38 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
     /// </summary>
     public class TowerUpgradeManager
     {
-        private readonly Dictionary<string, TowerUpgrade> _upgrades;
+        private readonly Dictionary<Tower, List<TowerUpgrade>> _towerUpgrades = new();
+        private Dictionary<string, TowerUpgrade> _upgrades;
 
-        public TowerUpgradeManager()
-        {
-            _upgrades = new Dictionary<string, TowerUpgrade>();
-        }
+        public TowerUpgradeManager() => _upgrades = new Dictionary<string, TowerUpgrade>();
 
         public TowerUpgrade GetUpgrade(string id)
         {
             return _upgrades.TryGetValue(id, out var upgrade) ? upgrade : null;
         }
 
-        public void RegisterUpgrade(TowerUpgrade upgrade)
-        {
-            _upgrades[upgrade.Id] = upgrade;
-        }
+        public void RegisterUpgrade(TowerUpgrade upgrade) => _upgrades[upgrade.Id] = upgrade;
 
-        internal int? GetUpgrades(string v)
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        internal TowerUpgrade[] GetUpgrades(string id) => new[] { GetUpgrade(id) };
 
         internal object GetPurchasedUpgrades(Tower tower)
         {
-            throw new NotImplementedException();
+            if (tower == null)
+                return new List<TowerUpgrade>();
+
+            // Check if we have upgrades recorded for this tower
+            if (!_towerUpgrades.ContainsKey(tower))
+            {
+                // No upgrades found for this tower
+                return new List<TowerUpgrade>();
+            }
+
+            return _towerUpgrades[tower];
         }
     }
 
@@ -77,12 +80,12 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
     [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
     public class NeuralManager
     {
-        private readonly Dictionary<TowerType, List<TowerUpgrade>> _upgradePaths;
-        private readonly Dictionary<TowerType, TowerUpgradeDatabase> _upgradeDatabases;
-        private readonly Dictionary<string, TowerUpgrade> _purchasedUpgrades;
-        private readonly Dictionary<Tower, List<TowerUpgrade>> _towerUpgrades;
-        private bool _isInitialized;
-        private static NeuralManager _instance;
+        readonly Dictionary<TowerType, List<TowerUpgrade>> _upgradePaths = new();
+        readonly Dictionary<TowerType, TowerUpgradeDatabase> _upgradeDatabases = new();
+        readonly Dictionary<string, TowerUpgrade> _purchasedUpgrades;
+        readonly Dictionary<Tower, List<TowerUpgrade>> _towerUpgrades = new();
+        bool _isInitialized;
+        static NeuralManager _instance;
 
         // Events
         public event Action<TowerUpgrade> OnUpgradePurchased;
@@ -183,17 +186,17 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         {
             if (tower == null || upgrade == null) return false;
 
-            var playerCash = EconomyManager.CurrentCash;
+            var playerCash = EconomyManager.Instance.CurrentCash;
             var towerLevel = tower.Level;
 
             if (!upgrade.CanPurchase(playerCash, towerLevel))
             {
-                PlayErrorSound.PlayInsufficientFunds();
+                PlayErrorSound("PlayInsufficientFunds");
                 return false;
             }
 
             // Purchase upgrade
-            if (!upgrade.Purchase(playerCash))
+            if (!upgrade.Purchase(ref playerCash))
             {
                 return false;
             }
@@ -210,6 +213,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             {
                 _towerUpgrades[tower] = new List<TowerUpgrade>();
             }
+
             _towerUpgrades[tower].Add(upgrade);
 
             // Trigger events
@@ -218,7 +222,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             OnTowerUpgraded?.Invoke(tower);
 
             // Play success sound
-            PlaySuccessSound.PlayUpgradePurchase();
+            PlaySuccessSound("PlayUpgradePurchase");
 
             Console.WriteLine($"Purchased upgrade: {upgrade.Name} for {tower.Type}");
             return true;
@@ -330,9 +334,8 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 var upgrades = kvp.Value;
 
                 foreach (var upgrade in upgrades)
-                {
                     upgrade.RemoveFromTower(tower);
-                }
+                
             }
 
             // Clear tracking
@@ -341,7 +344,8 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
 
             // Refund some cost (optional)
             var refundAmount = TotalUpgradeValue / 2; // Refund 50%
-            EconomyManager.Earn(refundAmount);
+
+            EconomyManager.Instance.AddCash(refundAmount);
 
             Console.WriteLine($"Refunded ${refundAmount} from upgrade reset");
         }
@@ -365,7 +369,6 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         {
             try
             {
-
                 // Save to file (implementation would go here)
                 Console.WriteLine($"Saved upgrade data: {saveName}");
                 return true;
@@ -453,7 +456,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         /// <summary>
         /// Initialize upgrade databases.
         /// </summary>
-        private void InitializeUpgradeDatabases()
+        void InitializeUpgradeDatabases()
         {
             // Create upgrade databases for each tower type
             foreach (TowerType towerType in Enum.GetValues<TowerType>())
@@ -468,16 +471,16 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         /// <summary>
         /// Initialize upgrade paths.
         /// </summary>
-        private void InitializeUpgradePaths()
+        void InitializeUpgradePaths()
         {
             // Create upgrade paths for each tower type
             foreach (var kvp in _upgradeDatabases)
             {
                 var towerType = kvp.Key;
                 var database = kvp.Value;
-                // TODO: Fix GetUpgradePath method - doesn't exist on upgrade database
-                // var upgradePath = database.GetUpgradePath();
-                var upgradePath = new List<TowerUpgrade>(); // Placeholder
+                
+                // Get upgrades from database
+                var upgradePath = database.GetUpgrades(towerType);
                 _upgradePaths[towerType] = upgradePath;
             }
 
@@ -488,7 +491,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         /// Get most purchased upgrade.
         /// </summary>
         /// <returns>Most purchased upgrade.</returns>
-        private TowerUpgrade GetMostPurchasedUpgrade()
+        TowerUpgrade GetMostPurchasedUpgrade()
         {
             return _purchasedUpgrades.Values.GroupBy(u => u.Name)
                 .OrderByDescending(g => g.Count())
@@ -499,7 +502,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         /// Get most valuable upgrade.
         /// </summary>
         /// <returns>Most valuable upgrade.</returns>
-        private TowerUpgrade GetMostValuableUpgrade()
+        TowerUpgrade GetMostValuableUpgrade()
         {
             return _purchasedUpgrades.Values.OrderByDescending(u => u.Cost).FirstOrDefault();
         }
@@ -508,7 +511,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         /// Get number of completed upgrade paths.
         /// </summary>
         /// <returns>Number of completed upgrade paths.</returns>
-        private int GetCompletedUpgradePaths()
+        int GetCompletedUpgradePaths()
         {
             var completedPaths = 0;
 
@@ -517,16 +520,14 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 var towerType = kvp.Key;
                 var upgradePath = kvp.Value;
                 var maxLevel = upgradePath.Max(u => u.Level);
+
                 var purchasedLevels = _purchasedUpgrades.Values
                     .Where(u => u.TowerType == towerType)
                     .Select(u => u.Level)
                     .Distinct()
                     .Count();
 
-                if (purchasedLevels >= maxLevel)
-                {
-                    completedPaths++;
-                }
+                if (purchasedLevels >= maxLevel) completedPaths++;
             }
 
             return completedPaths;
@@ -535,7 +536,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         /// <summary>
         /// Play success sound.
         /// </summary>
-        private void PlaySuccessSound(string soundName)
+        void PlaySuccessSound(string soundName)
         {
             // TODO: Implement ModernAudioSubsystem instance
             // ModernAudioSubsystem.PlaySound(soundName);
@@ -544,16 +545,13 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         /// <summary>
         /// Play error sound.
         /// </summary>
-        private void PlayErrorSound(string soundName)
+        void PlayErrorSound(string soundName)
         {
             // TODO: Implement ModernAudioSubsystem instance
             // ModernAudioSubsystem.PlaySound(soundName);
         }
 
-        private string GetDebuggerDisplay()
-        {
-            return ToString();
-        }
+        string GetDebuggerDisplay() => ToString();
 
         #endregion
     }
@@ -610,17 +608,16 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
 /// </summary>
 public static class TowerUpgradeManagerExtensions
 {
-
     /// <summary>
     /// Get upgrade completion percentage.
     /// </summary>
     public static float GetUpgradeCompletion(this NeuralManager manager, TowerType towerType)
-        {
-            var totalUpgrades = manager.GetUpgradePath(towerType).Count;
-            var purchasedUpgrades = manager.GetAllPurchasedUpgrades()
-                .Values.Count(u => u.TowerType == towerType);
+    {
+        var totalUpgrades = manager.GetUpgradePath(towerType).Count;
 
-            return totalUpgrades > 0 ? (float)purchasedUpgrades / totalUpgrades : 0f;
-        }
+        var purchasedUpgrades = manager.GetAllPurchasedUpgrades()
+            .Values.Count(u => u.TowerType == towerType);
+
+        return totalUpgrades > 0 ? (float)purchasedUpgrades / totalUpgrades : 0f;
     }
-
+}

@@ -1,3 +1,9 @@
+// FILE PATH: Engine/Animation/Components/AnimationTypes.cs
+// EXECUTION TRIGGER: Instantiated by AnimationStateMachine and debug systems during state recording
+// PROGRAM PURPOSE: Data container classes for animation system state information providing serializable state records for debugging and persistence
+// PROGRAM CALLS: None (data containers)
+// PROGRAM CONTENTS: AnimationStateInfo, AnimationTransitionRecord, AnimationParameterInfo classes with EntityId, StateName, Timestamp, Parameters properties
+
 using System;
 using System.Collections.Generic;
 

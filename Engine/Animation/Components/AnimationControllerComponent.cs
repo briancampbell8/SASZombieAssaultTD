@@ -1,7 +1,14 @@
-/*
-File:    AnimationControllerComponent.cs
-Purpose: P11-16-02 - Animation controller component for ECS entities.
-*/
+// ROLE: Animation controller for ECS entities.
+// RESPONSIBILITY: Manage animation states, playback time, and event firing for entities.
+// TRIGGERS: Added to entities by EntityManager during entity initialization.
+// INPUTS: Receives animation clips, state changes, and playback commands.
+// OUTPUTS: Controls animation playback and fires animation events.
+// DEPENDENCIES: Extends BaseComponent, uses AnimationClip, AnimationTrack, IAnimationState.
+// CONTENTS: AnimationControllerComponent class with Entity, CurrentState, CurrentClip, PlaybackTime, 
+//           IsPlaying properties and Play, Stop, Update, FireEvent methods.
+
+#nullable enable
+
 using SASZombieAssaultTD.Engine.Animation.Events;
 using SASZombieAssaultTD.Engine.Animation.Core;
 using SASZombieAssaultTD.Engine.VectorMath;
@@ -22,7 +29,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         /// <summary>
         /// The entity this animation controller is attached to.
         /// </summary>
-        public ECS.Entity Entity
+        public new ECS.Entity Entity
         {
             get => _entity;
             set
@@ -107,6 +114,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         /// </summary>
         public AnimationControllerComponent()
         {
+            IsActive = false;
             ModernLoggingSystem.Log("DEBUG", "AnimationControllerComponent: Initialized");
         }
 
@@ -233,7 +241,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         /// P11-16-02: Updates the animation playback.
         /// </summary>
         /// <param name="deltaTime">Time elapsed since last frame.</param>
-        public void Update(float deltaTime)
+        public override void Update(float deltaTime)
         {
             if (!_isPlaying || _isPaused)
                 return;

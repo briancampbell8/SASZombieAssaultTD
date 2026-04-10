@@ -2,12 +2,12 @@
 File:    ECSVerificationReport.cs
 Purpose: P11-12-10 - Final verification and reporting for ECS system.
 */
+using SASZombieAssaultTD.Engine.Components;
+using SASZombieAssaultTD.Engine.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Components;
 
 namespace SASZombieAssaultTD.Engine.ECS
 {
@@ -41,14 +41,14 @@ namespace SASZombieAssaultTD.Engine.ECS
             return report.ToString();
         }
 
-        private static void AppendHeader(StringBuilder report)
+        static void AppendHeader(StringBuilder report)
         {
             report.AppendLine("=== P11-12 ECS System Verification Report ===");
             report.AppendLine($"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
             report.AppendLine();
         }
 
-        private static void AppendTestSuiteResults(StringBuilder report)
+        static void AppendTestSuiteResults(StringBuilder report)
         {
             report.AppendLine("1. Test Suite Results:");
             var testResults = ECSTestSuite.RunAllTests();
@@ -60,16 +60,18 @@ namespace SASZombieAssaultTD.Engine.ECS
             if (testResults.FailedCount > 0)
             {
                 report.AppendLine("   Failed Tests:");
+
                 foreach (var result in testResults.Results.Where(r => !(bool)r.GetType().GetProperty("Passed")?.GetValue(r)))
                 {
                     var name = result.GetType().GetProperty("Name")?.GetValue(result)?.ToString() ?? "Unknown Test";
                     report.AppendLine($"     - {name}");
                 }
             }
+
             report.AppendLine();
         }
 
-        private static void AppendSystemArchitectureVerification(StringBuilder report)
+        static void AppendSystemArchitectureVerification(StringBuilder report)
         {
             report.AppendLine("2. System Architecture:");
             report.AppendLine("   ✓ Entity class with unique IDs and lifecycle management");
@@ -82,7 +84,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             report.AppendLine();
         }
 
-        private static void AppendCoreComponentsVerification(StringBuilder report)
+        static void AppendCoreComponentsVerification(StringBuilder report)
         {
             report.AppendLine("3. Core Components:");
             report.AppendLine("   ✓ TransformComponent - Position, rotation, scale, movement helpers");
@@ -92,7 +94,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             report.AppendLine();
         }
 
-        private static void AppendSystemPatternVerification(StringBuilder report)
+        static void AppendSystemPatternVerification(StringBuilder report)
         {
             report.AppendLine("4. System Pattern:");
             report.AppendLine("   ✓ ISystem interface with Update/Render methods");
@@ -102,7 +104,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             report.AppendLine();
         }
 
-        private static void AppendIntegrationVerification(StringBuilder report)
+        static void AppendIntegrationVerification(StringBuilder report)
         {
             report.AppendLine("5. Integration Points:");
             report.AppendLine("   ✓ GameLoop.Update() calls ECSWorld.Update()");
@@ -112,7 +114,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             report.AppendLine();
         }
 
-        private static void AppendMigrationStatus(StringBuilder report)
+        static void AppendMigrationStatus(StringBuilder report)
         {
             report.AppendLine("6. Legacy Migration:");
             report.AppendLine("   ✓ Enemy.cs health → HealthComponent");
@@ -124,7 +126,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             report.AppendLine();
         }
 
-        private static void AppendDebugAndInspection(StringBuilder report)
+        static void AppendDebugAndInspection(StringBuilder report)
         {
             report.AppendLine("7. Debug and Inspection:");
             report.AppendLine("   ✓ ECSDebugInspector with comprehensive analysis tools");
@@ -134,7 +136,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             report.AppendLine();
         }
 
-        private static void AppendPerformanceCharacteristics(StringBuilder report)
+        static void AppendPerformanceCharacteristics(StringBuilder report)
         {
             report.AppendLine("8. Performance Characteristics:");
             var perfTest = RunPerformanceTest();
@@ -145,7 +147,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             report.AppendLine();
         }
 
-        private static void AppendComplianceVerification(StringBuilder report)
+        static void AppendComplianceVerification(StringBuilder report)
         {
             report.AppendLine("9. P11-12 Requirements Compliance:");
             report.AppendLine("   ✓ P11-12-01: Entity.cs and IEntityComponent.cs created");
@@ -161,7 +163,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             report.AppendLine();
         }
 
-        private static void AppendSummaryAndRecommendations(StringBuilder report)
+        static void AppendSummaryAndRecommendations(StringBuilder report)
         {
             report.AppendLine("10. Summary and Recommendations:");
             var testResults = ECSTestSuite.RunAllTests();
@@ -199,17 +201,19 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// <summary>
         /// Runs a quick performance test.
         /// </summary>
-        private static PerformanceTestResults RunPerformanceTest()
+        static PerformanceTestResults RunPerformanceTest()
         {
             var world = new ECSWorld();
             var results = new PerformanceTestResults();
 
             // Entity creation test
             var start = DateTime.UtcNow;
+
             for (int i = 0; i < 1000; i++)
             {
                 var entity = world.CreateEntity();
                 entity.AddComponent(new TransformComponent());
+
                 if (i % 2 == 0)
                 {
                     var renderable = new RenderableComponent();
@@ -217,15 +221,18 @@ namespace SASZombieAssaultTD.Engine.ECS
                     entity.AddComponent(renderable);
                 }
             }
+
             results.CreationTime = (DateTime.UtcNow - start).TotalMilliseconds;
 
             // Query test
             start = DateTime.UtcNow;
+
             for (int i = 0; i < 100; i++)
             {
                 var entities = world.GetEntitiesWith<SASZombieAssaultTD.Engine.Components.TransformComponent>().ToList();
                 var renderables = world.GetEntitiesWith<SASZombieAssaultTD.Engine.Components.TransformComponent, SASZombieAssaultTD.Engine.ECS.BaseComponent>().ToList();
             }
+
             results.QueryTime = (DateTime.UtcNow - start).TotalMilliseconds;
 
             // Update test
@@ -239,7 +246,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             return results;
         }
 
-        private class PerformanceTestResults
+        class PerformanceTestResults
         {
             public double CreationTime { get; set; }
             public double QueryTime { get; set; }
@@ -272,7 +279,3 @@ namespace SASZombieAssaultTD.Engine.ECS
         public IReadOnlyList<object> Results { get; set; } = Array.Empty<object>();
     }
 }
-
-
-
-

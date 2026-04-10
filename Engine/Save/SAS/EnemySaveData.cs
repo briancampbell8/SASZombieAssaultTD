@@ -1,10 +1,7 @@
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Enemies;
-using SASZombieAssaultTD.Engine.Gameplay.Enemies;
-using SASZombieAssaultTD.Engine.Waves;
 using EnemyType = SASZombieAssaultTD.Engine.Dictionary.EnemyType;
 using ZombieType = SASZombieAssaultTD.Engine.Dictionary.ZombieType;
 
@@ -103,25 +100,25 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         {
             return new EnemySaveData
             {
-                TotalSpawned = this.TotalSpawned,
-                TotalKilled = this.TotalKilled,
-                TotalEscaped = this.TotalEscaped,
-                ActiveEnemies = this.ActiveEnemies,
-                LastUpdated = this.LastUpdated,
-                Enemies = new List<EnemySaveInfo>(this.Enemies),
-                EnemyTypes = new Dictionary<uint, EnemyType>(this.EnemyTypes),
-                EnemyPositions = new Dictionary<uint, Vector3>(this.EnemyPositions),
-                EnemyHealth = new Dictionary<uint, float>(this.EnemyHealth),
-                EnemyVelocities = new Dictionary<uint, Vector3>(this.EnemyVelocities),
-                EnemyWaves = new Dictionary<uint, object>(this.EnemyWaves),
-                EnemyStats = new Dictionary<uint, EnemyStatistics>(this.EnemyStats),
-                EnemyKills = new Dictionary<uint, int>(this.EnemyKills),
-                EnemyDamage = new Dictionary<uint, float>(this.EnemyDamage),
-                EnemyLifetime = new Dictionary<uint, float>(this.EnemyLifetime),
-                WaveEnemies = new Dictionary<int, List<uint>>(this.WaveEnemies),
-                WaveEnemyTypes = new Dictionary<int, Dictionary<uint, EnemyType>>(this.WaveEnemyTypes),
-                WaveSpawnPositions = new Dictionary<int, Dictionary<uint, Vector3>>(this.WaveSpawnPositions),
-                CustomData = new Dictionary<uint, Dictionary<string, object>>(this.CustomData)
+                TotalSpawned = TotalSpawned,
+                TotalKilled = TotalKilled,
+                TotalEscaped = TotalEscaped,
+                ActiveEnemies = ActiveEnemies,
+                LastUpdated = LastUpdated,
+                Enemies = new List<EnemySaveInfo>(Enemies),
+                EnemyTypes = new Dictionary<uint, EnemyType>(EnemyTypes),
+                EnemyPositions = new Dictionary<uint, Vector3>(EnemyPositions),
+                EnemyHealth = new Dictionary<uint, float>(EnemyHealth),
+                EnemyVelocities = new Dictionary<uint, Vector3>(EnemyVelocities),
+                EnemyWaves = new Dictionary<uint, object>(EnemyWaves),
+                EnemyStats = new Dictionary<uint, EnemyStatistics>(EnemyStats),
+                EnemyKills = new Dictionary<uint, int>(EnemyKills),
+                EnemyDamage = new Dictionary<uint, float>(EnemyDamage),
+                EnemyLifetime = new Dictionary<uint, float>(EnemyLifetime),
+                WaveEnemies = new Dictionary<int, List<uint>>(WaveEnemies),
+                WaveEnemyTypes = new Dictionary<int, Dictionary<uint, EnemyType>>(WaveEnemyTypes),
+                WaveSpawnPositions = new Dictionary<int, Dictionary<uint, Vector3>>(WaveSpawnPositions),
+                CustomData = new Dictionary<uint, Dictionary<string, object>>(CustomData)
             };
         }
 
@@ -134,6 +131,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             try
             {
                 var enemyManager = EnemyManager.Instance;
+
                 if (enemyManager == null)
                     return false;
 
@@ -144,6 +142,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 foreach (var enemyInfo in Enemies)
                 {
                     var enemy = CreateEnemyFromSaveInfo(enemyInfo);
+
                     if (enemy != null)
                     {
                         enemyManager.AddEnemy(enemy);
@@ -156,6 +155,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     var enemyId = kvp.Key;
                     var health = kvp.Value;
                     var enemy = enemyManager.GetEnemy(enemyId);
+
                     if (enemy != null)
                     {
                         enemy.Health = health;
@@ -168,6 +168,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     var enemyId = kvp.Key;
                     var velocity = kvp.Value;
                     var enemy = enemyManager.GetEnemy(enemyId);
+
                     if (enemy != null)
                     {
                         enemy.Velocity = velocity;
@@ -180,6 +181,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     var enemyId = kvp.Key;
                     var wave = kvp.Value;
                     var enemy = enemyManager.GetEnemy(enemyId);
+
                     if (enemy != null)
                     {
                         enemy.SourceWave = wave is int w ? w : 0;
@@ -192,11 +194,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     var enemyId = kvp.Key;
                     var stats = kvp.Value;
                     var enemy = enemyManager.GetEnemy(enemyId);
+
                     if (enemy != null)
                     {
                         enemy.TotalKills = stats.TotalKills;
                         enemy.DamageDealt = stats.DamageDealt;
-                        enemy.Lifetime = stats.Lifetime;
+                        ///         enemy.Lifetime = stats.Lifetime; // Lifetime is runtime-only; do not restore from save data
                     }
                 }
 
@@ -217,6 +220,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         public static EnemySaveData CaptureCurrentState()
         {
             var enemyManager = EnemyManager.Instance;
+
             if (enemyManager == null)
                 return new EnemySaveData();
 
@@ -231,6 +235,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
             // Capture enemy information
             var enemies = enemyManager.GetAllEnemies();
+
             foreach (var enemy in enemies)
             {
                 var enemyInfo = new EnemySaveInfo
@@ -265,6 +270,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 // Add to wave collections
                 var wave = enemy.SourceWave;
                 var waveId = wave is int w ? w : (int)wave;
+
                 if (!saveData.WaveEnemies.ContainsKey(waveId))
                 {
                     saveData.WaveEnemies[waveId] = new List<uint>();
@@ -407,6 +413,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             {
                 CustomData[enemyId] = new Dictionary<string, object>();
             }
+
             CustomData[enemyId][key] = value;
         }
 
@@ -491,7 +498,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         /// <summary>
         /// Create an enemy from save information.
         /// </summary>
-        private Enemy CreateEnemyFromSaveInfo(EnemySaveInfo enemyInfo)
+        Enemy CreateEnemyFromSaveInfo(EnemySaveInfo enemyInfo)
         {
             try
             {
@@ -500,6 +507,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     return null;
 
                 var enemy = Enemy.CreateEnemy(parsedId);
+
                 if (enemy != null)
                 {
                     enemy.Name = enemyInfo.Name;
@@ -529,7 +537,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         /// <summary>
         /// Create an enemy by type.
         /// </summary>
-        private Enemy CreateEnemyByType(ZombieType enemyType)
+        Enemy CreateEnemyByType(ZombieType enemyType)
         {
             // Implementation would create appropriate enemy based on type
             switch (enemyType)
@@ -607,10 +615,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         public float RangeEfficiency { get; set; }
         public float CostEfficiency { get; set; }
 
-        public EnemyStatistics()
-        {
-            CreatedTime = DateTime.Now;
-        }
+        public EnemyStatistics() => CreatedTime = DateTime.Now;
 
         public DateTime CreatedTime { get; set; }
     }
@@ -620,19 +625,38 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
     /// </summary>
     public class EnemyManager
     {
-        private static EnemyManager _instance;
-        public static EnemyManager Instance => _instance ??= new EnemyManager();
+        static EnemyManager _instance;
+        public static EnemyManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new EnemyManager();
+                }
 
-        private readonly List<Enemy> _enemies = new();
+                return _instance;
+            }
+        }
+
+        readonly List<Enemy> _enemies = new();
 
         public void ClearAllEnemies() => _enemies.Clear();
+
         public void AddEnemy(Enemy enemy) => _enemies.Add(enemy);
+
         public Enemy GetEnemy(string id) => _enemies.FirstOrDefault(e => e.Id.ToString() == id);
+
         public Enemy GetEnemy(uint id) => _enemies.FirstOrDefault(e => e.Id == id);
+
         public List<Enemy> GetAllEnemies() => new List<Enemy>(_enemies);
+
         public int GetTotalSpawned() => _enemies.Count;
+
         public int GetTotalKilled() => _enemies.Count(e => e.Health <= 0);
+
         public int GetTotalEscaped() => 0;
+
         public int GetActiveEnemyCount() => _enemies.Count(e => e.Health > 0);
     }
 }

@@ -2,7 +2,7 @@ using System;
 
 namespace SASZombieAssaultTD.Engine.Rendering
 {
-    public readonly struct Font : IEquatable<Font>
+    public sealed class Font : IEquatable<Font>
     {
         public readonly string Name;
         public readonly float Size;
@@ -64,7 +64,15 @@ namespace SASZombieAssaultTD.Engine.Rendering
             IsSystemFont = other.IsSystemFont;
             FilePath = other.FilePath;
         }
-        
+
+        public Font(CachedFont cachedFont) : this()
+        {
+        }
+
+        public Font()
+        {
+        }
+
         public Font WithSize(float newSize) => new Font(Name, newSize, Weight, Style);
         public Font WithWeight(FontWeight newWeight) => new Font(Name, Size, newWeight, Style);
         public Font WithStyle(FontStyle newStyle) => new Font(Name, Size, Weight, newStyle);

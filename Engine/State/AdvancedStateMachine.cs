@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +17,7 @@ namespace SASZombieAssaultTD.Engine.State
         private readonly List<StateTransition> _transitionHistory;
         private readonly int _maxHistorySize;
         private readonly Dictionary<GameStateType, DateTime> _stateEnterTimes;
-        private StateFactory _stateFactory;
+        private StateFactory? _stateFactory;
 
         /// <summary>
         /// Gets the transition history.
@@ -36,17 +38,22 @@ namespace SASZombieAssaultTD.Engine.State
         /// <summary>
         /// Event fired when a state transition is about to occur.
         /// </summary>
-        public event Action<StateTransition> OnTransitionStarted;
+        public event Action<StateTransition>? OnTransitionStarted;
 
         /// <summary>
         /// Event fired when a state transition has completed.
         /// </summary>
-        public event Action<StateTransition> OnTransitionCompleted;
+        public event Action<StateTransition>? OnTransitionCompleted;
 
         /// <summary>
         /// Event fired when a state transition fails.
         /// </summary>
-        public event Action<StateTransition, Exception> OnTransitionFailed;
+        public event Action<StateTransition, Exception>? OnTransitionFailed;
+
+        /// <summary>
+        /// Dictionary of state enter times for external access.
+        /// </summary>
+        public Dictionary<GameStateType, DateTime> StateEnterTimes { get; set; }
 
         /// <summary>
         /// Initializes a new advanced state machine.
@@ -57,6 +64,7 @@ namespace SASZombieAssaultTD.Engine.State
             _maxHistorySize = maxHistorySize;
             _transitionHistory = new List<StateTransition>();
             _stateEnterTimes = new Dictionary<GameStateType, DateTime>();
+            StateEnterTimes = new Dictionary<GameStateType, DateTime>();
         }
 
         /// <summary>

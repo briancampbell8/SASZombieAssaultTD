@@ -1,14 +1,13 @@
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Towers;
-using SASZombieAssaultTD.Engine.Gameplay.Towers;
-using SASZombieAssaultTD.Engine.Gameplay.Items;
 using Tower = SASZombieAssaultTD.Engine.Towers.Tower;
+
 // Alias to disambiguate TowerType between different namespaces
 using TowerTypeAlias = SASZombieAssaultTD.Engine.Dictionary.TowerType;
-using SASZombieAssaultTD.Engine.Extensions;
 
 namespace SASZombieAssaultTD.Engine.Save.SAS
 {
@@ -101,21 +100,21 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         {
             return new TowerSaveData
             {
-                TowerCount = this.TowerCount,
-                TotalValue = this.TotalValue,
-                LastUpdated = this.LastUpdated,
-                Towers = new List<TowerSaveInfo>(this.Towers),
-                TowerLevels = new Dictionary<string, int>(this.TowerLevels),
-                TowerPositions = new Dictionary<string, Vector3>(this.TowerPositions),
-                TowerTypes = new List<string>(this.TowerTypes),
-                TowerUpgrades = new Dictionary<string, List<string>>(this.TowerUpgrades),
-                TowerUpgradeLevels = new Dictionary<string, int>(this.TowerUpgradeLevels),
-                TowerAbilities = new Dictionary<string, List<string>>(this.TowerAbilities),
-                TowerStats = new Dictionary<string, TowerStatistics>(this.TowerStats),
-                TowerKills = new Dictionary<string, int>(this.TowerKills),
-                TowerDamage = new Dictionary<string, float>(this.TowerDamage),
-                TowerUptime = new Dictionary<string, TimeSpan>(this.TowerUptime),
-                CustomData = new Dictionary<string, Dictionary<string, object>>(this.CustomData)
+                TowerCount = TowerCount,
+                TotalValue = TotalValue,
+                LastUpdated = LastUpdated,
+                Towers = new List<TowerSaveInfo>(Towers),
+                TowerLevels = new Dictionary<string, int>(TowerLevels),
+                TowerPositions = new Dictionary<string, Vector3>(TowerPositions),
+                TowerTypes = new List<string>(TowerTypes),
+                TowerUpgrades = new Dictionary<string, List<string>>(TowerUpgrades),
+                TowerUpgradeLevels = new Dictionary<string, int>(TowerUpgradeLevels),
+                TowerAbilities = new Dictionary<string, List<string>>(TowerAbilities),
+                TowerStats = new Dictionary<string, TowerStatistics>(TowerStats),
+                TowerKills = new Dictionary<string, int>(TowerKills),
+                TowerDamage = new Dictionary<string, float>(TowerDamage),
+                TowerUptime = new Dictionary<string, TimeSpan>(TowerUptime),
+                CustomData = new Dictionary<string, Dictionary<string, object>>(CustomData)
             };
         }
 
@@ -128,6 +127,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             try
             {
                 var towerRegistry = TowerRegistry.Instance;
+
                 if (towerRegistry == null)
                     return false;
 
@@ -138,6 +138,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 foreach (var towerInfo in Towers)
                 {
                     var towerF = CreateTowerFromSaveInfo(towerInfo);
+
                     if (tower != null)
                     {
                         towerRegistry.AddTower(tower);
@@ -150,6 +151,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     var towerId = kvp.Key;
                     var level = kvp.Value;
                     var towerF = towerRegistry.GetTower(towerId);
+
                     if (tower != null)
                     {
                         tower.Level = level;
@@ -162,6 +164,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     var towerId = kvp.Key;
                     var position = kvp.Value;
                     var towerF = towerRegistry.GetTower(towerId);
+
                     if (tower != null)
                     {
                         position1 = position;
@@ -174,6 +177,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     var towerId = kvp.Key;
                     var upgrades = kvp.Value;
                     var towerF = towerRegistry.GetTower(towerId);
+
                     if (tower != null)
                     {
                         foreach (var upgradeName in upgrades)
@@ -189,12 +193,11 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     var towerId = kvp.Key;
                     var abilities = kvp.Value;
                     var towerF = towerRegistry.GetTower(towerId);
+
                     if (tower != null)
                     {
                         foreach (var ability in abilities)
-                        {
                             tower.AddSpecialAbility(ability);
-                        }
                     }
                 }
 
@@ -204,6 +207,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     var towerId = kvp.Key;
                     var stats = kvp.Value;
                     var towerF = towerRegistry.GetTower(towerId);
+
                     if (tower != null)
                     {
                         tower.TotalKills = stats.TotalKills;
@@ -229,6 +233,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         public static TowerSaveData CaptureCurrentState()
         {
             var towerRegistry = TowerRegistry.Instance;
+
             if (towerRegistry == null)
                 return new TowerSaveData();
 
@@ -241,6 +246,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
             // Capture tower information
             var towers = towerRegistry.GetAllTowers();
+
             foreach (var tower in towers)
             {
                 var towerInfo = new TowerSaveInfo
@@ -275,6 +281,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
                 // Capture upgrades
                 var upgrades = tower.GetAvailableUpgrades();
+
                 if (upgrades.Count > 0)
                 {
                     saveData.TowerUpgrades[tower.Id.ToString()] = upgrades.Select(u => u.Name).ToList();
@@ -283,9 +290,10 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
                 // Capture abilities
                 var abilities = tower.GetSpecialAbilities();
+
                 if (abilities.Count > 0)
                 {
-                    saveData.TowerAbilities[tower.Id.ToString()] = abilities;
+                    saveData.TowerAbilities[tower.Id.ToString()] = new List<string>(abilities);
                 }
 
                 // Capture statistics
@@ -294,8 +302,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     TotalKills = tower.TotalKills,
                     TotalDamage = tower.DamageDealt,
                     Uptime = TimeSpan.FromSeconds(tower.Uptime),
-                    Accuracy = tower.Accuracy,
-                    DPS = tower.DPS
+                    
+                    Accuracy = (float)tower.Accuracy,
+                    DPS = (float)tower.DPS
                 };
 
                 saveData.TowerKills[tower.Id.ToString()] = tower.TotalKills;
@@ -388,6 +397,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             {
                 CustomData[towerId] = new Dictionary<string, object>();
             }
+
             CustomData[towerId][key] = value;
         }
 
@@ -423,130 +433,107 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         /// <summary>
         /// Create a tower from save information.
         /// </summary>
-        private Tower CreateTowerFromSaveInfo(TowerSaveInfo towerInfo)
+        Tower CreateTowerFromSaveInfo(TowerSaveInfo towerInfo)
         {
             try
             {
-                // Parse tower type (use alias to avoid ambiguous reference)
-                if (Enum.TryParse<TowerTypeAlias>(towerInfo.Type, out var towerType))
+                if (Enum.TryParse<TowerType>(towerInfo.Type, out var towerType))
                 {
-                    // Create tower based on type
-                    var tower = CreateTowerByType(towerType);
+                 ///   var tower = CreateTowerByType(towerType);
+                    var tower = CreateTowerFromSaveInfo(towerInfo);
 
                     if (tower != null)
                     {
-                        // tower.Id = towerInfo.Id; // Read-only property
-                        // tower.Name = towerInfo.Name; // Read-only property
-                        tower.Level = towerInfo.Level;
-                        // tower.Position = towerInfo.Position; // Read-only property
-                        tower.Rotation = towerInfo.Rotation.Y;
-                        tower.Scale = towerInfo.Scale.X;
-                        // tower.Cost = towerInfo.Cost; // Read-only property
-                        tower.Health = towerInfo.Health;
-                        tower.MaxHealth = towerInfo.MaxHealth;
-                        tower.Damage = towerInfo.Damage;
-                        tower.Range = towerInfo.Range;
-                        tower.FireRate = towerInfo.FireRate;
-                        tower.Speed = towerInfo.Speed;
-                        tower.IsActive = towerInfo.IsActive;
+                        // setup
+                        return tower;
                     }
-
-                    return tower;
                 }
 
+                // If parsing failed or tower creation failed
                 return null;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error creating tower from save info: {ex.Message}");
+                Console.WriteLine($"Error creating tower: {ex.Message}");
                 return null;
             }
         }
 
-        /// <summary>
-        /// Create a tower by type.
-        /// </summary>
-        private Tower CreateTowerByType(TowerTypeAlias towerType)
+        public class NewStruct
         {
-            return NewMethod(towerType);
+            public object A { get; }
+            public object B { get; }
 
-            static Tower NewMethod(TowerTypeAlias towerType)
+            public NewStruct(object a, object b)
             {
-                // Implementation would create appropriate tower based on type
-                switch (towerType)
-                {
-                    case TowerTypeAlias.VickersTurret:
-                        return null;
-                    case TowerTypeAlias.MGLTurret:
-                        return null;
-                    case TowerTypeAlias.SpecialTurret:
-                        return null;
-                    case TowerTypeAlias.SASSoldier:
-                        return null;
-                    case TowerTypeAlias.SniperSAS:
-                        return null;
-                    default:
-                        return null;
-                }
+                A = a;
+                B = b;
+            }
+
+            public static implicit operator NewStruct((object, object) value)
+            {
+                return new NewStruct(value.Item1, value.Item2);
             }
         }
 
-        #endregion
     }
 
-    /// <summary>
-    /// Individual tower save information.
-    /// </summary>
-    public class TowerSaveInfo
+    internal class NewStruct
     {
-        public string Id { get; set; }
-        public string Type { get; set; }
-        public string Name { get; set; }
-        public int Level { get; set; }
-        public Vector3 Position { get; set; }
-        public Vector3 Rotation { get; set; }
-        public Vector3 Scale { get; set; }
-        public int Cost { get; set; }
-        public float Health { get; set; }
-        public float MaxHealth { get; set; }
-        public float Damage { get; set; }
-        public float Range { get; set; }
-        public float FireRate { get; set; }
-        public float Speed { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime CreatedTime { get; set; }
-        public DateTime LastModified { get; set; }
-
-        public TowerSaveInfo()
-        {
-            CreatedTime = DateTime.Now;
-            LastModified = DateTime.Now;
-        }
     }
+}
 
-    /// <summary>
-    /// Tower statistics for save data.
-    /// </summary>
-    public class TowerStatistics
+    #endregion
+
+/// <summary>
+/// Individual tower save information.
+/// </summary>
+public class TowerSaveInfo
+{
+    public string Id { get; set; }
+    public string Type { get; set; }
+    public string Name { get; set; }
+    public int Level { get; set; }
+    public Vector3 Position { get; set; }
+    public Vector3 Rotation { get; set; }
+    public Vector3 Scale { get; set; }
+    public int Cost { get; set; }
+    public float Health { get; set; }
+    public float MaxHealth { get; set; }
+    public float Damage { get; set; }
+    public float Range { get; set; }
+    public float FireRate { get; set; }
+    public float Speed { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime CreatedTime { get; set; }
+    public DateTime LastModified { get; set; }
+
+    public TowerSaveInfo()
     {
-        public int TotalKills { get; set; }
-        public float TotalDamage { get; set; }
-        public TimeSpan Uptime { get; set; }
-        public float Accuracy { get; set; }
-        public float DPS { get; set; }
-        public int ShotsFired { get; set; }
-        public int ShotsHit { get; set; }
-        public float CriticalHits { get; set; }
-        public float DamageDealt { get; set; }
-        public float DamageTaken { get; set; }
-        public float RangeEfficiency { get; set; }
-        public float CostEfficiency { get; set; }
-
-        public TowerStatistics()
-        {
-            CreatedTime = DateTime.Now;
-        }
-
-        public DateTime CreatedTime { get; set; }
+        CreatedTime = DateTime.Now;
+        LastModified = DateTime.Now;
     }
+}
+
+/// <summary>
+/// Tower statistics for save data.
+/// </summary>
+public class TowerStatistics
+{
+    public int TotalKills { get; set; }
+    public float TotalDamage { get; set; }
+    public TimeSpan Uptime { get; set; }
+    public float Accuracy { get; set; }
+    public float DPS { get; set; }
+    public int ShotsFired { get; set; }
+    public int ShotsHit { get; set; }
+    public float CriticalHits { get; set; }
+    public float DamageDealt { get; set; }
+    public float DamageTaken { get; set; }
+    public float RangeEfficiency { get; set; }
+    public float CostEfficiency { get; set; }
+
+    public TowerStatistics() => CreatedTime = DateTime.Now;
+
+    public DateTime CreatedTime { get; set; }
 }

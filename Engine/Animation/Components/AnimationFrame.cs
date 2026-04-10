@@ -1,3 +1,12 @@
+// ROLE: Represents a single animation frame.
+// RESPONSIBILITY: Store frame data including texture reference, duration, and transform data.
+// TRIGGERS: Instantiated by AnimationClip during frame data loading.
+// INPUTS: Receives texture name and duration from animation data.
+// OUTPUTS: Provides frame data for animation playback.
+// DEPENDENCIES: Uses Vector3 for transform data.
+// CONTENTS: AnimationFrame class with TextureName, DurationSeconds, Time, Metadata, SpriteIndex, 
+//           TransformOffset, ColorTint properties.
+
 using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;

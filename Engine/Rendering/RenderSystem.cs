@@ -49,12 +49,42 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public static void EndFrame() { }
         public static void DrawLine(Vector3 start, Vector3 end, Color color) { }
         public static void DrawCircle(Vector3 center, float radius, Color color) { }
-        public static void DrawRectangle(Vector3 position, float width, float height, Color color) { }
+        public static void DrawRectangle(float v, Vector3 position, float width, float height, Color color) { }
         public static void DrawText(string text, Vector3 position, Color color) { }
         public static void SetCamera(Matrix viewMatrix, Matrix projectionMatrix) { }
         public static void Flush() { }
         public static void DrawCheckmark(Vector3 position, Color color, float size) { }
         public static void DrawX(Vector3 position, Color color, float size) { }
         public static void DrawString(string text, Vector3 position, Color color, float size = 1.0f) { DrawText(text, position, color); }
+
+        internal static void DrawRectangle(float v1, float v2, float scale1, float scale2, Color color)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawLine(Vector3 vector31, Vector3 vector32, Color red, float v)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawCircle(float x, float y, float currentRange, System.Drawing.Color rangeColor, float v)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawLine(Vector3 startPoint, Vector3 endPoint, System.Drawing.Color color, float v)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawSprite(Sprite towerSprite, Vector3 towerPos, Vector3 vector3, System.Drawing.Color finalColor)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawRectangle(float v1, float v2, float x, float v3, System.Drawing.Color baseColor)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

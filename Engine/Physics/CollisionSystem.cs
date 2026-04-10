@@ -26,17 +26,16 @@ Notes:      This system does not apply physics forces - only detection and event
            Supports both discrete and continuous collision detection modes.
 
 */
+using SASZombieAssaultTD.Engine.ECS;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.Physics.Components;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
-using SASZombieAssaultTD.Engine.Extensions;
 using System.Linq;
 using System.Threading.Tasks;
-using SASZombieAssaultTD.Engine.Components;
-using SASZombieAssaultTD.Engine.ECS;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Physics.Components;
 
 namespace SASZombieAssaultTD.Engine.Physics
 {
@@ -54,13 +53,13 @@ namespace SASZombieAssaultTD.Engine.Physics
 
         int IECSSystem.Priority => throw new NotImplementedException();
 
-        private readonly EntityManager _entityManager;
-        private readonly EventRouter _eventRouting;
-        private readonly ConcurrentBag<CollisionResult> _currentCollisions = new();
-        private readonly ConcurrentBag<CollisionResult> _previousCollisions = new();
-        private readonly object _lock = new();
-        private bool _initialized;
-        private readonly bool _debugOutput = true;
+        readonly EntityManager _entityManager;
+        readonly EventRouter _eventRouting;
+        readonly ConcurrentBag<CollisionResult> _currentCollisions = new();
+        readonly ConcurrentBag<CollisionResult> _previousCollisions = new();
+        readonly object _lock = new();
+        bool _initialized;
+        readonly bool _debugOutput = true;
 
         public CollisionSystem(EntityManager entityManager, EventRouter eventRouting)
         {
@@ -101,10 +100,11 @@ namespace SASZombieAssaultTD.Engine.Physics
             try
             {
                 _previousCollisions.Clear();
+
                 foreach (var collision in _currentCollisions)
-                {
                     _previousCollisions.Add(collision);
-                }
+                
+
                 _currentCollisions.Clear();
 
                 var collisionEntities = _entityManager.GetEntitiesWithCollisionAndTransform();
@@ -123,7 +123,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        private void DetectCollisions(IReadOnlyList<object> entities)
+        void DetectCollisions(IReadOnlyList<object> entities)
         {
             Parallel.For(0, entities.Count, i =>
             {
@@ -141,20 +141,21 @@ namespace SASZombieAssaultTD.Engine.Physics
             });
         }
 
-        private bool CheckCollision(object entityA, object entityB)
+        bool CheckCollision(object entityA, object entityB)
         {
             try
             {
                 var entityIdA = entityA is Entity entA ? entA.Id : (uint)entityA;
                 var entityIdB = entityB is Entity entB ? entB.Id : (uint)entityB;
-                
+
                 var collisionA = _entityManager.GetComponent<ColliderComponent>(entityIdA);
                 var collisionB = _entityManager.GetComponent<ColliderComponent>(entityIdB);
                 var transformA = _entityManager.GetComponent<SASZombieAssaultTD.Engine.Components.TransformComponent>(entityIdA);
-                var transformB = _entityManager.GetComponent<SASZombieAssaultTD.Engine.Components.TransformComponent> (entityIdB);
- 
+                var transformB = _entityManager.GetComponent<SASZombieAssaultTD.Engine.Components.TransformComponent>(entityIdB);
+
                 if (collisionA == null || collisionB == null ||
-                    transformA.Equals(default(SASZombieAssaultTD.Engine.ECS.TransformComponent)) || transformB.Equals(default(SASZombieAssaultTD.Engine.ECS.TransformComponent)) ||
+                    transformA.Equals(default(SASZombieAssaultTD.Engine.Components.TransformComponent)) || 
+                    transformB.Equals(default(SASZombieAssaultTD.Engine.Components.TransformComponent)) ||
                     !collisionA.Enabled || !collisionB.Enabled)
                 {
                     return false;
@@ -169,6 +170,7 @@ namespace SASZombieAssaultTD.Engine.Physics
                     transformA.Position.X + (collisionA.Shape?.Center.X ?? 0),
                     transformA.Position.Y + (collisionA.Shape?.Center.Y ?? 0)
                 );
+
                 var worldPosB = new PointF(
                     transformB.Position.X + (collisionB.Shape?.Center.X ?? 0),
                     transformB.Position.Y + (collisionB.Shape?.Center.Y ?? 0)
@@ -184,14 +186,14 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        private bool BroadPhaseAABBCheck(ColliderComponent collisionA, PointF posA, ColliderComponent collisionB, PointF posB)
+        bool BroadPhaseAABBCheck(ColliderComponent collisionA, PointF posA, ColliderComponent collisionB, PointF posB)
         {
             var aabbA = GetColliderAABB(collisionA, posA);
             var aabbB = GetColliderAABB(collisionB, posB);
             return aabbA.IntersectsWith(aabbB);
         }
 
-        private bool NarrowPhaseShapeCheck(ColliderComponent collisionA, PointF posA, ColliderComponent collisionB, PointF posB)
+        bool NarrowPhaseShapeCheck(ColliderComponent collisionA, PointF posA, ColliderComponent collisionB, PointF posB)
         {
             if (collisionA.Shape == null || collisionB.Shape == null)
                 return false;
@@ -214,56 +216,57 @@ namespace SASZombieAssaultTD.Engine.Physics
             };
         }
 
-        private bool CheckBoxBoxCollision(CollisionShape boxA, PointF posA, CollisionShape boxB, PointF posB)
+        bool CheckBoxBoxCollision(CollisionShape boxA, PointF posA, CollisionShape boxB, PointF posB)
         {
             // Simplified box-box collision check
             var boundsA = boxA.Bounds;
             var boundsB = boxB.Bounds;
-            
+
             return boundsA.Intersects(boundsB);
         }
 
-        private bool CheckCircleCircleCollision(CollisionShape circleA, PointF posA, CollisionShape circleB, PointF posB)
+        bool CheckCircleCircleCollision(CollisionShape circleA, PointF posA, CollisionShape circleB, PointF posB)
         {
             // Simplified circle-circle collision check
             var distance = System.MathF.Sqrt(System.MathF.Pow(posA.X - posB.X, 2) + System.MathF.Pow(posA.Y - posB.Y, 2));
             var radiusSum = GetCircleRadius(circleA) + GetCircleRadius(circleB);
-            
+
             return distance <= radiusSum;
         }
 
-        private bool CheckBoxCircleCollision(CollisionShape box, PointF boxPos, CollisionShape circle, PointF circlePos)
+        bool CheckBoxCircleCollision(CollisionShape box, PointF boxPos, CollisionShape circle, PointF circlePos)
         {
             // Simplified box-circle collision check
             return CheckCircleBoxCollision(circle, circlePos, box, boxPos);
         }
 
-        private bool CheckCircleBoxCollision(CollisionShape circle, PointF circlePos, CollisionShape box, PointF boxPos)
+        bool CheckCircleBoxCollision(CollisionShape circle, PointF circlePos, CollisionShape box, PointF boxPos)
         {
             // Simplified circle-box collision check
             var bounds = box.Bounds;
             var closestX = System.MathF.Max(bounds.Min.X, System.MathF.Min(circlePos.X, bounds.Max.X));
             var closestY = System.MathF.Max(bounds.Min.Y, System.MathF.Min(circlePos.Y, bounds.Max.Y));
-            
+
             var distance = System.MathF.Sqrt(System.MathF.Pow(circlePos.X - closestX, 2) + System.MathF.Pow(circlePos.Y - closestY, 2));
             var radius = GetCircleRadius(circle);
-            
+
             return distance <= radius;
         }
 
-        private float GetCircleRadius(CollisionShape circle)
+        float GetCircleRadius(CollisionShape circle)
         {
             // For circle shapes, use the bounds to estimate radius
             var bounds = circle.Bounds;
             return System.MathF.Max(bounds.Width, bounds.Height) * 0.5f;
         }
 
-        private RectangleF GetColliderAABB(ColliderComponent collision, PointF position)
+        RectangleF GetColliderAABB(ColliderComponent collision, PointF position)
         {
             if (collision.Shape == null)
                 return RectangleF.Empty;
 
             var bounds = collision.Shape.Bounds;
+
             return new RectangleF(
                 position.X + bounds.Min.X,
                 position.Y + bounds.Min.Y,
@@ -272,23 +275,24 @@ namespace SASZombieAssaultTD.Engine.Physics
             );
         }
 
-        private CollisionResult CreateCollisionResult(object entityA, object entityB)
+        CollisionResult CreateCollisionResult(object entityA, object entityB)
         {
             var entityIdA = (uint)entityA;
             var entityIdB = (uint)entityB;
             var collisionA = _entityManager.GetComponent<ColliderComponent>(entityIdA);
             var collisionB = _entityManager.GetComponent<ColliderComponent>(entityIdB);
             var isTrigger = collisionA?.IsTrigger == true || collisionB?.IsTrigger == true;
-            return new CollisionResult 
-            { 
-                ObjectA = entityA, 
-                ObjectB = entityB, 
+
+            return new CollisionResult
+            {
+                ObjectA = entityA,
+                ObjectB = entityB,
                 HasCollision = true,
-                IsTrigger = isTrigger 
+                IsTrigger = isTrigger
             };
         }
 
-        private void ResolvePhysicalCollisions()
+        void ResolvePhysicalCollisions()
         {
             foreach (var collision in _currentCollisions)
             {
@@ -308,7 +312,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        private void ProcessCollisionEvents()
+        void ProcessCollisionEvents()
         {
             foreach (var collision in _currentCollisions)
             {
@@ -331,7 +335,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        private void DebugLog(string message)
+        void DebugLog(string message)
         {
             if (_debugOutput)
             {
@@ -353,7 +357,7 @@ namespace SASZombieAssaultTD.Engine.Physics
         /// <summary>
         /// Resolves overlap between colliding entities.
         /// </summary>
-        private void ResolveOverlap(CollisionResult collision, PhysicsComponent physicsA, PhysicsComponent physicsB, SASZombieAssaultTD.Engine.Components.TransformComponent transformA, SASZombieAssaultTD.Engine.Components.TransformComponent transformB)
+        void ResolveOverlap(CollisionResult collision, PhysicsComponent physicsA, PhysicsComponent physicsB, SASZombieAssaultTD.Engine.Components.TransformComponent transformA, SASZombieAssaultTD.Engine.Components.TransformComponent transformB)
         {
             // Simple overlap resolution - push entities apart
             var separation = collision.Normal * collision.PenetrationDepth * 0.5f;
@@ -374,7 +378,7 @@ namespace SASZombieAssaultTD.Engine.Physics
         /// <summary>
         /// Applies bounce forces to colliding entities.
         /// </summary>
-        private void ApplyBounceForces(CollisionResult collision, PhysicsComponent physicsA, PhysicsComponent physicsB)
+        void ApplyBounceForces(CollisionResult collision, PhysicsComponent physicsA, PhysicsComponent physicsB)
         {
             if (physicsA.IsKinematic && physicsB.IsKinematic)
                 return;
@@ -517,7 +521,3 @@ namespace SASZombieAssaultTD.Engine.Physics
         Continuous
     }
 }
-
-
-
-

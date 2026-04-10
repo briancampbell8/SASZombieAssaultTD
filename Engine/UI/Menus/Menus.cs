@@ -1,4 +1,5 @@
 using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.UI.Components;
 using System;
 using System.Collections.Generic;
 
@@ -6,12 +7,11 @@ namespace SASZombieAssaultTD.Engine.UI
 {
     public sealed class Menus
     {
-        private readonly List<UIElementBase> _elements = new List<UIElementBase>();
+        readonly List<UIElementBase> _elements = new List<UIElementBase>();
 
         public void Add(UIElementBase element)
         {
-            if (element != null)
-                _elements.Add(element);
+            if (element != null) _elements.Add(element);
         }
 
         public void Update(float deltaTime)

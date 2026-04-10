@@ -1,11 +1,12 @@
+using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.ECS;
+using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Core;
-using TransformComponent = SASZombieAssaultTD.Engine.Components.TransformComponent;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using SASZombieAssaultTD.Engine.Extensions;
+using TransformComponent = SASZombieAssaultTD.Engine.Components.TransformComponent;
 
 namespace SASZombieAssaultTD.Engine.Physics
 {
@@ -15,7 +16,8 @@ namespace SASZombieAssaultTD.Engine.Physics
     /// </summary>
     public sealed class CollisionDebugRenderer
     {
-        private readonly ECSWorld _ecsWorld;
+        readonly ECSWorld _ecsWorld;
+        object statsText, showContacts, showBounds, showShapes, showGrid;
 
         public bool Enabled { get; set; }
         public bool ShowGrid { get; set; } = true;
@@ -52,9 +54,10 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        private void RenderSpatialGrid(IRenderContext context)
+        void RenderSpatialGrid(IRenderContext context)
         {
             var grid = _ecsWorld.SpatialGrid;
+
             var stats = new SpatialGridStats
             {
                 TotalCells = 10000,
@@ -65,6 +68,7 @@ namespace SASZombieAssaultTD.Engine.Physics
                 GridHeight = 100,
                 CellSize = 100
             };
+
             var worldMin = new Vector3(-1000, -1000, 0);
             var cellSize = stats.CellSize;
 
@@ -88,7 +92,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             context.DrawRectangle(boundsRect, new Color(0xFFFFFFFF), 2.0f);
         }
 
-        private void RenderCollisionShapes(IRenderContext context)
+        void RenderCollisionShapes(IRenderContext context)
         {
             foreach (var entity in _ecsWorld.GetEntitiesWith<ColliderComponent, TransformComponent>())
             {
@@ -114,7 +118,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        private void RenderShape(IRenderContext context, CollisionShape shape, Vector3 position, bool isTrigger)
+        void RenderShape(IRenderContext context, CollisionShape shape, Vector3 position, bool isTrigger)
         {
             var color = isTrigger ? TriggerColor : ShapeColor;
 
@@ -134,13 +138,13 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        private void RenderCircle(IRenderContext context, CircleShape circle, Vector3 position, uint color)
+        void RenderCircle(IRenderContext context, CircleShape circle, Vector3 position, uint color)
         {
             var centerPos = new Vector3(position.X + circle.Center.X, position.Y + circle.Center.Y, 0);
             context.DrawCircle(centerPos, circle.Radius, new Color(color));
         }
 
-        private void RenderAABB(IRenderContext context, AABBShape aabb, Vector3 position, uint color)
+        void RenderAABB(IRenderContext context, AABBShape aabb, Vector3 position, uint color)
         {
             var min = position + aabb.Min;
             var size = aabb.Size;
@@ -148,7 +152,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             context.DrawRectangle(rect, new Color(color));
         }
 
-        private void RenderCapsule(IRenderContext context, CapsuleShape capsule, Vector3 position, uint color)
+        void RenderCapsule(IRenderContext context, CapsuleShape capsule, Vector3 position, uint color)
         {
             var halfHeight = capsule.HalfHeight;
             var radius = capsule.Radius;
@@ -164,26 +168,37 @@ namespace SASZombieAssaultTD.Engine.Physics
             context.DrawCircle(bottomCenter, radius, new Color(color));
         }
 
-        private void RenderDebugStats(IRenderContext context)
+        void RenderDebugStats(IRenderContext context)
         {
             var collisionSystem = _ecsWorld.GetSystem<CollisionSystem>();
             var gridStats = _ecsWorld.SpatialGrid.GetStats();
 
-            var statsText = $"  Actual Collisions: {collisionSystem?.ActualCollisions ?? 0}\n" +
-                            "\nSpatial Grid Stats:\n" +
-                            $"  Total Cells: {gridStats?.TotalCells ?? 0}\n" +
-                            $"  Occupied Cells: {gridStats?.OccupiedCells ?? 0}\n" +
-                            $"  Total Entities: {gridStats?.TotalEntities ?? 0}\n" +
-                            $"  Avg Entities/Cell: {(gridStats?.AverageEntitiesPerCell).ToString("F2") ?? "0.00"}\n" +
-                            $"  Max Entities/Cell: {gridStats?.MaxEntitiesPerCell ?? 0}\n" +
-                            $"\nDebug Options: Grid={ShowGrid} Shapes={ShowShapes} Contacts={ShowContacts} Bounds={ShowBounds}";
+            // 1. Rename to debugOutput
+            // 2. Add () to MaxEntitiesPerCell if it is a method (it has a red line in your image)
+            var debugOutput =
+             $"  Actual Collisions: {collisionSystem?.ActualCollisions ?? 0}\n" +
+             "\nSpatial Grid Stats:\n" +
+             // Change line 186 to this:
+             $"  Total Cells: {(gridStats != null ? ObjectExtensions.TotalCells(gridStats) : 0)}\n" +
+             $"  Occupied Cells: {(gridStats != null ? ObjectExtensions.OccupiedCells(gridStats) : 0)}\n" +
+             $"  Total Entities: {(gridStats != null ? ObjectExtensions.TotalEntities(gridStats) : 0)}\n" +
+             $" Avg Entities/Cell: {(gridStats != null ? ObjectExtensions.AverageEntitiesPerCell(gridStats).ToString("F2") : "0.00")}\n" +
+             $"  Max Entities/Cell: {(gridStats != null ? ObjectExtensions.MaxEntitiesPerCell(gridStats) : 0)}\n" +
+             $"\nDebug Options: Grid={ShowGrid} Shapes={ShowShapes} Contacts={ShowContacts} Bounds={ShowBounds}";
 
+            // 3. Update the loop to use the new name
             var y = 10;
-            foreach (var line in statsText.Split('\n'))
+
+            foreach (var line in debugOutput.Split('\n'))
             {
                 context.DrawText(line, 10, y);
                 y += 15;
             }
+        }
+
+        IEnumerable<object> Split(object statsText)
+        {
+            throw new NotImplementedException();
         }
 
         public string GetDebugInfo() =>
@@ -284,10 +299,11 @@ public static class GridStatsParser
     public static SpatialGridStats ParseGridStats(string debugText)
     {
         var stats = new SpatialGridStats();
-        
+
         if (string.IsNullOrEmpty(debugText)) return stats;
-        
+
         var lines = debugText.Split('\n');
+
         foreach (var line in lines)
         {
             if (line.StartsWith("  Total Cells: "))
@@ -316,9 +332,9 @@ public static class GridStatsParser
                     stats.MaxEntitiesPerCell = maxEntities;
             }
         }
-        
+
         stats.FreeCells = stats.TotalCells - stats.BlockedCells - stats.OccupiedCells;
-        
+
         return stats;
     }
 }

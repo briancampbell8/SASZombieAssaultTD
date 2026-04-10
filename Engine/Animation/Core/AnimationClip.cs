@@ -1,7 +1,11 @@
-/*
-File:    AnimationClip.cs
-Purpose: P11-16-01 - Represents a single animation clip.
-*/
+// FILE PATH: Engine/Animation/Core/AnimationClip.cs
+// EXECUTION TRIGGER: Referenced by AnimationPlayer and AnimationStateMachine during animation playback
+// PROGRAM PURPOSE: Immutable data container for a single animation clip storing animation data as pure data without update logic for deterministic playback
+// PROGRAM CALLS: None (data container)
+// PROGRAM CONTENTS: AnimationClip class with Name, Duration, Loop, FrameCount, Events properties and GetFrameDuration method
+
+#nullable enable
+
 using SASZombieAssaultTD.Engine.Animation.Events;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Core;
@@ -64,7 +68,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
         /// <summary>
         /// Gets the metadata associated with this animation clip.
         /// </summary>
-        public Dictionary<string, object> Metadata { get; set; }
+        public Dictionary<string, object?> Metadata { get; set; }
 
         /// <summary>
         /// Initializes a new AnimationClip.
@@ -81,7 +85,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             Events = new List<AnimationEvent>();
             Tracks = new Dictionary<AnimationTrackType, AnimationTrack>();
             Tags = new List<string>();
-            Metadata = new Dictionary<string, object>();
+            Metadata = new Dictionary<string, object?>();
 
             ModernLoggingSystem.Log("DEBUG", $"AnimationClip: Created '{name}' ({duration}s, looping: {isLooping})");
         }
@@ -98,7 +102,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             Events = new List<AnimationEvent>();
             Tracks = new Dictionary<AnimationTrackType, AnimationTrack>();
             Tags = new List<string>();
-            Metadata = new Dictionary<string, object>();
+            Metadata = new Dictionary<string, object?>();
         }
 
         /// <summary>
@@ -173,7 +177,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
         /// </summary>
         /// <param name="trackType">The type of track to retrieve.</param>
         /// <returns>The track if found, null otherwise.</returns>
-        public AnimationTrack GetTrack(AnimationTrackType trackType)
+        public AnimationTrack? GetTrack(AnimationTrackType trackType)
         {
             Tracks.TryGetValue(trackType, out var track);
             return track;
@@ -300,7 +304,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             SpriteIndex = spriteIndex;
             TransformOffset = Vector3.Zero;
             ColorTint = 0xFFFFFFFF;
-            Metadata = new Dictionary<string, object>();
+            Metadata = new Dictionary<string, object?>();
 
             ModernLoggingSystem.Log("DEBUG", $"AnimationFrame: Created at time {time:F3}, duration {duration:F3}s");
         }

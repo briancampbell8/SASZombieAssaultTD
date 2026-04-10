@@ -1,15 +1,9 @@
+using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.State;
+using SASZombieAssaultTD.Engine.UI.Input;
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.UI.Input;
-using SASZombieAssaultTD.Engine.UI.Systems;
-using SASZombieAssaultTD.Engine.Scenes;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Audio;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.State;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Core;
 
 namespace SASZombieAssaultTD.Engine.State
 {
@@ -353,15 +347,16 @@ namespace SASZombieAssaultTD.Engine.State
         {
             if (gameRoot == null)
             throw new ArgumentNullException(nameof(gameRoot));
-            
-            var stateMachine = gameRoot.StateMachine;
+
+            var stateMachine = gameRoot.StateMachine();
             if (stateMachine is EnhancedStateMachine enhancedStateMachine)
             {
                 return enhancedStateMachine.GenerateComprehensiveReport();
             }
             else
             {
-                var stats = stateMachine.GetStatistics();
+                var stats = ((StateMachine)stateMachine).GetStatistics();
+
                 return $"Basic StateMachine Report: Current={stats.CurrentState}, " +
                 $"Registered={stats.RegisteredStates}, Transitions={stats.TotalTransitions}";
             }

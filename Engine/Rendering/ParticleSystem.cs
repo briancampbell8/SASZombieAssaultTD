@@ -7,17 +7,14 @@ P11-03-04-B: Subsystem maintains particle pool, spawns particles based on emitte
 updates particle properties, removes expired particles, and handles rendering data.
 */
 
-using System;
-using SASZombieAssaultTD.Engine.Dictionary;
-using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.Components;
+using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.Resources;
-using Vector3 = SASZombieAssaultTD.Engine.VectorMath.Vector3;
-using SASZombieAssaultTD.Engine.Extensions;
-
+using System;
+using System.Collections.Generic;
 // Alias directives to resolve ambiguity
 using Components_TransformComponent = SASZombieAssaultTD.Engine.Components.TransformComponent;
+using Vector3 = SASZombieAssaultTD.Engine.VectorMath.Vector3;
 
 namespace SASZombieAssaultTD.Engine.Rendering
 {
@@ -76,19 +73,19 @@ namespace SASZombieAssaultTD.Engine.Rendering
     /// </summary>
     public class ParticleSystem
     {
-        private readonly EntityManager _entityManager;
-        private readonly RSManager _assetManager;
-        private readonly EventRouter _eventBus;
-        private readonly List<Particle> _particles = new();
-        private readonly Queue<Particle> _particlePool = new();
-        private readonly string _particleAssetId = "particle_default"; // Default particle asset
+        readonly EntityManager _entityManager;
+        readonly RSManager _assetManager;
+        readonly EventRouter _eventBus;
+        readonly List<Particle> _particles = new();
+        readonly Queue<Particle> _particlePool = new();
+        readonly string _particleAssetId = "particle_default"; // Default particle asset
 
-        private bool _initialized;
-        private readonly bool _debugOutput = true;
-        private bool _isPaused = false;
-        private readonly Random _random = new Random();
+        bool _initialized;
+        readonly bool _debugOutput = true;
+        bool _isPaused;
+        readonly Random _random = new Random();
 
-        private static ParticleSystem _instance;
+        static ParticleSystem _instance;
         public static ParticleSystem Instance => _instance ??= new ParticleSystem(null, null, null);
 
         /// <summary>
@@ -175,7 +172,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         /// <summary>
         /// Processes all particle emitters and spawns new particles.
         /// </summary>
-        private void ProcessEmitters(float deltaTime)
+        void ProcessEmitters(float deltaTime)
         {
             var emitters = GetEntitiesWithParticleEmitterAndTransform();
 
@@ -196,26 +193,25 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
                 // Spawn particles
                 for (int i = 0; i < particlesToEmit && _particles.Count < emitter.MaxParticles; i++)
-                {
                     SpawnParticle(emitter, transform);
-                }
+                
             }
         }
 
         /// <summary>
         /// Spawns a single particle from an emitter.
         /// </summary>
-        private void SpawnParticle(ParticleEmitterComponent emitter, Components_TransformComponent transform)
+        void SpawnParticle(ParticleEmitterComponent emitter, Components_TransformComponent transform)
         {
             var particle = GetParticleFromPool();
             if (particle == null) return;
 
             // Set initial particle properties from emitter ranges
             particle.Position = transform.Position;
-            
+
             var velocity = emitter.InitialVelocityRange.GetRandom();
             particle.Velocity = new Vector3(velocity.X, velocity.Y, 0);
-            
+
             var rotation = emitter.InitialRotationRange.GetRandom();
             particle.Rotation = rotation;
             var scale = emitter.InitialScaleRange.GetRandom();
@@ -232,7 +228,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         /// <summary>
         /// Gets a particle from the pool or creates a new one if the pool is empty.
         /// </summary>
-        private Particle? GetParticleFromPool()
+        Particle? GetParticleFromPool()
         {
             return _particlePool.Count > 0 ? _particlePool.Dequeue() : new Particle(Vector3.Zero, Vector3.Zero, 0.0f, 1.0f, Color.White, 1.0f);
         }
@@ -240,7 +236,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         /// <summary>
         /// Returns a particle to the pool for reuse.
         /// </summary>
-        private void ReturnParticleToPool(Particle particle)
+        void ReturnParticleToPool(Particle particle)
         {
             if (_particlePool.Count < 200) // Limit pool size
             {
@@ -253,7 +249,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         /// <summary>
         /// Gets all entities that have both ParticleEmitterComponent and TransformComponent.
         /// </summary>
-        private IReadOnlyList<object> GetEntitiesWithParticleEmitterAndTransform()
+        IReadOnlyList<object> GetEntitiesWithParticleEmitterAndTransform()
         {
             var result = new List<object>();
             var entities = _entityManager.Entities;
@@ -276,7 +272,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public void Stop()
         {
             if (!_initialized) return;
-            
+
             _particles.Clear();
             DebugLog("ParticleSystem: Stopped - All particles cleared");
         }
@@ -305,11 +301,12 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public void StartConfetti()
         {
             if (!_initialized) return;
-            
+
             // Create confetti particles
             for (int i = 0; i < 50; i++)
             {
                 var particle = GetParticleFromPool();
+
                 if (particle != null)
                 {
                     particle.Position = new Vector3(
@@ -317,22 +314,26 @@ namespace SASZombieAssaultTD.Engine.Rendering
                         (float)_random.NextDouble() * 600 - 300,
                         0
                     );
+
                     particle.Velocity = new Vector3(
                         (float)_random.NextDouble() * 200 - 100,
                         (float)_random.NextDouble() * 300 + 100,
                         0
                     );
+
                     particle.Color = new Color(
                         (byte)_random.Next(256),
                         (byte)_random.Next(256),
                         (byte)_random.Next(256),
                         255
                     );
+
                     particle.Lifetime = 3.0f;
                     particle.IsAlive = true;
                     _particles.Add(particle);
                 }
             }
+
             DebugLog("ParticleSystem: Started confetti effects");
         }
 
@@ -342,7 +343,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public void StopConfetti()
         {
             if (!_initialized) return;
-            
+
             // Remove confetti particles (simplified - just clear all)
             _particles.Clear();
             DebugLog("ParticleSystem: Stopped confetti effects");
@@ -375,7 +376,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         /// <summary>
         /// Logs debug messages if debug output is enabled.
         /// </summary>
-        private void DebugLog(string message)
+        void DebugLog(string message)
         {
             if (_debugOutput)
             {
@@ -384,7 +385,3 @@ namespace SASZombieAssaultTD.Engine.Rendering
         }
     }
 }
-
-
-
-

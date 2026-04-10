@@ -1,12 +1,13 @@
+using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.Save.SAS;
+using SASZombieAssaultTD.Engine.Towers.TowerControl;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Save.SAS;
-using SASZombieAssaultTD.Engine.Towers.TowerControl;
-using SASZombieAssaultTD.Engine.VectorMath;
 
 namespace SASZombieAssaultTD.Engine.Save
 {
@@ -395,16 +396,31 @@ namespace SASZombieAssaultTD.Engine.Save
             $"Current={_currentSaveSlot}, AutoSave={_autoSave}, Interval={_autoSaveInterval}s";
         }
 
-        private static void CaptureTowerState(SAS.SASGameSave save)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="save"></param>
+ private static void CaptureTowerState(SAS.SASGameSave save)
         {
-            // Adapted to use TowerUpgradeManager for tower state management
             var towerUpgradeManager = new TowerUpgradeManager();
 
-            save.Towers = new TowerSaveData
+            // Retrieve the single upgrade for this tower ID
+            var upgrade = towerUpgradeManager.GetUpgrade("default");
+
+            save.Towers = NewMethod(upgrade);
+        }
+
+        private static TowerSaveData NewMethod(Towers.TowerUpgrade upgrade)
+        {
+            return new TowerSaveData
             {
-                TowerCount = towerUpgradeManager.GetUpgrades("default")?.Count<object>() ?? 0,
-                TotalValue = towerUpgradeManager.GetUpgrades("default")?.Sum<object>(upgrade => (decimal)upgrade.Value) ?? 0,
-                TowerTypes = towerUpgradeManager.GetUpgrades("default")?.Select<object, string>(upgrade => upgrade.Type).ToList() ?? new List<string>(),
+                TowerCount = upgrade != null ? 1 : 0,
+                TotalValue = (int)(upgrade?.Value() ?? 0),
+                TowerTypes = upgrade != null
+                        ? new List<string> { upgrade.Type.ToString() }
+                        : new List<string>(),
+
+                // These will be populated later when implemented
                 TowerPositions = new Dictionary<string, Vector3>(),
                 TowerLevels = new Dictionary<string, int>()
             };

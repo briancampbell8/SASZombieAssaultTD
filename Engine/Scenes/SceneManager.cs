@@ -18,6 +18,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         private bool _isTransitioning;
         private float _transitionTimer;
         private float _transitionDuration;
+        internal string GameStateType;
 
         /// <summary>
         /// Gets currently active scene.
@@ -291,7 +292,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             // Clean up current scene
             if (_currentScene != null)
             {
-                // _currentScene.Cleanup(); 
+                _currentScene.Cleanup();
             }
 
             // Set new current scene
@@ -382,7 +383,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             // Cleanup all loaded scenes
             foreach (var kvp in _loadedScenes)
             {
-                // kvp.Value.Cleanup(); // TODO: implement BaseScene.Cleanup
+                kvp.Value.Cleanup();
             }
 
             _loadedScenes.Clear();
@@ -390,6 +391,35 @@ namespace SASZombieAssaultTD.Engine.Scenes
             _nextScene = null;
             _isTransitioning = false;
             _transitionTimer = 0f;
+        }
+
+        /// <summary>
+        /// Queues a scene for loading and switching using object parameter.
+        /// Converts object to string and delegates to string-based method.
+        /// </summary>
+        /// <param name="name">The scene name as object (for compatibility).</param>
+        /// <returns>True if scene was queued successfully.</returns>
+        internal void QueueScene(object name)
+        {
+            if (name == null)
+            {
+                ModernLoggingSystem.Log("ERROR", "SceneManager: Cannot queue scene with null object");
+                return;
+            }
+
+            string sceneName = name.ToString();
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                ModernLoggingSystem.Log("ERROR", "SceneManager: Object converted to null or empty string");
+                return;
+            }
+
+            // Delegate to the existing QueueScene(string) method
+            bool success = QueueScene(sceneName);
+            if (!success)
+            {
+                ModernLoggingSystem.Log("ERROR", $"SceneManager: Failed to queue scene '{sceneName}' from object parameter");
+            }
         }
     }
 }

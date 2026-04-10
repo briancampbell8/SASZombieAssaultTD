@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using SASZombieAssaultTD.Engine.Core;
 
 namespace SASZombieAssaultTD.Engine.Rendering
@@ -29,10 +30,15 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public void Begin(SpriteSortMode sortMode, BlendState blendState) { }
         public void Begin(SpriteSortMode sortMode, BlendState blendState, SamplerState samplerState) { }
         public void End() { }
-        public void Draw(object texture, System.Numerics.Vector2 position, Color color) { }
+        public void Draw(object texture, System.Numerics.Vector3 vector3, System.Numerics.Vector2 position, Color color) { }
         public void Draw(object texture, System.Numerics.Vector2 position, Rectangle? sourceRectangle, Color color) { }
         public void DrawString(object spriteFont, string text, System.Numerics.Vector2 position, Color color) { }
         public void DrawString(object spriteFont, string text, System.Numerics.Vector2 position, Color color, float rotation, System.Numerics.Vector2 origin, float scale, SpriteEffects effects, float layerDepth) { }
+
+        internal void Draw(nint v, Vector3 vector31, Rectangle sourceRect, Color color, float rotation, Vector3 vector32, Vector3 vector33, SpriteEffects none, float layerDepth)
+        {
+            throw new NotImplementedException();
+        }
     }
     
     public class SamplerState

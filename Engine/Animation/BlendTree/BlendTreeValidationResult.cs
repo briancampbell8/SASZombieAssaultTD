@@ -1,6 +1,11 @@
-// File: Engine/Animation/BlendTrees/Nodes/BlendTreeValidationResult.cs
-// Purpose: Represents the result of validating a blend tree.
-// Required by BlendTreeSerializer and BlendTreeValidator.
+// ROLE: Container for blend tree validation results.
+// RESPONSIBILITY: Store validation errors, warnings, and severity levels from tree inspection.
+// TRIGGERS: Returned by BlendTreeValidator and IBlendNode.Validate during validation operations.
+// INPUTS: Receives error and warning messages during validation checks.
+// OUTPUTS: Provides IsValid flag and aggregated validation messages.
+// DEPENDENCIES: Uses ValidationSeverity enum for categorization.
+// CONTENTS: BlendTreeValidationResult class with IsValid, Errors, Warnings, Infos properties 
+//           and AddError, AddWarning, AddInfo, Combine methods.
 
 using System.Collections.Generic;
 

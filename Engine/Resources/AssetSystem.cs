@@ -66,7 +66,8 @@ namespace SASZombieAssaultTD.Engine.Assets
         UI = 11,
         Particle = 12,
         Video = 13,
-        Material = 14
+        Material = 14,
+        Json = 15
     }
 
     /// <summary>
@@ -74,6 +75,11 @@ namespace SASZombieAssaultTD.Engine.Assets
     /// </summary>
     public class AssetMetadata
     {
+        internal object Format;
+        internal long SizeBytes;
+        internal DateTime LastModified;
+        internal bool IsCritical;
+
         public AssetKey Key { get; init; }
         public AssetType Type { get; init; }
         public string Path { get; init; } = string.Empty;
@@ -169,11 +175,15 @@ namespace SASZombieAssaultTD.Engine.Assets
     /// <summary>
     /// Asset registry with advanced caching and management.
     /// </summary>
-    public static class AssetRegistry
+    /// 
+
+       public static class AssetRegistry
     {
         private static readonly Dictionary<AssetKey, AssetMetadata> _assets = new();
         private static readonly Dictionary<AssetType, List<AssetKey>> _assetsByType = new();
         private static readonly object _lock = new();
+       
+
 
         /// <summary>
         /// Registers an asset with metadata.
@@ -269,6 +279,11 @@ namespace SASZombieAssaultTD.Engine.Assets
             }
         }
 
+        internal static void Register(string v1, string v2)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Gets the count of registered assets.
         /// </summary>
@@ -282,5 +297,8 @@ namespace SASZombieAssaultTD.Engine.Assets
                 }
             }
         }
+        public static object Instance { get; private set; }
+       
+        // public static object Instance { get; internal set; }
     }
 }

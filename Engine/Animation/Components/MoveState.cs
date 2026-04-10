@@ -1,8 +1,9 @@
-/*
-File:    MoveState.cs
-Purpose: P11-17-04 - Implement MoveState using IAnimationState with explicit transition conditions and deterministic Update behavior.
-Provides deterministic movement state with explicit transition conditions and no placeholder behavior.
-*/
+// FILE PATH: Engine/Animation/Components/MoveState.cs
+// EXECUTION TRIGGER: Instantiated by AnimationStateMachine during movement state transitions
+// PROGRAM PURPOSE: Movement animation state implementing deterministic movement state with explicit transition conditions
+// PROGRAM CALLS: IAnimationState, AnimationClip, IdleState, JumpState, AttackState, Vector3
+// PROGRAM CONTENTS: MoveState class implementing IAnimationState with Name, Clip, Velocity, Direction, IsRunning properties and Enter, Exit, Update, CheckTransitions methods
+
 using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.Animation.Core;
 using System.Collections.Generic;

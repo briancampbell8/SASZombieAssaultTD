@@ -1,7 +1,14 @@
-/*
-File:    AnimationComponent.cs
-Purpose: Core animation component for entities.
-*/
+// ROLE: Core animation component for ECS entities.
+// RESPONSIBILITY: Control animation playback, state, and transitions for entities.
+// TRIGGERS: Added to entities by EntityManager during entity initialization.
+// INPUTS: Receives animation data and playback commands from entity systems.
+// OUTPUTS: Provides current animation state and playback status.
+// DEPENDENCIES: Extends BaseComponent from ECS system.
+// CONTENTS: AnimationComponent class extending BaseComponent with _currentAnimation, _isPlaying, 
+//           _isLooping, _animationTime fields and AnimationPlaybackMode enum.
+
+#nullable enable
+
 using SASZombieAssaultTD.Engine.ECS;
 using System;
 using System.Collections.Generic;

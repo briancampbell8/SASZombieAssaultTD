@@ -1,3 +1,9 @@
+// FILE PATH: Engine/Animation/Core/LoggingSystemMonitor.cs
+// EXECUTION TRIGGER: Called by health check systems during runtime monitoring
+// PROGRAM PURPOSE: Logging system health monitor for runtime monitoring providing easy access to logging system status and health checks
+// PROGRAM CALLS: ModernLoggingSystem
+// PROGRAM CONTENTS: LoggingSystemMonitor static class with IsHealthy, GetStatus, GetStats methods
+
 using System;
 
 namespace SASZombieAssaultTD.Engine.Core

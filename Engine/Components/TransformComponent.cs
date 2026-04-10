@@ -8,6 +8,14 @@ namespace SASZombieAssaultTD.Engine.Components
     /// </summary>
     public class TransformComponent : BaseComponent
     {
+        public TransformComponent()
+        {
+        }
+
+        public TransformComponent(Vector3 worldPosition)
+        {
+        }
+
         public float X { get; set; }
         public float Y { get; set; }
         public float Z { get; set; }

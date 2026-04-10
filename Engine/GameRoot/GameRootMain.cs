@@ -43,7 +43,7 @@ namespace SASZombieAssaultTD.Engine
         private readonly IRenderContext _renderContext;
 
         // System properties for external access
-        // public UISystem? UISystem => null;
+        // public GetUISystem? GetUISystem => null;
         // public AnimationSystem? AnimationSystem => null;
         public SASZombieAssaultTD.Engine.Enemies.EnemySystem? EnemySystem => GetService<SASZombieAssaultTD.Engine.Enemies.EnemySystem>();
         public object? RenderSystem => GetService<RenderManager>();

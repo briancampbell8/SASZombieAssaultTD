@@ -1,3 +1,12 @@
+// ROLE: Serialization for blend trees.
+// RESPONSIBILITY: Convert blend trees to and from JSON format with validation.
+// TRIGGERS: Called by BlendTree and Animation systems during serialization operations.
+// INPUTS: Receives BlendTree objects for serialization or JSON strings for deserialization.
+// OUTPUTS: Produces JSON strings or BlendTree objects with validation reports.
+// DEPENDENCIES: Uses System.Text.Json for serialization.
+// CONTENTS: BlendTreeSerializer static class with SerializeBlendTree, DeserializeBlendTree, 
+//           TryDeserializeBlendTree, ValidateBlendTreeJson methods.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -195,18 +204,20 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             errors.AddRange(nodeValidation.Errors);
             warnings.AddRange(nodeValidation.Warnings);
 
-            // Recursively validate child nodes based on type
-            if (node is LinearBlendNode linearNode)
+            // Recursively validate child nodes based on type using pattern matching
+            switch (node)
             {
-                ValidateNodeRecursive(linearNode.ChildA, errors, warnings);
-                ValidateNodeRecursive(linearNode.ChildB, errors, warnings);
-            }
-            else if (node is TwoDBlendNode twoDNode)
-            {
-                ValidateNodeRecursive(twoDNode.ChildBottomLeft, errors, warnings);
-                ValidateNodeRecursive(twoDNode.ChildBottomRight, errors, warnings);
-                ValidateNodeRecursive(twoDNode.ChildTopLeft, errors, warnings);
-                ValidateNodeRecursive(twoDNode.ChildTopRight, errors, warnings);
+                case LinearBlendNode linearNode:
+                    ValidateNodeRecursive(linearNode.ChildA, errors, warnings);
+                    ValidateNodeRecursive(linearNode.ChildB, errors, warnings);
+                    break;
+
+                case TwoDBlendNode twoDNode:
+                    ValidateNodeRecursive(twoDNode.ChildBottomLeft, errors, warnings);
+                    ValidateNodeRecursive(twoDNode.ChildBottomRight, errors, warnings);
+                    ValidateNodeRecursive(twoDNode.ChildTopLeft, errors, warnings);
+                    ValidateNodeRecursive(twoDNode.ChildTopRight, errors, warnings);
+                    break;
             }
         }
 
@@ -260,35 +271,37 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 RequiredParameters = new List<string>(node.RequiredParameters)
             };
 
-            // Convert node-specific properties
-            if (node is SingleClipNode singleClipNode)
+            // Convert node-specific properties using pattern matching
+            switch (node)
             {
-                serializableNode.ClipId = singleClipNode.ClipId;
-            }
-            else if (node is LinearBlendNode linearNode)
-            {
-                serializableNode.BlendParameter = linearNode.BlendParameter;
-                serializableNode.ChildAId = linearNode.ChildA?.NodeId;
-                serializableNode.ChildBId = linearNode.ChildB?.NodeId;
+                case SingleClipNode singleClipNode:
+                    serializableNode.ClipId = singleClipNode.ClipId;
+                    break;
 
-                // Recursively convert children
-                ConvertNodeRecursive(linearNode.ChildA, processedNodes, serializableNodes);
-                ConvertNodeRecursive(linearNode.ChildB, processedNodes, serializableNodes);
-            }
-            else if (node is TwoDBlendNode twoDNode)
-            {
-                serializableNode.ParameterX = twoDNode.BlendParameterX;
-                serializableNode.ParameterY = twoDNode.BlendParameterY;
-                serializableNode.ChildBottomLeftId = twoDNode.ChildBottomLeft?.NodeId;
-                serializableNode.ChildBottomRightId = twoDNode.ChildBottomRight?.NodeId;
-                serializableNode.ChildTopLeftId = twoDNode.ChildTopLeft?.NodeId;
-                serializableNode.ChildTopRightId = twoDNode.ChildTopRight?.NodeId;
+                case LinearBlendNode linearNode:
+                    serializableNode.BlendParameter = linearNode.BlendParameter;
+                    serializableNode.ChildAId = linearNode.ChildA?.NodeId;
+                    serializableNode.ChildBId = linearNode.ChildB?.NodeId;
 
-                // Recursively convert children
-                ConvertNodeRecursive(twoDNode.ChildBottomLeft, processedNodes, serializableNodes);
-                ConvertNodeRecursive(twoDNode.ChildBottomRight, processedNodes, serializableNodes);
-                ConvertNodeRecursive(twoDNode.ChildTopLeft, processedNodes, serializableNodes);
-                ConvertNodeRecursive(twoDNode.ChildTopRight, processedNodes, serializableNodes);
+                    // Recursively convert children
+                    ConvertNodeRecursive(linearNode.ChildA, processedNodes, serializableNodes);
+                    ConvertNodeRecursive(linearNode.ChildB, processedNodes, serializableNodes);
+                    break;
+
+                case TwoDBlendNode twoDNode:
+                    serializableNode.ParameterX = twoDNode.BlendParameterX;
+                    serializableNode.ParameterY = twoDNode.BlendParameterY;
+                    serializableNode.ChildBottomLeftId = twoDNode.ChildBottomLeft?.NodeId;
+                    serializableNode.ChildBottomRightId = twoDNode.ChildBottomRight?.NodeId;
+                    serializableNode.ChildTopLeftId = twoDNode.ChildTopLeft?.NodeId;
+                    serializableNode.ChildTopRightId = twoDNode.ChildTopRight?.NodeId;
+
+                    // Recursively convert children
+                    ConvertNodeRecursive(twoDNode.ChildBottomLeft, processedNodes, serializableNodes);
+                    ConvertNodeRecursive(twoDNode.ChildBottomRight, processedNodes, serializableNodes);
+                    ConvertNodeRecursive(twoDNode.ChildTopLeft, processedNodes, serializableNodes);
+                    ConvertNodeRecursive(twoDNode.ChildTopRight, processedNodes, serializableNodes);
+                    break;
             }
 
             serializableNodes.Add(serializableNode);
@@ -319,30 +332,30 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 }
             }
 
-            // Second pass: establish node relationships
+            // Second pass: establish node relationships using pattern matching
             foreach (var serializableNode in serializableTree.Nodes)
             {
-                if (serializableNode.NodeType == nameof(LinearBlendNode) &&
-                nodeMap.TryGetValue(serializableNode.NodeId, out var linearNode))
+                switch (serializableNode.NodeType)
                 {
-                    var typedNode = (LinearBlendNode)linearNode;
-                    if (serializableNode.ChildAId != null && nodeMap.TryGetValue(serializableNode.ChildAId, out var childA))
-                        typedNode.GetType().GetField("_childA", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(typedNode, childA);
-                    if (serializableNode.ChildBId != null && nodeMap.TryGetValue(serializableNode.ChildBId, out var childB))
-                        typedNode.GetType().GetField("_childB", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(typedNode, childB);
-                }
-                else if (serializableNode.NodeType == nameof(TwoDBlendNode) &&
-                nodeMap.TryGetValue(serializableNode.NodeId, out var twoDNode))
-                {
-                    var typedNode = (TwoDBlendNode)twoDNode;
-                    if (serializableNode.ChildBottomLeftId != null && nodeMap.TryGetValue(serializableNode.ChildBottomLeftId, out var childBL))
-                        typedNode.GetType().GetField("_childBottomLeft", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(typedNode, childBL);
-                    if (serializableNode.ChildBottomRightId != null && nodeMap.TryGetValue(serializableNode.ChildBottomRightId, out var childBR))
-                        typedNode.GetType().GetField("_childBottomRight", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(typedNode, childBR);
-                    if (serializableNode.ChildTopLeftId != null && nodeMap.TryGetValue(serializableNode.ChildTopLeftId, out var childTL))
-                        typedNode.GetType().GetField("_childTopLeft", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(typedNode, childTL);
-                    if (serializableNode.ChildTopRightId != null && nodeMap.TryGetValue(serializableNode.ChildTopRightId, out var childTR))
-                        typedNode.GetType().GetField("_childTopRight", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(typedNode, childTR);
+                    case nameof(LinearBlendNode) when nodeMap.TryGetValue(serializableNode.NodeId, out var linearNode):
+                        var typedLinearNode = (LinearBlendNode)linearNode;
+                        if (serializableNode.ChildAId != null && nodeMap.TryGetValue(serializableNode.ChildAId, out var childA))
+                            typedLinearNode.GetType().GetField("_childA", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(typedLinearNode, childA);
+                        if (serializableNode.ChildBId != null && nodeMap.TryGetValue(serializableNode.ChildBId, out var childB))
+                            typedLinearNode.GetType().GetField("_childB", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(typedLinearNode, childB);
+                        break;
+
+                    case nameof(TwoDBlendNode) when nodeMap.TryGetValue(serializableNode.NodeId, out var twoDNode):
+                        var typedTwoDNode = (TwoDBlendNode)twoDNode;
+                        if (serializableNode.ChildBottomLeftId != null && nodeMap.TryGetValue(serializableNode.ChildBottomLeftId, out var childBL))
+                            typedTwoDNode.GetType().GetField("_childBottomLeft", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(typedTwoDNode, childBL);
+                        if (serializableNode.ChildBottomRightId != null && nodeMap.TryGetValue(serializableNode.ChildBottomRightId, out var childBR))
+                            typedTwoDNode.GetType().GetField("_childBottomRight", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(typedTwoDNode, childBR);
+                        if (serializableNode.ChildTopLeftId != null && nodeMap.TryGetValue(serializableNode.ChildTopLeftId, out var childTL))
+                            typedTwoDNode.GetType().GetField("_childTopLeft", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(typedTwoDNode, childTL);
+                        if (serializableNode.ChildTopRightId != null && nodeMap.TryGetValue(serializableNode.ChildTopRightId, out var childTR))
+                            typedTwoDNode.GetType().GetField("_childTopRight", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?.SetValue(typedTwoDNode, childTR);
+                        break;
                 }
             }
 

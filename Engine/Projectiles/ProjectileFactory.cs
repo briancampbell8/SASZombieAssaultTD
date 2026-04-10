@@ -442,8 +442,8 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         /// </summary>
         private Projectile GetProjectileFromPool(ProjectileType type)
         {
-            return ProjectileSystem.Instance?.GetProjectileFromPool(type) ??
-                   PerformanceManager.Instance?.Get<Projectile>();
+                return ProjectileSystem.Instance?.GetProjectileFromPool(type) ??
+                PerformanceManager.Instance?.Get<Projectile>();
         }
     }
 

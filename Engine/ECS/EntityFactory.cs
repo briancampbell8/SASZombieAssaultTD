@@ -38,8 +38,8 @@ namespace SASZombieAssaultTD.Engine.ECS
             AddCoreComponents(entity, position, $"enemy_{type.ToString().ToLower()}");
 
             var stats = EnemyStats.Get(type);
-            
-            entity.AddComponent(new EnemyTypeComponent { Type = (SASZombieAssaultTD.Engine.Enemies.ZombieType)type });
+
+            entity.AddComponent(new EnemyTypeComponent { Type = (SASZombieAssaultTD.Engine.ECS.EnemyType)type });
             entity.AddComponent(component: new HealthComponent { CurrentHealth = stats.Health, MaxHealth = stats.Health });
             entity.AddComponent(new MovementComponent { Speed = (float)stats.Speed });
             entity.AddComponent(new ScoreComponent { ScoreValue = stats.Score });

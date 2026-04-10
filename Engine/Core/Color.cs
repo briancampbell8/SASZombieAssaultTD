@@ -342,11 +342,16 @@ namespace SASZombieAssaultTD.Engine.Core
         
         public static Color operator *(Color color, float scalar) => color.WithBrightness(scalar);
         public static Color operator *(float scalar, Color color) => color.WithBrightness(scalar);
-        
+
+        public static implicit operator Color(System.Drawing.Color v)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region Static Constructors
-        
+
         /// <summary>
         /// Creates a Color from ARGB byte values.
         /// </summary>
@@ -383,7 +388,12 @@ namespace SASZombieAssaultTD.Engine.Core
         {
             return $"Color(R: {R:F3}, G: {G:F3}, B: {B:F3}, A: {A:F3})";
         }
-        
+
+        internal static Color FromRgb(int v1, int v2, int v3)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

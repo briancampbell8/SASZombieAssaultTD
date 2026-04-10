@@ -1,5 +1,10 @@
-// File: E:\BDC\Projects\SASZombieAssaultTD\Engine\Animation\BlendTrees\BlendTree.cs
-// Minimal, build-clean BlendTree implementation for triage purposes.
+// ROLE: Animation blend tree system for layered animation blending.
+// RESPONSIBILITY: Blend multiple animation clips based on parameters using tree-based structure.
+// TRIGGERS: Instantiated by AnimationControllerComponent for entity animation blending.
+// INPUTS: Receives blend parameters from animation controller.
+// OUTPUTS: Produces blended animation output for playback.
+// DEPENDENCIES: Uses IBlendNode interface and BlendParameters.
+// CONTENTS: BlendTree class with RootNode, Parameters, Evaluate method and tree traversal logic.
 
 using System;
 using System.Collections.Generic;

@@ -11,7 +11,7 @@ namespace SASZombieAssaultTD.Engine.Audio
     /// <summary>
     /// Generic audio playback helper for UI and gameplay events.
     /// </summary>
-    public static class PlaySound
+    public class PlaySound
     {
         /// <summary>
         /// Plays a sound by name.

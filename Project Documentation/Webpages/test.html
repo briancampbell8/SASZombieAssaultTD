@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true });</script>
+</head>
+<body>
+   <div class="tabs">
+        <div class="tab active" data-panel="a">Appendix A</div>
+        <div class="tab" data-panel="b">Appendix B</div>
+        <div class="tab" data-panel="c">Appendix C</div>
+        <div class="tab" data-panel="flow">Engine Flow</div>
+    </div>
+<div id="flow" class="panel">
+  <h2>Engine Startup Flow</h2>
+
+<pre class="mermaid">
+stateDiagram-v2
+    [*] --> StartEngine
+    StartEngine --> CheckReadiness
+    CheckReadiness --> InitializeSubsystems: YES
+    CheckReadiness --> ErrorState: NO
+    InitializeSubsystems --> EnterMainLoop
+    EnterMainLoop --> [*]
+</pre>
+
+</div>
+</body>
+</html>

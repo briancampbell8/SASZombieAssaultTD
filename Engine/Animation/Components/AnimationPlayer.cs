@@ -1,3 +1,12 @@
+// ROLE: Core animation playback system.
+// RESPONSIBILITY: Advance animation frames over time providing time-based frame indexing.
+// TRIGGERS: Instantiated by AnimationControllerComponent during animation playback.
+// INPUTS: Receives animation clip and playback commands (Play, Stop, Reset).
+// OUTPUTS: Provides CurrentFrameIndex for rendering queries.
+// DEPENDENCIES: Uses AnimationClip for frame data.
+// CONTENTS: AnimationPlayer class with CurrentClip, CurrentTime, CurrentFrameIndex, IsPlaying 
+//           properties and Play, Stop, Reset, Update methods.
+
 using System;
 using SASZombieAssaultTD.Engine.Animation.Core;
 

@@ -1,7 +1,7 @@
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Extensions;
 
 namespace SASZombieAssaultTD.Engine.UI.Input
 {
@@ -376,7 +376,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 // Process input events for all registered elements
                 foreach (var element in _elements)
                 {
-                    if (element.IsActive)
+                    if (element.IsActive())
                     {
                         element.ProcessInput(_currentInput);
                     }
@@ -403,7 +403,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
         /// <returns>Current key states</returns>
         public bool[] GetKeyStates()
         {
-            return _inputState.KeyStates;
+            return (bool[])_inputState.KeyStates();
         }
 
         /// <summary>
@@ -453,9 +453,23 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 PressedElement = _pressedElement
             };
         }
+
+        /// <summary>
+        /// Dispose the input router.
+        /// </summary>
+        public void Dispose()
+        {
+            // Unsubscribe from input events and clear routing tables.
+            ReleaseInputRouting();
+        }
+
+        private void ReleaseInputRouting()
+        {
+            _elements.Clear();
+            _hoveredElement = null;
+            _pressedElement = null;
+            _isInitialized = false;
+            Console.WriteLine("UIInputRouter: Released input routing");
+        }
     }
 }
-
-
-
-
