@@ -227,32 +227,22 @@ namespace SASZombieAssaultTD.Engine.Navigation
                 System.Math.Abs(neighbor.GridPosition.Y - currentPos.Y) > 0;
                 var moveCost = isDiagonal ? _diagonalCost : 1.0f;
                 var tentativeGCost = currentCell.GCost + (neighbor.MovementCost * moveCost);
-                var inOpenSet = neighbor.IsInOpenSet();
-                if (_openSet.Contains(neighbor))
-                {
-                    
-                    if (!inOpenSet || tentativeGCost < neighbor.GCost)
-                    {
-                        neighbor.GCost = tentativeGCost;
-                        neighbor.HCost = CalculateHeuristic(neighbor.GridPosition, endGrid);
-                        neighbor.Parent = currentCell;
 
-                        if (!inOpenSet)
-                        {
-                            _openSet.Add(neighbor);
-                        }
-                        else
-                        {
-                            _openSet.UpdateItem(neighbor);
-                        }
-                    }
-                }
-                else
+                var inOpenSet = neighbor.IsInOpenSet();
+                if (!inOpenSet || tentativeGCost < neighbor.GCost)
                 {
                     neighbor.GCost = tentativeGCost;
                     neighbor.HCost = CalculateHeuristic(neighbor.GridPosition, endGrid);
                     neighbor.Parent = currentCell;
-                    _openSet.Add(neighbor);
+
+                    if (!inOpenSet)
+                    {
+                        _openSet.Add(neighbor);
+                    }
+                    else
+                    {
+                        _openSet.UpdateItem(neighbor);
+                    }
                 }
             }
         }
@@ -512,7 +502,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
             while (true)
             {
                 var parentItem = _items[parentIndex];
-                if (item.FCost < parentItem.FCost) // Added StringComparison.Ordinal
+                if (item.CompareTo(parentItem, StringComparison.Ordinal) < 0) // Added StringComparison.Ordinal
                 {
                     Swap(item, parentItem);
                 }
@@ -537,8 +527,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
                     swapIndex = childIndexLeft;
                     if (childIndexRight < _currentItemCount)
                     {
-                        if (_items[childIndexLeft].FCost > _items[childIndexRight].FCost)
-                        // Added StringComparison.Ordinal
+                        if (_items[childIndexLeft].CompareTo(_items[childIndexRight], StringComparison.Ordinal) > 0) // Added StringComparison.Ordinal
                         {
                             swapIndex = childIndexRight;
                         }

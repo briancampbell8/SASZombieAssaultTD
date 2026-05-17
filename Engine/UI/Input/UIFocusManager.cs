@@ -33,21 +33,6 @@ namespace SASZombieAssaultTD.Engine.UI.Input
         }
 
         /// <summary>
-        /// Initialize the focus manager.
-        /// </summary>
-        public void Initialize()
-        {
-            // Initialize focus state and register default focused element if needed.
-            ResetFocusState();
-        }
-
-        private void ResetFocusState()
-        {
-            // Reset focus state implementation
-            Console.WriteLine("UIFocusManager: Reset focus state");
-        }
-
-        /// <summary>
         /// Adds a focusable element to the manager
         /// </summary>
         /// <param name="element">Element to add</param>
@@ -293,27 +278,6 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 Console.WriteLine($"UIFocusManager: Error creating string representation - {ex.Message}");
                 return "UIFocusManager: Error";
             }
-        }
-
-        /// <summary>
-        /// Dispose the focus manager.
-        /// </summary>
-        public void Dispose()
-        {
-            // Unsubscribe from events and clear focus references.
-            ReleaseFocusResources();
-        }
-
-        private void ReleaseFocusResources()
-        {
-            _focusableElements.Clear();
-            _focusedElement = null;
-            Console.WriteLine("UIFocusManager: Released focus resources");
-        }
-
-        internal void Initialize(UIRoot rootElement)
-        {
-            throw new NotImplementedException();
         }
     }
 }

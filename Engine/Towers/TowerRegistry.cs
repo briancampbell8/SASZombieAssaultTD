@@ -24,8 +24,6 @@ namespace SASZombieAssaultTD.Engine.Towers
 
         private readonly Dictionary<uint, Tower> _towers = new Dictionary<uint, Tower>();
         private readonly Dictionary<string, TowerType> _towerTypes = new Dictionary<string, TowerType>();
-        internal Action<object> OnTowerSelected;
-        internal Action OnTowerDeselected;
 
         public TowerRegistry()
         {

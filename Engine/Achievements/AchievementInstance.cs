@@ -1,13 +1,3 @@
-// ROLE: Tracks per-player achievement progress.
-// RESPONSIBILITY: Maintain achievement completion state with progress tracking and 
-//                  serialization support.
-// TRIGGERS: Instantiated by AchievementManager when player starts tracking an achievement.
-// INPUTS: Receives progress updates from gameplay systems.
-// OUTPUTS: Provides completion status and progress data for UI and save systems.
-// DEPENDENCIES: References AchievementDefinition for requirements.
-// CONTENTS: AchievementInstance class with AchievementId, CurrentProgress, TargetProgress, 
-//           IsCompleted, CompletedAt, IsNotificationSuppressed properties.
-
 using SASZombieAssaultTD.Engine;
 using SASZombieAssaultTD.Engine.Math;
 using System;

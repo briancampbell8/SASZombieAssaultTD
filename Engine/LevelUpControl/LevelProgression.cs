@@ -1,10 +1,10 @@
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Gameplay;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.IO;
+using SASZombieAssaultTD.Engine.Gameplay;
+using SASZombieAssaultTD.Engine.Extensions;
 
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
@@ -70,11 +70,11 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
     /// </summary>
     public class LevelProgression
     {
-        readonly List<ProgressionMilestone> _milestones;
-        readonly Dictionary<string, ProgressionAchievement> _achievements;
-        readonly List<ProgressionEvent> _events;
-        bool _isInitialized;
-        static LevelProgression _instance;
+        private readonly List<ProgressionMilestone> _milestones;
+        private readonly Dictionary<string, ProgressionAchievement> _achievements;
+        private readonly List<ProgressionEvent> _events;
+        private bool _isInitialized;
+        private static LevelProgression _instance;
 
         // Events
         public event Action<ProgressionMilestone> OnMilestoneReached;
@@ -87,7 +87,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public int TotalMilestones => _milestones.Count;
         public int TotalAchievements => _achievements.Count;
         public int CompletedMilestones => _milestones.Count(m => m.IsCompleted);
-        public int UnlockedAchievements => _achievements.Count(static a => a.IsUnlocked());
+        public int UnlockedAchievements => _achievements.Count(a => a.IsUnlocked);
         public IReadOnlyList<ProgressionMilestone> AllMilestones => _milestones;
         public IReadOnlyDictionary<string, ProgressionAchievement> AllAchievements => _achievements;
         public static LevelProgression Instance => _instance ??= new LevelProgression();
@@ -136,16 +136,6 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 Console.WriteLine($"Failed to initialize Level Progression System: {ex.Message}");
                 throw;
             }
-        }
-
-        void OnUnlockUnlocked(PlayerUnlock unlock)
-        {
-            throw new NotImplementedException();
-        }
-
-        void OnRewardUnlocked(PlayerReward reward)
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -340,8 +330,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 {
                     CompletedMilestones = _milestones.Where(m => m.IsCompleted).Select(m => m.Id).ToList(),
                     UnlockedAchievements = _achievements.Values.Where(a => a.IsUnlocked).Select(a => a.Id).ToList(),
-                    MilestoneData = _milestones.ToDictionary(m => m.Id, m => m.Serialize()),
-                    AchievementData = _achievements.Values.ToDictionary(a => a.Id, a => a.Serialize()),
+                    MilestoneData = _milestones.ToDictionary<string, string>(m => m.Id, m => m.Serialize()),
+                    AchievementData = _achievements.ToDictionary<string, string>(a => a.Id, a => a.Serialize()),
                     EventData = _events.Select(e => e.Serialize()).ToList(),
                     LastSaved = DateTime.Now
                 };
@@ -370,7 +360,6 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             try
             {
                 var savePath = Path.Combine("Data", "Progression", "progression.json");
-
                 if (!File.Exists(savePath))
                 {
                     Console.WriteLine("No saved progression data found");
@@ -378,7 +367,6 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 }
 
                 var json = File.ReadAllText(savePath);
-
                 var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
@@ -409,12 +397,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
 
                 // Restore events
                 _events.Clear();
-
                 foreach (var eventData in saveData.EventData)
                 {
-                    var ev = new ProgressionEvent();
-                    ev.Deserialize(eventData);
-                    _events.Add(ev);
+                    _events.Add(ProgressionEvent.Deserialize(eventData));
                 }
 
                 Console.WriteLine($"Progression data loaded from {savePath}");
@@ -432,7 +417,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         /// <summary>
         /// Initialize milestones.
         /// </summary>
-        void InitializeMilestones()
+        private void InitializeMilestones()
         {
             // Level milestones
             _milestones.Add(new ProgressionMilestone
@@ -516,7 +501,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         /// <summary>
         /// Initialize achievements.
         /// </summary>
-        void InitializeAchievements()
+        private void InitializeAchievements()
         {
             // Combat achievements
             _achievements.Add("sharpshooter", new ProgressionAchievement
@@ -567,7 +552,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         /// <summary>
         /// Initialize events.
         /// </summary>
-        void InitializeEvents()
+        private void InitializeEvents()
         {
             _events.Add(new ProgressionEvent
             {
@@ -593,7 +578,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         /// <summary>
         /// Calculate average milestones per session.
         /// </summary>
-        float CalculateAverageMilestonesPerSession()
+        private float CalculateAverageMilestonesPerSession()
         {
             // This would be calculated from saved data
             // For now, return a reasonable default
@@ -607,13 +592,12 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         /// <summary>
         /// Handle player level up event.
         /// </summary>
-        void OnPlayerLevelUp(int newLevel)
+        private void OnPlayerLevelUp(int newLevel)
         {
             try
             {
                 // Check for milestone completion
                 var milestone = _milestones.FirstOrDefault(m => m.RequiredLevel == newLevel);
-
                 if (milestone != null && !milestone.IsCompleted)
                 {
                     milestone.IsCompleted = true;
@@ -621,7 +605,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
 
                     // Grant rewards
                     foreach (var reward in milestone.Rewards)
+                    {
                         GrantReward(reward);
+                    }
 
                     OnMilestoneReached?.Invoke(milestone);
                     Console.WriteLine($"Milestone reached: {milestone.Name}");
@@ -636,7 +622,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         /// <summary>
         /// Handle experience gained event.
         /// </summary>
-        void OnExperienceGained(int level, int experience)
+        private void OnExperienceGained(int level, int experience)
         {
             try
             {
@@ -662,7 +648,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         /// <summary>
         /// Handle reward unlocked event.
         /// </summary>
-        void OnRewardUnlocked(ProgressionReward reward)
+        private void OnRewardUnlocked(ProgressionReward reward)
         {
             try
             {
@@ -674,7 +660,6 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                         {
                             ModernPlayerStateSystem.Instance.AddCash(reward.Amount);
                         }
-
                         break;
                     case RewardType.TowerSlot:
                         // Grant tower slot
@@ -698,7 +683,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         /// <summary>
         /// Handle unlock event.
         /// </summary>
-        void OnUnlockUnlocked(ProgressionAchievement unlock)
+        private void OnUnlockUnlocked(ProgressionAchievement unlock)
         {
             try
             {
@@ -723,7 +708,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         /// <summary>
         /// Handle max level reached event.
         /// </summary>
-        void OnMaxLevelReached()
+        private void OnMaxLevelReached()
         {
             try
             {
@@ -748,7 +733,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         /// <summary>
         /// Check for achievements.
         /// </summary>
-        void CheckAchievements(int level, int experience)
+        private void CheckAchievements(int level, int experience)
         {
             foreach (var achievement in _achievements.Values)
             {
@@ -772,7 +757,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         /// <summary>
         /// Grant a reward.
         /// </summary>
-        void GrantReward(ProgressionReward reward)
+        private void GrantReward(ProgressionReward reward)
         {
             // This would integrate with appropriate systems
             switch (reward.Type)
@@ -782,14 +767,12 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                     {
                         ModernPlayerStateSystem.Instance.AddCash(reward.Amount);
                     }
-
                     break;
                 case RewardType.Experience:
                     if (PlayerLevel.Instance != null)
                     {
                         PlayerLevel.Instance.AddExperience(reward.Amount, "Reward");
                     }
-
                     break;
                 case RewardType.TowerSlot:
                     // Grant tower slot through tower system
@@ -825,6 +808,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public void Deserialize(object data)
         {
             if (data is not Dictionary<string, object> dict) return;
+
+            var dict = (Dictionary<string, object>)data;
+
             if (dict.TryGetValue("Id", out var id)) Id = (string)id;
             if (dict.TryGetValue("Name", out var name)) Name = (string)name;
             if (dict.TryGetValue("Description", out var description)) Description = (string)description;
@@ -835,15 +821,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
 
             if (dict.TryGetValue("Rewards", out var rewardsData) && rewardsData is List<object>)
             {
-                ///          Rewards = ((List<object>)rewardsData).Select(r => ProgressionReward.Deserialize(r)).ToList();
-                Rewards = ((List<object>)rewardsData)
-                .Select(r =>
-               {
-                   var reward = new ProgressionReward();
-                   reward.Deserialize(r);
-                   return reward;
-               })
-           .ToList();
+                Rewards = ((List<object>)rewardsData).Select(r => ProgressionReward.Deserialize(r)).ToList();
             }
         }
     }
@@ -870,6 +848,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public void Deserialize(object data)
         {
             if (data is not Dictionary<string, object> dict) return;
+
+            var dict = (Dictionary<string, object>)data;
+
             if (dict.TryGetValue("Id", out var id)) Id = (string)id;
             if (dict.TryGetValue("Name", out var name)) Name = (string)name;
             if (dict.TryGetValue("Description", out var description)) Description = (string)description;
@@ -902,18 +883,15 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public void Deserialize(object data)
         {
             if (data is not Dictionary<string, object> dict) return;
+
+            var dict = (Dictionary<string, object>)data;
+
             if (dict.TryGetValue("Id", out var id)) Id = (string)id;
             if (dict.TryGetValue("Name", out var name)) Name = (string)name;
             if (dict.TryGetValue("Description", out var description)) Description = (string)description;
             if (dict.TryGetValue("Category", out var category)) Category = (EventCategory)Enum.Parse<EventCategory>(category.ToString());
             if (dict.TryGetValue("IsRecurring", out var isRecurring)) IsRecurring = (bool)isRecurring;
-
-            if (dict.TryGetValue("Reward", out var rewardData))
-            {
-                var reward = new ProgressionReward();
-                reward.Deserialize(rewardData);
-                Reward = reward;
-            }
+            if (dict.TryGetValue("Reward", out var rewardData)) Reward = ProgressionReward.Deserialize(rewardData);
 
             if (dict.TryGetValue("Timestamp", out var timestamp)) Timestamp = timestamp != null ? (DateTime)timestamp : DateTime.Now;
         }
@@ -927,15 +905,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public RewardType Type { get; set; }
         public int Amount { get; set; }
 
-        public ProgressionReward() { }
-
-        public ProgressionReward(RewardType type, int amount)
-        {
-            Type = type;
-            Amount = amount;
-        }
-
-        public ProgressionReward Deserialize(object data)
+        public static ProgressionReward Deserialize(object data)
         {
             if (data is not Dictionary<string, object> dict) return null;
 
@@ -951,7 +921,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 Amount = rewardAmount;
             }
 
-            return null;
+            return new ProgressionReward { Type, Amount };
         }
     }
 

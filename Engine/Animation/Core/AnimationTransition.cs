@@ -1,10 +1,22 @@
-// FILE PATH: Engine/Animation/Core/AnimationTransition.cs
-// EXECUTION TRIGGER: Instantiated by AnimationStateMachine during transition registration
-// PROGRAM PURPOSE: Defines animation state transitions with conditions and timing managing rules for when and how animation states change
-// PROGRAM CALLS: IAnimationState, AnimationConditionOperator
-// PROGRAM CONTENTS: AnimationTransition class with TargetState, TransitionDuration, HasExitTime, ExitTime, Conditions properties and AddCondition, RemoveCondition, ShouldTransition methods
+/*
+File:    AnimationTransition.cs
+Path:    Engine/Animation/AnimationTransition.cs
+Purpose:   Animation state transition support.
+           Represents transitions between animation states.
 
-using System;
+Role:      Essential animation transition system.
+           - Defines transition rules between animation states
+           - Manages transition conditions and timing
+           - Supports smooth state transitions
+
+Features:   Animation state transition definitions.
+           Transition condition management.
+           Integration with animation state machine.
+
+Notes:      This system defines transition behavior for animations.
+           Works in conjunction with AnimationStateMachine.
+*/
+
 using System.Collections.Generic;
 
 namespace SASZombieAssaultTD.Engine.Animation.Core

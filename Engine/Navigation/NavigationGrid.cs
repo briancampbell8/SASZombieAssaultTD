@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Navigation;
 using SASZombieAssaultTD.Engine.Core;
 using Vector3 = SASZombieAssaultTD.Engine.VectorMath.Vector3;
 using Vector3Int = SASZombieAssaultTD.Engine.VectorMath.Vector3Int;
@@ -358,8 +357,6 @@ namespace SASZombieAssaultTD.Engine.Navigation
     /// </summary>
     public class NavigationCell
     {
-        internal int FCost;
-
         public Vector3Int Position { get; }
         public bool IsWalkable { get; }
         public float MovementCost { get; }
@@ -385,11 +382,6 @@ namespace SASZombieAssaultTD.Engine.Navigation
             HCost = 0;
             Parent = null;
             HeapIndex = 0;
-        }
-
-        internal bool IsInOpenSet()
-        {
-            throw new NotImplementedException();
         }
     }
 }

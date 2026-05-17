@@ -1,9 +1,15 @@
-using SASZombieAssaultTD.Engine.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Utility;
+using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Audio;
+using SASZombieAssaultTD.Engine.Resources;
+using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.Extensions;
 
 namespace SASZombieAssaultTD.Engine.Towers.TowerControl
 {
@@ -13,12 +19,12 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
     /// </summary>
     public class NeuralDatabase
     {
-        readonly TowerType _towerType;
-        readonly List<TowerUpgrade> _upgrades;
-        readonly Dictionary<int, TowerUpgrade> _upgradeLevels;
-        readonly Dictionary<SASZombieAssaultTD.Engine.Towers.UpgradeType, List<TowerUpgrade>> _upgradeTypes;
-        readonly string _dataPath;
-        bool _isLoaded;
+        private readonly TowerType _towerType;
+        private readonly List<TowerUpgrade> _upgrades;
+        private readonly Dictionary<int, TowerUpgrade> _upgradeLevels;
+        private readonly Dictionary<SASZombieAssaultTD.Engine.Towers.UpgradeType, List<TowerUpgrade>> _upgradeTypes;
+        private readonly string _dataPath;
+        private bool _isLoaded;
 
         // Properties
         public TowerType TowerType => _towerType;
@@ -66,7 +72,10 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         /// Get upgrade path for the tower.
         /// </summary>
         /// <returns>Upgrade path.</returns>
-        public List<TowerUpgrade> GetUpgradePath() => new List<TowerUpgrade>(_upgrades);
+        public List<TowerUpgrade> GetUpgradePath()
+        {
+            return new List<TowerUpgrade>(_upgrades);
+        }
 
         /// <summary>
         /// Get upgrade by level.
@@ -134,7 +143,10 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         /// Get total cost for all upgrades.
         /// </summary>
         /// <returns>Total cost of all upgrades.</returns>
-        public int GetTotalUpgradeCost() => _upgrades.Sum(u => u.Cost);
+        public int GetTotalUpgradeCost()
+        {
+            return _upgrades.Sum(u => u.Cost);
+        }
 
         /// <summary>
         /// Get upgrade statistics.
@@ -175,7 +187,6 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             {
                 _upgradeTypes[upgrade.Type] = new List<TowerUpgrade>();
             }
-
             _upgradeTypes[upgrade.Type].Add(upgrade);
 
             Console.WriteLine($"Added upgrade: {upgrade.Name} (Level {upgrade.Level}) to {_towerType}");
@@ -192,7 +203,6 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             if (upgrade == null) return false;
 
             var removed = _upgrades.Remove(upgrade);
-
             if (removed)
             {
                 _upgradeLevels.Remove(upgrade.Level);
@@ -200,7 +210,6 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 if (_upgradeTypes.ContainsKey(upgrade.Type))
                 {
                     _upgradeTypes[upgrade.Type].Remove(upgrade);
-
                     if (_upgradeTypes[upgrade.Type].Count == 0)
                     {
                         _upgradeTypes.Remove(upgrade.Type);
@@ -243,7 +252,6 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
 
             // Check for duplicate levels
             var levelCounts = _upgrades.GroupBy(u => u.Level).ToDictionary(g => g.Key, g => g.Count());
-
             foreach (var kvp in levelCounts)
             {
                 if (kvp.Value > 1)
@@ -255,7 +263,6 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
 
             // Check for missing levels
             var maxLevel = MaxLevel;
-
             for (int i = 1; i <= maxLevel; i++)
             {
                 if (!_upgradeLevels.ContainsKey(i))
@@ -268,7 +275,6 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             foreach (var upgrade in _upgrades)
             {
                 var upgradeResult = ValidateUpgrade(upgrade);
-
                 if (!upgradeResult.IsValid)
                 {
                     result.IsValid = false;
@@ -325,7 +331,6 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 }
 
                 var json = File.ReadAllText(_dataPath);
-
                 var options = new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
@@ -339,7 +344,9 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 _upgradeTypes.Clear();
 
                 foreach (var upgrade in upgrades)
+                {
                     AddUpgrade(upgrade);
+                }
 
                 _isLoaded = true;
                 Console.WriteLine($"Loaded upgrade database for {_towerType} from {_dataPath}");
@@ -397,7 +404,9 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 _upgradeTypes.Clear();
 
                 foreach (var upgrade in upgrades)
+                {
                     AddUpgrade(upgrade);
+                }
 
                 _isLoaded = true;
                 Console.WriteLine($"Imported upgrade database for {_towerType} from JSON");
@@ -428,25 +437,31 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         /// <summary>
         /// Load upgrades from file or create defaults.
         /// </summary>
-        void LoadUpgrades()
+        private void LoadUpgrades()
         {
-            if (!LoadDatabase()) CreateDefaultUpgrades();
+            if (!LoadDatabase())
+            {
+                CreateDefaultUpgrades();
+            }
         }
 
         /// <summary>
         /// Create default upgrades for the tower type.
         /// </summary>
-        void CreateDefaultUpgrades() => CreateGenericUpgrades();
+        private void CreateDefaultUpgrades()
+        {
+            CreateGenericUpgrades();
+        }
 
         /// <summary>
         /// Create generic upgrades for unknown tower types.
         /// </summary>
-        void CreateGenericUpgrades()
+        private void CreateGenericUpgrades()
         {
             for (int i = 1; i <= 5; i++)
             {
                 var upgrade = NeuralTowerUpgrade.Create(i, $"Upgrade {i}", $"Generic upgrade level {i}", 100 * i, _towerType, UpgradeType.Damage);
-                upgrade.SetVisualProperties(null, Color.White, null, 1.0f);
+                upgrade.SetVisualProperties(null, Color.White, null, null);
                 AddUpgrade(upgrade);
             }
         }
@@ -454,7 +469,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         /// <summary>
         /// Build lookup tables for faster access.
         /// </summary>
-        void BuildLookupTables()
+        private void BuildLookupTables()
         {
             _upgradeLevels.Clear();
             _upgradeTypes.Clear();
@@ -467,7 +482,6 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 {
                     _upgradeTypes[upgrade.Type] = new List<TowerUpgrade>();
                 }
-
                 _upgradeTypes[upgrade.Type].Add(upgrade);
             }
         }
@@ -475,7 +489,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         /// <summary>
         /// Validate a single upgrade.
         /// </summary>
-        ValidationResult ValidateUpgrade(TowerUpgrade upgrade)
+        private ValidationResult ValidateUpgrade(TowerUpgrade upgrade)
         {
             var result = new ValidationResult { IsValid = true };
 

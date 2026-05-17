@@ -1,12 +1,3 @@
-// ROLE: Validation system for blend tree integrity.
-// RESPONSIBILITY: Check node graphs, parameter usage, unreachable nodes, and cyclic references.
-// TRIGGERS: Called by BlendTreeSerializer and AnimationControllerComponent during validation.
-// INPUTS: Receives BlendTree or IBlendNode instances for validation.
-// OUTPUTS: Returns BlendTreeValidationResult with errors, warnings, and recommendations.
-// DEPENDENCIES: Uses BlendTreeValidationResult for reporting.
-// CONTENTS: BlendTreeValidator static class with Validate, ValidateNode, DetectCycles, 
-//           FindUnreachableNodes, ValidateParameterUsage methods.
-
 using SASZombieAssaultTD.Engine.Animation;
 using SASZombieAssaultTD.Engine.Animation.BlendTree;
 using SASZombieAssaultTD.Engine.Utility;

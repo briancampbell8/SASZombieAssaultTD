@@ -12,8 +12,6 @@ Role:     Specific event subtype for loop-based animations in the animation syst
           Used by AnimationUpdateSystem to dispatch loop events with proper type safety.
 */
 
-#nullable enable
-
 using System;
 using System.Collections.Generic;
 

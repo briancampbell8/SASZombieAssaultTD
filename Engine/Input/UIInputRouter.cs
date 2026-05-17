@@ -188,11 +188,6 @@ namespace SASZombieAssaultTD.Engine.Input
             };
         }
 
-        internal object GetMenuInput()
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
     }
 

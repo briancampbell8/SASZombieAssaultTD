@@ -2,13 +2,11 @@
 File:    BaseScene.cs
 Purpose: SceneManager and GameRoot references; protected accessors for systems.
 */
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Input;
+using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.UI.Input;
 using System.Collections.Generic;
-using System;
-using ModernLoggingSystem = SASZombieAssaultTD.Engine.Core.ModernLoggingSystem;
 using UISystem = SASZombieAssaultTD.Engine.UI.UISystem;
-
+using SASZombieAssaultTD.Engine.Extensions;
 // P11-08-01: Updated to work with decomposed WaveSystem structure
 
 namespace SASZombieAssaultTD.Engine.Scenes
@@ -18,8 +16,8 @@ namespace SASZombieAssaultTD.Engine.Scenes
     /// </summary>
     public class AnimationSystem
     {
-        readonly Dictionary<uint, string> _entityAnimations;
-        readonly Dictionary<string, float> _animationDurations;
+        private readonly Dictionary<uint, string> _entityAnimations;
+        private readonly Dictionary<string, float> _animationDurations;
 
         public AnimationSystem()
         {
@@ -71,12 +69,10 @@ namespace SASZombieAssaultTD.Engine.Scenes
     /// </summary>
     public class GameRoot
     {
-        internal UISystem UISystem;
-
         public bool IsInitialized { get; private set; }
         public bool IsRunning { get; private set; }
         public SASZombieAssaultTD.Engine.ECS.EntityManager? EntityManager { get; private set; }
-        public Input.UIInputRouter? Input { get; private set; }
+        public UIInputRouter? Input { get; private set; }
         // public SASZombieAssaultTD.Engine.Gameplay.WaveController? WaveSystem { get; private set; } // Add this property
 
         public GameRoot()
@@ -128,10 +124,8 @@ namespace SASZombieAssaultTD.Engine.Scenes
 
     public abstract class BaseScene
     {
-        GameRoot? _gameRoot;
-        SceneManager? _sceneManager;
-        bool _resumeRequested;
-        private object previousGameScene;
+        private GameRoot? _gameRoot;
+        private SceneManager? _sceneManager;
 
         protected GameRoot? GameRoot => _gameRoot;
         protected SceneManager? SceneManager => _sceneManager;
@@ -142,68 +136,32 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// Gets of input module for input state access.
         /// P11-10-08: Replaces legacy InputSystem with new UIInputRouter.
         /// </summary>
-        protected SASZombieAssaultTD.Engine.Input.UIInputRouter? InputRouter => _gameRoot?.Input;
+        protected UIInputRouter? InputRouter => _gameRoot?.Input;
 
         protected UISystem? UISystem => _gameRoot?.UISystem;
-
-        /// <summary>
-        /// Gets the animation system for the scene.
-        /// Returns a shared instance or creates a new one if needed.
-        /// </summary>
-        protected AnimationSystem? AnimationSystem 
-        { 
-            get 
-            {
-                if (_gameRoot == null) return null;
-                // In a full implementation, this would return a shared instance
-                // For now, create a new instance per scene
-                return _animationSystem ??= new AnimationSystem();
-            } 
-        }
-        
-        /// <summary>
-        /// Gets the enemy system for the scene.
-        /// Returns a shared instance or creates a new one if needed.
-        /// </summary>
-        protected SASZombieAssaultTD.Engine.Enemies.EnemySystem? EnemySystem 
-        { 
-            get 
-            {
-                if (_gameRoot == null) return null;
-                // In a full implementation, this would return a shared instance
-                // For now, create a new instance per scene
-                return _enemySystem ??= new SASZombieAssaultTD.Engine.Enemies.EnemySystem();
-            } 
-        }
-        
-        /// <summary>
-        /// Gets the render system for the scene.
-        /// Returns the static RenderSystem class.
-        /// </summary>
-        protected object RenderSystem 
-        { 
-            get 
-            {
-                // RenderSystem is a static class, return the class itself
-                return typeof(SASZombieAssaultTD.Engine.Rendering.RenderSystem);
-            } 
-        }
-
-        // Private backing fields for lazy-loaded systems
-        private AnimationSystem? _animationSystem;
-        private SASZombieAssaultTD.Engine.Enemies.EnemySystem? _enemySystem;
+        protected AnimationSystem? AnimationSystem => _gameRoot?.AnimationSystem;
+        protected SASZombieAssaultTD.Engine.Enemies.EnemySystem? EnemySystem => _gameRoot?.EnemySystem;
+        // P11-08-01: Updated to work with decomposed WaveSystem structure
+        // protected SASZombieAssaultTD.Engine.Gameplay.WaveController? WaveSystem => _gameRoot?.WaveSystem;
+        protected object? RenderSystem => _gameRoot?.RenderSystem;
 
         /// <summary>
         /// Sets the GameRoot reference for this scene.
         /// </summary>
         /// <param name="gameRoot">The GameRoot instance</param>
-        public void SetGameRoot(GameRoot gameRoot) => _gameRoot = gameRoot;
+        public void SetGameRoot(GameRoot gameRoot)
+        {
+            _gameRoot = gameRoot;
+        }
 
         /// <summary>
         /// Sets the SceneManager reference for this scene.
         /// </summary>
         /// <param name="sceneManager">The SceneManager instance</param>
-        public void SetSceneManager(SceneManager sceneManager) => _sceneManager = sceneManager;
+        public void SetSceneManager(SceneManager sceneManager)
+        {
+            _sceneManager = sceneManager;
+        }
 
         /// <summary>
         /// P11-11-02: Called when the scene becomes active.
@@ -235,7 +193,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// Default implementation is a no-op.
         /// </summary>
         /// <param name="context">Render context</param>
-        public virtual void Render(SASZombieAssaultTD.Engine.Rendering.IRenderContext context) { }
+        public virtual void Render(IRenderContext context) { }
 
         /// <summary>
         /// P11-11-02: Called during scene update loop.
@@ -249,78 +207,13 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// Default implementation is a no-op.
         /// </summary>
         /// <param name="context">Render context</param>
-        ///      public virtual void Render(SASZombieAssaultTD.Engine.Rendering.IRenderContext context) { }
-        public virtual void OnRender(SASZombieAssaultTD.Engine.Rendering.IRenderContext context) { }
+        public virtual void OnRender(IRenderContext context) { }
 
         /// <summary>
         /// P11-11-02: Called when scene content should be loaded.
-        /// Loads scene-specific assets and initializes resources.
+        /// Default implementation is a no-op.
         /// </summary>
-        public virtual void LoadContent()
-        {
-            ModernLoggingSystem.Log("DEBUG", $"BaseScene: Loading content for {GetType().Name}");
-            
-            try
-            {
-                // Load scene-specific assets
-                LoadSceneAssets();
-                
-                // Initialize scene systems
-                InitializeSceneSystems();
-                
-                // Create initial entities
-                CreateInitialEntities();
-                
-                ModernLoggingSystem.Log("INFO", $"BaseScene: Content loading completed for {GetType().Name}");
-            }
-            catch (Exception ex)
-            {
-                ModernLoggingSystem.Log("ERROR", $"BaseScene: Error loading content for {GetType().Name}: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Loads scene-specific assets.
-        /// Override in derived classes to load custom assets.
-        /// </summary>
-        protected virtual void LoadSceneAssets()
-        {
-            // Default implementation - override in derived classes
-            // Examples:
-            // - Load textures
-            // - Load sounds
-            // - Load models
-            // - Load UI elements
-        }
-
-        /// <summary>
-        /// Initializes scene-specific systems.
-        /// Override in derived classes to setup custom systems.
-        /// </summary>
-        protected virtual void InitializeSceneSystems()
-        {
-            // Default implementation - override in derived classes
-            // Examples:
-            // - Initialize physics system
-            // - Setup audio system
-            // - Configure rendering system
-            // - Initialize game logic systems
-        }
-
-        /// <summary>
-        /// Creates initial entities for the scene.
-        /// Override in derived classes to create scene-specific entities.
-        /// </summary>
-        protected virtual void CreateInitialEntities()
-        {
-            // Default implementation - override in derived classes
-            // Examples:
-            // - Create player entities
-            // - Create environment objects
-            // - Spawn initial enemies
-            // - Setup UI elements
-        }
+        public virtual void LoadContent() { }
 
         /// <summary>
         /// P11-11-02: Called when scene should be cleaned up.
@@ -328,33 +221,5 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// Default implementation is a no-op.
         /// </summary>
         public virtual void Cleanup() { }
-
-        /// <summary>
-        /// P11-11-02: Called every frame to update pause menu logic.
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since last frame.</param>
-        // Default behavior for scenes that don't override it
-
-        public virtual void OnUpdate(float deltaTime, InputData inputData)
-        {
-            // Handle pause menu input - check if the user has requested to resume.
-            // P11-11-06: Input is now accessible through the Input property
-            if (inputData != null)
-            {
-                // Check for ESC key press to resume game
-                if (SASZombieAssaultTD.Engine.Input.InputSystem.IsKeyPressed(KeyCode.Escape))
-                {
-                    _resumeRequested = true;
-                }
-            }
-
-            if (_resumeRequested)
-            {
-                ModernLoggingSystem.Log("Info", "[PauseScene] Resume requested.");
-                // Queue transition back to previous scene via SceneManager
-                SceneManager?.QueueScene(name: previousGameScene);
-                
-            }
-        }
     }
 }

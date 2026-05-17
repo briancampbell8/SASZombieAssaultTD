@@ -7,14 +7,14 @@ Created: February 14, 2026
 Notes: Provides foundation for Button, Panel, HUD, and other UI elements.
 */
 
-using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Rendering;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Numerics;
+using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.VectorMath;
+using SASZombieAssaultTD.Engine.Extensions;
 
-namespace SASZombieAssaultTD.Engine.UI.Components
+namespace SASZombieAssaultTD.Engine.UI
 {
     /// <summary>
     /// Represents different anchoring positions for UI elements.
@@ -47,12 +47,16 @@ namespace SASZombieAssaultTD.Engine.UI.Components
     /// P11-04-09-E: Enhanced with anchoring, visibility toggles, layering/z-index,
     /// and optional fade-in/fade-out transitions. All properties are ECS-friendly.
     /// </summary>
-    public abstract class UIElementBase : IDisposable
+    public abstract class UIElementBase
     {
-        bool _isFading, _isMouseOver, _isVisible = true, _isEnabled = true;
-        Rectangle _bounds;
-        float _alpha = 1.0f, _targetAlpha = 1.0f, _fadeSpeed = 2.0f;
-        readonly List<UIElementBase> _children = new List<UIElementBase>();
+        private bool _isVisible = true;
+        private bool _isEnabled = true;
+        private Rectangle _bounds;
+        private float _alpha = 1.0f;
+        private float _targetAlpha = 1.0f;
+        private float _fadeSpeed = 2.0f;
+        private bool _isFading = false;
+        private bool _isMouseOver = false;
 
         /// <summary>
         /// Gets or sets the unique identifier for this UI element.
@@ -71,7 +75,7 @@ namespace SASZombieAssaultTD.Engine.UI.Components
         /// <summary>
         /// Gets or sets the size of the UI element.
         /// </summary>
-        public SASZombieAssaultTD.Engine.Core.Size Size
+        public Core.Size Size
         {
             get => _bounds.Size;
             set => _bounds = new Rectangle(_bounds.X, _bounds.Y, value.Width, value.Height);
@@ -103,11 +107,6 @@ namespace SASZombieAssaultTD.Engine.UI.Components
             get => _isEnabled;
             set => _isEnabled = value;
         }
-
-        /// <summary>
-        /// Gets the transformation matrix for the UI element.
-        /// </summary>
-        public Matrix3x2 Transform { get; private set; }
 
         /// <summary>
         /// Gets or sets the parent UI element.
@@ -189,7 +188,6 @@ namespace SASZombieAssaultTD.Engine.UI.Components
         protected UIElementBase()
         {
             _bounds = new Rectangle(0, 0, 100, 50);
-            Transform = Matrix3x2.Identity;
         }
 
         /// <summary>
@@ -199,7 +197,6 @@ namespace SASZombieAssaultTD.Engine.UI.Components
         protected UIElementBase(Rectangle bounds)
         {
             _bounds = bounds;
-            Transform = Matrix3x2.Identity;
         }
 
         /// <summary>
@@ -227,9 +224,10 @@ namespace SASZombieAssaultTD.Engine.UI.Components
         /// <returns>True if the click was handled, false otherwise.</returns>
         public virtual bool HandleClick(Point position)
         {
-            if (!_isVisible || !_isEnabled) return false;
+            if (!_isVisible || !_isEnabled)
+                return false;
 
-            if (_bounds.Contains(new SASZombieAssaultTD.Engine.VectorMath.Vector3(position.X, position.Y, 0f)))
+            if (_bounds.Contains(new Vector3(position.X, position.Y, 0f)))
             {
                 OnClicked();
                 return true;
@@ -245,16 +243,23 @@ namespace SASZombieAssaultTD.Engine.UI.Components
         /// <returns>True if the mouse is over this element, false otherwise.</returns>
         public virtual bool HandleMouseMove(Point position)
         {
-            if (!_isVisible) return false;
+            if (!_isVisible)
+                return false;
 
-            var isOver = _bounds.Contains(new SASZombieAssaultTD.Engine.VectorMath.Vector3(position.X, position.Y, 0f));
+            bool isOver = _bounds.Contains(new Vector3(position.X, position.Y, 0f));
 
             // Mouse enter/leave tracking
-            var wasOver = _isMouseOver;
+            bool wasOver = _isMouseOver;
             _isMouseOver = isOver;
 
-            if (isOver && !wasOver) OnMouseEnter();
-            else if (!isOver && wasOver) OnMouseLeave();
+            if (isOver && !wasOver)
+            {
+                OnMouseEnter();
+            }
+            else if (!isOver && wasOver)
+            {
+                OnMouseLeave();
+            }
 
             return isOver;
         }
@@ -262,32 +267,50 @@ namespace SASZombieAssaultTD.Engine.UI.Components
         /// <summary>
         /// Triggers the Clicked event.
         /// </summary>
-        protected virtual void OnClicked() => Clicked?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnClicked()
+        {
+            Clicked?.Invoke(this, EventArgs.Empty);
+        }
 
         /// <summary>
         /// Triggers the MouseEnter event.
         /// </summary>
-        protected virtual void OnMouseEnter() => MouseEnter?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnMouseEnter()
+        {
+            MouseEnter?.Invoke(this, EventArgs.Empty);
+        }
 
         /// <summary>
         /// Triggers the MouseLeave event.
         /// </summary>
-        protected virtual void OnMouseLeave() => MouseLeave?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnMouseLeave()
+        {
+            MouseLeave?.Invoke(this, EventArgs.Empty);
+        }
 
         /// <summary>
         /// Triggers the MouseExit event.
         /// </summary>
-        protected virtual void OnMouseExit() => MouseExit?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnMouseExit()
+        {
+            MouseExit?.Invoke(this, EventArgs.Empty);
+        }
 
         /// <summary>
         /// Triggers the MousePress event.
         /// </summary>
-        protected virtual void OnMousePress() => MousePress?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnMousePress()
+        {
+            MousePress?.Invoke(this, EventArgs.Empty);
+        }
 
         /// <summary>
         /// Triggers the MouseRelease event.
         /// </summary>
-        protected virtual void OnMouseRelease() => MouseRelease?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnMouseRelease()
+        {
+            MouseRelease?.Invoke(this, EventArgs.Empty);
+        }
 
         /// <summary>
         /// Gets the screen-space bounds of this UI element, accounting for parent transforms.
@@ -298,7 +321,6 @@ namespace SASZombieAssaultTD.Engine.UI.Components
             if (Parent != null)
             {
                 var parentBounds = Parent.GetScreenBounds();
-
                 return new Rectangle(
                 parentBounds.X + _bounds.X,
                 parentBounds.Y + _bounds.Y,
@@ -327,8 +349,8 @@ namespace SASZombieAssaultTD.Engine.UI.Components
         /// <param name="containerBounds">The container bounds to center within.</param>
         public void CenterIn(Rectangle containerBounds)
         {
-            var nx = containerBounds.X + (containerBounds.Width - _bounds.Width) / 2;
-            var ny = containerBounds.Y + (containerBounds.Height - _bounds.Height) / 2;
+            float nx = containerBounds.X + (containerBounds.Width - _bounds.Width) / 2;
+            float ny = containerBounds.Y + (containerBounds.Height - _bounds.Height) / 2;
             _bounds = new Rectangle(nx, ny, _bounds.Width, _bounds.Height);
         }
 
@@ -340,7 +362,6 @@ namespace SASZombieAssaultTD.Engine.UI.Components
         public virtual void Show(bool fadeIn = true)
         {
             _isVisible = true;
-
             if (fadeIn)
             {
                 Alpha = 1.0f;
@@ -379,20 +400,26 @@ namespace SASZombieAssaultTD.Engine.UI.Components
         /// </summary>
         public virtual void ToggleVisibility()
         {
-            if (_isVisible) Hide();
-            else Show();
+            if (_isVisible)
+            {
+                Hide();
+            }
+            else
+            {
+                Show();
+            }
         }
 
         /// <summary>
         /// Updates fade transition for the UI element.
         /// P11-04-09-E: Handles smooth fade-in/fade-out animations.
         /// </summary>
-        void UpdateFadeTransition(float deltaTime)
+        private void UpdateFadeTransition(float deltaTime)
         {
             if (System.Math.Abs(_alpha - _targetAlpha) > 0.001f)
             {
                 _isFading = true;
-                var fadeDirection = _targetAlpha > _alpha ? 1f : -1f;
+                float fadeDirection = _targetAlpha > _alpha ? 1f : -1f;
                 _alpha += fadeDirection * _fadeSpeed * deltaTime;
                 _alpha = System.Math.Clamp(_alpha, 0f, 1f);
 
@@ -417,7 +444,7 @@ namespace SASZombieAssaultTD.Engine.UI.Components
         /// Updates element position based on anchoring.
         /// P11-04-09-E: Handles automatic positioning based on anchor settings.
         /// </summary>
-        void UpdateAnchoring()
+        private void UpdateAnchoring()
         {
             // This would typically use the screen dimensions from a render context
             // For now, this is a placeholder that derived classes can override
@@ -434,49 +461,11 @@ namespace SASZombieAssaultTD.Engine.UI.Components
             {
                 return _alpha * parentElement.GetEffectiveAlpha();
             }
-
             return _alpha;
-        }
-
-        /// <summary>
-        /// Add a child element.
-        /// </summary>
-        public void AddChild(UIElementBase child)
-        {
-            if (child == null)
-                throw new ArgumentNullException(nameof(child));
-
-            _children.Add(child);
-            OnChildAdded(child);
-        }
-
-        protected virtual void OnChildAdded(UIElementBase child)
-        {
-            // Optional override hook for derived elements.
-        }
-
-        /// <summary>
-        /// Dispose the UI element.
-        /// </summary>
-        public void Dispose()
-        {
-            // Dispose children first, then perform element-specific cleanup.
-            foreach (var child in _children)
-                (child as IDisposable)?.Dispose();
-            
-
-            _children.Clear();
-            OnDisposed();
-        }
-
-        protected virtual void OnDisposed()
-        {
-            // Optional override hook for derived elements.
-        }
-
-        public static explicit operator UIElementBase(UIElement v)
-        {
-            throw new NotImplementedException();
         }
     }
 }
+
+
+
+

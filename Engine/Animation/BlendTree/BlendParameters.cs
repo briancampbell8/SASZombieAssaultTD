@@ -1,12 +1,3 @@
-// ROLE: Container for blend tree parameter values.
-// RESPONSIBILITY: Store and retrieve float parameters used during animation evaluation.
-// TRIGGERS: Passed to IBlendNode.Evaluate during blend tree traversal.
-// INPUTS: Receives parameter names and float values from animation systems.
-// OUTPUTS: Provides parameter lookup for blend node evaluation.
-// DEPENDENCIES: Self-contained with Dictionary-based storage.
-// CONTENTS: BlendParameters class with SetValue, GetValue, TryGetValue methods and 
-//           _parameters Dictionary.
-
 using System.Collections.Generic;
 using System.Linq;
 

@@ -1,12 +1,3 @@
-// ROLE: Interface for blend tree nodes.
-// RESPONSIBILITY: Define contract for deterministic animation evaluation and validation.
-// TRIGGERS: Implemented by all blend tree node types during blend tree construction.
-// INPUTS: Receives BlendParameters and BlendContext during evaluation.
-// OUTPUTS: Returns BlendNodeResult with blended animation data.
-// DEPENDENCIES: Uses BlendParameters, BlendContext, BlendNodeResult types.
-// CONTENTS: IBlendNode interface with Evaluate method, NodeId/Weight properties, 
-//           GetRequiredParameters method plus supporting structs.
-
 using System;
 using System.Collections.Generic;
 

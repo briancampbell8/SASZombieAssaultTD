@@ -1,8 +1,11 @@
-using SASZombieAssaultTD.Engine.Navigation;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Towers;
-using SASZombieAssaultTD.Engine.VectorMath;
 using System;
+using System.Collections.Generic;
+using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.VectorMath;
+using SASZombieAssaultTD.Engine.Audio;
+using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Navigation;
 
 namespace SASZombieAssaultTD.Engine.UI.HUD
 {
@@ -12,33 +15,33 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
     /// </summary>
     public class PlacementInfoDisplay : HUDComponent
     {
-        PlacementInfo _placementInfo;
-        float _displayTimer;
-        new bool _isVisible;
-        bool _isTransitioning;
-        float _transitionTimer;
-        float _transitionDuration = 0.2f;
+        private PlacementInfo _placementInfo;
+        private float _displayTimer = 0f;
+        private new bool _isVisible = false;
+        private bool _isTransitioning = false;
+        private float _transitionTimer = 0f;
+        private float _transitionDuration = 0.2f;
 
         // Visual properties
-        new Vector3 _position;
-        new Vector3 _size;
-        SASZombieAssaultTD.Engine.Core.Color _validColor = new SASZombieAssaultTD.Engine.Core.Color(0, 255, 0, 180);
-        SASZombieAssaultTD.Engine.Core.Color _invalidColor = new SASZombieAssaultTD.Engine.Core.Color(255, 0, 0, 180);
-        SASZombieAssaultTD.Engine.Core.Color _warningColor = new SASZombieAssaultTD.Engine.Core.Color(255, 255, 0, 180);
-        SASZombieAssaultTD.Engine.Core.Color _normalColor = new SASZombieAssaultTD.Engine.Core.Color(255, 255, 255, 180);
-        SASZombieAssaultTD.Engine.Core.Color _borderColor = new SASZombieAssaultTD.Engine.Core.Color(200, 200, 200, 255);
+        private new Vector3 _position;
+        private new Vector3 _size;
+        private SASZombieAssaultTD.Engine.Core.Color _validColor = new SASZombieAssaultTD.Engine.Core.Color(0, 255, 0, 180);
+        private SASZombieAssaultTD.Engine.Core.Color _invalidColor = new SASZombieAssaultTD.Engine.Core.Color(255, 0, 0, 180);
+        private SASZombieAssaultTD.Engine.Core.Color _warningColor = new SASZombieAssaultTD.Engine.Core.Color(255, 255, 0, 180);
+        private SASZombieAssaultTD.Engine.Core.Color _normalColor = new SASZombieAssaultTD.Engine.Core.Color(255, 255, 255, 180);
+        private SASZombieAssaultTD.Engine.Core.Color _borderColor = new SASZombieAssaultTD.Engine.Core.Color(200, 200, 200, 255);
 
         // Text properties
-        Font _titleFont;
-        Font _textFont;
-        Font _iconFont;
-        Font _smallFont;
+        private Font _titleFont;
+        private Font _textFont;
+        private Font _iconFont;
+        private Font _smallFont;
 
         // Animation properties
-        float _pulseSpeed = 2f;
-        float _pulseAmount = 0.1f;
-        float _pulseTimer;
-        bool _isPulsing;
+        private float _pulseSpeed = 2f;
+        private float _pulseAmount = 0.1f;
+        private float _pulseTimer = 0f;
+        private bool _isPulsing = false;
 
         // Events
         public event Action<PlacementInfo> OnPlacementAttempted;
@@ -90,7 +93,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// Set display position.
         /// </summary>
         /// <param name="position">New position.</param>
-        public void SetPosition(Vector3 position) => _position = position;
+        public void SetPosition(Vector3 position)
+        {
+            _position = position;
+        }
 
         /// <summary>
         /// Set display size.
@@ -171,12 +177,15 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// Set display timer.
         /// </summary>
         /// <param name="seconds">Display duration in seconds.</param>
-        public void SetDisplayTimer(float seconds) => _displayTimer = seconds;
+        public void SetDisplayTimer(float seconds)
+        {
+            _displayTimer = seconds;
+        }
 
         /// <summary>
         /// Start transition animation.
         /// </summary>
-        void StartTransition()
+        private void StartTransition()
         {
             _transitionTimer = 0f;
             _isTransitioning = true;
@@ -185,10 +194,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Update transition animation.
         /// </summary>
-        void UpdateTransition(float deltaTime)
+        private void UpdateTransition(float deltaTime)
         {
             _transitionTimer += deltaTime;
-
             if (_transitionTimer >= _transitionDuration)
             {
                 _isTransitioning = false;
@@ -199,7 +207,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Render the placement info display.
         /// </summary>
-        void RenderPlacementInfo()
+        private void RenderPlacementInfo()
         {
             if (!_isVisible || _placementInfo == null) return;
 
@@ -226,7 +234,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Render background.
         /// </summary>
-        void RenderBackground()
+        private void RenderBackground()
         {
             var backgroundColor = Color.FromArgb((byte)(255 * GetTransitionProgress()), (byte)_backgroundColor.R, (byte)_backgroundColor.G, (byte)_backgroundColor.B);
             var borderColor = Color.FromArgb((byte)(255 * GetTransitionProgress()), (byte)_borderColor.R, (byte)_borderColor.G, (byte)_borderColor.B);
@@ -239,14 +247,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Render tower preview.
         /// </summary>
-        void RenderTowerPreview()
+        private void RenderTowerPreview()
         {
             if (_placementInfo == null) return;
 
             var towerData = _placementInfo.TowerData;
             var towerSize = towerData.Size;
             var towerPosition = _placementInfo.GridPosition;
-            var worldPosition = NavigationGrid.Instance.GridToWorld(towerPosition);
+            var worldPosition = NavigationGrid.GridToWorld(towerPosition);
             var towerColor = _placementInfo.CanPlace ? _validColor : _invalidColor;
 
             // Calculate tower size for preview (avoid Vector3 operator overloads)
@@ -269,27 +277,18 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             // Render tower base
             var baseSize = new Vector3(towerSize.X * 0.8f, towerSize.Y * 0.8f, towerSize.Z * 0.8f);
             var basePosition = new Vector3(worldPosition.X + (towerSize.X / 2f), worldPosition.Y + (towerSize.Y / 2f), worldPosition.Z + (towerSize.Z / 2f));
-            var baseColor = Color.FromArgb(
-                (byte)100,
-                (byte)towerColor.R, 
-                (byte)towerColor.G, 
-                (byte)towerColor.B);
+            var baseColor = Color.FromArgb(100, (byte)towerColor.R, (byte)towerColor.G, (byte)towerColor.B);
             Renderer.DrawRectangle(basePosition, baseSize, baseSize, baseColor, 1f);
         }
 
         /// <summary>
         /// Render status indicator.
         /// </summary>
-        void RenderStatus()
+        private void RenderStatus()
         {
             var statusText = GetStatusText();
             var statusColor = GetStatusColor();
-
-            var statusTextColor = Color.FromArgb((byte)255,
-                                                 (byte)statusColor.R,
-                                                 (byte)statusColor.G,
-                                                 (byte)statusColor.B);
-
+            var statusTextColor = Color.FromArgb(255, (byte)statusColor.R, (byte)statusColor.G, (byte)statusColor.B);
             var statusPosition = new Vector3(_position.X + 10f, _position.Y + _size.Y - 25f, 0);
             var statusFont = FontCache.GetFont("small") ?? FontCache.GetFont("default");
 
@@ -299,7 +298,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Get status text based on current state.
         /// </summary>
-        string GetStatusText()
+        private string GetStatusText()
         {
             if (_placementInfo == null) return "No tower selected";
 
@@ -320,7 +319,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Get status color based on state.
         /// </summary>
-        SASZombieAssaultTD.Engine.Core.Color GetStatusColor()
+        private SASZombieAssaultTD.Engine.Core.Color GetStatusColor()
         {
             if (_placementInfo == null) return _normalColor;
 
@@ -341,15 +340,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Get transition progress (0-1).
         /// </summary>
-        float GetTransitionProgress()
+        private float GetTransitionProgress()
         {
             if (!_isTransitioning) return 1f;
             return (float)System.Math.Clamp(_transitionTimer / _transitionDuration, 0f, 1f);
         }
 
         // Placeholder: kept to satisfy compilation until real implementation exists
-        void UpdateHeartPositions() { }
-
-        void RenderText() { }
+        private void UpdateHeartPositions() { }
+        private void RenderText() { }
     }
 }

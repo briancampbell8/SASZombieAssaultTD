@@ -1,8 +1,29 @@
-// FILE PATH: Engine/Animation/Core/AnimationTransitionDebug.cs
-// EXECUTION TRIGGER: Instantiated by debug systems during animation transition tracking
-// PROGRAM PURPOSE: Animation transition debugging and visualization providing debugging data for animation state transitions
-// PROGRAM CALLS: Vector3, AnimationStateMachine
-// PROGRAM CONTENTS: AnimationTransitionDebug class with RecordTransition, GetTransitionHistory, ClearHistory methods plus transition tracking fields
+/*
+File:    AnimationTransitionDebug.cs
+Path:    Engine/Animation/AnimationTransitionDebug.cs
+Purpose:   P11-16-05 - Animation transition debugging and visualization.
+           Provides debugging data for animation state transitions.
+
+Role:      Essential animation transition debugging system for visualization.
+           - Tracks animation state transitions with progress monitoring
+           - Provides visualization data for transition debugging
+           - Handles transition timing and duration tracking
+           - Integrates with AnimationDebugTools for transition visualization
+           - Supports real-time transition debugging and analysis
+
+Features:   Animation state transition tracking with progress monitoring.
+           Transition visualization data with position and timing information.
+           Real-time transition debugging with duration tracking.
+           Thread-safe transition operations for concurrent access.
+           Integration with debug rendering system for visualization.
+           Comprehensive transition analysis and reporting.
+
+Notes:      This system is designed for development and debugging visualization.
+           Transition tracking has minimal performance impact on animation system.
+           All transition operations are thread-safe and designed for concurrent access.
+           System integrates seamlessly with AnimationDebugTools for complete visualization.
+           Transition data can be exported for analysis and optimization.
+*/
 
 using SASZombieAssaultTD.Engine.VectorMath;
 using System;

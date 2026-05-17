@@ -1,5 +1,4 @@
-using SASZombieAssaultTD.Engine.Assets;
-using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 
@@ -10,18 +9,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
     /// </summary>
     public class UIRenderContext : IRenderContext
     {
-        public float ScreenWidth => ViewportSize.X;
-        public float ScreenHeight => ViewportSize.Y;
-
-        public float Width => ViewportSize.X;
-        public float Height => ViewportSize.Y;
-
-        public Viewport Viewport { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
 
         // Corrected ViewportSize to explicitly use the canonical Vector3
-        public SASZombieAssaultTD.Engine.VectorMath.Vector3 ViewportSize
-        { get; set; } = SASZombieAssaultTD.Engine.VectorMath.Vector3.Zero;
-        object IRenderContext.Viewport { get => Viewport; set => throw new NotImplementedException(); }
+        public SASZombieAssaultTD.Engine.VectorMath.Vector3 ViewportSize { get; set; } = SASZombieAssaultTD.Engine.VectorMath.Vector3.Zero;
 
         public void Clear(Color color) { }
 
@@ -41,10 +33,8 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                 (int)(g * 255),
                 (int)(b * 255)
             );
-
             Clear(color);
         }
-
         public void DrawLine(SASZombieAssaultTD.Engine.VectorMath.Vector3 start, SASZombieAssaultTD.Engine.VectorMath.Vector3 end, Color color, float thickness = 1.0f) { }
 
         /// <summary>
@@ -62,21 +52,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             var end = new SASZombieAssaultTD.Engine.VectorMath.Vector3(x2, y2, 0);
             DrawLine(start, end, color);
         }
-
         public void DrawRectangle(Rectangle rect, Color color, float thickness = 1.0f) { }
-
-        /// <summary>
-        /// Draws a rectangle using the Rect structure.
-        /// Implements the IRenderContext.DrawRectangle method.
-        /// </summary>
-        /// <param name="rect">Rectangle to draw</param>
-        /// <param name="color">Rectangle color</param>
-        public void DrawRectangle(Rect rect, Color color)
-        {
-            // Convert Rect to Rectangle for internal implementation
-            var rectangle = new Rectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
-            DrawRectangle(rectangle, color);
-        }
 
         /// <summary>
         /// Draws a rectangle using coordinate components.
@@ -107,9 +83,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             var rect = new Rectangle(x, y, width, height);
             DrawRectangle(rect, color);
         }
-
         public void FillRectangle(Rectangle rect, Color color) { }
-
         public void DrawCircle(SASZombieAssaultTD.Engine.VectorMath.Vector3 center, float radius, Color color, float thickness = 1.0f) { }
 
         /// <summary>
@@ -125,9 +99,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             var center = new SASZombieAssaultTD.Engine.VectorMath.Vector3(x, y, 0);
             DrawCircle(center, radius, color);
         }
-
         public void FillCircle(SASZombieAssaultTD.Engine.VectorMath.Vector3 center, float radius, Color color) { }
-
         public void DrawText(string text, SASZombieAssaultTD.Engine.VectorMath.Vector3 position, Color color, float size = 12.0f) { }
 
         /// <summary>
@@ -160,34 +132,6 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             DrawText(text, position, color, size);
         }
 
-        /// <summary>
-        /// Draws text at the specified position with font.
-        /// Implements the IRenderContext.DrawText method.
-        /// </summary>
-        /// <param name="text">Text to draw</param>
-        /// <param name="position">Position for text (Z component ignored)</param>
-        /// <param name="color">Text color</param>
-        /// <param name="font">Font to use for text rendering</param>
-        public void DrawText(string text, Vector3 position, Color color, Font font)
-        {
-            // Convert Font to size for internal implementation
-            var fontSize = font?.Size ?? 12f;
-            DrawText(text, position, color, fontSize);
-        }
-
-        /// <summary>
-        /// Draws an image/texture at the specified rectangle.
-        /// Implements the IRenderContext.DrawImage method.
-        /// </summary>
-        /// <param name="texture">Texture to render</param>
-        /// <param name="rect">Destination rectangle for texture rendering</param>
-        public void DrawImage(Texture texture, Rect rect)
-        {
-            // Convert Rect to Rectangle for internal implementation
-            var rectangle = new Rectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
-            FillRectangle(rectangle, Color.White); // Placeholder implementation
-        }
-
         // Overloads for KillFeedSystem compatibility
         public void DrawText(string text, float x, float y, Color color, float fontSize)
         {
@@ -195,13 +139,14 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         }
 
         public void Present() { }
-
         public void BeginBatch() { }
-
         public void EndBatch() { }
 
         // Missing interface methods that need to be implemented
-        public void ClearScreen() => Clear(Color.Black);
+        public void ClearScreen()
+        {
+            Clear(Color.Black);
+        }
 
         /// <summary>
         /// Measures text dimensions.
@@ -212,8 +157,8 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public SASZombieAssaultTD.Engine.VectorMath.Vector3 MeasureText(string text, float size = 12.0f)
         {
             // Simple text measurement
-            var width = text.Length * size * 0.6f; // Approximate width
-            var height = size;
+            float width = text.Length * size * 0.6f; // Approximate width
+            float height = size;
             return new SASZombieAssaultTD.Engine.VectorMath.Vector3(width, height, 0);
         }
 
@@ -223,7 +168,6 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public void Initialize()
         {
             // Initialize UI render context
-            PlaceholderTexture.Initialize();
         }
 
         /// <summary>
@@ -279,9 +223,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
 
         // Additional methods for compatibility
         public void ClearClipRect() { }
-
         public void SetAlpha(float alpha) { }
-
         public void Reset() { }
 
         /// <summary>
@@ -315,11 +257,6 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         }
 
         public void DrawText(string stateText, int v1, int v2)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DrawText(object line, int v, int y)
         {
             throw new NotImplementedException();
         }

@@ -4,9 +4,12 @@ Purpose:  Extension methods for various object types.
 Features:  Comprehensive extension methods for all missing object properties.
 */
 
-using SASZombieAssaultTD.Engine.Towers;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.Core;
 
 namespace SASZombieAssaultTD.Engine.Extensions
 {
@@ -35,7 +38,10 @@ namespace SASZombieAssaultTD.Engine.Extensions
         public string ErrorMessage { get; set; }
         public bool IsValid => string.IsNullOrEmpty(ErrorMessage);
 
-        public ValidationResult(string errorMessage = null) => ErrorMessage = errorMessage;
+        public ValidationResult(string errorMessage = null)
+        {
+            ErrorMessage = errorMessage;
+        }
 
         public static ValidationResult Success => new ValidationResult();
         public static ValidationResult Error(string message) => new ValidationResult(message);
@@ -103,21 +109,30 @@ namespace SASZombieAssaultTD.Engine.Extensions
         /// </summary>
         /// <param name="vector">The vector to get X from.</param>
         /// <returns>X coordinate of vector.</returns>
-        public static float X(this SASZombieAssaultTD.Engine.VectorMath.Vector3 vector) => vector.X;
+        public static float X(this SASZombieAssaultTD.Engine.VectorMath.Vector3 vector)
+        {
+            return vector.X;
+        }
 
         /// <summary>
         /// Gets Y coordinate of a Vector3.
         /// </summary>
         /// <param name="vector">The vector to get Y from.</param>
         /// <returns>Y coordinate of vector.</returns>
-        public static float Y(this SASZombieAssaultTD.Engine.VectorMath.Vector3 vector) => vector.Y;
+        public static float Y(this SASZombieAssaultTD.Engine.VectorMath.Vector3 vector)
+        {
+            return vector.Y;
+        }
 
         /// <summary>
         /// Gets Z coordinate of a Vector3.
         /// </summary>
         /// <param name="vector">The vector to get Z from.</param>
         /// <returns>Z coordinate of vector.</returns>
-        public static float Z(this SASZombieAssaultTD.Engine.VectorMath.Vector3 vector) => vector.Z;
+        public static float Z(this SASZombieAssaultTD.Engine.VectorMath.Vector3 vector)
+        {
+            return vector.Z;
+        }
 
         /// <summary>
         /// Creates a new Vector3 with specified coordinates.
@@ -146,7 +161,10 @@ namespace SASZombieAssaultTD.Engine.Extensions
         /// </summary>
         /// <param name="rect">The rectangle to get size from.</param>
         /// <returns>Size of rectangle.</returns>
-        public static SizeF Size(this Rectangle rect) => new SizeF(rect.Width, rect.Height);
+        public static SizeF Size(this Rectangle rect)
+        {
+            return new SizeF(rect.Width, rect.Height);
+        }
 
         /// <summary>
         /// Checks if a point is inside a rectangle.
@@ -191,15 +209,14 @@ namespace SASZombieAssaultTD.Engine.Extensions
         public static bool TryGetTarget<T>(this WeakReference<T> weakReference, out T target) where T : class
         {
             ArgumentNullException.ThrowIfNull(weakReference);
-
             if (weakReference != null && weakReference.TryGetTarget(out target))
             {
                 return true;
             }
-
             target = null;
             return false;
         }
+
 
         /// <summary>
         /// Gets error message from a ValidationResult.
@@ -236,7 +253,10 @@ namespace SASZombieAssaultTD.Engine.Extensions
         /// </summary>
         /// <param name="tower">The Tower instance.</param>
         /// <returns>Turret type.</returns>
-        public static string Turret(this Tower tower) => tower.Type.ToString();
+        public static string Turret(this Tower tower)
+        {
+            return tower.Type.ToString();
+        }
 
         /// <summary>
         /// Gets turret type from a TowerType enum.
@@ -259,7 +279,10 @@ namespace SASZombieAssaultTD.Engine.Extensions
         /// </summary>
         /// <param name="name">The tower name.</param>
         /// <returns>Turret type string.</returns>
-        public static string Turret(string name) => name ?? "BaseTurret";
+        public static string Turret(string name)
+        {
+            return name ?? "BaseTurret";
+        }
 
         /// <summary>
         /// Gets upgrade type from a TowerUpgrade.
@@ -268,7 +291,7 @@ namespace SASZombieAssaultTD.Engine.Extensions
         /// <returns>Upgrade type.</returns>
         public static string UpgradeType(this TowerUpgrade upgrade)
         {
-            return upgrade?.Type.ToString() ?? "Basic";
+        return upgrade?.Type.ToString() ?? "Basic";
         }
 
         /// <summary>
@@ -276,7 +299,10 @@ namespace SASZombieAssaultTD.Engine.Extensions
         /// </summary>
         /// <param name="level">The level number.</param>
         /// <returns>LevelUpEffect instance.</returns>
-        public static LevelUpEffect FromLevel(int level) => new LevelUpEffect { Level = level };
+        public static LevelUpEffect FromLevel(int level)
+        {
+            return new LevelUpEffect { Level = level };
+        }
 
         /// <summary>
         /// Creates a level up effect to level.
@@ -298,8 +324,10 @@ namespace SASZombieAssaultTD.Engine.Extensions
         public static bool TryGetValue(this List<PlayerUnlock> unlocks, string id)
         {
             foreach (var unlock in unlocks)
-                if (unlock.Id == id) return true;
-
+            {
+                if (unlock.Id == id)
+                    return true;
+            }
             return false;
         }
 
@@ -326,84 +354,59 @@ namespace SASZombieAssaultTD.Engine.Extensions
         /// <returns>Selected result list.</returns>
         public static List<TResult> Select<TSource, TResult>(this List<TSource> source, Func<TSource, TResult> selector)
         {
-            return System.Linq.Enumerable.ToList(System.Linq.Enumerable.Select(source, selector));
+        return System.Linq.Enumerable.ToList(System.Linq.Enumerable.Select(source, selector));
         }
 
         // InputData extensions
         public static bool F5Pressed(this SASZombieAssaultTD.Engine.InputData inputData) => inputData.F5Pressed;
-
         public static bool IsUpPressed(this SASZombieAssaultTD.Engine.InputData inputData) => inputData.IsUpPressed;
-
         public static bool IsDownPressed(this SASZombieAssaultTD.Engine.InputData inputData) => inputData.IsDownPressed;
-
         public static bool IsSelectPressed(this SASZombieAssaultTD.Engine.InputData inputData) => inputData.IsSelectPressed;
 
         // GameLoop extensions
         public static void Start(this object gameLoop) { }
-
         public static void Pause(this object gameLoop) { }
-
         public static void Update(this object gameLoop, float deltaTime) { }
-
         public static void HandleInput(this object gameLoop, object input) { }
-
         public static void Render(this object gameLoop, object context) { }
 
         // WaveDirector extensions
         public static void StartWaveSync(this object waveDirector) { }
-
         public static void Initialize(this object waveDirector) { }
-
         public static void StartNextWaveEarly(this object waveDirector) { }
-
         public static bool IsGameComplete(this object waveDirector) => false;
-
-        //   public static void OnWaveProgress(this object waveDirector, Action<int, int> callback) { } 
+        public static void OnWaveProgress(this object waveDirector, Action<int, int> callback) { }
 
         // TowerPlacementPreview extensions
         public static void Hide(this object towerPlacementPreview) { }
 
         // HUDController extensions
         public static void HandleClick(this object hudController, object clickData) { }
-
         public static void ShowPlacementInfo(this object hudController, string info) { }
-
         public static void HidePlacementInfo(this object hudController) { }
-
         public static void UpdatePlacementInfo(this object hudController, string info) { }
 
         // Tower extensions
         public static object TowerData(this object tower) => null;
-
         public static object GetFirePosition(this object tower) => null;
-
         public static void AddSpecialAbility(this object tower, string ability) { }
-
         public static void SetCustomProperty(this object tower, string key, object value) { }
 
         // TowerType extensions
         public static object MGLTurret(this object towerType) => null;
-
         public static object SpecialTurret(this object towerType) => null;
-
         public static object SASSoldier(this object towerType) => null;
-
         public static object SniperTower(this object towerType) => null;
-
         public static object Turret(this object towerType) => null;
 
         // TowerUpgrade extensions
         public static bool IsAfford(this object towerUpgrade) => true;
-
-        public static void SetVisualProperties(this object towerUpgrade, object properties, object upgradeColor) { }
+        public static void SetVisualProperties(this object towerUpgrade, object properties) { }
 
         // NavigationGrid extensions
         public static object WorldOrigin(this object navigationGrid) => null;
-
         public static void SetOccupied(this object navigationGrid, int x, int y, bool occupied) { }
-
         public static object GetTerrainType(this object navigationGrid, int x, int y) => null;
-
         public static List<object> GetSpawnPoints(this object navigationGrid) => new List<object>();
 
         // NavigationCell extensions
@@ -417,7 +420,6 @@ namespace SASZombieAssaultTD.Engine.Extensions
 
         // Projectile extensions
         public static void Activate(this object projectile, VectorMath.Vector3 position) { }
-
         public static float Speed(this object projectile) => 100f;
 
         // PerformanceProfiler extensions
@@ -425,19 +427,12 @@ namespace SASZombieAssaultTD.Engine.Extensions
 
         // String extensions for collision debug
         public static float CellSize(this string grid) => 1f;
-
         public static int GridWidth(this string grid) => 100;
-
         public static int GridHeight(this string grid) => 100;
-
         public static int TotalCells(this string grid) => 10000;
-
         public static int OccupiedCells(this string grid) => 0;
-
         public static int TotalEntities(this string grid) => 0;
-
         public static float AverageEntitiesPerCell(this string grid) => 0f;
-
         public static int MaxEntitiesPerCell(this string grid) => 0;
 
         // Texture2D extensions
@@ -451,55 +446,39 @@ namespace SASZombieAssaultTD.Engine.Extensions
 
         // Long extensions (for nullable simulation)
         public static bool HasValue(this long value) => true;
-
         public static long Value(this long value) => value;
 
         // Object extensions for GameRoot
-        public static object GetUISystem(this object gameRoot) => null;
-
+        public static object UISystem(this object gameRoot) => null;
         public static object AnimationSystem(this object gameRoot) => null;
-
         public static object EnemySystem(this object gameRoot) => null;
-
         public static object RenderSystem(this object gameRoot) => null;
-
         public static object StateMachine(this object gameRoot) => null;
-
-        public static object AsInstance(this object singleton) => singleton;
+        public static object Instance(this object singleton) => singleton;
 
         // StateMachineStatistics extensions
         public static int TotalTransitions(this object stats) => 0;
-
-        public static object EnemyModifiers(this object waveSpawnGroup, Func<object, bool> value) => null;
+        public static object EnemyModifiers(this object waveSpawnGroup) => null;
 
         // SpawnPatternParameters extensions
         public static object CustomSpawnPosition(this object parameters) => null;
-
         public static object StartPoint(this object parameters) => null;
-
         public static object Direction(this object parameters) => null;
-
         public static object BasePoint(this object parameters) => null;
 
         // GameState extensions
         public static object PlayerLevel(this object gameState) => null;
-
         public static object BuiltTowers(this object gameState) => null;
 
         // Hazard extensions
         public static float Intensity(this object hazard) => 1.0f;
-
         public static void PerformCleanup(this object hazardCleanup) { }
 
         // HazardAnalytics extensions
         public static int GetTotalHazardCount(this object hazardAnalytics) => 0;
-
         public static int GetActiveHazardCount(this object hazardAnalytics) => 0;
-
         public static object GetHazardTypeBreakdown(this object hazardAnalytics) => null;
-
         public static float GetAverageHazardLifetime(this object hazardAnalytics) => 0f;
-
         public static float GetAverageEffectivenessScore(this object hazardAnalytics) => 0f;
 
         // LevelUpAnimation extensions
@@ -507,7 +486,6 @@ namespace SASZombieAssaultTD.Engine.Extensions
 
         // Func extensions
         public static float X(this Func<object> func) => 0f;
-
         public static float Y(this Func<object> func) => 0f;
         public class HazardDensityData
         {
@@ -515,19 +493,15 @@ namespace SASZombieAssaultTD.Engine.Extensions
         }
         // Float extensions
         public static float X(this float value) => value;
-
         public static float Y(this float value) => value;
 
         // IGrouping extensions
         public static string ResourcePath(this object grouping) => "";
-
         public static string ResourceType(this object grouping) => "";
-
         public static int Priority(this object grouping) => 0;
 
         // HealthComponent extensions
         public static bool HasValue(this object healthComponent) => true;
-
         public static float Value(this object healthComponent) => 100f;
 
         // TransformComponent extensions
@@ -535,24 +509,19 @@ namespace SASZombieAssaultTD.Engine.Extensions
 
         // HUDComponent extensions
         public static void SetVisibility(this object hudComponent, bool visible) { }
-
         public static void SetPaused(this object hudComponent, bool paused) { }
-
         public static void Cleanup(this object hudComponent) { }
 
         // UIElement extensions
         public static bool IsActive(this object uiElement) => true;
-
         public static void ProcessInput(this object uiElement, object input) { }
-
         public static string Name(this object uiElement) => "";
 
         // UIPanel extensions
 
         // TowerRegistry extensions
-        // public static void OnTowerSelected(this object towerRegistry, Action<object> callback) { }
-
-       // public static void OnTowerDeselected(this object towerRegistry, Action<object> callback) { }
+        public static void OnTowerSelected(this object towerRegistry, Action<object> callback) { }
+        public static void OnTowerDeselected(this object towerRegistry, Action<object> callback) { }
 
         // UIInputState extensions
         public static object KeyStates(this object uiInputState) => null;
@@ -565,7 +534,6 @@ namespace SASZombieAssaultTD.Engine.Extensions
 
         // LevelUpEffect extensions (static methods)
         public static LevelUpEffect FromLevel(this object levelUpEffect, int level) => new LevelUpEffect { Level = level };
-
         public static LevelUpEffect ToLevel(this object levelUpEffect, int level) => new LevelUpEffect { Level = level };
 
         // ValidationResult extensions

@@ -1,4 +1,5 @@
 using SASZombieAssaultTD.Engine.Audio;
+using SASZombieAssaultTD.Engine.Dictionary;
 using SASZombieAssaultTD.Engine.Difficulty;
 using SASZombieAssaultTD.Engine.Enemies;
 using SASZombieAssaultTD.Engine.Extensions;
@@ -10,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ModernLoggingSystem = SASZombieAssaultTD.Engine.Core.ModernLoggingSystem;
-using ZombieType = SASZombieAssaultTD.Engine.Enemies.ZombieType;
 
 namespace SASZombieAssaultTD.Engine.Waves
 {
@@ -55,8 +55,6 @@ namespace SASZombieAssaultTD.Engine.Waves
         // Singleton
         static WaveDirector _instance;
         public static WaveDirector Instance => _instance ??= new WaveDirector();
-
-        public Action<object> OnWaveProgress { get; internal set; }
 
         private WaveDirector()
         {
@@ -326,19 +324,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             // Check if any enemies from current wave are still active
             var activeEnemies = enemyManager.GetActiveEnemies();
 
-            foreach (var enemy in activeEnemies)
-            {
-                if (enemy != null && enemy.SourceWave == _currentWaveNumber)
-                {
-                    // There is still at least one enemy from the current wave
-                    return false;
-                }
-            }
-
-            return true;
+            object enemy = null;
+            return enemy.SourceWave != _currentWaveNumber;
         }
 
-        public IEnumerable<Enemy> GetActiveEnemies()
+        private IEnumerable<object> GetActiveEnemies()
         {
             throw new NotImplementedException();
         }
@@ -380,7 +370,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         {
             try
             {
-                var loader = WaveLoader.Instance;
+                var loader = new WaveLoader();
                 var scripts = loader.LoadAllWaveScripts();
 
                 _waveScripts.Clear();
@@ -463,6 +453,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
         }
 
+        /// <summary>
+        /// Spawn a single enemy.
+        /// </summary>
         Enemy SpawnEnemy(SASZombieAssaultTD.Engine.Enemies.ZombieType zombieType)
         {
             try
@@ -476,7 +469,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 var spawnPosition = GetSpawnPosition(SpawnPatternType.Line);
 
                 // Create enemy
-                var enemy = EnemyManager.SpawnEnemy(zombieType, spawnPosition);
+                var enemy = enemyManager.SpawnEnemy(zombieType, spawnPosition);
 
                 if (enemy == null)
                     return null;
@@ -488,8 +481,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 enemy.SourceWave = _currentWaveNumber;
 
                 // Play spawn sound
-
-                ModernAudioSubsystem.Instance.PlaySound("enemy_spawn", spawnPosition);
+                ModernAudioSubsystem.PlaySound("enemy_spawn", spawnPosition);
 
                 return enemy;
             }
@@ -588,6 +580,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         {
             _waveTimer += deltaTime;
 
+            // Check if wave is complete
             if (AreAllWaveEnemiesDefeated() && _currentWave != null)
             {
                 CompleteCurrentWave();
@@ -623,7 +616,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             _interWaveTimer = 0f;
 
             // Play wave complete sound
-            ModernAudioSubsystem.Instance.PlaySound("wave_complete");
+            ModernAudioSubsystem.PlaySound("wave_complete");
 
             // Show wave complete notification
             ShowWaveCompleteNotification(_currentWave);
@@ -656,7 +649,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             OnGameComplete?.Invoke();
 
             // Play victory sound
-            ModernAudioSubsystem.Instance.PlaySound("victory");
+            ModernAudioSubsystem.PlaySound("victory");
         }
 
         /// <summary>
@@ -827,7 +820,7 @@ namespace SASZombieAssaultTD.Engine.Waves
 
             var spawnGroup = new WaveSpawnGroup
             {
-                EnemyType = (WaveSpawnGroup.ZombieType)ZombieType.Swarm,
+                EnemyType = ZombieType.Swarm,
                 Count = enemyCount,
                 SpawnDelay = 0.5f,
                 Pattern = SpawnPatternType.Line

@@ -5,12 +5,12 @@ Purpose:  Enemy management system for SAS Zombie Assault TD.
 Features: Enemy spawning, enumeration, and lifecycle management.
 */
 
-using SASZombieAssaultTD.Engine.ECS;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.VectorMath;
+using SASZombieAssaultTD.Engine.ECS;
 
 namespace SASZombieAssaultTD.Engine.Enemies
 {
@@ -22,10 +22,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
     {
         #region Private Fields
 
-        readonly List<Enemy> _enemies = new();
-        readonly ECSWorld _ecsWorld;
-        uint _nextEnemyId = 1;
-        internal static EnemyManager Instance;
+        private readonly List<Enemy> _enemies = new();
+        private readonly ECSWorld _ecsWorld;
+        private uint _nextEnemyId = 1;
 
         #endregion
 
@@ -59,10 +58,10 @@ namespace SASZombieAssaultTD.Engine.Enemies
                 var enemy = new Enemy(entity);
                 enemy.Type = enemyType.ToString();
                 enemy.Position = position;
-
+                
                 // Add enemy to tracking list
                 _enemies.Add(enemy);
-
+                
                 return enemy;
             }
             catch (Exception ex)
@@ -76,19 +75,28 @@ namespace SASZombieAssaultTD.Engine.Enemies
         /// Gets all currently active enemies.
         /// </summary>
         /// <returns>Collection of all active enemies.</returns>
-        public IEnumerable<Enemy> GetAllEnemies() => _enemies.Where(e => e.IsActive);
+        public IEnumerable<Enemy> GetAllEnemies()
+        {
+            return _enemies.Where(e => e.IsActive);
+        }
 
         /// <summary>
         /// Gets all enemies as IReadOnlyList for compatibility.
         /// </summary>
         /// <returns>ReadOnly list of all enemies.</returns>
-        public IReadOnlyList<Enemy> GetAllEnemiesReadOnly() => _enemies.AsReadOnly();
+        public IReadOnlyList<Enemy> GetAllEnemiesReadOnly()
+        {
+            return _enemies.AsReadOnly();
+        }
 
         /// <summary>
         /// Gets all enemies (including inactive ones).
         /// </summary>
         /// <returns>Collection of all enemies.</returns>
-        public IEnumerable<Enemy> GetAllEnemiesIncludingInactive() => _enemies;
+        public IEnumerable<Enemy> GetAllEnemiesIncludingInactive()
+        {
+            return _enemies;
+        }
 
         /// <summary>
         /// Gets enemies of a specific type.
@@ -108,7 +116,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
         /// <returns>Collection of enemies within the radius.</returns>
         public IEnumerable<Enemy> GetEnemiesInRadius(Vector3 center, float radius)
         {
-            return _enemies.Where(e => e.IsActive &&
+            return _enemies.Where(e => e.IsActive && 
                 Vector3.Distance(e.Position, center) <= radius);
         }
 
@@ -121,13 +129,13 @@ namespace SASZombieAssaultTD.Engine.Enemies
             if (enemy == null) return;
 
             enemy.IsActive = false;
-
+            
             // Remove from ECS world if entity exists
             if (enemy.Entity != null)
             {
                 _ecsWorld.DestroyEntity(enemy.Entity);
             }
-
+            
             _enemies.Remove(enemy);
         }
 
@@ -139,15 +147,16 @@ namespace SASZombieAssaultTD.Engine.Enemies
         {
             // Update all active enemies
             foreach (var enemy in _enemies.Where(e => e.IsActive))
+            {
                 enemy.Update(deltaTime);
-            
+            }
 
             // Remove dead enemies
             var deadEnemies = _enemies.Where(e => !e.IsActive).ToList();
-
             foreach (var deadEnemy in deadEnemies)
+            {
                 RemoveEnemy(deadEnemy);
-            
+            }
         }
 
         /// <summary>
@@ -172,7 +181,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
                     _ecsWorld.DestroyEntity(enemy.Entity);
                 }
             }
-
+            
             _enemies.Clear();
         }
 
@@ -184,15 +193,10 @@ namespace SASZombieAssaultTD.Engine.Enemies
         /// Updates enemy statistics.
         /// </summary>
         /// <param name="enemy">The enemy to update.</param>
-        void UpdateEnemyStats(Enemy enemy)
+        private void UpdateEnemyStats(Enemy enemy)
         {
             // Update enemy stats based on difficulty, wave, etc.
             // This would integrate with the difficulty system
-        }
-
-        internal static Enemy SpawnEnemy(ZombieType zombieType, Vector3 spawnPosition)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion

@@ -1,9 +1,8 @@
-// FILE PATH: Engine/Animation/Components/JumpState.cs
-// EXECUTION TRIGGER: Instantiated by AnimationStateMachine during jump state transitions
-// PROGRAM PURPOSE: Jump animation state implementing deterministic jump state with explicit transition conditions
-// PROGRAM CALLS: IAnimationState, AnimationClip, IdleState, MoveState, AttackState
-// PROGRAM CONTENTS: JumpState class implementing IAnimationState with Name, Clip, JumpHeight, JumpVelocity, IsGrounded, IsAttacking, JumpTime, IsJumping properties and Enter, Exit, Update, CheckTransitions methods
-
+/*
+File:    JumpState.cs
+Purpose: P11-17-05 - Implement JumpState using IAnimationState with explicit transition conditions and deterministic Update behavior.
+Provides deterministic jump state with explicit transition conditions and no placeholder behavior.
+*/
 using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.Animation.Core;
 using System.Collections.Generic;

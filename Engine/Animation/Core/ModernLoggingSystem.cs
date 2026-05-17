@@ -1,9 +1,3 @@
-// FILE PATH: Engine/Animation/Core/ModernLoggingSystem.cs
-// EXECUTION TRIGGER: Called by all engine systems for debug, info, warning, and error logging
-// PROGRAM PURPOSE: Modern logging system with levels, filtering, and thread-safe operation providing centralized logging with rate limiting and emergency stop capabilities
-// PROGRAM CALLS: LogLevel, LogEntry
-// PROGRAM CONTENTS: ModernLoggingSystem static class with Log, LogDebug, LogInfo, LogWarning, LogError, LogCritical methods and _logQueue, _maxLogsPerSecond, _emergencyStop fields plus LogLevel enum and LogEntry struct
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

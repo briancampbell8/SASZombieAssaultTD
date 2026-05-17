@@ -1,4 +1,5 @@
 using System;
+using SASZombieAssaultTD.Engine.Math;
 
 namespace SASZombieAssaultTD.Engine.VectorMath
 {
@@ -32,10 +33,6 @@ namespace SASZombieAssaultTD.Engine.VectorMath
             X = x;
             Y = y;
             Z = z;
-        }
-
-        public Vector3(int v1, int v2) : this()
-        {
         }
 
         public float Magnitude => (float)System.Math.Sqrt(X * X + Y * Y + Z * Z);
@@ -112,7 +109,6 @@ namespace SASZombieAssaultTD.Engine.VectorMath
                 throw new ArgumentException("String cannot be null or empty", nameof(s));
 
             var parts = s.Split(',');
-
             if (parts.Length != 3)
                 throw new FormatException("Input string must be in the format 'X,Y,Z'");
 
@@ -121,14 +117,6 @@ namespace SASZombieAssaultTD.Engine.VectorMath
                 float.Parse(parts[1]),
                 float.Parse(parts[2])
             );
-        }
-
-        public class inte
-        {
-            public inte inteNormalized()
-            {
-                throw new NotImplementedException();
-            }
         }
     }
 }

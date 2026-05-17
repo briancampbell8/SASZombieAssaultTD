@@ -1,8 +1,13 @@
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SASZombieAssaultTD.Engine.LevelUpControl;
+using SASZombieAssaultTD.Engine.State;
+using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.Towers.TowerControl;
+using SASZombieAssaultTD.Engine.Audio;
+using SASZombieAssaultTD.Engine.Managers;
+using SASZombieAssaultTD.Engine.Extensions;
 
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
@@ -17,15 +22,6 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         private bool _isLevelUpInProgress;
         private bool _isInitialized;
         private static LevelUpController _instance;
-        // gpte test
-
-
-
-
-      
-
-
-         
 
         // Events
         public event Action<int, int, List<PlayerReward>> OnLevelUpStarted;
@@ -38,13 +34,6 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public bool IsLevelUpInProgress => _isLevelUpInProgress;
         public int CurrentAnimationCount => _animations.Count(a => a.IsActive);
         public static LevelUpController Instance => _instance ??= new LevelUpController();
-        // gpte test
-        // HTTP 429 (insufficient_quota: insufficient_quota)
-        // You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.
-
-        // To use this extension, you need an OpenAi account and provide it's API key to this extension
-        // https://platform.openai.com/account/api-keys
-        // Set API key in options, Tools->Options->Comment2GPT->Authentication->OpenAI(ChatGPT)->OpenAI API Key
 
         // Singleton
         private LevelUpController()
@@ -84,14 +73,6 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 throw;
             }
         }
-        // gpte Rewrite this method to fix the CS0120 error by making Deserialize static. Only modify the Deserialize method.
-        // HTTP 401 (invalid_request_error: invalid_issuer)
-        // Your authentication token is not from a valid issuer.
-
-        // To use this extension, you need an OpenAi account and provide it's API key to this extension
-        // https://platform.openai.com/account/api-keys
-        // Set API key in options, Tools->Options->Comment2GPT->Authentication->OpenAI(ChatGPT)->OpenAI API Key
-
 
         /// <summary>
         /// Start a level up sequence.
@@ -581,14 +562,10 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         private void GrantReward(ProgressionReward reward)
         {
             // This would integrate with appropriate systems
-            // gpte 
-            // HTTP 401 (invalid_request_error: invalid_issuer)
-            // Your authentication token is not from a valid issuer.
-
             switch (reward.Type)
             {
                 case RewardType.Cash:
-                    EconomyManager.Instance.AddCash(reward.Amount);
+                    EconomyManager.AddCash(reward.Amount);
                     break;
                 case RewardType.TowerSlot:
                     // Grant tower slot through tower system
@@ -691,6 +668,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         {
             if (data is not Dictionary<string, object> dict) return;
 
+            var dict = (Dictionary<string, object>)data;
+
             if (dict.TryGetValue("Id", out var id)) Id = (string)id;
             if (dict.TryGetValue("Name", out var name)) Name = (string)name;
             if (dict.TryGetValue("FromLevel", out var fromLevel)) FromLevel = (int)fromLevel;
@@ -699,13 +678,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             if (dict.TryGetValue("AnimationType", out var animationType)) AnimationType = (AnimationType)Enum.Parse<AnimationType>(animationType.ToString());
             if (dict.TryGetValue("Rewards", out var rewardsData) && rewardsData is List<object>)
             {
-                Rewards = [.. ((List<object>)rewardsData)
-    .Select(r =>
-    {
-        var reward = new ProgressionReward();
-        reward.Deserialize(r);
-        return reward;
-    })];
+                Rewards = ((List<object>)rewardsData).Select(r => ProgressionReward.Deserialize(r)).ToList();
             }
         }
     }
@@ -799,6 +772,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public void Deserialize(object data)
         {
             if (data is not Dictionary<string, object> dict) return;
+
+            var dict = (Dictionary<string, object>)data;
 
             if (dict.TryGetValue("Id", out var id)) Id = (string)id;
             if (dict.TryGetValue("Name", out var name)) Name = (string)name;

@@ -1,9 +1,10 @@
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Resources;
-using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SASZombieAssaultTD.Engine.VectorMath;
+using SASZombieAssaultTD.Engine.Resources;
+using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Math;
 
 namespace SASZombieAssaultTD.Engine.Audio
 {
@@ -13,27 +14,24 @@ namespace SASZombieAssaultTD.Engine.Audio
     /// </summary>
     public sealed class ModernAudioSubsystem : IDisposable
     {
-        readonly Dictionary<string, AudioSample> _samples = new();
-        readonly List<AudioSource> _activeSources = new();
-        readonly AudioMixer _mixer = new();
-        readonly ModernResourcePipeline _resourcePipeline;
-        bool _disposed;
-        bool _initialized;
+        private readonly Dictionary<string, AudioSample> _samples = new();
+        private readonly List<AudioSource> _activeSources = new();
+        private readonly AudioMixer _mixer = new();
+        private readonly ModernResourcePipeline _resourcePipeline;
+        private bool _disposed = false;
+        private bool _initialized = false;
 
         // Audio settings
-        float _masterVolume = 1.0f;
-        float _musicVolume = 0.8f;
-        float _sfxVolume = 1.0f;
-        int _maxConcurrentSounds = 32;
-        public static ModernAudioSubsystem Instance { get; private set; }
+        private float _masterVolume = 1.0f;
+        private float _musicVolume = 0.8f;
+        private float _sfxVolume = 1.0f;
+        private int _maxConcurrentSounds = 32;
+
         public ModernAudioSubsystem(ModernResourcePipeline resourcePipeline)
         {
             _resourcePipeline = resourcePipeline ?? throw new ArgumentNullException(nameof(resourcePipeline));
         }
-        public ModernAudioSubsystem()
-        {
-            Instance = this;
-        }
+
         /// <summary>
         /// Initialize the audio subsystem.
         /// </summary>
@@ -148,7 +146,6 @@ namespace SASZombieAssaultTD.Engine.Audio
             if (!_initialized || _disposed) return;
 
             var musicSources = _activeSources.Where(s => s.IsMusic).ToList();
-
             foreach (var source in musicSources)
             {
                 source.Stop();
@@ -164,9 +161,9 @@ namespace SASZombieAssaultTD.Engine.Audio
             if (!_initialized || _disposed) return;
 
             foreach (var source in _activeSources.ToList())
+            {
                 source.Stop();
-            
-
+            }
             _activeSources.Clear();
         }
 
@@ -211,10 +208,10 @@ namespace SASZombieAssaultTD.Engine.Audio
 
                 // Remove finished sources
                 var finishedSources = _activeSources.Where(s => !s.IsPlaying).ToList();
-
                 foreach (var source in finishedSources)
+                {
                     _activeSources.Remove(source);
-                
+                }
 
                 // Update 3D audio positions
                 Update3DAudio();
@@ -241,7 +238,7 @@ namespace SASZombieAssaultTD.Engine.Audio
             };
         }
 
-        AudioSample LoadAudioSample(string audioName)
+        private AudioSample LoadAudioSample(string audioName)
         {
             try
             {
@@ -251,7 +248,6 @@ namespace SASZombieAssaultTD.Engine.Audio
 
                 // Load from resource pipeline
                 var sample = _resourcePipeline.LoadResourceAsync<AudioSample>(audioName).Result;
-
                 if (sample != null)
                 {
                     _samples[audioName] = sample;
@@ -267,7 +263,7 @@ namespace SASZombieAssaultTD.Engine.Audio
             }
         }
 
-        void UpdateAllVolumes()
+        private void UpdateAllVolumes()
         {
             foreach (var source in _activeSources)
             {
@@ -278,29 +274,32 @@ namespace SASZombieAssaultTD.Engine.Audio
             }
         }
 
-        void UpdateMusicVolumes()
+        private void UpdateMusicVolumes()
         {
             foreach (var source in _activeSources.Where(s => s.IsMusic))
+            {
                 source.Volume = _musicVolume * _masterVolume;
-            
+            }
         }
 
-        void UpdateSfxVolumes()
+        private void UpdateSfxVolumes()
         {
             foreach (var source in _activeSources.Where(s => !s.IsMusic))
+            {
                 source.Volume = source.OriginalVolume * _sfxVolume * _masterVolume;
-            
+            }
         }
 
-        void Update3DAudio()
+        private void Update3DAudio()
         {
             // Update 3D audio positioning based on listener position
             // This would integrate with the camera/player position system
             foreach (var source in _activeSources.Where(s => s.Is3D))
+            {
                 // Calculate 3D audio parameters based on source position
                 // Apply distance attenuation, panning, etc.
                 _mixer.Update3DSource(source);
-            
+            }
         }
 
         public void Dispose()
@@ -344,18 +343,14 @@ namespace SASZombieAssaultTD.Engine.Audio
         public DateTime StartTime { get; set; }
         public bool IsPlaying { get; set; }
 
-        public void Stop() => IsPlaying = false;
+        public void Stop() { IsPlaying = false; }
     }
     public class AudioMixer
     {
         public void Initialize() { }
-
-        public void PlaySource(AudioSource source) => source.IsPlaying = true;
-
+        public void PlaySource(AudioSource source) { source.IsPlaying = true; }
         public void Update(float deltaTime) { }
-
         public void Update3DSource(AudioSource source) { }
-
         public void Dispose() { }
     }
 }

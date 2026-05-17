@@ -1,7 +1,6 @@
 using SASZombieAssaultTD.Engine.Resources;
 using System;
 using System.Collections.Generic;
-
 /*
 File: AssetInitializer.cs
 Author: BDC
@@ -16,13 +15,14 @@ Notes:
 Updated for the NEW Asset System API.
 */
 
+
 namespace SASZombieAssaultTD.Engine.Assets
 {
     /// <summary>
     /// Entry point for asset initialization. Performs the full
     /// discovery → validation → registration sequence.
     /// </summary>
-
+    
     public static class AssetInitializer
     {
         /// <summary>
@@ -46,6 +46,7 @@ namespace SASZombieAssaultTD.Engine.Assets
                 Name = "";
                 Path = "";
                 Type = RSType.Unknown;
+
             }
         }
 
@@ -64,41 +65,38 @@ namespace SASZombieAssaultTD.Engine.Assets
             // ------------------------------------------------------------
             SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("Info", "[Assets] Running AssetDiscovery...");
 
-            var discoveryContext = new AssetLoadContext("Content");
-            var assetDiscovery = new RSDiscovery();
+            AssetLoadContext discoveryContext = new AssetLoadContext("Content");
+            RSDiscovery assetDiscovery = new RSDiscovery();
 
             // NEW API: Discover() returns IReadOnlyList<DiscoveredResource>
-            var discoveredAssets = (IReadOnlyList<DiscoveredResource>)assetDiscovery.Discover(discoveryContext);
+            IReadOnlyList<DiscoveredResource> discoveredAssets = (IReadOnlyList<DiscoveredResource>)assetDiscovery.Discover(discoveryContext);
 
             if (discoveredAssets == null || discoveredAssets.Count == 0)
             {
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem
-                    .Log("Warn", "[Assets] No assets discovered. Engine will run with empty asset tables.");
+                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("Warn", "[Assets] No assets discovered. Engine will run with empty asset tables.");
                 return;
             }
 
-            SASZombieAssaultTD.Engine.Core.ModernLoggingSystem
-                .Log("Info", $"[Assets] Discovered {discoveredAssets.Count} assets.");
+            SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("Info", $"[Assets] Discovered {discoveredAssets.Count} assets.");
 
             // ------------------------------------------------------------
             // 2. Validate metadata
             // ------------------------------------------------------------
             SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("Info", "[Assets] Validating metadata...");
 
-            var validAssets = new List<DiscoveredResource>();
-            var invalidCount = 0;
+            List<DiscoveredResource> validAssets = new List<DiscoveredResource>();
+            int invalidCount = 0;
 
             foreach (var discovered in discoveredAssets)
             {
                 // NEW API: ValidateMetadata returns bool
                 // bool isValid = AssetValidation.ValidateMetadata(discovered.Metadata);
-                var isValid = true; // TODO: Implement proper validation when AssetValidation exists
+                bool isValid = true; // TODO: Implement proper validation when AssetValidation exists
 
                 if (!isValid)
                 {
                     // NEW API: Key is now a value object; use ToString()
-                    SASZombieAssaultTD.Engine.Core.ModernLoggingSystem
-                        .Log("Warn", $"[Assets] Invalid metadata for {discovered.Key}");
+                    SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("Warn", $"[Assets] Invalid metadata for {discovered.Key}");
                     invalidCount++;
                     continue;
                 }
@@ -106,8 +104,7 @@ namespace SASZombieAssaultTD.Engine.Assets
                 validAssets.Add(discovered);
             }
 
-            SASZombieAssaultTD.Engine.Core.ModernLoggingSystem
-                .Log("Info", $"[Assets] {validAssets.Count}/{discoveredAssets.Count} assets passed validation.");
+            SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("Info", $"[Assets] {validAssets.Count}/{discoveredAssets.Count} assets passed validation.");
 
             // ------------------------------------------------------------
             // 3. Register metadata
@@ -115,28 +112,29 @@ namespace SASZombieAssaultTD.Engine.Assets
             SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("Info", "[Assets] Registering metadata...");
 
             foreach (var discovered in validAssets)
+            {
                 AssetRegistry.Register(discovered.Key.ToString(), discovered.Source.ToString());
-            
+            }
 
             SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("Info", "[Assets] Metadata registration complete.");
 
             // ------------------------------------------------------------
             // 4. Summary
             // ------------------------------------------------------------
-            var successCount = validAssets.Count;
-            var failureCount = invalidCount;
+            int successCount = validAssets.Count;
+            int failureCount = invalidCount;
 
-            SASZombieAssaultTD.Engine.Core.ModernLoggingSystem
-                .Log("Info", $"[Assets] Registration complete. Success: {successCount}, Failed: {failureCount}");
+            SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("Info", $"[Assets] Registration complete. Success: {successCount}, Failed: {failureCount}");
 
             if (failureCount > 0)
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem
-                    .Log("Warn", "[Assets] Some assets failed validation. Check logs for details.");
+                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("Warn", "[Assets] Some assets failed validation. Check logs for details.");
             else
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem
-                    .Log("Info", "[Assets] All assets registered successfully.");
+                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("Info", "[Assets] All assets registered successfully.");
 
             SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("Info", "[Assets] Initialization finished.");
         }
     }
 }
+
+
+

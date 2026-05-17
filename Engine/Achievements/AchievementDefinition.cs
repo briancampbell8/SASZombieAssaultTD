@@ -1,15 +1,3 @@
-// ROLE: Defines achievement metadata structure.
-// RESPONSIBILITY: Store static achievement data including requirements, rewards, and display 
-//                  properties for serialization.
-// TRIGGERS: Loaded by AchievementManager during achievement system initialization.
-// INPUTS: Achievement data from configuration or save files.
-// OUTPUTS: Provides achievement metadata for runtime tracking and UI display.
-// DEPENDENCIES: Uses AchievementCategory and AchievementRarity enums.
-// CONTENTS: AchievementDefinition class with Id, Name, Description, Category, Rarity, PointValue, 
-//           IconId, IsHidden, IsActive, SortOrder properties.
-
-#nullable enable
-
 using System;
 using System.Runtime.Serialization;
 

@@ -230,7 +230,6 @@ namespace SASZombieAssaultTD.Engine.Rendering
         void DrawLine(int x1, int y1, int x2, int y2, uint pathColor);
         void DrawCircle(int x, int y, int v, uint pathColor);
         void DrawText(string stateText, int v1, int v2);
-        void DrawText(object line, int v, int y);
 
         /// <summary>
         /// Gets the render context width.

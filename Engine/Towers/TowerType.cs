@@ -49,26 +49,6 @@ namespace SASZombieAssaultTD.Engine.Towers
         Laser,
 
         /// <summary>
-        /// Mortar tower with area damage.
-        /// </summary>
-        Mortar,
-
-        /// <summary>
-        /// Flame tower with continuous damage.
-        /// </summary>
-        Flame,
-
-        /// <summary>
-        /// Ice tower with freezing capability.
-        /// </summary>
-        Ice,
-
-        /// <summary>
-        /// Electric tower with chain lightning.
-        /// </summary>
-        Electric,
-
-        /// <summary>
         /// Tesla tower with chain lightning.
         /// </summary>
         Tesla

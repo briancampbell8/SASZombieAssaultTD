@@ -1,5 +1,3 @@
-#nullable enable
-
 using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.Utility;
 using System;

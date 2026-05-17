@@ -1,9 +1,12 @@
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Towers;
-using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Audio;
+using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.VectorMath;
+using SASZombieAssaultTD.Engine.UI.Rendering;
+using TowerUpgrade = SASZombieAssaultTD.Engine.UI.HUD.TowerUpgrade;
 
 namespace SASZombieAssaultTD.Engine.UI.HUD
 {
@@ -202,11 +205,6 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             {
                 Console.WriteLine($"Error rendering tower info panel: {ex.Message}");
             }
-        }
-
-        private void RenderBackground()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -459,7 +457,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Get tower damage per second.
         /// </summary>
-        public static double GetDPS(Tower tower)
+        public static float GetDPS(Tower tower)
         {
             return tower.DPS;
         }
@@ -467,7 +465,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Get tower accuracy percentage.
         /// </summary>
-        public static double GetAccuracy(Tower tower)
+        public static float GetAccuracy(Tower tower)
         {
             return tower.Accuracy;
         }

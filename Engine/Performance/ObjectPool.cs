@@ -13,7 +13,7 @@ namespace SASZombieAssaultTD.Engine.Performance
     /// Reduces garbage collection overhead by reusing objects.
     /// </summary>
     /// <typeparam name="T">The type of object to pool.</typeparam>
-    public class ObjectPool<T> where T : class
+    public class ObjectPool<T> where T : class, new()
     {
         private readonly Queue<T> _pool = new();
         private readonly Func<T> _createFunc;
@@ -26,13 +26,6 @@ namespace SASZombieAssaultTD.Engine.Performance
         /// Number of objects currently in the pool.
         /// </summary>
         public int PoolSize => _pool.Count;
-
-        public ObjectPool(Func<T> createFunc, Action<T> resetFunc = null, Action<T> activateFunc = null)
-        {
-            _createFunc = createFunc;
-            _resetFunc = resetFunc;
-            _activateFunc = activateFunc;
-        }
 
         /// <summary>
         /// Total number of objects created by this pool.
@@ -51,14 +44,22 @@ namespace SASZombieAssaultTD.Engine.Performance
         /// <summary>
         /// Create a new object pool with default factory functions.
         /// </summary>
-        
+        public ObjectPool() : this(() => new T(), obj => { }, obj => { })
+        {
+        }
+
         /// <summary>
         /// Create a new object pool with custom factory functions.
         /// </summary>
         /// <param name="createFunc">Function to create new objects.</param>
         /// <param name="resetFunc">Function to reset objects when returned to pool.</param>
         /// <param name="activateFunc">Function to activate objects when retrieved from pool.</param>
-
+        public ObjectPool(Func<T> createFunc, Action<T> resetFunc, Action<T> activateFunc)
+        {
+            _createFunc = createFunc ?? throw new ArgumentNullException(nameof(createFunc));
+            _resetFunc = resetFunc ?? throw new ArgumentNullException(nameof(resetFunc));
+            _activateFunc = activateFunc ?? throw new ArgumentNullException(nameof(activateFunc));
+        }
 
         /// <summary>
         /// Get an object from the pool or create a new one if empty.

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using ModernLoggingSystem = SASZombieAssaultTD.Engine.Core.ModernLoggingSystem;
-using SASZombieAssaultTD.Engine.Debug;
 
 namespace SASZombieAssaultTD.Engine.UI.Assets
 {
@@ -138,12 +136,6 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
         /// <returns>Loaded texture data, or null if failed</returns>
         public byte[] LoadTexture(string path, string name)
         {
-            if (DebugSettings.SkipImageLoading)
-            {
-                ModernLoggingSystem.LogInfo("DebugSettings.SkipImageLoading = true; returning placeholder texture.");
-                return new byte[0]; // Return empty placeholder data
-            }
-
             try
             {
                 if (string.IsNullOrEmpty(path))

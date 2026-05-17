@@ -17,10 +17,12 @@
  * - Performance monitoring for font operations
  */
 
-using SASZombieAssaultTD.Engine.Resources;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using SASZombieAssaultTD.Engine.Resources;
+using SASZombieAssaultTD.Engine.Dictionary;
+using SASZombieAssaultTD.Engine.Core;
 using Font = SASZombieAssaultTD.Engine.Rendering.Font;
 using ModernLoggingSystem = SASZombieAssaultTD.Engine.Core.ModernLoggingSystem;
 
@@ -32,9 +34,9 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
     /// </summary>
     public static class FontManager
     {
-        static readonly ConcurrentDictionary<string, Font> _fontCache = new();
-        static readonly Font _fallbackFont = new Font("Arial", 12f);
-        static bool _initialized;
+        private static readonly ConcurrentDictionary<string, Font> _fontCache = new();
+        private static readonly Font _fallbackFont = new Font("Arial", 12f);
+        private static bool _initialized = false;
 
         /// <summary>
         /// Initialize the font manager with default fonts.
@@ -46,13 +48,13 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
             try
             {
                 ModernLoggingSystem.Log("INFO", "FontManager: Initializing font system");
-
+                
                 // Pre-load common fonts
                 await LoadFontAsync("title", "UI/Fonts/title.ttf");
                 await LoadFontAsync("text", "UI/Fonts/text.ttf");
                 await LoadFontAsync("icons", "UI/Fonts/icons.ttf");
                 await LoadFontAsync("small", "UI/Fonts/small.ttf");
-
+                
                 _initialized = true;
                 ModernLoggingSystem.Log("INFO", "FontManager: Font system initialized successfully");
             }
@@ -67,25 +69,37 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
         /// Load title font for UI elements.
         /// </summary>
         /// <returns>Loaded title font or fallback</returns>
-        public static Font LoadTitleFont() => GetFont("title");
+        public static Font LoadTitleFont()
+        {
+            return GetFont("title");
+        }
 
         /// <summary>
         /// Load text font for UI elements.
         /// </summary>
         /// <returns>Loaded text font or fallback</returns>
-        public static Font LoadTextFont() => GetFont("text");
+        public static Font LoadTextFont()
+        {
+            return GetFont("text");
+        }
 
         /// <summary>
         /// Load icon font for UI elements.
         /// </summary>
         /// <returns>Loaded icon font or fallback</returns>
-        public static Font LoadIconFont() => GetFont("icons");
+        public static Font LoadIconFont()
+        {
+            return GetFont("icons");
+        }
 
         /// <summary>
         /// Load small font for UI elements.
         /// </summary>
         /// <returns>Loaded small font or fallback</returns>
-        public static Font LoadSmallFont() => GetFont("small");
+        public static Font LoadSmallFont()
+        {
+            return GetFont("small");
+        }
 
         /// <summary>
         /// Get font by name with caching.
@@ -115,15 +129,15 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
         /// <param name="fontName">Font name identifier</param>
         /// <param name="resourcePath">Path to font resource</param>
         /// <returns>Task representing the loading operation</returns>
-        static async Task LoadFontAsync(string fontName, string resourcePath)
+        private static async Task LoadFontAsync(string fontName, string resourcePath)
         {
             try
             {
                 ModernLoggingSystem.Log("DEBUG", $"FontManager: Loading font '{fontName}' from '{resourcePath}'");
-
+                
                 var resourcePipeline = new ModernResourcePipeline();
                 var fontData = await resourcePipeline.LoadResourceAsync<byte[]>(resourcePath);
-
+                
                 if (fontData != null)
                 {
                     var font = new Font(fontName, 12f); // Default size
@@ -146,7 +160,7 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
         /// </summary>
         /// <param name="fontName">Font name identifier</param>
         /// <returns>Font instance</returns>
-        static Font LoadFontSync(string fontName)
+        private static Font LoadFontSync(string fontName)
         {
             try
             {
@@ -168,10 +182,10 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
         public static async Task ReloadFontsAsync()
         {
             ModernLoggingSystem.Log("INFO", "FontManager: Reloading all fonts");
-
+            
             _fontCache.Clear();
             _initialized = false;
-
+            
             await InitializeAsync();
         }
 
@@ -193,7 +207,7 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
         /// Estimate memory usage of font cache.
         /// </summary>
         /// <returns>Estimated memory usage in bytes</returns>
-        static long EstimateCacheSize()
+        private static long EstimateCacheSize()
         {
             // Rough estimation - each font ~1MB
             return _fontCache.Count * 1024 * 1024;

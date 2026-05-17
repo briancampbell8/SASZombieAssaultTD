@@ -1,8 +1,7 @@
-// FILE PATH: Engine/Animation/Core/AnimationTrack.cs
-// EXECUTION TRIGGER: Instantiated by AnimationClip during track data loading
-// PROGRAM PURPOSE: Per-property animation track for individual property animation control managing sprite indices, transform offsets, and per-frame properties
-// PROGRAM CALLS: AnimationFrame, Vector3, IInterpolatable
-// PROGRAM CONTENTS: AnimationTrack class with PropertyName, Keyframes, Duration properties and AddKeyframe, RemoveKeyframe, Evaluate, Sample methods plus AnimationKeyframe nested class
+/*
+File:    AnimationTrack.cs
+Purpose: P11-16-01 - Represents per-property animation tracks.
+*/
 
 using System;
 using System.Collections.Generic;
@@ -133,7 +132,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
         }
 
         /// <summary>
-        /// Interpolates between two keyframe values using pattern matching.
+        /// Interpolates between two keyframe values.
         /// Uses IInterpolatable&lt;T&gt; when available, otherwise falls back to built-in numeric and vector interpolation.
         /// </summary>
         /// <typeparam name="T">The type of values to interpolate.</typeparam>
@@ -147,23 +146,40 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             if (value1 is IInterpolatable<T> interpolatable)
                 return interpolatable.Interpolate(value2, t);
 
-            return value1 switch
+            // Float interpolation
+            if (typeof(T) == typeof(float))
             {
-                // Float interpolation
-                float f1 => (T)(object)(f1 * (1f - t) + Convert.ToSingle(value2) * t),
+                float f1 = Convert.ToSingle(value1);
+                float f2 = Convert.ToSingle(value2);
+                return (T)(object)(f1 * (1f - t) + f2 * t);
+            }
 
-                // Int interpolation
-                int i1 => (T)(object)(int)(i1 * (1f - t) + Convert.ToInt32(value2) * t),
+            // Int interpolation
+            if (typeof(T) == typeof(int))
+            {
+                int i1 = Convert.ToInt32(value1);
+                int i2 = Convert.ToInt32(value2);
+                return (T)(object)(int)(i1 * (1f - t) + i2 * t);
+            }
 
-                // Vector3 interpolation
-                Vector3 v1 => (T)(object)(v1 + ((Vector3)(object)value2! - v1) * t),
+            // Vector3 interpolation
+            if (typeof(T) == typeof(Vector3))
+            {
+                var v1 = (Vector3)(object)value1!;
+                var v2 = (Vector3)(object)value2!;
+                return (T)(object)(v1 + (v2 - v1) * t);
+            }
 
-                // Bool interpolation: step at 0.5
-                bool b1 => (T)(object)(t < 0.5f ? b1 : (bool)(object)value2!),
+            // Bool interpolation: step at 0.5
+            if (typeof(T) == typeof(bool))
+            {
+                bool b1 = (bool)(object)value1!;
+                bool b2 = (bool)(object)value2!;
+                return (T)(object)(t < 0.5f ? b1 : b2);
+            }
 
-                // Fallback: return first value
-                _ => value1
-            };
+            // Fallback: return first value
+            return value1;
         }
 
         /// <summary>

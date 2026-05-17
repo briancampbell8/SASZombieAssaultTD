@@ -1,11 +1,9 @@
-// ROLE: Animation state inspection and debugging tools.
-// RESPONSIBILITY: Provide detailed animation state information and debugging capabilities.
-// TRIGGERS: Instantiated by debug and development tools for animation analysis.
-// INPUTS: Receives animation state data from AnimationControllerComponent.
-// OUTPUTS: Generates state history, transition history, and analysis reports.
-// DEPENDENCIES: Uses AnimationStateSnapshot and AnimationTransitionRecord.
-// CONTENTS: AnimationStateInspector class with IsEnabled property and RecordSnapshot, GetStateHistory, 
-//           GetTransitionHistory, AnalyzeStateTransitions, GenerateReport methods.
+/*
+File:    AnimationStateInspector.cs
+Path:    Engine/Animation/AnimationStateInspector.cs
+Purpose: P11-16-05 - Animation state inspection and analysis tools.
+Provides detailed animation state information and debugging capabilities.
+*/
 
 using SASZombieAssaultTD.Engine.Core;
 using System;

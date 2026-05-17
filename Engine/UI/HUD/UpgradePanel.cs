@@ -2,15 +2,19 @@
 // Purpose: Manages the upgrade panel in the HUD for displaying and purchasing tower upgrades.
 // Features: Displays available upgrades, handles user interactions, and updates the UI dynamically.
 
-using SASZombieAssaultTD.Engine.Audio;
-using SASZombieAssaultTD.Engine.Economy;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Towers;
-using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Audio;
+using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.Dictionary;
+using SASZombieAssaultTD.Engine.Towers.TowerControl;
+using SASZombieAssaultTD.Engine.VectorMath;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.UI.Rendering;
+using SASZombieAssaultTD.Engine.Towers.Upgrades;
+using SASZombieAssaultTD.Engine.Economy;
 
 namespace SASZombieAssaultTD.Engine.UI.HUD
 {
@@ -20,31 +24,31 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
     /// </summary>
     public class UpgradePanel : HUDComponent
     {
-        Tower _currentTower;
-        List<TowerUpgrade> _availableUpgrades;
-        TowerUpgrade _selectedUpgrade;
-        int _selectedUpgradeIndex = -1;
-        bool _canAffordUpgrade;
-        float _displayTimer;
-        bool _isTransitioning;
-        float _transitionTimer;
-        float _transitionDuration = 0.3f;
+        private Tower _currentTower;
+        private List<TowerUpgrade> _availableUpgrades;
+        private TowerUpgrade _selectedUpgrade;
+        private int _selectedUpgradeIndex = -1;
+        private bool _canAffordUpgrade = false;
+        private float _displayTimer = 0f;
+        private bool _isTransitioning = false;
+        private float _transitionTimer = 0f;
+        private float _transitionDuration = 0.3f;
 
         // Visual properties
-        new Vector3 _position;
-        new Vector3 _size;
-        new Color _backgroundColor = new Color(0, 0, 0, 180);
-        Color _borderColor = new Color(200, 200, 200, 255);
-        Color _normalColor = Color.White;
-        Color _warningColor = Color.Orange;
-        Color _dangerColor = Color.Red;
-        Color _successColor = Color.Green;
+        private new Vector3 _position;
+        private new Vector3 _size;
+        private new Color _backgroundColor = new Color(0, 0, 0, 180);
+        private Color _borderColor = new Color(200, 200, 200, 255);
+        private Color _normalColor = Color.White;
+        private Color _warningColor = Color.Orange;
+        private Color _dangerColor = Color.Red;
+        private Color _successColor = Color.Green;
 
         // Text properties
-        Font _titleFont;
-        Font _textFont;
-        Font _smallFont;
-        Font _iconFont;
+        private Font _titleFont;
+        private Font _textFont;
+        private Font _smallFont;
+        private Font _iconFont;
 
         // Events
         public event Action<TowerUpgrade> OnUpgradePurchased;
@@ -82,7 +86,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
 
             _currentTower = tower;
-            _availableUpgrades = TowerInfoPanelExtensions.GetAvailableUpgrades(tower).Cast<TowerUpgrade>().ToList();
+            _availableUpgrades = TowerInfoPanelExtensions.GetAvailableUpgrades(tower).Cast<SASZombieAssaultTD.Engine.UI.HUD.TowerUpgrade>().ToList();
             _selectedUpgrade = null;
             _selectedUpgradeIndex = -1;
             _displayTimer = 0f;
@@ -114,51 +118,78 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// Set panel position.
         /// </summary>
         /// <param name="position">New position.</param>
-        public void SetPosition(Vector3 position) => _position = position;
+        public void SetPosition(Vector3 position)
+        {
+            _position = position;
+        }
 
         /// <summary>
         /// Set panel size.
         /// </summary>
         /// <param name="size">New size.</param>
-        public void SetSize(Vector3 size) => _size = size;
+        public void SetSize(Vector3 size)
+        {
+            _size = size;
+        }
 
         /// <summary>
         /// Set background color.
         /// </summary>
         /// <param name="color">Background color.</param>
-        public void SetBackgroundColor(Color color) => _backgroundColor = color;
+        public void SetBackgroundColor(Color color)
+        {
+            _backgroundColor = color;
+        }
 
         /// <summary>
         /// Set border color.
         /// </summary>
         /// <param name="color">Border color.</param>
-        public void SetBorderColor(Color color) => _borderColor = color;
+        public void SetBorderColor(Color color)
+        {
+            _borderColor = color;
+        }
 
         /// <summary>
         /// Set normal text color.
         /// </summary>
         /// <param name="color">Normal text color.</param>
-        public void SetNormalColor(Color color) => _normalColor = color;
+        public void SetNormalColor(Color color)
+        {
+            _normalColor = color;
+        }
 
         /// <summary>
         /// Set warning text color.
         /// </summary>
         /// <param name="color">Warning text color.</param>
-        public void SetWarningColor(Color color) => _warningColor = color;
+        public void SetWarningColor(Color color)
+        {
+            _warningColor = color;
+        }
 
         /// <summary>
         /// Set danger text color.
         /// </summary>
         /// <param name="color">Danger text color.</param>
-        public void SetDangerColor(Color color) => _dangerColor = color;
+        public void SetDangerColor(Color color)
+        {
+            _dangerColor = color;
+        }
 
         /// <summary>
         /// Set success text color.
         /// </summary>
         /// <param name="color">Success text color.</param>
-        public void SetSuccessColor(Color color) => _successColor = color;
+        public void SetSuccessColor(Color color)
+        {
+            _successColor = color;
+        }
 
-        public override void Initialize() => base.Initialize();
+        public override void Initialize()
+        {
+            base.Initialize();
+        }
 
         public override void Update(float deltaTime)
         {
@@ -203,15 +234,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        void RenderBackground()
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Render upgrade options list.
         /// </summary>
-        void RenderUpgradeOptions()
+        private void RenderUpgradeOptions()
         {
             var optionsY = _position.Y + 20f;
             var optionsHeight = _size.Y - 40f;
@@ -223,7 +249,6 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
                 _backgroundColor.R, _backgroundColor.G, _backgroundColor.B,
                 (byte)(200 * GetTransitionProgress())
             );
-
             RenderSystem.DrawRectangle(optionsX, optionsY, optionsWidth, optionsHeight, backgroundColor);
 
             // Border
@@ -231,7 +256,6 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
                 _borderColor.R, _borderColor.G, _borderColor.B,
                 (byte)(255 * GetTransitionProgress())
             );
-
             RenderSystem.DrawRectangle(optionsX, optionsY, optionsWidth, optionsHeight, borderColor, 2f);
 
             // Title
@@ -257,15 +281,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        int GetTransitionProgress()
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Render upgrade status.
         /// </summary>
-        void RenderUpgradeStatus()
+        private void RenderUpgradeStatus()
         {
             if (_selectedUpgrade == null) return;
 
@@ -278,15 +297,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             RenderSystem.DrawString(statusText, statusPosition, statusTextColor, _textFont, new Vector3(10f, 10f, 0f));
         }
 
-        object GetUpgradeStatusColor()
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Render upgrade info.
         /// </summary>
-        void RenderUpgradeInfo()
+        private void RenderUpgradeInfo()
         {
             if (_selectedUpgrade == null) return;
 
@@ -297,20 +311,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             RenderSystem.DrawString(infoText, new Vector3(_position.X + 10f, infoY, 0f), infoTextColor, _textFont, new Vector3(10f, 10f, 0f));
         }
 
-        Color GetUpgradeInfoTextColor(TowerUpgrade selectedUpgrade)
-        {
-            throw new NotImplementedException();
-        }
-
-        string GetUpgradeInfoText(TowerUpgrade selectedUpgrade)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Start transition animation.
         /// </summary>
-        void StartTransition()
+        private void StartTransition()
         {
             _transitionTimer = 0f;
             _isTransitioning = true;
@@ -319,7 +323,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Update transition animation.
         /// </summary>
-        void UpdateTransition(float deltaTime)
+        private void UpdateTransition(float deltaTime)
         {
             _transitionTimer += deltaTime;
 
@@ -333,7 +337,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Get upgrade color based on availability.
         /// </summary>
-        Color GetUpgradeColor(TowerUpgrade upgrade)
+        private Color GetUpgradeColor(TowerUpgrade upgrade)
         {
             if (!_canAffordUpgrade) return _dangerColor;
 
@@ -345,7 +349,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Get upgrade text color based on availability.
         /// </summary>
-        Color GetUpgradeTextColor(TowerUpgrade upgrade)
+        private Color GetUpgradeTextColor(TowerUpgrade upgrade)
         {
             if (!_canAffordUpgrade) return _dangerColor;
 
@@ -359,7 +363,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// </summary>
         /// <param name="upgrade">Upgrade to get status for.</param>
         /// <returns>Status text.</returns>
-        string GetUpgradeStatusText(TowerUpgrade upgrade)
+        private string GetUpgradeStatusText(TowerUpgrade upgrade)
         {
             if (!_canAffordUpgrade) return "INSUFFICIENT FUNDS";
 
@@ -371,7 +375,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Get upgrade status color.
         /// </summary>
-        Color GetUpgradeStatusTextColor(TowerUpgrade upgrade)
+        private Color GetUpgradeStatusTextColor(TowerUpgrade upgrade)
         {
             if (!_canAffordUpgrade) return _dangerColor;
 
@@ -383,7 +387,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Update can afford status.
         /// </summary>
-        void UpdateCanAffordStatus()
+        private void UpdateCanAffordStatus()
         {
             // Economy system not available - always set to true for now
             _canAffordUpgrade = _currentTower != null && _selectedUpgrade != null;
@@ -406,7 +410,6 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
 
             // Update available upgrades
             var upgradeIndex = _availableUpgrades.IndexOf(_selectedUpgrade);
-
             if (upgradeIndex >= 0)
             {
                 _availableUpgrades.RemoveAt(upgradeIndex);
@@ -424,15 +427,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             OnUpgradePurchased?.Invoke(_selectedUpgrade);
             // TODO: Fix type mismatch - cannot cast Tower to UI.HUD.TowerUpgrade
             // OnUpgradeCompleted?.Invoke((UI.HUD.TowerUpgrade)_currentTower);
-            OnUpgradeCompleted?.Invoke(_selectedUpgrade);
+            OnUpgradeCompleted?.Invoke(_currentTower);
 
             Console.WriteLine($"Purchased upgrade: {_selectedUpgrade.Name} for {_currentTower.Name}");
             return true;
-        }
-
-        void UpdateUpgradeOptions()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -459,40 +457,50 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             Console.WriteLine($"Selected upgrade: {_selectedUpgrade.Name}");
         }
 
-        private void PlaySound(string v)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Get selected upgrade.
         /// </summary>
         /// <returns>Selected upgrade or null.</returns>
-        public TowerUpgrade GetSelectedUpgrade() => _selectedUpgrade;
+        public TowerUpgrade GetSelectedUpgrade()
+        {
+            return _selectedUpgrade;
+        }
 
         /// <summary>
         /// Get available upgrades count.
         /// </summary>
         /// <returns>Number of available upgrades.</returns>
-        public int GetAvailableUpgradeCount() => _availableUpgrades.Count;
+        public int GetAvailableUpgradeCount()
+        {
+            return _availableUpgrades.Count;
+        }
 
         /// <summary>
         /// Get all available upgrades.
         /// </summary>
         /// <returns>List of available upgrades.</returns>
-        public List<TowerUpgrade> GetAllAvailableUpgrades() => _availableUpgrades;
+        public List<TowerUpgrade> GetAllAvailableUpgrades()
+        {
+            return _availableUpgrades;
+        }
 
         /// <summary>
         /// Check if any upgrades are available.
         /// </summary>
         /// <returns>True if upgrades available.</returns>
-        public bool HasAvailableUpgrades() => _availableUpgrades.Count > 0;
+        public bool HasAvailableUpgrades()
+        {
+            return _availableUpgrades.Count > 0;
+        }
 
         /// <summary>
         /// Get total upgrade cost.
         /// </summary>
         /// <returns>Total cost of all available upgrades.</returns>
-        public int GetTotalUpgradeCost() => _availableUpgrades.Sum(u => u.Cost);
+        public int GetTotalUpgradeCost()
+        {
+            return _availableUpgrades.Sum(u => u.Cost);
+        }
 
         /// <summary>
         /// Get upgrade at specific index.
@@ -505,7 +513,6 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             {
                 return _availableUpgrades[index];
             }
-
             return null;
         }
 
@@ -559,8 +566,8 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
     /// </summary>
     public class TowerUpgrade
     {
-        bool _isAffordable;
-        bool IsAffordable;
+        private bool _isAffordable;
+        private bool IsAffordable;
 
         public string Name { get; set; }
         public string Description { get; set; }
@@ -604,14 +611,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         public TowerUpgrade Clone()
         {
             return new TowerUpgrade(
-                Name,
-                Level,
-                Cost,
-                DamageIncrease,
-                RangeIncrease,
-                FireRateIncrease,
-                SpeedIncrease,
-                new List<string>(SpecialAbilities)
+                this.Name,
+                this.Level,
+                this.Cost,
+                this.DamageIncrease,
+                this.RangeIncrease,
+                this.FireRateIncrease,
+                this.SpeedIncrease,
+                new List<string>(this.SpecialAbilities)
             );
         }
     }
@@ -624,37 +631,57 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// <summary>
         /// Check if upgrade is max level.
         /// </summary>
-        public static bool IsMaxLevel(TowerUpgrade upgrade) => upgrade.IsMaxLevel;
+        public static bool IsMaxLevel(TowerUpgrade upgrade)
+        {
+            return upgrade.IsMaxLevel;
+        }
 
         /// <summary>
         /// Check if upgrade is available.
         /// </summary>
-        /// 
-        public static bool IsAvailable { get; private set; }
+        public static bool IsAvailable(TowerUpgrade upgrade)
+        {
+            return upgrade.IsAvailable;
+        }
 
         /// <summary>
         /// Get upgrade cost.
         /// </summary>
-        public static int GetCost(TowerUpgrade upgrade) => upgrade.Cost;
+        public static int GetCost(TowerUpgrade upgrade)
+        {
+            return upgrade.Cost;
+        }
 
         /// <summary>
         /// Get upgrade damage increase.
         /// </summary>
-        public static float GetDamageIncrease(TowerUpgrade upgrade) => upgrade.DamageIncrease;
+        public static float GetDamageIncrease(TowerUpgrade upgrade)
+        {
+            return upgrade.DamageIncrease;
+        }
 
         /// <summary>
         /// Get upgrade range increase.
         /// </summary>
-        public static float GetRangeIncrease(TowerUpgrade upgrade) => upgrade.RangeIncrease;
+        public static float GetRangeIncrease(TowerUpgrade upgrade)
+        {
+            return upgrade.RangeIncrease;
+        }
 
         /// <summary>
         /// Get upgrade fire rate increase.
         /// </summary>
-        public static float GetFireRateIncrease(TowerUpgrade upgrade) => upgrade.FireRateIncrease;
+        public static float GetFireRateIncrease(TowerUpgrade upgrade)
+        {
+            return upgrade.FireRateIncrease;
+        }
 
         /// <summary>
         /// Get upgrade speed increase.
         /// </summary>
-        public static float GetSpeedIncrease(TowerUpgrade upgrade) => upgrade.SpeedIncrease;
+        public static float GetSpeedIncrease(TowerUpgrade upgrade)
+        {
+            return upgrade.SpeedIncrease;
+        }
     }
 }

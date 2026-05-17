@@ -1,12 +1,8 @@
-// ROLE: Deterministic animation state machine.
-// RESPONSIBILITY: Manage animation states with explicit tracking and deterministic transitions.
-// TRIGGERS: Instantiated by AnimationStateMachineComponent during entity initialization.
-// INPUTS: Receives state transitions and update timing from animation controller.
-// OUTPUTS: Provides current/previous state tracking and transition validation.
-// DEPENDENCIES: Uses IAnimationState and AnimationTransition types.
-// CONTENTS: AnimationStateMachine class with CurrentState, PreviousState, TimeInCurrentState 
-//           properties and AddState, RemoveState, RegisterTransition, CanTransitionTo, UpdateState methods.
-
+/*
+File:    AnimationStateMachine.cs
+Purpose: P11-17-01 - Create initial state machine class with explicit fields for CurrentState, PreviousState, and deterministic UpdateState method.
+Provides deterministic state management for animation system with explicit state tracking.
+*/
 using SASZombieAssaultTD.Engine.Animation.Core;
 using SASZombieAssaultTD.Engine.Core;
 using System;

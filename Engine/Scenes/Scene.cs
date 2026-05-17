@@ -451,38 +451,6 @@ namespace SASZombieAssaultTD.Engine.Scenes
         }
 
         /// <summary>
-        /// Cleans up the scene and releases all resources.
-        /// Called when the scene is being unloaded or destroyed.
-        /// </summary>
-        public void Cleanup()
-        {
-            ModernLoggingSystem.Log("DEBUG", $"Scene: Cleaning up scene '{_name}'");
-
-            // Fire scene unloaded event
-            OnSceneUnloaded?.Invoke();
-
-            // Deactivate the scene
-            if (_isActive)
-            {
-                Deactivate();
-            }
-
-            // Clear all entities
-            ClearEntities();
-
-            // Clear scene data
-            _sceneData.Clear();
-
-            // Unload scene-specific data
-            UnloadSceneData();
-
-            // Reset state
-            _isLoaded = false;
-
-            ModernLoggingSystem.Log("DEBUG", $"Scene: Cleanup completed for '{_name}'");
-        }
-
-        /// <summary>
         /// Scene-specific update logic.
         /// Override in derived classes.
         /// </summary>

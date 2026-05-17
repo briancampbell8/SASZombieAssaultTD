@@ -208,7 +208,7 @@ namespace SASZombieAssaultTD.Engine.Serialization
         #region Private Helper Methods
 
         /// <summary>
-        /// Serializes an object to binary format using pattern matching.
+        /// Serializes an object to binary format.
         /// </summary>
         private static void SerializeObject<T>(System.IO.BinaryWriter writer, T obj)
         {
@@ -220,30 +220,32 @@ namespace SASZombieAssaultTD.Engine.Serialization
 
             writer.Write(true); // Not null flag
 
-            switch (obj)
+            if (typeof(T) == typeof(string))
             {
-                case string s:
-                    writer.Write(s);
-                    break;
-                case int i:
-                    writer.Write(i);
-                    break;
-                case float f:
-                    writer.Write(f);
-                    break;
-                case bool b:
-                    writer.Write(b);
-                    break;
-                default:
-                    // Fallback to JSON serialization for complex types
-                    var json = JsonSerializer.Serialize(obj);
-                    writer.Write(json);
-                    break;
+                writer.Write((string)(object)obj);
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                writer.Write((int)(object)obj);
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                writer.Write((float)(object)obj);
+            }
+            else if (typeof(T) == typeof(bool))
+            {
+                writer.Write((bool)(object)obj);
+            }
+            else
+            {
+                // Fallback to JSON serialization for complex types
+                var json = JsonSerializer.Serialize(obj);
+                writer.Write(json);
             }
         }
 
         /// <summary>
-        /// Deserializes an object from binary format using pattern matching.
+        /// Deserializes an object from binary format.
         /// </summary>
         private static T DeserializeObject<T>(System.IO.BinaryReader reader)
         {
@@ -251,14 +253,28 @@ namespace SASZombieAssaultTD.Engine.Serialization
             if (!isNotNull)
                 return default(T);
 
-            return typeof(T) switch
+            if (typeof(T) == typeof(string))
             {
-                var t when t == typeof(string) => (T)(object)reader.ReadString(),
-                var t when t == typeof(int) => (T)(object)reader.ReadInt32(),
-                var t when t == typeof(float) => (T)(object)reader.ReadSingle(),
-                var t when t == typeof(bool) => (T)(object)reader.ReadBoolean(),
-                _ => (T)(object)JsonSerializer.Deserialize<T>(reader.ReadString())
-            };
+                return (T)(object)reader.ReadString();
+            }
+            else if (typeof(T) == typeof(int))
+            {
+                return (T)(object)reader.ReadInt32();
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                return (T)(object)reader.ReadSingle();
+            }
+            else if (typeof(T) == typeof(bool))
+            {
+                return (T)(object)reader.ReadBoolean();
+            }
+            else
+            {
+                // Fallback to JSON deserialization for complex types
+                var json = reader.ReadString();
+                return JsonSerializer.Deserialize<T>(json);
+            }
         }
 
         #endregion

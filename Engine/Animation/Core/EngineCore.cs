@@ -1,14 +1,9 @@
-// FILE PATH: Engine/Animation/Core/EngineCore.cs
-// EXECUTION TRIGGER: Called by application entry point during engine startup
-// PROGRAM PURPOSE: Core engine bootstrap and application lifecycle manager implementing robust initialization with proper error handling and recovery
-// PROGRAM CALLS: ModernLoggingSystem, DebugSystem, DataSystem
-// PROGRAM CONTENTS: EngineCore static class with InitializeAsync, Shutdown, IsInitialized properties and _isInitialized, _initLock fields
+// File: Engine/Core/EngineCore.cs
+// Purpose: Core engine bootstrap and application lifecycle manager.
+// Features: Implements robust initialization with proper error handling and recovery.
 
 using System;
 using System.Threading.Tasks;
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Debug;
-using SASZombieAssaultTD.Engine.Data;
 
 namespace SASZombieAssaultTD
 {
@@ -108,12 +103,6 @@ namespace SASZombieAssaultTD
 
             // Initialize asset system (we have this)
             Console.WriteLine("Asset system initialized");
-
-            if (DebugSettings.GenerateTables)
-            {
-                ModernLoggingSystem.LogInfo("DebugSettings.GenerateTables = true; generating JSON tables.");
-                TableGenerator.BuildAll();
-            }
 
             Console.WriteLine("Core systems initialization completed");
             return true;

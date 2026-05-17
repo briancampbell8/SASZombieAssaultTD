@@ -1,9 +1,8 @@
-// FILE PATH: Engine/Animation/Components/AttackState.cs
-// EXECUTION TRIGGER: Instantiated by AnimationStateMachine during combat state transitions
-// PROGRAM PURPOSE: Attack animation state with damage timing and completion transitions implementing deterministic attack animation with windup and damage phases
-// PROGRAM CALLS: IAnimationState, AnimationStateMachine, ModernLoggingSystem
-// PROGRAM CONTENTS: AttackState class implementing IAnimationState with Name, Duration, CanTransitionTo, Update methods and ATTACK_COMPLETION_THRESHOLD constant
-
+/*
+File:    AttackState.cs
+Purpose: P11-17-05 - Implement AttackState using IAnimationState with explicit transition conditions and deterministic Update behavior.
+Provides deterministic attack state with explicit transition conditions and no placeholder behavior.
+*/
 using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Utility;

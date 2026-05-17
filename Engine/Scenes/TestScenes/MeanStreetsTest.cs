@@ -40,10 +40,9 @@ namespace SASZombieAssaultTD.Engine.Scenes.TestScenes
         public void ConfigureDefaultSpawns()
         {
             SpawnPoints.Clear();
-            SpawnPoints.Add(new PointF(100f, 100f));
-            SpawnPoints.Add(new PointF(200f, 150f));
-            SpawnPoints.Add(new PointF(300f, 200f));
-
+            SpawnPoints.Add(new Vector3(100f, 100f, 0f));
+            SpawnPoints.Add(new Vector3(200f, 150f, 0f));
+            SpawnPoints.Add(new Vector3(300f, 200f, 0f));
         }
 
         public void Run()

@@ -35,14 +35,6 @@ namespace SASZombieAssaultTD.Engine.VectorMath
             this.z = 0;
         }
 
-        public Vector3Int(int x, int y, int z, int v) : this(x, y, z)
-        {
-        }
-
-        public Vector3Int(int v) : this()
-        {
-        }
-
         public static readonly Vector3Int Zero = new(0, 0, 0);
         public static readonly Vector3Int One = new(1, 1, 1);
         public static readonly Vector3Int Up = new(0, 1, 0);

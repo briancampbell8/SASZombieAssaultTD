@@ -568,11 +568,6 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             throw new NotImplementedException();
         }
-
-        public void DrawText(object line, int v, int y)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>

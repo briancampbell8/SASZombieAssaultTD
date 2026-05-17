@@ -1,7 +1,7 @@
+using System;
+using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.VectorMath;
-using System;
 
 namespace SASZombieAssaultTD.Engine.Rendering
 {
@@ -11,16 +11,16 @@ namespace SASZombieAssaultTD.Engine.Rendering
     /// </summary>
     public class Sprite
     {
-        Texture2D _texture;
-        Vector3 _position;
-        Vector3 _size;
-        Rectangle? _sourceRect;
-        Color _color;
-        float _rotation;
-        Vector3 _origin;
-        Vector3 _scale;
-        float _layerDepth;
-        bool _isVisible;
+        private Texture2D _texture;
+        private Vector3 _position;
+        private Vector3 _size;
+        private Rectangle? _sourceRect;
+        private Color _color;
+        private float _rotation;
+        private Vector3 _origin;
+        private Vector3 _scale;
+        private float _layerDepth;
+        private bool _isVisible;
 
         /// <summary>
         /// Gets or sets the texture for the sprite.
@@ -290,7 +290,6 @@ namespace SASZombieAssaultTD.Engine.Rendering
             var targetAspectRatio = targetSize.X / targetSize.Y;
 
             Vector3 newSize;
-
             if (aspectRatio > targetAspectRatio)
             {
                 // Width is limiting factor
@@ -335,7 +334,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         /// <summary>
         /// Updates the sprite size based on the current texture.
         /// </summary>
-        void UpdateSizeFromTexture()
+        private void UpdateSizeFromTexture()
         {
             if (_texture != null && _size == Vector3.Zero)
             {
@@ -372,3 +371,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         }
     }
 }
+
+
+
+

@@ -14,7 +14,7 @@ namespace SASZombieAssaultTD.Engine.Resources
     /// <summary>
     /// Represents a reference to a loaded asset instance.
     /// </summary>
-    public class AssetHandle
+    public sealed class AssetHandle
     {
         /// <summary>
         /// The unique key identifying this asset.
@@ -29,62 +29,12 @@ namespace SASZombieAssaultTD.Engine.Resources
         /// <summary>
         /// The type of the loaded asset instance.
         /// </summary>
-        public Type InstanceType => Instance?.GetType() ?? typeof(object);
-
-        /// <summary>
-        /// The asset type for this handle.
-        /// </summary>
-        public AssetType AssetType { get; }
-
-        /// <summary>
-        /// Number of references to this asset.
-        /// </summary>
-        public int ReferenceCount { get; set; }
-
-        /// <summary>
-        /// Last time this asset was accessed.
-        /// </summary>
-        public DateTime LastAccessed { get; set; }
-
-        /// <summary>
-        /// Memory size of this asset in bytes.
-        /// </summary>
-        public long MemorySize { get; set; }
-
-        /// <summary>
-        /// Metadata for this asset.
-        /// </summary>
-        public AssetMetadata Metadata { get; set; }
-
-        /// <summary>
-        /// Gets whether the asset is loaded.
-        /// </summary>
-        public bool IsLoaded
-        {
-            get
-            {
-                // Return true when the underlying asset is fully loaded and valid.
-                return Instance != null;
-            }
-        }
+        public Type InstanceType => Instance.GetType();
 
         public AssetHandle(AssetKey key, object instance)
         {
-            Key = key ?? throw new ArgumentNullException(nameof(key));
+            Key = key;
             Instance = instance ?? throw new ArgumentNullException(nameof(instance));
-            AssetType = AssetType.Unknown;
-            ReferenceCount = 0;
-            LastAccessed = DateTime.UtcNow;
-            MemorySize = 0;
-        }
-
-        public AssetHandle(AssetKey key, AssetType assetType, AssetPriority priority)
-        {
-            Key = key ?? throw new ArgumentNullException(nameof(key));
-            AssetType = assetType;
-            ReferenceCount = 0;
-            LastAccessed = DateTime.UtcNow;
-            MemorySize = 0;
         }
 
         /// <summary>
@@ -100,11 +50,6 @@ namespace SASZombieAssaultTD.Engine.Resources
         public override string ToString()
         {
             return $"AssetHandle({Key}, Type={InstanceType.Name})";
-        }
-
-        public void Dispose()
-        {
-            // Cleanup logic here
         }
     }
 }

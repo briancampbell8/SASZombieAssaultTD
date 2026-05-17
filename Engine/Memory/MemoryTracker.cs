@@ -1,15 +1,13 @@
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Memory;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using SASZombieAssaultTD.Engine.Core;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SASZombieAssaultTD.Engine.Memory
-
 {
     /// <summary>
     /// Memory tracking and leak detection system.
@@ -18,18 +16,18 @@ namespace SASZombieAssaultTD.Engine.Memory
     /// </summary>
     public class MemoryTracker
     {
-        readonly ConcurrentDictionary<string, MemoryAllocation> _allocations;
-        readonly ConcurrentDictionary<Type, TypeMemoryInfo> _typeInfo;
-        readonly object _snapshotLock = new object();
-        bool _enabled;
-        long _totalAllocated;
-        long _totalFreed;
-        long _peakMemoryUsage;
-        int _allocationCount;
-        int _freeCount;
-        float _lastGCTime;
-        List<MemorySnapshot> _snapshots;
-        int _maxSnapshots;
+        private readonly ConcurrentDictionary<string, MemoryAllocation> _allocations;
+        private readonly ConcurrentDictionary<Type, TypeMemoryInfo> _typeInfo;
+        private readonly object _snapshotLock = new object();
+        private bool _enabled;
+        private long _totalAllocated;
+        private long _totalFreed;
+        private long _peakMemoryUsage;
+        private int _allocationCount;
+        private int _freeCount;
+        private float _lastGCTime;
+        private List<MemorySnapshot> _snapshots;
+        private int _maxSnapshots;
 
         /// <summary>
         /// Gets or sets whether memory tracking is enabled.
@@ -197,8 +195,9 @@ namespace SASZombieAssaultTD.Engine.Memory
                     _snapshots.Add(snapshot);
 
                     while (_snapshots.Count > _maxSnapshots)
+                    {
                         _snapshots.RemoveAt(0);
-                    
+                    }
 
                     SnapshotTaken?.Invoke(this, snapshot);
                     ModernLoggingSystem.Log("INFO", $"MemoryTracker: Took snapshot '{snapshot.Label}' (usage: {snapshot.CurrentUsage:N0} bytes)");
@@ -230,10 +229,9 @@ namespace SASZombieAssaultTD.Engine.Memory
         /// <summary>
         /// Updates the peak memory usage if the current usage exceeds the previous peak.
         /// </summary>
-        void UpdatePeakMemoryUsage()
+        private void UpdatePeakMemoryUsage()
         {
             var currentUsage = CurrentMemoryUsage;
-
             if (currentUsage > _peakMemoryUsage)
             {
                 Interlocked.Exchange(ref _peakMemoryUsage, currentUsage);
@@ -276,8 +274,9 @@ namespace SASZombieAssaultTD.Engine.Memory
         public Dictionary<Type, TypeMemoryInfo> GetTypeStatistics()
         {
             lock (_snapshotLock)
+            {
                 return _typeInfo.ToDictionary(kv => kv.Key, kv => kv.Value);
-            
+            }
         }
 
         /// <summary>
@@ -287,8 +286,9 @@ namespace SASZombieAssaultTD.Engine.Memory
         public List<MemorySnapshot> GetSnapshots()
         {
             lock (_snapshotLock)
+            {
                 return new List<MemorySnapshot>(_snapshots);
-            
+            }
         }
 
         /// <summary>
@@ -338,7 +338,6 @@ namespace SASZombieAssaultTD.Engine.Memory
                 .Take(5);
 
                 summary.Add("Top 5 Types by Memory Usage:");
-
                 foreach (var typeInfo in topTypes)
                 {
                     summary.Add($"  {typeInfo.Type.Name}: {typeInfo.CurrentUsage:N0} bytes ({typeInfo.AllocationCount} allocations)");
@@ -385,33 +384,45 @@ namespace SASZombieAssaultTD.Engine.Memory
     public class TypeMemoryInfo
     {
         public Type Type { get; set; }
-
-        public long TotalAllocated;     // field
-        public long TotalFreed;         // field
-        public int AllocationCount;     // field
-        public int FreeCount;           // field
+        public long TotalAllocated { get; set; }
+        public long TotalFreed { get; set; }
+        public int AllocationCount { get; set; }
+        public int FreeCount { get; set; }
 
         public long CurrentUsage => TotalAllocated - TotalFreed;
+        public int ActiveCount => AllocationCount - FreeCount;
+
+        public override string ToString()
+        {
+            return $"TypeMemoryInfo: {Type.Name} - Usage: {CurrentUsage:N0}, Active: {ActiveCount}";
+        }
     }
-}
 
-/// <summary>
-/// Memory snapshot.
-/// </summary>
-public class MemorySnapshot
-{
-    public string Label { get; set; }
-    public DateTime Timestamp { get; set; }
-    public long TotalAllocated { get; set; }
-    public long TotalFreed { get; set; }
-    public long CurrentUsage { get; set; }
-    public long PeakUsage { get; set; }
-    public int ActiveAllocations { get; set; }
-    public int GCCount { get; set; }
-    public Dictionary<Type, TypeMemoryInfo> TypeInfo { get; set; }
-
-    public override string ToString()
+    /// <summary>
+    /// Memory snapshot.
+    /// </summary>
+    public class MemorySnapshot
     {
-        return $"MemorySnapshot: {Label} - Usage: {CurrentUsage:N0}, Active: {ActiveAllocations}";
+        public string Label { get; set; }
+        public DateTime Timestamp { get; set; }
+        public long TotalAllocated { get; set; }
+        public long TotalFreed { get; set; }
+        public long CurrentUsage { get; set; }
+        public long PeakUsage { get; set; }
+        public int ActiveAllocations { get; set; }
+        public int GCCount { get; set; }
+        public Dictionary<Type, TypeMemoryInfo> TypeInfo { get; set; }
+
+        public override string ToString()
+        {
+            return $"MemorySnapshot: {Label} - Usage: {CurrentUsage:N0}, Active: {ActiveAllocations}";
+        }
     }
 }
+
+
+
+
+
+
+

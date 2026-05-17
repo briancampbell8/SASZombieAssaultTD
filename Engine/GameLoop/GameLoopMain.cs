@@ -486,7 +486,7 @@ namespace SASZombieAssaultTD.Engine.Systems
             /// <summary>
             /// Adjusts quality settings based on performance metrics.
             /// </summary>
-            public async Task AdjustQualityAsync(PerformanceMetrics metrics)
+            private async Task AdjustQualityAsync(PerformanceMetrics metrics)
             {
                 if (_adjustmentCooldown > 0) return;
 

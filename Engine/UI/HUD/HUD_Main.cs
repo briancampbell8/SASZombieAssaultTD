@@ -1,5 +1,4 @@
 using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.UI.Components;
 using System;
 using System.Collections.Generic;
 

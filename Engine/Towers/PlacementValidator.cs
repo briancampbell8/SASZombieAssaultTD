@@ -167,123 +167,19 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Gets the current occupancy state of a grid area.
-        /// Creates a snapshot of the grid occupancy for the specified area.
-        /// </summary>
-        /// <param name="x">Starting X coordinate in grid space.</param>
-        /// <param name="y">Starting Y coordinate in grid space.</param>
-        /// <param name="gridSize">Size of the area to check.</param>
-        /// <returns>2D boolean array representing occupancy state (true = occupied).</returns>
         private bool[,] GetAreaOccupancy(int x, int y, Vector3Int gridSize)
         {
-            // Validate inputs
-            if (_navigationGrid == null)
-                throw new InvalidOperationException("Navigation grid not initialized");
-                
-            if (gridSize.X <= 0 || gridSize.Y <= 0)
-                return new bool[0, 0];
-            
-            // Create occupancy array for the specified area
-            var occupancy = new bool[gridSize.X, gridSize.Y];
-            
-            // Check each cell in the area
-            for (int i = 0; i < gridSize.X; i++)
-            {
-                for (int j = 0; j < gridSize.Y; j++)
-                {
-                    var checkX = x + i;
-                    var checkY = y + j;
-                    
-                    // Check if position is within grid bounds
-                    if (_navigationGrid.IsInBounds(checkX, checkY))
-                    {
-                        occupancy[i, j] = _navigationGrid.IsOccupied(checkX, checkY);
-                    }
-                    else
-                    {
-                        // Out of bounds is considered occupied for placement purposes
-                        occupancy[i, j] = true;
-                    }
-                }
-            }
-            
-            return occupancy;
+            throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Sets the occupancy state of a grid area.
-        /// Marks all cells in the specified area as occupied or unoccupied.
-        /// </summary>
-        /// <param name="x">Starting X coordinate in grid space.</param>
-        /// <param name="y">Starting Y coordinate in grid space.</param>
-        /// <param name="gridSize">Size of the area to modify.</param>
-        /// <param name="occupied">True to mark as occupied, false to mark as unoccupied.</param>
-        private void SetAreaOccupancy(int x, int y, Vector3Int gridSize, bool occupied)
+        private void SetAreaOccupancy(int x, int y, Vector3Int gridSize, bool v)
         {
-            // Validate inputs
-            if (_navigationGrid == null)
-                throw new InvalidOperationException("Navigation grid not initialized");
-                
-            if (gridSize.X <= 0 || gridSize.Y <= 0)
-                return;
-            
-            // Set occupancy for each cell in the area
-            for (int i = 0; i < gridSize.X; i++)
-            {
-                for (int j = 0; j < gridSize.Y; j++)
-                {
-                    var checkX = x + i;
-                    var checkY = y + j;
-                    
-                    // Only modify cells within grid bounds
-                    if (_navigationGrid.IsInBounds(checkX, checkY))
-                    {
-                        _navigationGrid.SetOccupied(checkX, checkY, occupied);
-                    }
-                }
-            }
+            throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Restores the occupancy state of a grid area from a previous snapshot.
-        /// Used to revert changes made during validation operations.
-        /// </summary>
-        /// <param name="x">Starting X coordinate in grid space.</param>
-        /// <param name="y">Starting Y coordinate in grid space.</param>
-        /// <param name="gridSize">Size of the area to restore.</param>
-        /// <param name="originalOccupancy">Original occupancy state to restore.</param>
         private void RestoreAreaOccupancy(int x, int y, Vector3Int gridSize, bool[,] originalOccupancy)
         {
-            // Validate inputs
-            if (_navigationGrid == null)
-                throw new InvalidOperationException("Navigation grid not initialized");
-                
-            if (originalOccupancy == null || gridSize.X <= 0 || gridSize.Y <= 0)
-                return;
-            
-            // Validate array dimensions match grid size
-            if (originalOccupancy.GetLength(0) != gridSize.X || 
-                originalOccupancy.GetLength(1) != gridSize.Y)
-            {
-                throw new ArgumentException("Original occupancy array dimensions don't match grid size");
-            }
-            
-            // Restore occupancy for each cell in the area
-            for (int i = 0; i < gridSize.X; i++)
-            {
-                for (int j = 0; j < gridSize.Y; j++)
-                {
-                    var checkX = x + i;
-                    var checkY = y + j;
-                    
-                    // Only restore cells within grid bounds
-                    if (_navigationGrid.IsInBounds(checkX, checkY))
-                    {
-                        _navigationGrid.SetOccupied(checkX, checkY, originalOccupancy[i, j]);
-                    }
-                }
-            }
+            throw new NotImplementedException();
         }
 
         /// <summary>

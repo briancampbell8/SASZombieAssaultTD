@@ -410,7 +410,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
     {
         public static void Log(string category, string message)
         {
-            System.Diagnostics.Debug.WriteLine($"[{category}] {message}");
+            Debug.WriteLine($"[{category}] {message}");
         }
     }
 }

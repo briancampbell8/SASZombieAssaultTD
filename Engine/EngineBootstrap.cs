@@ -32,7 +32,7 @@ namespace SASZombieAssaultTD.Engine
         private readonly Systems.SystemManager _systemManager;
         private readonly Systems.UpdateManager _updateManager;
         private readonly Systems.RenderManager _renderManager;
-        private SASZombieAssaultTD.Engine.Rendering.IRenderContext _renderContext;
+        private readonly Interfaces.IRenderContext _renderContext;
 
         /// <summary>
         /// Initializes a new instance of EngineBootstrap.
@@ -44,8 +44,7 @@ namespace SASZombieAssaultTD.Engine
             _systemManager = new Systems.SystemManager();
             _updateManager = new Systems.UpdateManager();
             _renderManager = new Systems.RenderManager();
-            UIRenderContext uIRenderContext = new();
-            _renderContext = (Rendering.IRenderContext)uIRenderContext;
+            _renderContext = new UIRenderContext();
         }
 
         /// <summary>

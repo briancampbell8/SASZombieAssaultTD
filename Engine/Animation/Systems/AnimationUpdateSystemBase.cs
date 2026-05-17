@@ -14,8 +14,6 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
 {
     public class AnimationUpdateSystemBase
     {
-#pragma warning disable CS0067 // Event is never used
         public event Action<AnimationControllerComponent, AnimationEvent> OnAnimationEventFired;
-#pragma warning restore CS0067
     }
 }

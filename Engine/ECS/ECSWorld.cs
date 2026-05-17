@@ -494,11 +494,6 @@ namespace SASZombieAssaultTD.Engine.ECS
             Reset();
         }
 
-        internal void DestroyEntity(uint id)
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
 
         #endregion

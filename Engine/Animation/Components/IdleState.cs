@@ -1,9 +1,8 @@
-// FILE PATH: Engine/Animation/Components/IdleState.cs
-// EXECUTION TRIGGER: Instantiated by AnimationStateMachine during idle state transitions
-// PROGRAM PURPOSE: Idle animation state implementing deterministic idle state with explicit transition conditions
-// PROGRAM CALLS: IAnimationState, AnimationClip, MoveState, JumpState, AttackState
-// PROGRAM CONTENTS: IdleState class implementing IAnimationState with Name, Clip, IsMoving, IsJumping, IsAttacking, IdleTime properties and Enter, Exit, Update, CheckTransitions methods
-
+/*
+File:    IdleState.cs
+Purpose: P11-17-03 - Implement IdleState using IAnimationState with deterministic transitions and no placeholder logic.
+Provides deterministic idle state with explicit transition conditions and no placeholder behavior.
+*/
 using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.Animation.Core;
 using System.Collections.Generic;

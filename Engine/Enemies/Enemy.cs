@@ -161,7 +161,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
         /// <summary>
         /// The wave that spawned this enemy.
         /// </summary>
-        public int SourceWave { get; set; }
+        public object SourceWave { get; set; }
 
         /// <summary>
         /// Index within the spawn group.

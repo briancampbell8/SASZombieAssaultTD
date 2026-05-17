@@ -1,10 +1,12 @@
-using SASZombieAssaultTD.Engine.Core.Random;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Navigation;
-using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.VectorMath;
+using SASZombieAssaultTD.Engine.Navigation;
+using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Dictionary;
+using SASZombieAssaultTD.Engine.Core.Random;
 
 namespace SASZombieAssaultTD.Engine.Waves
 {
@@ -29,7 +31,10 @@ namespace SASZombieAssaultTD.Engine.Waves
         public float? Frequency { get; set; }
         public Dictionary<string, object> CustomProperties { get; set; }
 
-        public SpawnPatternParameterss() => CustomProperties = new Dictionary<string, object>();
+        public SpawnPatternParameterss()
+        {
+            CustomProperties = new Dictionary<string, object>();
+        }
     }
 
     /// <summary>
@@ -43,7 +48,10 @@ namespace SASZombieAssaultTD.Engine.Waves
         public int MaxEnemies { get; set; }
         public List<SpawnPatternParameters> Parameters { get; set; }
 
-        public SpawnPatternDescription() => Parameters = new List<SpawnPatternParameters>();
+        public SpawnPatternDescription()
+        {
+            Parameters = new List<SpawnPatternParameters>();
+        }
     }
 
     /// <summary>
@@ -68,9 +76,15 @@ namespace SASZombieAssaultTD.Engine.Waves
         public bool IsValid { get; set; }
         public List<string> Errors { get; set; }
 
-        public SpawnPatternValidationResult() => Errors = new List<string>();
+        public SpawnPatternValidationResult()
+        {
+            Errors = new List<string>();
+        }
 
-        public void AddError(string error) => Errors.Add(error);
+        public void AddError(string error)
+        {
+            Errors.Add(error);
+        }
     }
 
     /// <summary>
@@ -79,8 +93,8 @@ namespace SASZombieAssaultTD.Engine.Waves
     /// </summary>
     public class SpawnPattern
     {
-        readonly Dictionary<SpawnPatternType, ISpawnPatternStrategy> _strategies;
-        static SpawnPattern _instance;
+        private readonly Dictionary<SpawnPatternType, ISpawnPatternStrategy> _strategies;
+        private static SpawnPattern _instance;
 
         /// <summary>
         /// Singleton instance.
@@ -187,7 +201,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         /// </summary>
         /// <param name="enemyCount">Number of enemies.</param>
         /// <returns>List of default positions.</returns>
-        List<Vector3> GetDefaultPositions(int enemyCount)
+        private List<Vector3> GetDefaultPositions(int enemyCount)
         {
             var positions = new List<Vector3>();
             var spawnPoints = NavigationGrid.Instance?.GetSpawnPoints();
@@ -196,9 +210,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             {
                 // Fallback to origin
                 for (int i = 0; i < enemyCount; i++)
+                {
                     positions.Add(new Vector3(0, i * 1f, 0));
-                
-
+                }
                 return positions;
             }
 
@@ -216,7 +230,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         /// <summary>
         /// Initialize default spawn pattern strategies.
         /// </summary>
-        void InitializeStrategies()
+        private void InitializeStrategies()
         {
             // Register all built-in strategies
             _strategies[SpawnPatternType.Line] = new SingleSpawnStrategy();
@@ -277,17 +291,14 @@ namespace SASZombieAssaultTD.Engine.Waves
         protected Vector3 GetRandomSpawnPoint()
         {
             var spawnPoints = GetSpawnPoints();
-
             if (spawnPoints.Count == 0)
                 return Vector3.Zero;
-
             return spawnPoints[EngineRandom.Range(0, spawnPoints.Count)];
         }
 
         protected Vector3 GetSpawnPoint(int index)
         {
             var spawnPoints = GetSpawnPoints();
-
             if (spawnPoints.Count == 0)
                 return Vector3.Zero;
 
@@ -295,9 +306,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
 
         public abstract List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters);
-
         public abstract SpawnPatternDescription GetDescription();
-
         public abstract ValidationResult ValidateParameters(SpawnPatternParameterss parameters);
     }
 
@@ -319,7 +328,6 @@ namespace SASZombieAssaultTD.Engine.Waves
                     EngineRandom.Range(-0.2f, 0.2f),
                     0
                 );
-
                 positions.Add(spawnPoint + offset);
             }
 
@@ -443,9 +451,9 @@ namespace SASZombieAssaultTD.Engine.Waves
 
             for (int i = 0; i < enemyCount; i++)
             {
-                object rng = null;
-                var angle = (float)rng * 2f * MathF.PI;
-                var distance = (float)rng * radius;
+                // Generate random position within cluster radius
+                var angle = System.Random.value * 2f * System.MathF.PI;
+                var distance = System.Random.value * radius;
 
                 var position = new Vector3(
                     centerPoint.X + MathF.Cos(angle) * distance,
@@ -572,7 +580,6 @@ namespace SASZombieAssaultTD.Engine.Waves
             for (int i = 0; i < enemyCount; i++)
             {
                 var waveOffset = MathF.Sin(i * frequency) * amplitude;
-
                 var position = new Vector3(
                     basePoint.X + i * 1f,
                     basePoint.Y + waveOffset,
@@ -658,7 +665,6 @@ namespace SASZombieAssaultTD.Engine.Waves
             for (int i = 0; i < enemyCount; i++)
             {
                 var angle = (2f * MathF.PI * i) / enemyCount;
-
                 var position = new Vector3(
                     centerPoint.X + MathF.Cos(angle) * radius,
                     centerPoint.Y + MathF.Sin(angle) * radius,
@@ -977,7 +983,6 @@ namespace SASZombieAssaultTD.Engine.Waves
             var spacing = parameters.Spacing ?? 1f;
 
             var index = 0;
-
             for (int x = 0; x < gridSize && index < enemyCount; x++)
             {
                 for (int y = 0; y < gridSize && index < enemyCount; y++)
@@ -1065,7 +1070,6 @@ namespace SASZombieAssaultTD.Engine.Waves
 
             // Left and right arms of V
             var armSize = (enemyCount - 1) / 2;
-
             for (int i = 1; i <= armSize; i++)
             {
                 var leftOffset = new Vector3(-i * spread / armSize, -i * depth / armSize, 0);

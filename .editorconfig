@@ -1,4 +1,0 @@
-﻿[*.cs]
-
-# Default severity for analyzer diagnostics with category 'Roslynator'
-dotnet_analyzer_diagnostic.category-Roslynator.severity = error

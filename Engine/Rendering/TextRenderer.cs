@@ -510,10 +510,8 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 // Apply advanced text effects
                 if (options.HasShadow)
                 {
-                    object value = options.ShadowOffsetX;
-                    object y = options.ShadowOffsetY;
-                    int colorValue = (int)options.ShadowColor;
-                    throw new NotImplementedException();
+                        ApplyShadowEffect(cache, glyph, options.ShadowOffsetX, 
+                        options.ShadowOffsetY, v: (int)options.ShadowColor.ToArgb());
                 }
 
                 if (options.HasOutline)

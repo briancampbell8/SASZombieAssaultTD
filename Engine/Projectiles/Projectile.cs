@@ -47,13 +47,6 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         public int MaxPierces { get; set; }
         public int CurrentPierces { get; set; }
         public float PierceDamageReduction { get; set; }
-        public bool HasGravity { get; internal set; } // NEW
-
-        public float FuseTime { get; internal set; } // NEW
-
-        public bool HasFuse { get; internal set; } // NEW
-        public float GravityStrength { get; internal set; } // NEW
-        public bool HasExploded { get; internal set; }
 
         public Projectile() { }
 

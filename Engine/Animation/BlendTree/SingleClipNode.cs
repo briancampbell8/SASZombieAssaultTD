@@ -1,12 +1,3 @@
-// ROLE: Leaf node for unblended animation clips.
-// RESPONSIBILITY: Return single animation clip without blending as terminal node in blend trees.
-// TRIGGERS: Instantiated by BlendTree and BlendTreeSerializer as leaf node for raw clip playback.
-// INPUTS: Receives clip ID and returns single animation result.
-// OUTPUTS: Returns single clip with full weight contribution.
-// DEPENDENCIES: Implements IBlendNode interface.
-// CONTENTS: SingleClipNode class with ClipId property and Evaluate, GetRequiredParameters, 
-//           Validate, GetDebugInfo methods.
-
 using System;
 using System.Collections.Generic;
 

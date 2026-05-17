@@ -13,7 +13,6 @@ Notes:   This is a placeholder implementation for special-type towers.
 */
 
 using System;
-using System.Linq;
 
 namespace SASZombieAssaultTD.Engine.Gameplay.Towers
 {
@@ -36,19 +35,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         
         /// <summary>Base cost to build this tower.</summary>
         public override int BaseCost => 300;
-
-        private string currentMode;
-
-        public string GetCurrentMode()
-        {
-            return currentMode;
-        }
-
-        private void SetCurrentMode(string value)
-        {
-            currentMode = value;
-        }
-
+        
         /// <summary>Base attack damage for this tower.</summary>
         public override float BaseDamage => 30f;
         
@@ -91,16 +78,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         
         /// <summary>Available modes for this tower.</summary>
         public string[] AvailableModes => new[] { "Normal", "Special", "Ultimate" };
-
+        
         /// <summary>Current active mode.</summary>
-        public static string CurrentMode
-        {
-            get
-            {
-                return "Normal";
-            }
-        }
-
+        public string CurrentMode => "Normal";
+        
         /// <summary>Whether this tower requires manual activation.</summary>
         public bool RequiresManualActivation => false;
         
@@ -193,7 +174,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
                 ["EnergyCost"] = SpecialEnergyCost,
                 ["Cooldown"] = SpecialCooldown,
                 ["Modes"] = AvailableModes,
-                ["CurrentMode"] = GetCurrentMode(),
+                ["CurrentMode"] = CurrentMode,
                 ["ManualActivation"] = RequiresManualActivation
             };
         }
@@ -270,8 +251,8 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         {
             if (!AvailableModes.Contains(mode))
                 return false;
-
-            SetCurrentMode(mode);
+                
+            CurrentMode = mode;
             return true;
         }
         
@@ -281,12 +262,12 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         /// <returns>True if ability was activated.</returns>
         public virtual bool ActivateSpecialAbility()
         {
-            if (GetCurrentMode() != "Special")
+            if (CurrentMode != "Special")
                 return false;
                 
             if (TotalInvestment >= SpecialEnergyCost)
             {
-                TotalInvestment -= (int)SpecialEnergyCost;
+                TotalInvestment -= SpecialEnergyCost;
                 return true;
             }
             
@@ -312,7 +293,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         /// <returns>Summary string.</returns>
         public override string ToString()
         {
-            return $"{DisplayName} (ID: {Id}, Level: {Level}/{MaxLevel}, Mode: {GetCurrentMode()})";
+            return $"{DisplayName} (ID: {Id}, Level: {Level}/{MaxLevel}, Mode: {CurrentMode})";
         }
         
         #endregion

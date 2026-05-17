@@ -11,7 +11,6 @@ Notes:
 
 */
 using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.UI.Components;
 using System;
 
 namespace SASZombieAssaultTD.Engine.UI
@@ -22,7 +21,6 @@ namespace SASZombieAssaultTD.Engine.UI
         public bool ButtonVisible { get; set; } = true;
         public string Text { get; set; } = string.Empty;
         public Action? OnClick { get; set; }
-        public Color BackgroundColor { get; set; } = Color.Gray;
 
         public override void Render(IRenderContext context)
         {

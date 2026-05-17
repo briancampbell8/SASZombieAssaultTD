@@ -41,8 +41,6 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// </summary>
         public TowerData Data { get; }
 
-        public int Cost;
-
         /// <summary>
         /// Whether the tower is currently active.
         /// </summary>
@@ -52,18 +50,6 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// Current upgrade level of the tower.
         /// </summary>
         public int UpgradeLevel { get; private set; } = 0;
-        
-        /// <summary>
-        /// Stat modifiers applied by upgrades.
-        /// Dictionary of stat name to modifier value.
-        /// </summary>
-        private Dictionary<string, float> _statModifiers = new();
-        
-        /// <summary>
-        /// Special abilities granted by upgrades.
-        /// List of active special abilities on this tower.
-        /// </summary>
-        private List<string> _specialAbilities = new();
 
         /// <summary>
         /// Entity reference for ECS integration.
@@ -143,7 +129,7 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// <summary>
         /// Cost of the tower.
         /// </summary>
-       
+        public int Cost => Data?.Cost ?? 0;
 
         /// <summary>
         /// Scale of the tower.
@@ -288,6 +274,15 @@ namespace SASZombieAssaultTD.Engine.Towers
         }
 
         /// <summary>
+        /// Gets the special abilities of this tower.
+        /// </summary>
+        /// <returns>List of special abilities.</returns>
+        public List<string> GetSpecialAbilities()
+        {
+            return new List<string>(); // Default implementation
+        }
+
+        /// <summary>
         /// Gets the available upgrades for this tower.
         /// </summary>
         /// <returns>List of available upgrades.</returns>
@@ -376,179 +371,6 @@ namespace SASZombieAssaultTD.Engine.Towers
                 TowerType.Tesla => 225,
                 _ => 100
             };
-        }
-
-        /// <summary>
-        /// Calculates the fire position for projectiles based on tower type and orientation.
-        /// Returns the world position where projectiles should spawn from this tower.
-        /// </summary>
-        /// <returns>World position for projectile spawn, or null if tower cannot fire.</returns>
-        internal Vector3? GetFirePosition()
-        {
-            // Check if tower is active and has valid data
-            if (!IsActive || Data == null)
-                return null;
-                
-            // Calculate fire position based on tower type
-            switch (Data.Type)
-            {
-                case TowerType.Basic:
-                case TowerType.Rapid:
-                case TowerType.Poison:
-                    // For basic towers, fire from top center
-                    return Position + new Vector3(0, Data.Size.Y * 0.8f, 0);
-                    
-                case TowerType.Laser:
-                    // For laser towers, fire from front face
-                    return Position + new Vector3(0, Data.Size.Y * 0.5f, Data.Size.X * 0.5f);
-                    
-                case TowerType.Tesla:
-                    // For tesla towers, fire from top center with electrical arc offset
-                    return Position + new Vector3(0, Data.Size.Y * 0.9f, 0);
-                    
-                case TowerType.Sniper:
-                    // For sniper towers, fire from elevated position
-                    return Position + new Vector3(0, Data.Size.Y * 1.2f, 0);
-                    
-                case TowerType.Mortar:
-                    // For mortar towers, fire from back/top position
-                    return Position + new Vector3(0, Data.Size.Y * 0.7f, -Data.Size.X * 0.2f);
-                    
-                case TowerType.Flame:
-                    // For flame towers, fire from front
-                    return Position + new Vector3(0, Data.Size.Y * 0.3f, Data.Size.X * 0.4f);
-                    
-                case TowerType.Ice:
-                    // For ice towers, fire from center
-                    return Position + new Vector3(0, Data.Size.Y * 0.5f, 0);
-                    
-                case TowerType.Electric:
-                    // For electric towers, fire from multiple points (simplified to center)
-                    return Position + new Vector3(0, Data.Size.Y * 0.6f, 0);
-                    
-                default:
-                    // Default fire position for unknown tower types
-                    return Position + new Vector3(0, Data.Size.Y * 0.5f, 0);
-            }
-        }
-
-        /// <summary>
-        /// Sets a stat modifier for this tower.
-        /// Used by upgrade system to apply stat modifications.
-        /// </summary>
-        /// <param name="stat">Name of the stat to modify.</param>
-        /// <param name="modifier">Modifier value to apply.</param>
-        public void SetStatModifier(string stat, float modifier)
-        {
-            if (string.IsNullOrEmpty(stat))
-                return;
-                
-            _statModifiers[stat] = modifier;
-            
-            // Apply modifier to actual tower data
-            switch (stat.ToLower())
-            {
-                case "damage":
-                    if (Data != null)
-                        Data.Damage *= modifier;
-                    break;
-                case "range":
-                    if (Data != null)
-                        Data.Range *= modifier;
-                    break;
-                case "firerate":
-                    if (Data != null)
-                        Data.FireRate *= modifier;
-                    break;
-                case "accuracy":
-                    if (Data != null)
-                        Data.Accuracy *= modifier;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Removes a stat modifier from this tower.
-        /// Used by upgrade system to revert stat modifications.
-        /// </summary>
-        /// <param name="stat">Name of the stat to unmodify.</param>
-        public void RemoveStatModifier(string stat)
-        {
-            if (string.IsNullOrEmpty(stat) || !_statModifiers.ContainsKey(stat))
-                return;
-                
-            var modifier = _statModifiers[stat];
-            _statModifiers.Remove(stat);
-            
-            // Revert modifier from actual tower data
-            switch (stat.ToLower())
-            {
-                case "damage":
-                    if (Data != null)
-                        Data.Damage /= modifier;
-                    break;
-                case "range":
-                    if (Data != null)
-                        Data.Range /= modifier;
-                    break;
-                case "firerate":
-                    if (Data != null)
-                        Data.FireRate /= modifier;
-                    break;
-                case "accuracy":
-                    if (Data != null)
-                        Data.Accuracy /= modifier;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Adds a special ability to this tower.
-        /// Used by upgrade system to grant special abilities.
-        /// </summary>
-        /// <param name="ability">Name of the special ability to add.</param>
-        public void AddSpecialAbility(string ability)
-        {
-            if (!string.IsNullOrEmpty(ability) && !_specialAbilities.Contains(ability))
-            {
-                _specialAbilities.Add(ability);
-            }
-        }
-
-        /// <summary>
-        /// Removes a special ability from this tower.
-        /// Used by upgrade system to revoke special abilities.
-        /// </summary>
-        /// <param name="ability">Name of the special ability to remove.</param>
-        public void RemoveSpecialAbility(string ability)
-        {
-            if (!string.IsNullOrEmpty(ability))
-            {
-                _specialAbilities.Remove(ability);
-            }
-        }
-
-        /// <summary>
-        /// Gets all special abilities currently active on this tower.
-        /// </summary>
-        /// <returns>Read-only list of special abilities.</returns>
-        public IReadOnlyList<string> GetSpecialAbilities()
-        {
-            return _specialAbilities.AsReadOnly();
-        }
-
-        /// <summary>
-        /// Gets all stat modifiers currently applied to this tower.
-        /// </summary>
-        /// <returns>Read-only dictionary of stat modifiers.</returns>
-        public IReadOnlyDictionary<string, float> GetStatModifiers()
-        {
-            return _statModifiers.AsReadOnly();
-        }
-
-        internal void SetVisualProperties(Tower tower, object primary, object secondary, float v1, float v2)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion

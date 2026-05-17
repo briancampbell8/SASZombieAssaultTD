@@ -1,9 +1,3 @@
-// FILE PATH: Engine/Animation/Core/ModernLoggingSystemExtensions.cs
-// EXECUTION TRIGGER: Called by legacy code using old 2-parameter Log signature
-// PROGRAM PURPOSE: Extension methods for ModernLoggingSystem backward compatibility providing legacy 2-parameter Log method support during migration
-// PROGRAM CALLS: ModernLoggingSystem, LogLevel
-// PROGRAM CONTENTS: ModernLoggingSystemExtensions static class with Log method
-
 using System;
 
 namespace SASZombieAssaultTD.Engine.Core

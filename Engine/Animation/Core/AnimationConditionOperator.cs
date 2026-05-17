@@ -1,8 +1,6 @@
-// FILE PATH: Engine/Animation/Core/AnimationConditionOperator.cs
-// EXECUTION TRIGGER: Referenced by AnimationTransition and AnimationStateMachine during condition evaluation
-// PROGRAM PURPOSE: Enumeration of comparison operators for animation parameter conditions used to evaluate transition conditions and blend tree parameters
-// PROGRAM CALLS: None (enum definition)
-// PROGRAM CONTENTS: AnimationConditionOperator enum with Equals, NotEquals, GreaterThan, LessThan, GreaterThanOrEqual, LessThanOrEqual, WithinRange, OutsideRange values
+// File: Engine/Animation/AnimationConditionOperator.cs
+// Purpose: Defines comparison operators for animation parameter conditions
+// Integration: Used by AnimationParameters.ParameterCondition for state transitions
 
 namespace SASZombieAssaultTD.Engine.Animation.Core
 {

@@ -1,12 +1,16 @@
-// ROLE: Provides delta time and timing utilities for animation, movement, cooldowns, and ECS updates.
-// RESPONSIBILITY: Maintain accurate timing state including delta time, fixed timestep, frame rate, 
-//                  and time scaling for the entire engine.
-// TRIGGERS: Invoked by UpdateManager during every frame update.
-// INPUTS: Receives current real time since startup in seconds from UpdateManager.
-// OUTPUTS: Provides DeltaTime, FixedDeltaTime, TimeScale, FPS, and related timing properties.
-// DEPENDENCIES: Self-contained static utility with no external dependencies.
-// CONTENTS: Time static class with DeltaTime, FixedDeltaTime, TimeScale, RealtimeSinceStartup 
-//           properties and Update, SetTimeScale, Reset methods plus private fields.
+/*
+File:    Time.cs
+Purpose: Provides delta time and timing utilities used by animation, movement, cooldowns, and ECS updates.
+         Offers comprehensive time management for frame-based and real-time calculations.
+         
+Features: Delta time tracking, frame rate calculation, time scaling, and timing utilities.
+          Supports fixed timestep, variable timestep, and time scaling for game effects.
+          Used by animation systems, movement calculations, cooldown management, and ECS updates.
+
+Created: Engine Core Implementation
+Notes:   This is the canonical time system for the entire engine.
+         All time-related operations should use this unified Time system.
+*/
 
 using System;
 

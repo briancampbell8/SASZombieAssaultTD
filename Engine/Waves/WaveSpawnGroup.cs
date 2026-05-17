@@ -1,18 +1,11 @@
-// FILE PATH: Engine/Waves/WaveSpawnGroup.cs
-// EXECUTION TRIGGER: Instantiated by WaveManager during wave initialization
-// PROGRAM PURPOSE: Configures and controls enemy spawn groups with timing, positioning, stat modifiers, and visual effects
-// PROGRAM CALLS: NavigationGrid, Enemy, IDifficultyService, WaveGameState, SpawnConditions, ThreadLocal<Random>
-// PROGRAM CONTENTS: WaveSpawnGroup class with spawn configuration properties, spawn position methods, enemy modification methods, validation, cloning, and nested types (ZombieType enum, Color struct, VisualEffect class, EnemyBehaviorModifier class, plus SpawnPositionType, AggressionLevel, AIType, SpawnTrigger enums)
-
-using SASZombieAssaultTD.Engine.Navigation;
-using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-
-// PROGRAM CALLS: None (data container)
-// PROGRAM CONTENTS: WaveGameState class with PlayerLevel, BuiltTowers, GameSpeed, IsPaused properties and default constructor
+using SASZombieAssaultTD.Engine.VectorMath;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.Dictionary;
+using SASZombieAssaultTD.Engine.State;
+using SASZombieAssaultTD.Engine.Navigation;
 
 namespace SASZombieAssaultTD.Engine.Waves
 {
@@ -22,7 +15,6 @@ namespace SASZombieAssaultTD.Engine.Waves
     /// </summary>
     public class WaveSpawnGroup : IWaveSpawnGroup
     {
-        #region
         /// <summary>
         /// Color for visual effects.
         /// </summary>
@@ -58,12 +50,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             Bloater,
             Mamushka
         }
-        /// <summary>
-        /// Thread-local random number generator for spawn variations.
-        /// Each thread gets its own instance to ensure thread-safety.
-        /// </summary>
-        static readonly ThreadLocal<Random> _random = new ThreadLocal<Random>(() =>
-            new Random(Guid.NewGuid().GetHashCode()));
+        private static readonly System.Random _random = new System.Random();
 
         // Basic spawn properties
         public WaveSpawnGroup.ZombieType EnemyType { get; set; }
@@ -118,10 +105,6 @@ namespace SASZombieAssaultTD.Engine.Waves
         public Action<WaveSpawnGroup> OnGroupCompleted { get; set; }
         public Func<Enemy, bool> SpawnFilter { get; set; }
 
-        // Cached spawn points to avoid repeated LINQ allocations in hot path
-        Vector3[] _cachedSpawnPoints;
-        bool _spawnPointsCached;
-
         public WaveSpawnGroup()
         {
             EnemyType = WaveSpawnGroup.ZombieType.Swarm;
@@ -157,8 +140,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             // Apply random variation if enabled
             if (RandomizeDelay && SpawnDelayVariation > 0)
             {
-                var variation = ((float)_random.Value.NextDouble() - 0.5f) * 2f * SpawnDelayVariation;
-
+                var variation = ((float)_random.NextDouble() - 0.5f) * 2f * SpawnDelayVariation;
                 baseDelay += variation;
             }
 
@@ -171,37 +153,28 @@ namespace SASZombieAssaultTD.Engine.Waves
         /// <summary>
         /// Get effective enemy count with modifiers.
         /// </summary>
-        /// <param name="difficultyService">Difficulty service for getting current difficulty multiplier.</param>
         /// <returns>Effective enemy count.</returns>
-        public int GetEffectiveCount(IDifficultyService difficultyService = null)
+        public int GetEffectiveCount()
         {
             var count = Count;
-            var multiplier = 1.0f;
 
             // Apply difficulty-based count increase
-            if (difficultyService != null)
+            var difficulty = "Normal"; // TODO: Implement proper difficulty system
+            var multiplier = difficulty switch
             {
-                multiplier = difficultyService.GetEnemyCountMultiplier();
-            }
+                "Hard" => 1.2f,
+                "Elite" => 1.5f,
+                _ => 1.0f
+            };
 
-            // Apply champion modifier (separate from stat scaling)
+            // Apply champion modifier
             if (IsChampion)
             {
-                multiplier *= GetChampionCountMultiplier();
+                multiplier *= (1f + (ChampionLevel * 0.1f));
             }
 
             return (int)(count * multiplier);
         }
-
-        /// <summary>
-        /// Get the champion multiplier for enemy count (10% per level).
-        /// </summary>
-        public float GetChampionCountMultiplier() => 1f + (ChampionLevel * 0.1f);
-
-        /// <summary>
-        /// Get the champion multiplier for enemy stats (20% per level).
-        /// </summary>
-        public float GetChampionStatMultiplier() => 1f + (ChampionLevel * 0.2f);
 
         /// <summary>
         /// Get spawn position for specific enemy.
@@ -251,7 +224,9 @@ namespace SASZombieAssaultTD.Engine.Waves
 
             // Apply behavior modifications
             foreach (var modifier in BehaviorModifiers)
+            {
                 modifier.Apply(enemy);
+            }
 
             // Override AI if specified
             if (OverrideAI != AIType.Default)
@@ -273,11 +248,15 @@ namespace SASZombieAssaultTD.Engine.Waves
 
             // Apply special abilities
             foreach (var ability in SpecialAbilities)
+            {
                 enemy.AddSpecialAbility(ability);
+            }
 
             // Apply custom properties
             foreach (var property in CustomProperties)
+            {
                 enemy.SetCustomProperty(property.Key, property.Value);
+            }
 
             // Set spawn group reference
             enemy.SourceSpawnGroup = this;
@@ -290,11 +269,13 @@ namespace SASZombieAssaultTD.Engine.Waves
         /// <param name="currentWave">Current wave number.</param>
         /// <param name="gameState">Current game state.</param>
         /// <returns>True if conditions are met.</returns>
-        public bool AreSpawnConditionsMet(int currentWave, WaveGameState gameState)
+        public bool AreSpawnConditionsMet(int currentWave, VisualEffect.GameState gameState)
         {
-            if (!ConditionalSpawn) return true;
+            if (!ConditionalSpawn)
+                return true;
 
-            if (gameState == null) return true;
+            if (gameState == null)
+                return true;
 
             return Conditions.AreConditionsMet(currentWave, gameState.PlayerLevel, new List<string>());
         }
@@ -306,7 +287,8 @@ namespace SASZombieAssaultTD.Engine.Waves
         /// <returns>True if enemy should be spawned.</returns>
         public bool ShouldSpawnEnemy(Enemy enemy)
         {
-            if (SpawnFilter == null) return true;
+            if (SpawnFilter == null)
+                return true;
 
             return SpawnFilter(enemy);
         }
@@ -314,13 +296,19 @@ namespace SASZombieAssaultTD.Engine.Waves
         /// <summary>
         /// Trigger spawn completion callback.
         /// </summary>
-        public void OnGroupCompletedCallback() => OnGroupCompleted?.Invoke(this);
+        public void OnGroupCompletedCallback()
+        {
+            OnGroupCompleted?.Invoke(this);
+        }
 
         /// <summary>
         /// Trigger enemy spawned callback.
         /// </summary>
         /// <param name="enemy">Spawned enemy.</param>
-        public void OnEnemySpawnedCallback(Enemy enemy) => OnEnemySpawned?.Invoke(enemy);
+        public void OnEnemySpawnedCallback(Enemy enemy)
+        {
+            OnEnemySpawned?.Invoke(enemy);
+        }
 
         /// <summary>
         /// Get spawn group description.
@@ -330,7 +318,8 @@ namespace SASZombieAssaultTD.Engine.Waves
         {
             var description = $"{EnemyType} x{Count}";
 
-            if (IsBoss) description += " (BOSS)";
+            if (IsBoss)
+                description += " (BOSS)";
 
             if (IsChampion)
                 description += $" (Champion Lv.{ChampionLevel})";
@@ -393,204 +382,57 @@ namespace SASZombieAssaultTD.Engine.Waves
                 result.AddError("Spawn radius cannot be negative");
             }
 
-            // Validate stat multipliers
-            if (HealthMultiplier.HasValue && HealthMultiplier.Value < 0)
-            {
-                result.IsValid = false;
-                result.AddError("Health multiplier cannot be negative");
-            }
-
-            if (SpeedMultiplier.HasValue && SpeedMultiplier.Value < 0)
-            {
-                result.IsValid = false;
-                result.AddError("Speed multiplier cannot be negative");
-            }
-
-            if (DamageMultiplier.HasValue && DamageMultiplier.Value < 0)
-            {
-                result.IsValid = false;
-                result.AddError("Damage multiplier cannot be negative");
-            }
-
-            if (SizeMultiplier.HasValue && SizeMultiplier.Value < 0)
-            {
-                result.IsValid = false;
-                result.AddError("Size multiplier cannot be negative");
-            }
-
-            if (ArmorMultiplier.HasValue && ArmorMultiplier.Value < 0)
-            {
-                result.IsValid = false;
-                result.AddError("Armor multiplier cannot be negative");
-            }
-
-            // Validate scale
-            if (Scale.HasValue && Scale.Value <= 0)
-            {
-                result.IsValid = false;
-                result.AddError("Scale must be positive");
-            }
-
-            // Validate spawn point indices
-            if (SpecificSpawnPoints != null)
-            {
-                foreach (var point in SpecificSpawnPoints)
-                {
-                    if (point < 0)
-                    {
-                        result.IsValid = false;
-                        result.AddError("Specific spawn point indices cannot be negative");
-                        break;
-                    }
-                }
-            }
-
-            // Validate spawn delay variation
-            if (SpawnDelayVariation < 0)
-            {
-                result.IsValid = false;
-                result.AddError("Spawn delay variation cannot be negative");
-            }
-
             return result;
         }
 
         /// <summary>
         /// Clone this spawn group.
         /// </summary>
-        /// <remarks>
-        /// Event callbacks (OnEnemySpawned, OnGroupCompleted, SpawnFilter) are intentionally NOT copied
-        /// to prevent potential memory leaks and unintended side effects from shared delegate references.
-        /// Use <see cref="Clone(bool)"/> with includeCallbacks=true if you need to copy callbacks.
-        /// </remarks>
         /// <returns>Cloned spawn group.</returns>
         public WaveSpawnGroup Clone()
         {
             var clone = new WaveSpawnGroup
             {
-                EnemyType = EnemyType,
-                Count = Count,
-                SpawnDelay = SpawnDelay,
-                Pattern = Pattern,
-                DelayAfterGroup = DelayAfterGroup,
-                IsBoss = IsBoss,
-                SpawnDelayVariation = SpawnDelayVariation,
-                RandomizeDelay = RandomizeDelay,
-                InitialDelay = InitialDelay,
-                PositionType = PositionType,
-                SpecificSpawnPoints = new List<int>(SpecificSpawnPoints),
-                CustomSpawnPosition = CustomSpawnPosition,
-                SpawnRadius = SpawnRadius,
-                HealthMultiplier = HealthMultiplier,
-                SpeedMultiplier = SpeedMultiplier,
-                DamageMultiplier = DamageMultiplier,
-                SizeMultiplier = SizeMultiplier,
-                ArmorMultiplier = ArmorMultiplier,
-                OverrideAI = OverrideAI,
-                Aggression = Aggression,
-                EnemySkin = EnemySkin,
-                TintColor = TintColor,
-                Scale = Scale,
-                IsChampion = IsChampion,
-                ChampionLevel = ChampionLevel,
-                SpecialAbilities = new List<string>(SpecialAbilities),
-                CustomProperties = new Dictionary<string, float>(CustomProperties),
-                ConditionalSpawn = ConditionalSpawn
+                EnemyType = this.EnemyType,
+                Count = this.Count,
+                SpawnDelay = this.SpawnDelay,
+                Pattern = this.Pattern,
+                DelayAfterGroup = this.DelayAfterGroup,
+                IsBoss = this.IsBoss,
+                SpawnDelayVariation = this.SpawnDelayVariation,
+                RandomizeDelay = this.RandomizeDelay,
+                InitialDelay = this.InitialDelay,
+                PositionType = this.PositionType,
+                SpecificSpawnPoints = new List<int>(this.SpecificSpawnPoints),
+                CustomSpawnPosition = this.CustomSpawnPosition,
+                SpawnRadius = this.SpawnRadius,
+                HealthMultiplier = this.HealthMultiplier,
+                SpeedMultiplier = this.SpeedMultiplier,
+                DamageMultiplier = this.DamageMultiplier,
+                SizeMultiplier = this.SizeMultiplier,
+                ArmorMultiplier = this.ArmorMultiplier,
+                OverrideAI = this.OverrideAI,
+                Aggression = this.Aggression,
+                EnemySkin = this.EnemySkin,
+                TintColor = this.TintColor,
+                Scale = this.Scale,
+                IsChampion = this.IsChampion,
+                ChampionLevel = this.ChampionLevel,
+                SpecialAbilities = new List<string>(this.SpecialAbilities),
+                CustomProperties = new Dictionary<string, float>(this.CustomProperties),
+                ConditionalSpawn = this.ConditionalSpawn
             };
 
-            clone.BehaviorModifiers = BehaviorModifiers.Select(mod => mod.Clone()).ToList();
-            clone.VisualEffects = VisualEffects.Select(effect => effect.Clone()).ToList();
-            clone.Conditions = Conditions.Clone();
+            clone.BehaviorModifiers = this.BehaviorModifiers.Select(mod => mod.Clone()).ToList();
+            clone.VisualEffects = this.VisualEffects.Select(effect => effect.Clone()).ToList();
+            clone.Conditions = this.Conditions.Clone();
 
             return clone;
         }
 
-        /// <summary>
-        /// Clone this spawn group with option to copy event callbacks.
-        /// </summary>
-        /// <param name="includeCallbacks">If true, copies event delegates. Use with caution - can cause memory leaks if not managed properly.</param>
-        /// <returns>Cloned spawn group.</returns>
-        public WaveSpawnGroup Clone(bool includeCallbacks)
-        {
-            var clone = Clone();
+        #region Private Helper Methods
 
-            if (includeCallbacks)
-            {
-                clone.OnEnemySpawned = OnEnemySpawned;
-                clone.OnGroupCompleted = OnGroupCompleted;
-                clone.SpawnFilter = SpawnFilter;
-            }
-
-            return clone;
-        }
-
-        /// <summary>
-        /// Initialize and cache spawn points for this wave.
-        /// Call this at wave start to avoid LINQ allocations during spawning.
-        /// </summary>
-        public void InitializeSpawnPoints()
-        {
-            _cachedSpawnPoints = GetAvailableSpawnPoints()?.ToArray() ?? GetDefaultSpawnPoints();
-            _spawnPointsCached = true;
-        }
-
-        /// <summary>
-        /// Clear cached spawn points.
-        /// Call this after wave completion to free memory.
-        /// </summary>
-        public void ClearCachedSpawnPoints()
-        {
-            _cachedSpawnPoints = null;
-            _spawnPointsCached = false;
-        }
-
-        /// <summary>
-        /// Get available spawn points from the navigation grid.
-        /// </summary>
-        List<Vector3> GetAvailableSpawnPoints()
-        {
-            var cells = NavigationGrid.Instance?.GetNeighbors(new Vector3Int(0, 0), false);
-            if (cells == null) return null;
-
-            var points = new List<Vector3>(cells.Count);
-
-            foreach (var cell in cells)
-            {
-                points.Add(new Vector3(cell.GridPosition.X, cell.GridPosition.Y, cell.GridPosition.Z));
-            }
-
-            return points.Count > 0 ? points : null;
-        }
-
-        /// <summary>
-        /// Get default fallback spawn points.
-        /// </summary>
-        Vector3[] GetDefaultSpawnPoints()
-        {
-            return new[] { Vector3.Zero, new Vector3(10, 0, 0), new Vector3(0, 10, 0) };
-        }
-
-        /// <summary>
-        /// Get cached spawn points or fetch from grid if not cached.
-        /// </summary>
-        IReadOnlyList<Vector3> GetSpawnPoints()
-        {
-            if (_spawnPointsCached && _cachedSpawnPoints != null)
-            {
-                return _cachedSpawnPoints;
-            }
-
-            var points = GetAvailableSpawnPoints();
-
-            if (points != null && points.Count > 0)
-            {
-                return points;
-            }
-
-            return GetDefaultSpawnPoints();
-        }
-
-        float ApplyPatternDelay(float baseDelay, int enemyIndex)
+        private float ApplyPatternDelay(float baseDelay, int enemyIndex)
         {
             return Pattern switch
             {
@@ -600,24 +442,29 @@ namespace SASZombieAssaultTD.Engine.Waves
             };
         }
 
-        Vector3 GetRandomSpawnPosition()
+        private Vector3 GetRandomSpawnPosition()
         {
-            var spawnPoints = GetSpawnPoints();
-            if (spawnPoints.Count == 0) return Vector3.Zero;
-
-            return spawnPoints[_random.Value.Next(0, spawnPoints.Count)];
+            var spawnPoints = NavigationGrid.Instance?.GetNeighbors(new Vector3Int(0, 0), false)?.Select(cell =>
+                new Vector3(cell.GridPosition.X, cell.GridPosition.Y, cell.GridPosition.Z)).ToList() ?? 
+                new List<Vector3> { new Vector3(0, 0, 0), new Vector3(10, 0, 0), new Vector3(0, 10, 0) };
             
+            if (spawnPoints == null || spawnPoints.Count == 0)
+                return Vector3.Zero;
+
+            return spawnPoints[_random.Next(0, spawnPoints.Count)];
         }
 
-        Vector3 GetSpecificSpawnPosition(int enemyIndex)
+        private Vector3 GetSpecificSpawnPosition(int enemyIndex)
         {
-            var spawnPoints = GetSpawnPoints();
-            if (spawnPoints.Count == 0) return Vector3.Zero;
+            var spawnPoints = NavigationGrid.Instance?.GetNeighbors(new Vector3Int(0, 0), false)?.Select(cell =>
+                new Vector3(cell.GridPosition.X, cell.GridPosition.Y, cell.GridPosition.Z)).ToList() ?? 
+                new List<Vector3> { new Vector3(0, 0, 0), new Vector3(10, 0, 0), new Vector3(0, 10, 0) };
+            if (spawnPoints == null || spawnPoints.Count == 0)
+                return Vector3.Zero;
 
             if (SpecificSpawnPoints.Count > 0)
             {
                 var pointIndex = SpecificSpawnPoints[enemyIndex % SpecificSpawnPoints.Count];
-
                 if (pointIndex >= 0 && pointIndex < spawnPoints.Count)
                     return spawnPoints[pointIndex];
             }
@@ -625,10 +472,13 @@ namespace SASZombieAssaultTD.Engine.Waves
             return spawnPoints[enemyIndex % spawnPoints.Count];
         }
 
-        Vector3 GetPatternSpawnPosition(int enemyIndex, int totalEnemies)
+        private Vector3 GetPatternSpawnPosition(int enemyIndex, int totalEnemies)
         {
-            var spawnPoints = GetSpawnPoints();
-            if (spawnPoints.Count == 0) return Vector3.Zero;
+            var spawnPoints = NavigationGrid.Instance?.GetNeighbors(new Vector3Int(0, 0), false)?.Select(cell =>
+                new Vector3(cell.GridPosition.X, cell.GridPosition.Y, cell.GridPosition.Z)).ToList() ?? 
+                new List<Vector3> { new Vector3(0, 0, 0), new Vector3(10, 0, 0), new Vector3(0, 10, 0) };
+            if (spawnPoints == null || spawnPoints.Count == 0)
+                return Vector3.Zero;
 
             return Pattern switch
             {
@@ -644,7 +494,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             };
         }
 
-        Vector3 GetCircleSpawnPosition(int enemyIndex, int totalEnemies)
+        private Vector3 GetCircleSpawnPosition(int enemyIndex, int totalEnemies)
         {
             var center = GetRandomSpawnPosition();
             var angle = (2f * MathF.PI * enemyIndex) / totalEnemies;
@@ -656,7 +506,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             );
         }
 
-        Vector3 GetLineSpawnPosition(int enemyIndex, int totalEnemies)
+        private Vector3 GetLineSpawnPosition(int enemyIndex, int totalEnemies)
         {
             var basePosition = GetRandomSpawnPosition();
             var spacing = SpawnRadius / totalEnemies;
@@ -668,19 +518,19 @@ namespace SASZombieAssaultTD.Engine.Waves
             );
         }
 
-        Vector3 GetClusterSpawnPosition()
+        private Vector3 GetClusterSpawnPosition()
         {
             var center = GetRandomSpawnPosition();
-
             var offset = new Vector3(
-                 (float)_random.Value.NextDouble() * (SpawnRadius * 2) - SpawnRadius,
-                 (float)_random.Value.NextDouble() * (SpawnRadius * 2) - SpawnRadius, 0
-                );
+                (float)_random.NextDouble() * (SpawnRadius * 2) - SpawnRadius,
+                (float)_random.NextDouble() * (SpawnRadius * 2) - SpawnRadius,
+                0
+            );
 
             return center + offset;
         }
 
-        void ApplyVisualModifications(Enemy enemy)
+        private void ApplyVisualModifications(Enemy enemy)
         {
             if (!string.IsNullOrEmpty(EnemySkin))
             {
@@ -692,37 +542,31 @@ namespace SASZombieAssaultTD.Engine.Waves
                 enemy.SetTintColor(TintColor.Value.R / 255f, TintColor.Value.G / 255f, TintColor.Value.B / 255f, TintColor.Value.A / 255f);
             }
 
-            if (Scale.HasValue) enemy.SetScale(Scale.Value);
+            if (Scale.HasValue)
+            {
+                enemy.SetScale(Scale.Value);
+            }
 
             foreach (var effect in VisualEffects)
+            {
                 enemy.AddVisualEffect(effect);
+            }
         }
 
-        /// <summary>
-        /// Apply champion properties to an enemy.
-        /// Uses 20% stat multiplier per champion level for health and damage.
-        /// </summary>
-        void ApplyChampionProperties(Enemy enemy)
+        private void ApplyChampionProperties(Enemy enemy)
         {
             enemy.IsChampion = true;
             // TODO: Add ChampionLevel property to Enemy class
             // enemy.ChampionLevel = ChampionLevel;
 
-            // Champion bonuses (20% per level for stats)
-            var championBonus = GetChampionStatMultiplier();
+            // Champion bonuses
+            var championBonus = 1f + (ChampionLevel * 0.2f);
             enemy.MaxHealth = (int)(enemy.MaxHealth * championBonus);
             enemy.Damage = (int)(enemy.Damage * championBonus);
 
             // Visual champion effects
             // enemy.SetChampionVisuals(); // TODO: implement champion visuals
         }
-
-        /// <summary>
-        /// Get enemy modifiers as a read-only list.
-        /// </summary>
-        /// <returns>Read-only list of behavior modifiers.</returns>
-        internal IReadOnlyList<EnemyBehaviorModifier> GetEnemyModifiers()
-            => BehaviorModifiers?.AsReadOnly();
 
         #endregion
     }
@@ -788,18 +632,20 @@ namespace SASZombieAssaultTD.Engine.Waves
         public float Duration { get; set; }
         public Dictionary<string, object> Parameters { get; set; }
 
-        public EnemyBehaviorModifier() => Parameters = new Dictionary<string, object>();
+        public EnemyBehaviorModifier()
+        {
+            Parameters = new Dictionary<string, object>();
+        }
 
         public void Apply(Enemy enemy)
         {
             var enemyModifier = new Enemies.EnemyBehaviorModifier
             {
-                ModifierType = ModifierType,
-                Value = Value,
-                Duration = Duration,
-                Parameters = Parameters ?? new Dictionary<string, object>()
+                ModifierType = this.ModifierType,
+                Value = this.Value,
+                Duration = this.Duration,
+                Parameters = this.Parameters ?? new Dictionary<string, object>()
             };
-
             enemy.ApplyBehaviorModifier(enemyModifier);
         }
 
@@ -807,10 +653,10 @@ namespace SASZombieAssaultTD.Engine.Waves
         {
             return new EnemyBehaviorModifier
             {
-                ModifierType = ModifierType,
-                Value = Value,
-                Duration = Duration,
-                Parameters = new Dictionary<string, object>(Parameters)
+                ModifierType = this.ModifierType,
+                Value = this.Value,
+                Duration = this.Duration,
+                Parameters = new Dictionary<string, object>(this.Parameters)
             };
         }
     }
@@ -826,18 +672,40 @@ namespace SASZombieAssaultTD.Engine.Waves
         public float Duration { get; set; }
         public Dictionary<string, object> Parameters { get; set; }
 
-        public VisualEffect() => Parameters = new Dictionary<string, object>();
+        public VisualEffect()
+        {
+            Parameters = new Dictionary<string, object>();
+        }
 
         public VisualEffect Clone()
         {
             return new VisualEffect
             {
-                EffectType = EffectType,
-                Color = Color,
-                Intensity = Intensity,
-                Duration = Duration,
-                Parameters = new Dictionary<string, object>(Parameters)
+                EffectType = this.EffectType,
+                Color = this.Color,
+                Intensity = this.Intensity,
+                Duration = this.Duration,
+                Parameters = new Dictionary<string, object>(this.Parameters)
             };
+        }
+
+        /// <summary>
+        /// Game state for wave system.
+        /// </summary>
+        public class GameState
+        {
+            public int PlayerLevel { get; set; }
+            public int BuiltTowers { get; set; }
+            public float GameSpeed { get; set; }
+            public bool IsPaused { get; set; }
+
+            public GameState()
+            {
+                PlayerLevel = 1;
+                BuiltTowers = 0;
+                GameSpeed = 1f;
+                IsPaused = false;
+            }
         }
     }
 }

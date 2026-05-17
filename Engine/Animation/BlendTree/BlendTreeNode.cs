@@ -1,11 +1,5 @@
-// ROLE: Basic blend node for blend tree system.
-// RESPONSIBILITY: Provide common foundation properties and evaluation logic for all node types.
-// TRIGGERS: Instantiated by BlendTree and BlendTreeSerializer during tree construction.
-// INPUTS: Receives blend parameters during evaluation.
-// OUTPUTS: Returns blended animation results through IBlendNode interface.
-// DEPENDENCIES: Implements IBlendNode interface.
-// CONTENTS: BlendTreeNode class with NodeId, DisplayName, Weight properties and Evaluate, 
-//           GetRequiredParameters, Validate, GetDebugInfo methods.
+// File: BlendTreeNode.cs
+// Basic blend node implementation for the canonical BlendTree system
 
 using System;
 using System.Collections.Generic;
