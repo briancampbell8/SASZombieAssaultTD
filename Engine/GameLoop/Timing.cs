@@ -91,7 +91,7 @@ namespace SASZombieAssaultTD.Engine.Systems
             finally
             {
                 _isRunning = false;
-                ModernLoggingSystem.LogInfo($"Game loop completed. Total frames: {_frameCount}, Average frame time: {_averageFrameTime:F4}s, FPS: {FramesPerSecond:F2}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"Game loop completed. Total frames: {_frameCount}, Average frame time: {_averageFrameTime:F4}s, FPS: {FramesPerSecond:F2}");
             }
         }
 
@@ -118,18 +118,18 @@ namespace SASZombieAssaultTD.Engine.Systems
                 // End frame diagnostics
                 _diagnostics.EndFrame();
 
-                ModernLoggingSystem.LogDebug($"Frame processed in {deltaTime:F4}s");
+                Engine.Diagnostics.DebugLogger.LogDebug($"Frame processed in {deltaTime:F4}s");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Frame processing failed: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Frame processing");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Frame processing failed: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Frame processing");
                 _diagnostics.RecordFrameError(ex);
 
                 // Decide whether to continue or shutdown based on error severity
                 if (IsCriticalError(ex))
                 {
-                    ModernLoggingSystem.Log("ERROR", "Critical error detected, shutting down game loop");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Critical error detected, shutting down game loop");
                     _isRunning = false;
                 }
             }

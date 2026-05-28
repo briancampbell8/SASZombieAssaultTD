@@ -48,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         {
             if (_isLoaded) return;
 
-            Console.WriteLine($"Initializing upgrade database for {_towerType}");
+            System.Diagnostics.Debug.WriteLine($"Initializing upgrade database for {_towerType}");
 
             try
             {
@@ -59,11 +59,11 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 BuildLookupTables();
 
                 _isLoaded = true;
-                Console.WriteLine($"Upgrade database initialized for {_towerType} with {_upgrades.Count} upgrades");
+                System.Diagnostics.Debug.WriteLine($"Upgrade database initialized for {_towerType} with {_upgrades.Count} upgrades");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to initialize upgrade database for {_towerType}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to initialize upgrade database for {_towerType}: {ex.Message}");
                 throw;
             }
         }
@@ -189,7 +189,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             }
             _upgradeTypes[upgrade.Type].Add(upgrade);
 
-            Console.WriteLine($"Added upgrade: {upgrade.Name} (Level {upgrade.Level}) to {_towerType}");
+            System.Diagnostics.Debug.WriteLine($"Added upgrade: {upgrade.Name} (Level {upgrade.Level}) to {_towerType}");
             return true;
         }
 
@@ -216,7 +216,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                     }
                 }
 
-                Console.WriteLine($"Removed upgrade: {upgrade.Name} from {_towerType}");
+                System.Diagnostics.Debug.WriteLine($"Removed upgrade: {upgrade.Name} from {_towerType}");
             }
 
             return removed;
@@ -305,12 +305,12 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 var json = JsonSerializer.Serialize(_upgrades, options);
                 File.WriteAllText(_dataPath, json);
 
-                Console.WriteLine($"Saved upgrade database for {_towerType} to {_dataPath}");
+                System.Diagnostics.Debug.WriteLine($"Saved upgrade database for {_towerType} to {_dataPath}");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving upgrade database for {_towerType}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error saving upgrade database for {_towerType}: {ex.Message}");
                 return false;
             }
         }
@@ -325,7 +325,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             {
                 if (!File.Exists(_dataPath))
                 {
-                    Console.WriteLine($"Upgrade database file not found for {_towerType}, creating defaults");
+                    System.Diagnostics.Debug.WriteLine($"Upgrade database file not found for {_towerType}, creating defaults");
                     CreateDefaultUpgrades();
                     return SaveDatabase();
                 }
@@ -349,12 +349,12 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 }
 
                 _isLoaded = true;
-                Console.WriteLine($"Loaded upgrade database for {_towerType} from {_dataPath}");
+                System.Diagnostics.Debug.WriteLine($"Loaded upgrade database for {_towerType} from {_dataPath}");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading upgrade database for {_towerType}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error loading upgrade database for {_towerType}: {ex.Message}");
                 return false;
             }
         }
@@ -377,7 +377,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error exporting upgrade database for {_towerType}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error exporting upgrade database for {_towerType}: {ex.Message}");
                 return string.Empty;
             }
         }
@@ -409,12 +409,12 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 }
 
                 _isLoaded = true;
-                Console.WriteLine($"Imported upgrade database for {_towerType} from JSON");
+                System.Diagnostics.Debug.WriteLine($"Imported upgrade database for {_towerType} from JSON");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error importing upgrade database for {_towerType}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error importing upgrade database for {_towerType}: {ex.Message}");
                 return false;
             }
         }
@@ -429,10 +429,10 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             _upgradeTypes.Clear();
             _isLoaded = false;
 
-            Console.WriteLine($"Cleared all upgrades for {_towerType}");
+            System.Diagnostics.Debug.WriteLine($"Cleared all upgrades for {_towerType}");
         }
 
-        #region Private Methods
+        ///  Private Methods
 
         /// <summary>
         /// Load upgrades from file or create defaults.
@@ -520,7 +520,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             return result;
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

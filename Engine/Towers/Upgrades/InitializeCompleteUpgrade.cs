@@ -26,7 +26,7 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
             {
                 if (tower == null || upgrade == null)
                 {
-                    ModernLoggingSystem.Log("ERROR", "InitializeCompleteUpgrade: Tower or upgrade is null");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "InitializeCompleteUpgrade: Tower or upgrade is null");
                     return false;
                 }
                 
@@ -42,12 +42,12 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
                 // Initialize upgrade effects
                 InitializeUpgradeEffects(tower, upgrade);
                 
-                ModernLoggingSystem.Log("INFO", $"InitializeCompleteUpgrade: Successfully initialized upgrade for tower");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"InitializeCompleteUpgrade: Successfully initialized upgrade for tower");
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"InitializeCompleteUpgrade: Failed to initialize upgrade - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"InitializeCompleteUpgrade: Failed to initialize upgrade - {ex.Message}");
                 return false;
             }
         }
@@ -61,7 +61,7 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
         {
             // Placeholder implementation
             // In real implementation, this would modify tower stats based on upgrade data
-            ModernLoggingSystem.Log("INFO", "InitializeCompleteUpgrade: Applied stat changes");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "InitializeCompleteUpgrade: Applied stat changes");
         }
         
         /// <summary>
@@ -73,7 +73,7 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
         {
             // Placeholder implementation
             // In real implementation, this would modify tower appearance, particles, etc.
-            ModernLoggingSystem.Log("INFO", "InitializeCompleteUpgrade: Applied visual changes");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "InitializeCompleteUpgrade: Applied visual changes");
         }
         
         /// <summary>
@@ -85,7 +85,7 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
         {
             // Placeholder implementation
             // In real implementation, this would modify tower metadata, tags, etc.
-            ModernLoggingSystem.Log("INFO", "InitializeCompleteUpgrade: Applied metadata changes");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "InitializeCompleteUpgrade: Applied metadata changes");
         }
         
         /// <summary>
@@ -97,7 +97,7 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
         {
             // Placeholder implementation
             // In real implementation, this would initialize special effects, abilities, etc.
-            ModernLoggingSystem.Log("INFO", "InitializeCompleteUpgrade: Initialized upgrade effects");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "InitializeCompleteUpgrade: Initialized upgrade effects");
         }
         
         /// <summary>
@@ -118,7 +118,7 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
             {
                 if (tower == null || string.IsNullOrEmpty(upgradeName))
                 {
-                    ModernLoggingSystem.Log("ERROR", "InitializeCompleteUpgrade: Invalid tower or upgrade name");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "InitializeCompleteUpgrade: Invalid tower or upgrade name");
                     return false;
                 }
                 
@@ -136,7 +136,7 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"InitializeCompleteUpgrade: Failed to initialize upgrade with parameters - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"InitializeCompleteUpgrade: Failed to initialize upgrade with parameters - {ex.Message}");
                 return false;
             }
         }

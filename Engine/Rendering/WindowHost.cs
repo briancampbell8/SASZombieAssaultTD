@@ -11,6 +11,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
         private Framebuffer? _framebuffer;
         private bool _disposed;
+        private int windowWidth;
+        private int windowHeight;
+        private IRenderContext _renderContext;
 
         public WindowHost(int width, int height, string title)
         {
@@ -24,14 +27,16 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
         public IRenderContext CreateRenderContext()
         {
-            // Return a Framebuffer-backed render context matching this host's dimensions.
-            // The engine's IRenderContext is implemented by Framebuffer.
-            _framebuffer = new Framebuffer(Width, Height);
+                    
+            _framebuffer = new Framebuffer();
+            _framebuffer.Width = windowWidth;   // Use your actual width variable name here
+            _framebuffer.Height = windowHeight; // Use your actual height variable name here
 
-            ModernLoggingSystem.Log("Info",
-            $"[WindowHost] Created render context ({Width}x{Height}).");
+            
+            _renderContext = (IRenderContext)_framebuffer;
+            return null;
 
-            return _framebuffer;
+          
         }
 
         public void PumpEvents()
@@ -51,7 +56,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _framebuffer = null;
             _disposed = true;
 
-            ModernLoggingSystem.Log("Info",
+            Engine.Diagnostics.DebugLogger.LogDebug("Info",
             "[WindowHost] Disposed.");
         }
     }

@@ -59,7 +59,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             _isInitialized = false;
             _currentInput = inputState;
 
-            Console.WriteLine("UIInputRouter: Initialized");
+            System.Diagnostics.Debug.WriteLine("UIInputRouter: Initialized");
         }
 
         /// <summary>
@@ -72,24 +72,24 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIInputRouter: Cannot register null element");
+                    System.Diagnostics.Debug.WriteLine("UIInputRouter: Cannot register null element");
                     return;
                 }
 
                 if (_elements.Contains(element))
                 {
-                    Console.WriteLine("UIInputRouter: Element already registered");
+                    System.Diagnostics.Debug.WriteLine("UIInputRouter: Element already registered");
                     return;
                 }
 
                 _elements.Add(element);
                 _focusManager.RegisterFocusableElement(element);
 
-                Console.WriteLine($"UIInputRouter: Registered element, total: {_elements.Count}");
+                System.Diagnostics.Debug.WriteLine($"UIInputRouter: Registered element, total: {_elements.Count}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputRouter: Error registering element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputRouter: Error registering element - {ex.Message}");
             }
         }
 
@@ -103,7 +103,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIInputRouter: Cannot unregister null element");
+                    System.Diagnostics.Debug.WriteLine("UIInputRouter: Cannot unregister null element");
                     return;
                 }
 
@@ -124,16 +124,16 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                         element.OnMouseRelease();
                     }
 
-                    Console.WriteLine($"UIInputRouter: Unregistered element, remaining: {_elements.Count}");
+                    System.Diagnostics.Debug.WriteLine($"UIInputRouter: Unregistered element, remaining: {_elements.Count}");
                 }
                 else
                 {
-                    Console.WriteLine("UIInputRouter: Element not found in router");
+                    System.Diagnostics.Debug.WriteLine("UIInputRouter: Element not found in router");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputRouter: Error unregistering element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputRouter: Error unregistering element - {ex.Message}");
             }
         }
 
@@ -149,7 +149,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             {
                 if (!_isInitialized)
                 {
-                    Console.WriteLine("UIInputRouter: Cannot update - not initialized");
+                    System.Diagnostics.Debug.WriteLine("UIInputRouter: Cannot update - not initialized");
                     return;
                 }
 
@@ -167,7 +167,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputRouter: Error during update - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputRouter: Error during update - {ex.Message}");
             }
         }
 
@@ -197,7 +197,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputRouter: Error processing hover changes - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputRouter: Error processing hover changes - {ex.Message}");
             }
         }
 
@@ -237,7 +237,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputRouter: Error processing press changes - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputRouter: Error processing press changes - {ex.Message}");
             }
         }
 
@@ -272,7 +272,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputRouter: Error processing focus changes - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputRouter: Error processing focus changes - {ex.Message}");
             }
         }
 
@@ -299,7 +299,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputRouter: Error getting element at position - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputRouter: Error getting element at position - {ex.Message}");
                 return null;
             }
         }
@@ -313,7 +313,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             {
                 if (_isInitialized)
                 {
-                    Console.WriteLine("UIInputRouter: Already initialized");
+                    System.Diagnostics.Debug.WriteLine("UIInputRouter: Already initialized");
                     return;
                 }
 
@@ -321,11 +321,11 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 _hoveredElement = null;
                 _pressedElement = null;
 
-                Console.WriteLine("UIInputRouter: Initialized successfully");
+                System.Diagnostics.Debug.WriteLine("UIInputRouter: Initialized successfully");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputRouter: Error during initialization - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputRouter: Error during initialization - {ex.Message}");
             }
         }
 
@@ -338,7 +338,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             {
                 if (!_isInitialized)
                 {
-                    Console.WriteLine("UIInputRouter: Already shut down");
+                    System.Diagnostics.Debug.WriteLine("UIInputRouter: Already shut down");
                     return;
                 }
 
@@ -358,11 +358,11 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 _pressedElement = null;
                 _isInitialized = false;
 
-                Console.WriteLine("UIInputRouter: Shut down successfully");
+                System.Diagnostics.Debug.WriteLine("UIInputRouter: Shut down successfully");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputRouter: Error during shutdown - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputRouter: Error during shutdown - {ex.Message}");
             }
         }
 
@@ -376,7 +376,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 // Process input events for all registered elements
                 foreach (var element in _elements)
                 {
-                    if (element.IsActive)
+                    if (element.IsActive())
                     {
                         element.ProcessInput(_currentInput);
                     }
@@ -384,7 +384,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputRouter: Error processing input - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputRouter: Error processing input - {ex.Message}");
             }
         }
 
@@ -403,7 +403,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
         /// <returns>Current key states</returns>
         public bool[] GetKeyStates()
         {
-            return _inputState.KeyStates;
+            return (bool[])_inputState.KeyStates();
         }
 
         /// <summary>
@@ -435,7 +435,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputRouter: Error setting enabled state - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputRouter: Error setting enabled state - {ex.Message}");
             }
         }
 

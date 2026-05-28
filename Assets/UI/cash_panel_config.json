@@ -1,0 +1,26 @@
+{
+  "panel": {
+    "x": 100,
+    "y": 540,
+    "width": 75,
+    "height": 22,
+    "layer": 998
+  },
+  "crosshair": {
+    "centerX": 122,
+    "centerY": 553,
+    "armLength": 8,
+    "thickness": 2,
+    "color": {
+      "r": 220,
+      "g": 20,
+      "b": 60,
+      "a": 255
+    },
+    "useFlashColor": true
+  },
+  "colors": {
+    "backgroundAlpha": 0.85,
+    "backgroundDarkness": 0.18
+  }
+}

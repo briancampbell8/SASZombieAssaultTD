@@ -38,7 +38,7 @@ namespace SASZombieAssaultTD.Engine.Components
     /// </summary>
     public class SpriteComponent : BaseComponent
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Texture or sprite asset ID for RSManager lookup.
@@ -85,9 +85,9 @@ namespace SASZombieAssaultTD.Engine.Components
         /// </summary>
         public bool IsVisible { get; set; } = true;
 
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
 
         /// <summary>
         /// Creates a new SpriteComponent with default values.
@@ -129,9 +129,9 @@ namespace SASZombieAssaultTD.Engine.Components
         {
         }
 
-        #endregion
+        /// 
 
-        #region Methods
+        ///  Methods
 
         /// <summary>
         /// Toggles the visibility of the sprite.
@@ -161,7 +161,7 @@ namespace SASZombieAssaultTD.Engine.Components
             return $"SpriteComponent(Asset: {AssetId}, Layer: {LayerDepth}, Visible: {IsVisible})";
         }
 
-        #endregion
+        /// 
     }
 }
 

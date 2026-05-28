@@ -21,7 +21,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
     /// </summary>
     public sealed class FrameStats
     {
-        #region Public Properties
+        ///  Public Properties
 
         /// <summary>
         /// Total number of frames rendered since startup.
@@ -33,16 +33,16 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         /// </summary>
         public float FramesPerSecond { get; private set; }
 
-        #endregion
+        /// 
 
-        #region Private Fields
+        ///  Private Fields
 
         private float _accumulatedTime;
         private int _framesThisSecond;
 
-        #endregion
+        /// 
 
-        #region Public Methods
+        ///  Public Methods
 
         /// <summary>
         /// Call once per frame with the elapsed time (in seconds) since the previous frame.
@@ -74,9 +74,9 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             ResetFrameAccumulator();
         }
 
-        #endregion
+        /// 
 
-        #region Private Methods
+        ///  Private Methods
 
         /// <summary>
         /// Resets the frame accumulator used for FPS calculation.
@@ -87,7 +87,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             _framesThisSecond = 0;
         }
 
-        #endregion
+        /// 
     }
 }
 

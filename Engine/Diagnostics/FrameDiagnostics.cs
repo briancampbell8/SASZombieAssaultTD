@@ -10,7 +10,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
     /// </summary>
     public class FrameDiagnostics
     {
-        #region Public Properties
+        ///  Public Properties
 
         /// <summary>
         /// Gets the current frames per second.
@@ -47,9 +47,9 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         /// </summary>
         public float TotalTime { get; private set; }
 
-        #endregion
+        /// 
 
-        #region Private Fields
+        ///  Private Fields
 
         private float _fpsAccumulator;
         private int _fpsFrameCount;
@@ -61,9 +61,9 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         private const int HistorySize = 1000;
         private const int RecentFrameCount = 60; // Last 60 frames for rolling average
 
-        #endregion
+        /// 
 
-        #region Constructor
+        ///  Constructor
 
         /// <summary>
         /// Initializes a new instance of the FrameDiagnostics class.
@@ -75,9 +75,9 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             Reset();
         }
 
-        #endregion
+        /// 
 
-        #region Public Methods
+        ///  Public Methods
 
         /// <summary>
         /// Updates frame metrics based on the current frame.
@@ -171,7 +171,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             _frameTimeHistory.Clear();
             _recentFrameTimes.Clear();
 
-            ModernLoggingSystem.Log("INFO", "FrameDiagnostics reset");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "FrameDiagnostics reset");
         }
 
         /// <summary>
@@ -194,9 +194,9 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             return CurrentFPS >= targetFPS * 0.9f && AverageFrameTimeMs <= maxFrameTimeMs * 1.1f;
         }
 
-        #endregion
+        /// 
 
-        #region Private Methods
+        ///  Private Methods
 
         private void UpdateFrameTimeStatistics(float frameTimeMs)
         {
@@ -267,7 +267,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             return variance / count;
         }
 
-        #endregion
+        /// 
     }
 }
 

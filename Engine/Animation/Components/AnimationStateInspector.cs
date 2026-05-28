@@ -39,12 +39,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             lock (_inspectorLock)
             {
-                ModernLoggingSystem.Log("INFO", "Initializing AnimationStateInspector...");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "Initializing AnimationStateInspector...");
                 _stateSnapshots.Clear();
                 _transitionHistories.Clear();
                 _isEnabled = true;
                 _startTime = DateTime.Now;
-                ModernLoggingSystem.Log("INFO", "AnimationStateInspector initialized successfully");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "AnimationStateInspector initialized successfully");
             }
         }
 
@@ -52,12 +52,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             lock (_inspectorLock)
             {
-                ModernLoggingSystem.Log("INFO", "Shutting down AnimationStateInspector...");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "Shutting down AnimationStateInspector...");
                 GenerateFinalReport();
                 _stateSnapshots.Clear();
                 _transitionHistories.Clear();
                 _isEnabled = false;
-                ModernLoggingSystem.Log("INFO", "AnimationStateInspector shutdown completed");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "AnimationStateInspector shutdown completed");
             }
         }
 
@@ -100,7 +100,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 }
                 catch (Exception ex)
                 {
-                    ModernLoggingSystem.Log("ERROR", $"Failed to get state info for entity {entityId}: {ex.Message}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to get state info for entity {entityId}: {ex.Message}");
                     return null;
                 }
             }
@@ -180,7 +180,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 }
                 catch (Exception ex)
                 {
-                    ModernLoggingSystem.Log("ERROR", $"Failed to get parameter info for entity {entityId}: {ex.Message}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to get parameter info for entity {entityId}: {ex.Message}");
                     return null;
                 }
             }
@@ -209,7 +209,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 }
                 catch (Exception ex)
                 {
-                    ModernLoggingSystem.Log("ERROR", $"Failed to get blend weight info for entity {entityId}: {ex.Message}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to get blend weight info for entity {entityId}: {ex.Message}");
                     return null;
                 }
             }
@@ -220,7 +220,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             lock (_inspectorLock)
             {
                 _isEnabled = enabled;
-                ModernLoggingSystem.LogInfo($"Animation state inspection {(enabled ? "enabled" : "disabled")}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"Animation state inspection {(enabled ? "enabled" : "disabled")}");
             }
         }
 
@@ -231,7 +231,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 _stateSnapshots.Clear();
                 _transitionHistories.Clear();
                 _startTime = DateTime.Now;
-                ModernLoggingSystem.LogInfo("Animation state inspection data cleared");
+                Engine.Diagnostics.DebugLogger.LogInfo("Animation state inspection data cleared");
             }
         }
 
@@ -258,15 +258,15 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             try
             {
                 var stats = GetStats();
-                ModernLoggingSystem.Log("INFO", "Animation state inspector final report:");
-                ModernLoggingSystem.Log("INFO", $"  Total run time: {stats.TotalRunTime:F2}s");
-                ModernLoggingSystem.Log("INFO", $"  Inspected entities: {stats.InspectedEntityCount}");
-                ModernLoggingSystem.Log("INFO", $"  Total transition records: {stats.TotalTransitionRecords}");
-                ModernLoggingSystem.Log("INFO", $"  Average transitions per entity: {stats.AverageTransitionsPerEntity:F2}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "Animation state inspector final report:");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"  Total run time: {stats.TotalRunTime:F2}s");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"  Inspected entities: {stats.InspectedEntityCount}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"  Total transition records: {stats.TotalTransitionRecords}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"  Average transitions per entity: {stats.AverageTransitionsPerEntity:F2}");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Failed to generate final report: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to generate final report: {ex.Message}");
             }
         }
     }

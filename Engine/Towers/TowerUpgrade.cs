@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Economy;
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Towers
 {
@@ -43,6 +44,9 @@ namespace SASZombieAssaultTD.Engine.Towers
     /// </summary>
     public class TowerUpgrade
     {
+        private object TheContainingType;
+        private object TheContainingMember;
+
         public UpgradeType Type { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -330,31 +334,50 @@ namespace SASZombieAssaultTD.Engine.Towers
 
         internal bool IsAvailableForLevel(int towerLevel, int playerLevel)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         internal bool CanPurchase(int playerCash, int towerLevel)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         internal bool Purchase(int playerCash)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         internal void ApplyToTower(Tower tower)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         internal void RemoveFromTower(Tower tower)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         internal object GetEfficiencyRating()
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
+
+        internal void SetVisualProperties(object value1, Color white, object value2, object value3)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
     }

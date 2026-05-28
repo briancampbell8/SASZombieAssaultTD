@@ -19,7 +19,7 @@ namespace SASZombieAssaultTD.Engine.Serialization
     /// </summary>
     public static class KeyValuePairExtensions
     {
-        #region JSON Serialization Extensions
+        ///  JSON Serialization Extensions
 
         /// <summary>
         /// Serializes a KeyValuePair to JSON string format.
@@ -85,9 +85,9 @@ namespace SASZombieAssaultTD.Engine.Serialization
             }
         }
 
-        #endregion
+        /// 
 
-        #region Binary Serialization Extensions
+        ///  Binary Serialization Extensions
 
         /// <summary>
         /// Serializes a KeyValuePair to a byte array for binary storage.
@@ -156,9 +156,9 @@ namespace SASZombieAssaultTD.Engine.Serialization
             }
         }
 
-        #endregion
+        /// 
 
-        #region Utility Extensions
+        ///  Utility Extensions
 
         /// <summary>
         /// Creates a deep copy of a KeyValuePair with serialized values.
@@ -203,9 +203,9 @@ namespace SASZombieAssaultTD.Engine.Serialization
             return HashCode.Combine(keyHash, valueHash);
         }
 
-        #endregion
+        /// 
 
-        #region Private Helper Methods
+        ///  Private Helper Methods
 
         /// <summary>
         /// Serializes an object to binary format.
@@ -277,7 +277,7 @@ namespace SASZombieAssaultTD.Engine.Serialization
             }
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

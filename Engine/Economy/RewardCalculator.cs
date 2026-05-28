@@ -45,7 +45,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _enemyKillRewards = new Dictionary<EnemyType, int>();
             _waveCompletionBonuses = new Dictionary<string, int>();
             InitializeRewardTables();
-            ModernLoggingSystem.Log("INFO", "RewardCalculator: Initialized with reward tables");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "RewardCalculator: Initialized with reward tables");
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace SASZombieAssaultTD.Engine.Economy
                 _waveCompletionBonuses[$"wave_{i}"] = bonus;
             }
 
-            ModernLoggingSystem.Log("INFO", $"RewardCalculator: Initialized {_enemyKillRewards.Count} enemy rewards and {_waveCompletionBonuses.Count} wave bonuses");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RewardCalculator: Initialized {_enemyKillRewards.Count} enemy rewards and {_waveCompletionBonuses.Count} wave bonuses");
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             var waveMultiplier = 1.0f + (waveNumber * 0.1f);
             var finalReward = (int)(baseReward * _parameters.DifficultyMultiplier * waveMultiplier * performanceScore);
 
-            ModernLoggingSystem.Log("DEBUG", $"RewardCalculator: Kill reward for {enemyType} = {finalReward} (base: {baseReward}, wave: {waveMultiplier:F2}, performance: {performanceScore:F2})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"RewardCalculator: Kill reward for {enemyType} = {finalReward} (base: {baseReward}, wave: {waveMultiplier:F2}, performance: {performanceScore:F2})");
             return finalReward;
         }
 
@@ -117,7 +117,7 @@ namespace SASZombieAssaultTD.Engine.Economy
 
             var finalBonus = (int)(baseBonus * totalMultiplier);
 
-            ModernLoggingSystem.Log("DEBUG", $"RewardCalculator: Wave bonus for wave {waveNumber} = {finalBonus} (base: {baseBonus}, performance: {completionBonus:F2}, survival: {survivalBonus:F2})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"RewardCalculator: Wave bonus for wave {waveNumber} = {finalBonus} (base: {baseBonus}, performance: {completionBonus:F2}, survival: {survivalBonus:F2})");
             return finalBonus;
         }
 
@@ -130,7 +130,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             var difficultyBonus = 1.0f + (difficultyLevel * 0.2f);
             var finalReward = (int)(baseReward * difficultyBonus * _parameters.DifficultyMultiplier);
 
-            ModernLoggingSystem.Log("DEBUG", $"RewardCalculator: Achievement reward for {achievementId} = {finalReward} (base: {baseReward}, difficulty: {difficultyLevel})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"RewardCalculator: Achievement reward for {achievementId} = {finalReward} (base: {baseReward}, difficulty: {difficultyLevel})");
             return finalReward;
         }
 
@@ -145,7 +145,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             var comboMultiplier = System.Math.Min(5.0f, 1.0f + (comboCount * 0.25f));
             var comboReward = (int)(baseKillReward * comboMultiplier * _parameters.ComboMultiplier);
 
-            ModernLoggingSystem.Log("DEBUG", $"RewardCalculator: Combo reward for {comboCount}x combo = {comboReward}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"RewardCalculator: Combo reward for {comboCount}x combo = {comboReward}");
             return comboReward;
         }
 
@@ -158,7 +158,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             var livesBonus = livesLost == 0 ? 1.2f : (1.0f - (float)livesLost / startingLives * 0.3f);
             var performanceBonus = timeBonus * livesBonus * _parameters.PerformanceBonus;
 
-            ModernLoggingSystem.Log("DEBUG", $"RewardCalculator: Performance bonus = {performanceBonus:F2} (time: {timeBonus:F2}, lives: {livesBonus:F2})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"RewardCalculator: Performance bonus = {performanceBonus:F2} (time: {timeBonus:F2}, lives: {livesBonus:F2})");
             return performanceBonus;
         }
 
@@ -169,7 +169,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _parameters = parameters;
             OnParametersChanged?.Invoke(_parameters);
-            ModernLoggingSystem.Log("INFO", $"RewardCalculator: Updated parameters - Difficulty: {parameters.DifficultyMultiplier:F2}, Wave: {parameters.WaveMultiplier:F2}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RewardCalculator: Updated parameters - Difficulty: {parameters.DifficultyMultiplier:F2}, Wave: {parameters.WaveMultiplier:F2}");
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _parameters.DifficultyMultiplier = System.Math.Max(0.1f, multiplier);
             OnParametersChanged?.Invoke(_parameters);
-            ModernLoggingSystem.Log("INFO", $"RewardCalculator: Set difficulty multiplier to {_parameters.DifficultyMultiplier:F2}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RewardCalculator: Set difficulty multiplier to {_parameters.DifficultyMultiplier:F2}");
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         public void SetEnemyKillReward(EnemyType enemyType, int reward)
         {
             _enemyKillRewards[enemyType] = reward;
-            ModernLoggingSystem.Log("INFO", $"RewardCalculator: Set {enemyType} kill reward to {reward}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RewardCalculator: Set {enemyType} kill reward to {reward}");
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _parameters = new RewardParameters();
             InitializeRewardTables();
             OnParametersChanged?.Invoke(_parameters);
-            ModernLoggingSystem.Log("INFO", "RewardCalculator: Reset to default parameters");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "RewardCalculator: Reset to default parameters");
         }
     }
 }

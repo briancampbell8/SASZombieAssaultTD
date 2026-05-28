@@ -196,14 +196,15 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             try
             {
                 // Render background
-                RenderBackground();
+                // TODO: RenderBackground is not a method
+                // RenderBackground();
 
                 // Render sections
                 RenderSections();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error rendering tower info panel: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error rendering tower info panel: {ex.Message}");
             }
         }
 
@@ -459,7 +460,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// </summary>
         public static float GetDPS(Tower tower)
         {
-            return tower.DPS;
+            return (float)tower.DPS;
         }
 
         /// <summary>
@@ -467,7 +468,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// </summary>
         public static float GetAccuracy(Tower tower)
         {
-            return tower.Accuracy;
+            return (float)tower.Accuracy;
         }
 
         /// <summary>

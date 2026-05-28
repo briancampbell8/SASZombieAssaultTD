@@ -1,10 +1,38 @@
+/* ====================================================================================================
+ *  FILE: LoggingSystemMonitor.cs
+ *  PATH: Engine/Core/LoggingSystemMonitor.cs
+ *  SUBSYSTEM: Diagnostics
+ *  ROLE: Public façade for logging subsystem health evaluation and status reporting.
+ *
+ *  RESPONSIBILITIES:
+ *      - Expose public API for checking logging system health.
+ *      - Retrieve monitoring statistics from DiagnosticsMonitor.
+ *      - Provide formatted status strings for runtime display or debugging.
+ *      - Attempt automatic recovery when emergency-stop is active.
+ *      - Supply detailed monitoring data for diagnostic tools.
+ *
+ *  NON-RESPONSIBILITIES:
+ *      - Log routing, formatting, or sink management (handled by DebugLogger).
+ *      - Monitoring state storage or threshold evaluation (handled by DiagnosticsMonitor).
+ *      - External reporting, serialization, or UI rendering.
+ *
+ *  ARCHITECTURAL NOTES:
+ *      - All monitoring data originates from DiagnosticsMonitor.
+ *      - DebugLogger must not expose monitoring APIs.
+ *      - Emergency-stop recovery delegates to DiagnosticsMonitor.ResetEmergencyStop().
+ *      - This façade must remain stateless and deterministic.
+ * ==================================================================================================== */
+
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using System;
+using System.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Core
 {
     /// <summary>
-    /// Logging system health monitor for runtime monitoring.
-    /// Provides easy access to logging system status and health checks.
+    /// Provides runtime health monitoring accessors for the logging subsystem.
+    /// Wraps DiagnosticsMonitor to expose simplified health evaluation and status reporting.
     /// </summary>
     public static class LoggingSystemMonitor
     {
@@ -14,7 +42,7 @@ namespace SASZombieAssaultTD.Engine.Core
         /// <returns>True if system is healthy, false if emergency stop is active.</returns>
         public static bool IsHealthy()
         {
-            var (isEmergencyStop, _, _) = ModernLoggingSystem.GetMonitoringStats();
+            var (isEmergencyStop, _, _) = DiagnosticsMonitor.GetMonitoringStats();
             return !isEmergencyStop;
         }
 
@@ -24,23 +52,17 @@ namespace SASZombieAssaultTD.Engine.Core
         /// <returns>Status information about the logging system.</returns>
         public static string GetStatus()
         {
-            var (isEmergencyStop, logsPerSecond, duplicateErrors) = ModernLoggingSystem.GetMonitoringStats();
-            
+            var (isEmergencyStop, logsPerSecond, duplicateErrors) = DiagnosticsMonitor.GetMonitoringStats();
+
             if (isEmergencyStop)
-            {
                 return "🚨 EMERGENCY STOP ACTIVE - Logging system has been halted due to abnormal conditions";
-            }
-            
+
             if (logsPerSecond > 500)
-            {
                 return $"⚠️ WARNING - High log volume: {logsPerSecond} logs/sec, {duplicateErrors} duplicate errors (approaching emergency stop)";
-            }
-            
+
             if (duplicateErrors > 5)
-            {
                 return $"⚠️ WARNING - Multiple duplicate errors: {logsPerSecond} logs/sec, {duplicateErrors} duplicate errors (approaching emergency stop)";
-            }
-            
+
             return $"✅ Healthy - {logsPerSecond} logs/sec, {duplicateErrors} duplicate errors";
         }
 
@@ -50,33 +72,27 @@ namespace SASZombieAssaultTD.Engine.Core
         /// <returns>True if system is healthy or was successfully recovered.</returns>
         public static bool PerformHealthCheck()
         {
-            var (isEmergencyStop, logsPerSecond, duplicateErrors) = ModernLoggingSystem.GetMonitoringStats();
-            
-            if (isEmergencyStop)
+            var (isEmergencyStop, logsPerSecond, duplicateErrors) = DiagnosticsMonitor.GetMonitoringStats();
+
+            if (!isEmergencyStop)
+                return true;
+
+            DebugLogger.LogError(
+                $"LoggingSystemMonitor: Emergency stop detected - attempting recovery. " +
+                $"Logs/sec: {logsPerSecond}, Duplicates: {duplicateErrors}");
+
+            DiagnosticsMonitor.ResetEmergencyStop();
+
+            var (stillEmergency, _, _) = DiagnosticsMonitor.GetMonitoringStats();
+
+            if (!stillEmergency)
             {
-                // Log the health check attempt (this will work since it's critical)
-                ModernLoggingSystem.Log(ModernLoggingSystem.LogLevel.Critical, "HEALTH_CHECK", 
-                    $"Emergency stop detected - attempting recovery: {logsPerSecond} logs/sec, {duplicateErrors} duplicates");
-                
-                // Attempt recovery
-                ModernLoggingSystem.ResetEmergencyStop();
-                
-                // Check if recovery worked
-                var (stillEmergency, _, _) = ModernLoggingSystem.GetMonitoringStats();
-                if (!stillEmergency)
-                {
-                    ModernLoggingSystem.Log(ModernLoggingSystem.LogLevel.Info, "HEALTH_CHECK", 
-                        "Emergency stop successfully cleared - logging system recovered");
-                    return true;
-                }
-                else
-                {
-                    Console.WriteLine("❌ Failed to recover logging system - manual intervention required");
-                    return false;
-                }
+                DebugLogger.LogInfo("LoggingSystemMonitor: Emergency stop cleared - system recovered");
+                return true;
             }
-            
-            return true;
+
+            DebugLogger.LogError("LoggingSystemMonitor: Recovery failed - manual intervention required");
+            return false;
         }
 
         /// <summary>
@@ -84,9 +100,9 @@ namespace SASZombieAssaultTD.Engine.Core
         /// </summary>
         public static (bool IsHealthy, int LogsPerSecond, int DuplicateErrors, string Status) GetDetailedStats()
         {
-            var (isEmergencyStop, logsPerSecond, duplicateErrors) = ModernLoggingSystem.GetMonitoringStats();
+            var (isEmergencyStop, logsPerSecond, duplicateErrors) = DiagnosticsMonitor.GetMonitoringStats();
             var status = GetStatus();
-            
+
             return (!isEmergencyStop, (int)logsPerSecond, (int)duplicateErrors, status);
         }
     }

@@ -18,6 +18,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         private bool _isTransitioning;
         private float _transitionTimer;
         private float _transitionDuration;
+        internal string GameStateType;
 
         /// <summary>
         /// Gets currently active scene.
@@ -69,7 +70,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         public void SetTransitionDuration(float duration)
         {
             _transitionDuration = System.Math.Max(0.1f, duration);
-            ModernLoggingSystem.Log("INFO", $"SceneManager: Transition duration set to {_transitionDuration:F2}s");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneManager: Transition duration set to {_transitionDuration:F2}s");
         }
 
         /// <summary>
@@ -81,20 +82,20 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (string.IsNullOrEmpty(sceneName))
             {
-                ModernLoggingSystem.Log("ERROR", "SceneManager: Cannot load scene with null or empty name");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "SceneManager: Cannot load scene with null or empty name");
                 return null;
             }
 
             if (_loadedScenes.ContainsKey(sceneName))
             {
-                ModernLoggingSystem.Log("WARNING", $"SceneManager: Scene '{sceneName}' is already loaded");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"SceneManager: Scene '{sceneName}' is already loaded");
                 return _loadedScenes[sceneName];
             }
 
             BaseScene? scene = CreateScene(sceneName);
             if (scene == null)
             {
-                ModernLoggingSystem.Log("ERROR", $"SceneManager: Failed to create scene '{sceneName}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Failed to create scene '{sceneName}'");
                 return null;
             }
 
@@ -105,12 +106,12 @@ namespace SASZombieAssaultTD.Engine.Scenes
 
                 _loadedScenes[sceneName] = scene;
 
-                ModernLoggingSystem.Log("INFO", $"SceneManager: Successfully loaded scene '{sceneName}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneManager: Successfully loaded scene '{sceneName}'");
                 return scene;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"SceneManager: Exception loading scene '{sceneName}': {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Exception loading scene '{sceneName}': {ex.Message}");
                 return null;
             }
         }
@@ -124,19 +125,19 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (string.IsNullOrEmpty(sceneName))
             {
-                ModernLoggingSystem.Log("ERROR", "SceneManager: Cannot unload scene with null or empty name");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "SceneManager: Cannot unload scene with null or empty name");
                 return false;
             }
 
             if (!_loadedScenes.ContainsKey(sceneName))
             {
-                ModernLoggingSystem.Log("WARNING", $"SceneManager: Scene '{sceneName}' is not loaded");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"SceneManager: Scene '{sceneName}' is not loaded");
                 return false;
             }
 
             if (_currentScene != null && GetSceneName(_currentScene) == sceneName)
             {
-                ModernLoggingSystem.Log("ERROR", $"SceneManager: Cannot unload active scene '{sceneName}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Cannot unload active scene '{sceneName}'");
                 return false;
             }
 
@@ -147,12 +148,12 @@ namespace SASZombieAssaultTD.Engine.Scenes
 
                 _loadedScenes.Remove(sceneName);
 
-                ModernLoggingSystem.Log("INFO", $"SceneManager: Successfully unloaded scene '{sceneName}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneManager: Successfully unloaded scene '{sceneName}'");
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"SceneManager: Exception unloading scene '{sceneName}': {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Exception unloading scene '{sceneName}': {ex.Message}");
                 return false;
             }
         }
@@ -166,14 +167,14 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (_isTransitioning)
             {
-                ModernLoggingSystem.Log("WARNING", "SceneManager: Cannot switch scenes during transition");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "SceneManager: Cannot switch scenes during transition");
                 return false;
             }
 
             var nextScene = LoadScene(sceneName);
             if (nextScene == null)
             {
-                ModernLoggingSystem.Log("ERROR", $"SceneManager: Failed to load scene '{sceneName}' for transition");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Failed to load scene '{sceneName}' for transition");
                 return false;
             }
 
@@ -190,7 +191,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             var scene = LoadScene(sceneName);
             if (scene == null)
             {
-                ModernLoggingSystem.Log("ERROR", $"SceneManager: Failed to load scene '{sceneName}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Failed to load scene '{sceneName}'");
                 return false;
             }
 
@@ -202,7 +203,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
 
             // Set new current scene
             _currentScene = scene;
-            ModernLoggingSystem.Log("INFO", $"SceneManager: Set scene to '{sceneName}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneManager: Set scene to '{sceneName}'");
             return true;
         }
 
@@ -226,7 +227,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (_isTransitioning)
             {
-                ModernLoggingSystem.Log("WARNING", "SceneManager: Cannot start transition - already in progress");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "SceneManager: Cannot start transition - already in progress");
                 return false;
             }
 
@@ -237,7 +238,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             var fromSceneName = fromScene != null ? GetSceneName(fromScene) : "None";
             var toSceneName = GetSceneName(toScene);
 
-            ModernLoggingSystem.Log("INFO", $"SceneManager: Starting transition from '{fromSceneName}' to '{toSceneName}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneManager: Starting transition from '{fromSceneName}' to '{toSceneName}'");
 
             // Fire transition started event
             OnSceneTransitionStarted?.Invoke(fromSceneName, toSceneName);
@@ -286,7 +287,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             var fromSceneName = _currentScene != null ? GetSceneName(_currentScene) : "None";
             var toSceneName = GetSceneName(_nextScene);
 
-            ModernLoggingSystem.Log("INFO", $"SceneManager: Completing transition from '{fromSceneName}' to '{toSceneName}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneManager: Completing transition from '{fromSceneName}' to '{toSceneName}'");
 
             // Clean up current scene
             if (_currentScene != null)
@@ -326,7 +327,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
                     return new PauseScene();
 
                 default:
-                    ModernLoggingSystem.Log("ERROR", $"SceneManager: Unknown scene type '{sceneName}'");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Unknown scene type '{sceneName}'");
                     return null;
             }
         }
@@ -377,7 +378,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// </summary>
         public void Cleanup()
         {
-            ModernLoggingSystem.Log("INFO", "SceneManager: Cleaning up all scenes");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneManager: Cleaning up all scenes");
 
             // Cleanup all loaded scenes
             foreach (var kvp in _loadedScenes)

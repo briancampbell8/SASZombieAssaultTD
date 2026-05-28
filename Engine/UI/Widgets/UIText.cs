@@ -27,7 +27,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 {
                     _text = value ?? string.Empty;
                     InvalidateLayout();
-                    Console.WriteLine($"UIText: Text set to '{_text}'");
+                    System.Diagnostics.Debug.WriteLine($"UIText: Text set to '{_text}'");
                 }
             }
         }
@@ -44,7 +44,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 {
                     _font = value ?? string.Empty;
                     InvalidateLayout();
-                    Console.WriteLine($"UIText: Font set to '{_font}'");
+                    System.Diagnostics.Debug.WriteLine($"UIText: Font set to '{_font}'");
                 }
             }
         }
@@ -60,7 +60,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 if (_color != value)
                 {
                     _color = value;
-                    Console.WriteLine($"UIText: Color set to {_color}");
+                    System.Diagnostics.Debug.WriteLine($"UIText: Color set to {_color}");
                 }
             }
         }
@@ -77,7 +77,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 {
                     _fontSize = System.Math.Max(1.0f, value);
                     InvalidateLayout();
-                    Console.WriteLine($"UIText: Font size set to {_fontSize}");
+                    System.Diagnostics.Debug.WriteLine($"UIText: Font size set to {_fontSize}");
                 }
             }
         }
@@ -94,7 +94,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 {
                     _wordWrap = value;
                     InvalidateLayout();
-                    Console.WriteLine($"UIText: Word wrap set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIText: Word wrap set to {value}");
                 }
             }
         }
@@ -111,7 +111,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 {
                     _alignment = value;
                     InvalidateLayout();
-                    Console.WriteLine($"UIText: Alignment set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIText: Alignment set to {value}");
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         /// </summary>
         public UIText() : base()
         {
-            Console.WriteLine("UIText: Created new text element");
+            System.Diagnostics.Debug.WriteLine("UIText: Created new text element");
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         public UIText(string text) : this()
         {
             Text = text;
-            Console.WriteLine($"UIText: Created text element with '{text}'");
+            System.Diagnostics.Debug.WriteLine($"UIText: Created text element with '{text}'");
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIText: Error calculating text size - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIText: Error calculating text size - {ex.Message}");
                 return new System.Drawing.SizeF(100, 20); // Default size
             }
         }
@@ -172,7 +172,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIText: Error during update - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIText: Error during update - {ex.Message}");
             }
         }
 
@@ -210,7 +210,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIText: Error during render - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIText: Error during render - {ex.Message}");
             }
         }
 
@@ -240,7 +240,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         {
             // Override in derived classes for actual text rendering
             // For now, just log the text
-            Console.WriteLine($"UIText: Rendering text '{_text}' at {AbsolutePosition}");
+            System.Diagnostics.Debug.WriteLine($"UIText: Rendering text '{_text}' at {AbsolutePosition}");
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         {
             // Override in derived classes for custom border rendering
             // For now, just log the border
-            Console.WriteLine($"UIText: Rendering border for text at {AbsolutePosition}");
+            System.Diagnostics.Debug.WriteLine($"UIText: Rendering border for text at {AbsolutePosition}");
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SASZombieAssaultTD.Engine.UI
     /// </summary>
     public class GameOverUI
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Whether the game over UI is visible.
@@ -29,9 +29,9 @@ namespace SASZombieAssaultTD.Engine.UI
         /// </summary>
         public string Message { get; set; } = string.Empty;
 
-        #endregion
+        /// 
 
-        #region Events
+        ///  Events
 
         /// <summary>
         /// Event triggered when retry is selected.
@@ -48,9 +48,9 @@ namespace SASZombieAssaultTD.Engine.UI
         /// </summary>
         public event Action OnHighScores;
 
-        #endregion
+        /// 
 
-        #region Constructor
+        ///  Constructor
 
         /// <summary>
         /// Creates a new GameOverUI instance.
@@ -60,9 +60,9 @@ namespace SASZombieAssaultTD.Engine.UI
             IsVisible = false;
         }
 
-        #endregion
+        /// 
 
-        #region Public Methods
+        ///  Public Methods
 
         /// <summary>
         /// Shows the game over screen with specified message.
@@ -130,6 +130,6 @@ namespace SASZombieAssaultTD.Engine.UI
             IsVisible = true;
         }
 
-        #endregion
+        /// 
     }
 }

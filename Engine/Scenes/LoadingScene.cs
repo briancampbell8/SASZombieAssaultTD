@@ -54,7 +54,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// </summary>
         public override void OnEnter()
         {
-            ModernLoggingSystem.Log("INFO", "LoadingScene.OnEnter: Loading scene started");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "LoadingScene.OnEnter: Loading scene started");
             _loadingTime = 0f;
             _readyToTransition = false;
 
@@ -68,7 +68,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// </summary>
         public override void OnExit()
         {
-            ModernLoggingSystem.Log("INFO", "LoadingScene.OnExit: Loading scene completed");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "LoadingScene.OnExit: Loading scene completed");
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             // Check if minimum loading duration has passed and we're ready to transition
             if (_loadingTime >= _minLoadingDuration && _readyToTransition && _targetScene != null)
             {
-                ModernLoggingSystem.Log("INFO", "LoadingScene.OnUpdate: Transitioning to target scene");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "LoadingScene.OnUpdate: Transitioning to target scene");
                 SceneManager?.QueueScene(_targetScene.GetType().Name);
             }
         }
@@ -175,7 +175,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             // - Perform any required async operations
 
             // For now, we'll simulate a brief loading period
-            ModernLoggingSystem.Log("INFO", "LoadingScene.SimulateLoadingWork: Simulating asset loading");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "LoadingScene.SimulateLoadingWork: Simulating asset loading");
 
             // Mark as ready after a brief simulation
             // In a real async implementation, this would be called when loading actually completes
@@ -183,7 +183,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             {
                 await System.Threading.Tasks.Task.Delay(500); // 500ms simulation
                 _readyToTransition = true;
-                ModernLoggingSystem.Log("INFO", "LoadingScene.SimulateLoadingWork: Loading simulation complete");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "LoadingScene.SimulateLoadingWork: Loading simulation complete");
             });
         }
 

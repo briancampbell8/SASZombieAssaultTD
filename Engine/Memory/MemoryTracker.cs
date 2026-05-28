@@ -100,7 +100,7 @@ namespace SASZombieAssaultTD.Engine.Memory
             _snapshots = new List<MemorySnapshot>();
             _maxSnapshots = 100;
 
-            ModernLoggingSystem.Log("INFO", "MemoryTracker: Initialized");
+            Engine.Diagnostics.DebugLogger.Log("INFO", "MemoryTracker: Initialized");
         }
 
         /// <summary>
@@ -127,12 +127,17 @@ namespace SASZombieAssaultTD.Engine.Memory
                 Interlocked.Increment(ref _allocationCount);
 
                 var typeInfo = _typeInfo.GetOrAdd(type, _ => new TypeMemoryInfo { Type = type });
-                Interlocked.Add(ref typeInfo.TotalAllocated, size);
-                Interlocked.Increment(ref typeInfo.AllocationCount);
+
+                // Fixes CS0206 on Lines 130 & 131: Use lock for thread-safe property modification
+                lock (typeInfo)
+                {
+                    typeInfo.TotalAllocated += size;
+                    typeInfo.AllocationCount++;
+                }
 
                 UpdatePeakMemoryUsage();
 
-                ModernLoggingSystem.Log("TRACE", $"MemoryTracker: Tracked allocation {id} ({size} bytes, {type.Name})");
+                Engine.Diagnostics.DebugLogger.Log("TRACE", $"MemoryTracker: Tracked allocation {id} ({size} bytes, {type.Name})");
             }
         }
 
@@ -155,15 +160,20 @@ namespace SASZombieAssaultTD.Engine.Memory
 
                 if (_typeInfo.TryGetValue(allocation.Type, out var typeInfo))
                 {
-                    Interlocked.Add(ref typeInfo.TotalFreed, allocation.Size);
-                    Interlocked.Increment(ref typeInfo.FreeCount);
+                    // Fixes CS0206 on Lines 158 & 159: Use lock for thread-safe property modification
+                    lock (typeInfo)
+                    {
+                        typeInfo.TotalFreed += allocation.Size;
+                        typeInfo.FreeCount++;
+                    }
                 }
 
-                ModernLoggingSystem.Log("TRACE", $"MemoryTracker: Tracked deallocation {id} ({allocation.Size} bytes)");
+
+                Engine.Diagnostics.DebugLogger.Log("TRACE", $"MemoryTracker: Tracked deallocation {id} ({allocation.Size} bytes)");
             }
             else
             {
-                ModernLoggingSystem.Log("WARNING", $"MemoryTracker: Deallocation tracked for unknown allocation {id}");
+                Engine.Diagnostics.DebugLogger.Log("WARNING", $"MemoryTracker: Deallocation tracked for unknown allocation {id}");
             }
         }
 
@@ -200,7 +210,7 @@ namespace SASZombieAssaultTD.Engine.Memory
                     }
 
                     SnapshotTaken?.Invoke(this, snapshot);
-                    ModernLoggingSystem.Log("INFO", $"MemoryTracker: Took snapshot '{snapshot.Label}' (usage: {snapshot.CurrentUsage:N0} bytes)");
+                    Engine.Diagnostics.DebugLogger.Log("INFO", $"MemoryTracker: Took snapshot '{snapshot.Label}' (usage: {snapshot.CurrentUsage:N0} bytes)");
                 }
             });
         }
@@ -222,7 +232,7 @@ namespace SASZombieAssaultTD.Engine.Memory
                 stopwatch.Stop();
 
                 _lastGCTime = (float)stopwatch.Elapsed.TotalMilliseconds;
-                ModernLoggingSystem.Log("INFO", $"MemoryTracker: Forced GC in {_lastGCTime:F2}ms");
+                Engine.Diagnostics.DebugLogger.Log("INFO", $"MemoryTracker: Forced GC in {_lastGCTime:F2}ms");
             });
         }
 
@@ -262,7 +272,7 @@ namespace SASZombieAssaultTD.Engine.Memory
                     }
                 }
 
-                ModernLoggingSystem.Log("INFO", $"MemoryTracker: Detected {leaks.Count} potential memory leaks");
+                Engine.Diagnostics.DebugLogger.Log("INFO", $"MemoryTracker: Detected {leaks.Count} potential memory leaks");
                 return leaks;
             }
         }
@@ -308,7 +318,7 @@ namespace SASZombieAssaultTD.Engine.Memory
                 _freeCount = 0;
                 _lastGCTime = 0f;
 
-                ModernLoggingSystem.Log("INFO", "MemoryTracker: Reset all tracking data");
+                Engine.Diagnostics.DebugLogger.Log("INFO", "MemoryTracker: Reset all tracking data");
             }
         }
 

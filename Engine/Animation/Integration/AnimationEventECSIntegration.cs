@@ -27,7 +27,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
         {
             if (entityId == 0 || handler == null)
             {
-                ModernLoggingSystem.Log("ERROR", "Invalid entity ID or handler.");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Invalid entity ID or handler.");
                 return false;
             }
 
@@ -41,12 +41,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
 
                 if (handlers.Contains(handler))
                 {
-                    ModernLoggingSystem.Log("WARNING", $"Handler '{handler.HandlerName}' already registered for entity {entityId}.");
+                    Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"Handler '{handler.HandlerName}' already registered for entity {entityId}.");
                     return false;
                 }
 
                 handlers.Add(handler);
-                ModernLoggingSystem.Log("DEBUG", $"Registered handler '{handler.HandlerName}' for entity {entityId}.");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Registered handler '{handler.HandlerName}' for entity {entityId}.");
                 return true;
             }
         }
@@ -58,7 +58,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
         {
             if (entityId == 0 || handler == null)
             {
-                ModernLoggingSystem.Log("ERROR", "Invalid entity ID or handler.");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Invalid entity ID or handler.");
                 return false;
             }
 
@@ -66,7 +66,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
             {
                 if (!_entityHandlers.TryGetValue(entityId, out var handlers) || !handlers.Remove(handler))
                 {
-                    ModernLoggingSystem.Log("WARNING", $"Handler '{handler.HandlerName}' not found for entity {entityId}.");
+                    Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"Handler '{handler.HandlerName}' not found for entity {entityId}.");
                     return false;
                 }
 
@@ -75,7 +75,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
                     _entityHandlers.Remove(entityId);
                 }
 
-                ModernLoggingSystem.Log("DEBUG", $"Deregistered handler '{handler.HandlerName}' for entity {entityId}.");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Deregistered handler '{handler.HandlerName}' for entity {entityId}.");
                 return true;
             }
         }
@@ -87,7 +87,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
         {
             if (handler == null)
             {
-                ModernLoggingSystem.Log("ERROR", "Cannot register null global handler.");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Cannot register null global handler.");
                 return false;
             }
 
@@ -95,12 +95,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
             {
                 if (_globalHandlers.Contains(handler))
                 {
-                    ModernLoggingSystem.Log("WARNING", $"Global handler '{handler.HandlerName}' already registered.");
+                    Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"Global handler '{handler.HandlerName}' already registered.");
                     return false;
                 }
 
                 _globalHandlers.Add(handler);
-                ModernLoggingSystem.Log("DEBUG", $"Registered global handler '{handler.HandlerName}'.");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Registered global handler '{handler.HandlerName}'.");
                 return true;
             }
         }
@@ -112,7 +112,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
         {
             if (handler == null)
             {
-                ModernLoggingSystem.Log("ERROR", "Cannot deregister null global handler.");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Cannot deregister null global handler.");
                 return false;
             }
 
@@ -120,11 +120,11 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
             {
                 if (!_globalHandlers.Remove(handler))
                 {
-                    ModernLoggingSystem.Log("WARNING", $"Global handler '{handler.HandlerName}' not found.");
+                    Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"Global handler '{handler.HandlerName}' not found.");
                     return false;
                 }
 
-                ModernLoggingSystem.Log("DEBUG", $"Deregistered global handler '{handler.HandlerName}'.");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Deregistered global handler '{handler.HandlerName}'.");
                 return true;
             }
         }
@@ -136,7 +136,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
         {
             if (animationEvent == null)
             {
-                ModernLoggingSystem.Log("ERROR", "Cannot dispatch null animation event.");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Cannot dispatch null animation event.");
                 return 0;
             }
 
@@ -152,7 +152,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
                 handlersProcessed += ProcessHandlers(_globalHandlers, entityId, animationEvent, context);
             }
 
-            ModernLoggingSystem.Log("DEBUG", $"Dispatched event '{animationEvent.EventName}' to {handlersProcessed} handlers.");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Dispatched event '{animationEvent.EventName}' to {handlersProcessed} handlers.");
             return handlersProcessed;
         }
 
@@ -166,11 +166,11 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
                 {
                     handler.HandleEvent(entityId, animationEvent);
                     processedCount++;
-                    ModernLoggingSystem.Log("DEBUG", $"Handler '{handler.HandlerName}' processed event '{animationEvent.EventName}' for entity {entityId}.");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Handler '{handler.HandlerName}' processed event '{animationEvent.EventName}' for entity {entityId}.");
                 }
                 catch (Exception ex)
                 {
-                    ModernLoggingSystem.Log("ERROR", $"Handler '{handler.HandlerName}' failed to process event '{animationEvent.EventName}': {ex.Message}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Handler '{handler.HandlerName}' failed to process event '{animationEvent.EventName}': {ex.Message}");
                 }
             }
 
@@ -184,7 +184,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
         {
             if (entityId == 0)
             {
-                ModernLoggingSystem.Log("ERROR", "Cannot clear handlers for entity ID 0.");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Cannot clear handlers for entity ID 0.");
                 return 0;
             }
 
@@ -192,12 +192,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
             {
                 if (!_entityHandlers.Remove(entityId, out var handlers))
                 {
-                    ModernLoggingSystem.Log("DEBUG", $"No handlers to clear for entity {entityId}.");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"No handlers to clear for entity {entityId}.");
                     return 0;
                 }
 
                 var count = handlers.Count;
-                ModernLoggingSystem.Log("DEBUG", $"Cleared {count} handlers for entity {entityId}.");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Cleared {count} handlers for entity {entityId}.");
                 return count;
             }
         }
@@ -211,7 +211,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Integration
             {
                 var count = _globalHandlers.Count;
                 _globalHandlers.Clear();
-                ModernLoggingSystem.Log("DEBUG", $"Cleared {count} global handlers.");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Cleared {count} global handlers.");
                 return count;
             }
         }

@@ -1,6 +1,8 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.VectorMath;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.Input
 {
@@ -16,6 +18,8 @@ namespace SASZombieAssaultTD.Engine.Input
         private static Vector3 _previousMousePosition = new Vector3();
         private static bool[] _mouseButtons = new bool[3];
         private static bool[] _previousMouseButtons = new bool[3];
+        private static object TheType;
+        private static object TheMember;
 
         /// <summary>
         /// Checks if a specific key is currently pressed.
@@ -182,6 +186,13 @@ namespace SASZombieAssaultTD.Engine.Input
                 }
             }
             return pressedKeys.ToArray();
+        }
+
+        internal static bool IsKeyPressed(KeyCode escape)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
         }
     }
 }

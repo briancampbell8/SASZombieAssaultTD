@@ -166,7 +166,7 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         /// </summary>
         public event Action<int> OnKillRecordsCleared;
 
-        #region Private Methods
+        ///  Private Methods
 
         private void UpdateDamageRecord(Hazard hazard, int target, float amount)
         {
@@ -252,7 +252,7 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
                     .OrderByDescending(c => c.Kills > 0 ? (c.TotalDamage / c.Kills) : c.TotalDamage)
                     .First();
 
-        #endregion
+        /// 
     }
 
     /// <summary>

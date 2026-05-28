@@ -35,7 +35,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         {
             if (_isInitialized) return;
 
-            Console.WriteLine("Initializing Projectile System");
+            System.Diagnostics.Debug.WriteLine("Initializing Projectile System");
 
             try
             {
@@ -43,11 +43,11 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                 InitializePools();
 
                 _isInitialized = true;
-                Console.WriteLine("Projectile System initialized successfully");
+                System.Diagnostics.Debug.WriteLine("Projectile System initialized successfully");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to initialize Projectile System: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to initialize Projectile System: {ex.Message}");
                 throw;
             }
         }
@@ -80,7 +80,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating Projectile System: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error updating Projectile System: {ex.Message}");
             }
         }
 
@@ -103,7 +103,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error rendering Projectile System: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error rendering Projectile System: {ex.Message}");
             }
         }
 
@@ -149,7 +149,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error firing projectile: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error firing projectile: {ex.Message}");
                 return null;
             }
         }
@@ -196,7 +196,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error firing projectile at position: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error firing projectile at position: {ex.Message}");
                 return null;
             }
         }
@@ -255,7 +255,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error firing projectile spread: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error firing projectile spread: {ex.Message}");
                 return projectiles;
             }
         }
@@ -327,7 +327,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             _pools[ProjectileType.Arrow] = new ProjectilePool(ProjectileType.Arrow);
             _pools[ProjectileType.Magic] = new ProjectilePool(ProjectileType.Magic);
 
-            Console.WriteLine($"Initialized {_pools.Count} projectile pools");
+            System.Diagnostics.Debug.WriteLine($"Initialized {_pools.Count} projectile pools");
         }
 
         /// <summary>
@@ -401,7 +401,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         /// </summary>
         public void Shutdown()
         {
-            Console.WriteLine("Shutting down Projectile System");
+            System.Diagnostics.Debug.WriteLine("Shutting down Projectile System");
 
             ClearAllProjectiles();
 
@@ -409,7 +409,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             _pools.Clear();
 
             _isInitialized = false;
-            Console.WriteLine("Projectile System shutdown complete");
+            System.Diagnostics.Debug.WriteLine("Projectile System shutdown complete");
         }
     }
 

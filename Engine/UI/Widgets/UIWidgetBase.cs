@@ -39,7 +39,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 if (_tooltip != value)
                 {
                     _tooltip = value ?? string.Empty;
-                    Console.WriteLine($"UIWidgetBase: Tooltip set to '{_tooltip}'");
+                    System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Tooltip set to '{_tooltip}'");
                 }
             }
         }
@@ -49,7 +49,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         /// </summary>
         protected UIWidgetBase()
         {
-            Console.WriteLine("UIWidgetBase: Created new widget base");
+            System.Diagnostics.Debug.WriteLine("UIWidgetBase: Created new widget base");
         }
 
         /// <summary>
@@ -60,11 +60,11 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             try
             {
                 _isHovered = true;
-                Console.WriteLine($"UIWidgetBase: Mouse entered widget");
+                System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Mouse entered widget");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIWidgetBase: Error in OnMouseEnter - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Error in OnMouseEnter - {ex.Message}");
             }
         }
 
@@ -76,11 +76,11 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             try
             {
                 _isHovered = false;
-                Console.WriteLine($"UIWidgetBase: Mouse exited widget");
+                System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Mouse exited widget");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIWidgetBase: Error in OnMouseExit - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Error in OnMouseExit - {ex.Message}");
             }
         }
 
@@ -92,11 +92,11 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             try
             {
                 _isPressed = true;
-                Console.WriteLine($"UIWidgetBase: Widget pressed");
+                System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Widget pressed");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIWidgetBase: Error in OnPressed - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Error in OnPressed - {ex.Message}");
             }
         }
 
@@ -108,11 +108,11 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             try
             {
                 _isPressed = false;
-                Console.WriteLine($"UIWidgetBase: Widget released");
+                System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Widget released");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIWidgetBase: Error in OnReleased - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Error in OnReleased - {ex.Message}");
             }
         }
 
@@ -127,12 +127,12 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 if (_isDisabled != disabled)
                 {
                     _isDisabled = disabled;
-                    Console.WriteLine($"UIWidgetBase: Widget disabled state set to {disabled}");
+                    System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Widget disabled state set to {disabled}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIWidgetBase: Error setting disabled state - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Error setting disabled state - {ex.Message}");
             }
         }
 
@@ -161,7 +161,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIWidgetBase: Error during update - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Error during update - {ex.Message}");
             }
         }
 
@@ -196,7 +196,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIWidgetBase: Error during render - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Error during render - {ex.Message}");
             }
         }
 
@@ -254,11 +254,11 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 _isDisabled = false;
                 _tooltip = string.Empty;
 
-                Console.WriteLine("UIWidgetBase: Widget state reset");
+                System.Diagnostics.Debug.WriteLine("UIWidgetBase: Widget state reset");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIWidgetBase: Error resetting state - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIWidgetBase: Error resetting state - {ex.Message}");
             }
         }
     }

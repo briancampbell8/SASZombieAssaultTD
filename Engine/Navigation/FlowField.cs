@@ -61,7 +61,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
             _targetPosition = Vector3Int.Zero;
             _isGenerated = false;
 
-            ModernLoggingSystem.Log("INFO", "FlowField: Initialized");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "FlowField: Initialized");
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
         {
             if (!_grid.IsInBounds(targetPosition))
             {
-                ModernLoggingSystem.Log("WARNING", $"FlowField: Target position {targetPosition} is out of bounds");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"FlowField: Target position {targetPosition} is out of bounds");
                 return;
             }
 
@@ -85,16 +85,16 @@ namespace SASZombieAssaultTD.Engine.Navigation
                 await Task.Run(() => GenerateFlowFieldDijkstra(targetPosition, cancellationToken), cancellationToken);
 
                 _isGenerated = true;
-                ModernLoggingSystem.Log("DEBUG", $"FlowField: Generated flow field to target {targetPosition}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"FlowField: Generated flow field to target {targetPosition}");
             }
             catch (OperationCanceledException)
             {
-                ModernLoggingSystem.Log("INFO", "FlowField: Flow field generation was canceled");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "FlowField: Flow field generation was canceled");
                 _isGenerated = false;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"FlowField: Error generating flow field: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"FlowField: Error generating flow field: {ex.Message}");
                 _isGenerated = false;
             }
         }
@@ -166,7 +166,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
         {
             ResetFlowField();
             _isGenerated = false;
-            ModernLoggingSystem.Log("DEBUG", "FlowField: Cleared flow field");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "FlowField: Cleared flow field");
         }
 
         /// <summary>

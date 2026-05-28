@@ -22,7 +22,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core.Time
     /// </summary>
     public static class Time
     {
-        #region Private Fields
+        ///  Private Fields
         
         private static float _deltaTime = 0.016f; // Default 60 FPS
         private static float _fixedDeltaTime = 0.02f; // 50 FPS fixed timestep
@@ -48,9 +48,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Core.Time
         private static float _fixedUnscaledTime = 0f;
         private static float _accumulator = 0f;
         
-        #endregion
+        /// 
 
-        #region Public Properties
+        ///  Public Properties
         
         /// <summary>
         /// Time in seconds since the last frame (scaled by time scale).
@@ -134,9 +134,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Core.Time
         /// </summary>
         public static float FixedUnscaledTime => _fixedUnscaledTime;
         
-        #endregion
+        /// 
 
-        #region Public Methods
+        ///  Public Methods
         
         /// <summary>
         /// Updates the time system. Should be called once per frame.
@@ -336,9 +336,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Core.Time
             return (float)(nextInterval - currentTime);
         }
         
-        #endregion
+        /// 
 
-        #region Timing Utilities
+        ///  Timing Utilities
         
         /// <summary>
         /// Creates a simple timer that counts down from a duration.
@@ -373,9 +373,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Core.Time
             return new PeriodicTrigger(interval, useUnscaledTime);
         }
         
-        #endregion
+        /// 
 
-        #region Private Methods
+        ///  Private Methods
         
         private static void UpdateFPS(float deltaTime)
         {
@@ -396,9 +396,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Core.Time
             _smoothDeltaTime = _smoothDeltaTime * smoothingFactor + _deltaTime * (1f - smoothingFactor);
         }
         
-        #endregion
+        /// 
 
-        #region Nested Classes
+        ///  Nested Classes
         
         /// <summary>
         /// Simple timer that counts down from a duration.
@@ -662,6 +662,6 @@ namespace SASZombieAssaultTD.Engine.Animation.Core.Time
             }
         }
         
-        #endregion
+        /// 
     }
 }

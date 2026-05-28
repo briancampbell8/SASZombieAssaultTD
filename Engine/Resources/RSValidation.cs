@@ -50,14 +50,14 @@ namespace SASZombieAssaultTD.Engine.Resources
             {
                 if (instance is null)
                 {
-                    ModernLoggingSystem.Log("Error", $"[Assets] Validation failed for '{key}': instance is null.");
+                    Engine.Diagnostics.DebugLogger.LogDebug("Error", $"[Assets] Validation failed for '{key}': instance is null.");
                     return false;
                 }
 
                 bool isValid = instance != null;
                 if (!isValid)
                 {
-                    ModernLoggingSystem.Log("Error",
+                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
                     $"[Assets] Validation failed for '{key}': instance type mismatch.");
                 }
 
@@ -65,7 +65,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("Error", $"[Assets] Validation failed for '{key}': {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("Error", $"[Assets] Validation failed for '{key}': {ex.Message}");
                 return false;
             }
         }
@@ -79,21 +79,21 @@ namespace SASZombieAssaultTD.Engine.Resources
             {
                 if (metadata is null)
                 {
-                    ModernLoggingSystem.Log("Error", "[Assets] Validation failed: metadata is null.");
+                    Engine.Diagnostics.DebugLogger.LogDebug("Error", "[Assets] Validation failed: metadata is null.");
                     return false;
                 }
 
                 // Key must be non-null and non-whitespace
                 if (string.IsNullOrWhiteSpace(metadata.Key))
                 {
-                    ModernLoggingSystem.Log("Error", "[Assets] Validation failed: metadata key is null or empty.");
+                    Engine.Diagnostics.DebugLogger.LogDebug("Error", "[Assets] Validation failed: metadata key is null or empty.");
                     return false;
                 }
 
                 // Path must be non-null and non-whitespace
                 if (string.IsNullOrWhiteSpace(metadata.Path))
                 {
-                    ModernLoggingSystem.Log("Error",
+                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
                     $"[Assets] Validation failed for '{metadata.Key}': path is null or empty.");
                     return false;
                 }
@@ -101,7 +101,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 // Basic rule: metadata.Type must not be Unknown
                 if (metadata.Type == AssetType.Unknown)
                 {
-                    ModernLoggingSystem.Log("Error",
+                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
                     $"[Assets] Validation failed for '{metadata.Key}': asset type is Unknown.");
                     return false;
                 }
@@ -109,7 +109,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 // Type must be a defined enum value
                 if (!Enum.IsDefined(metadata.Type))
                 {
-                    ModernLoggingSystem.Log("Error",
+                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
                     $"[Assets] Validation failed for '{metadata.Key}': asset type '{(int)metadata.Type}' is not a defined AssetType.");
                     return false;
                 }
@@ -117,7 +117,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 // If a format is provided, it must be non-empty
                 if (metadata.Format != null && metadata.Format.Trim().Length == 0)
                 {
-                    ModernLoggingSystem.Log("Error",
+                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
                     $"[Assets] Validation failed for '{metadata.Key}': format is empty or whitespace.");
                     return false;
                 }
@@ -125,7 +125,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 // If a format is provided, it must be compatible with the asset type
                 if (metadata.Format != null && !ValidateExtension(metadata.Type, metadata.Format))
                 {
-                    ModernLoggingSystem.Log("Error",
+                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
                     $"[Assets] Validation failed for '{metadata.Key}': format '{metadata.Format}' is not supported for asset type '{metadata.Type}'.");
                     return false;
                 }
@@ -133,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 // SizeBytes must be non-negative
                 if (metadata.SizeBytes < 0)
                 {
-                    ModernLoggingSystem.Log("Error",
+                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
                     $" [Assets] Validation failed for '{metadata.Key}': size is negative ({metadata.SizeBytes} bytes).");
                     return false;
                 }
@@ -142,7 +142,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("Error",
+                Engine.Diagnostics.DebugLogger.LogDebug("Error",
                 $"[Assets] Validation failed for '{metadata?.Key ?? "unknown"}': {ex.Message}");
                 return false;
             }
@@ -175,7 +175,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("Error",
+                Engine.Diagnostics.DebugLogger.LogDebug("Error",
                 $"[Assets] Extension validation failed for type '{type}', extension '{extension}': {ex.Message}");
                 return false;
             }

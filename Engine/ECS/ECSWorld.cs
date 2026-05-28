@@ -38,16 +38,16 @@ namespace SASZombieAssaultTD.Engine.ECS
     /// </summary>
     public sealed class ECSWorld
     {
-        #region Private Fields
+        ///  Private Fields
 
         private uint _nextEntityId = 1;
         private readonly Dictionary<uint, Entity> _entities = new();
         private readonly SpatialGrid _spatialGrid = new();
         private readonly ComponentStore _componentStore = new();
 
-        #endregion
+        /// 
 
-        #region Public API — Entity Lifecycle
+        ///  Public API — Entity Lifecycle
 
         /// <summary>
         /// Creates a new entity with a unique ID and registers it with the world.
@@ -78,9 +78,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// <returns>The entity, or null if not found.</returns>
         public Entity? GetEntity(uint id) => _entities.TryGetValue(id, out var entity) ? entity : null;
 
-        #endregion
+        /// 
 
-        #region Public API — Component Management
+        ///  Public API — Component Management
 
         /// <summary>
         /// Adds a component to an entity.
@@ -145,9 +145,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             return _componentStore.FindEntitiesWithComponents(componentTypes);
         }
 
-        #endregion
+        /// 
 
-        #region Public API — World Update
+        ///  Public API — World Update
 
         /// <summary>
         /// Updates all entities and their components.
@@ -169,9 +169,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             }
         }
 
-        #endregion
+        /// 
 
-        #region Public API — Collision Support
+        ///  Public API — Collision Support
 
         /// <summary>
         /// Gets the spatial partitioning grid for collision detection.
@@ -197,9 +197,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             }
         }
 
-        #endregion
+        /// 
 
-        #region Public API — Introspection
+        ///  Public API — Introspection
 
         /// <summary>
         /// Returns true if an entity with the given ID exists and is alive.
@@ -289,7 +289,7 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// </summary>
         public override string ToString() => $"ECSWorld: {_entities.Count} active entities";
 
-        #region ECSWorld Systems Management
+        ///  ECSWorld Systems Management
 
         private readonly List<IECSSystem> _systems = new();
         private readonly Dictionary<Type, IECSSystem> _systemLookup = new();
@@ -368,9 +368,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             return _systems.OrderBy(s => s.Priority);
         }
 
-        #endregion
+        /// 
 
-        #region ECSWorld Entity Queries
+        ///  ECSWorld Entity Queries
 
         /// <summary>
         /// Gets all active entities.
@@ -422,9 +422,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             return GetEntitiesWith<T>();
         }
 
-        #endregion
+        /// 
 
-        #region ECSWorld Update Methods
+        ///  ECSWorld Update Methods
 
         /// <summary>
         /// Initializes all systems.
@@ -494,9 +494,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             Reset();
         }
 
-        #endregion
+        /// 
 
-        #endregion
+        /// 
     }
 
     /// <summary>

@@ -32,7 +32,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 if (_isVisible != value)
                 {
                     _isVisible = value;
-                    Console.WriteLine($"UIDebugOverlay: Visibility set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Visibility set to {value}");
                 }
             }
         }
@@ -48,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 if (_showBounds != value)
                 {
                     _showBounds = value;
-                    Console.WriteLine($"UIDebugOverlay: Show bounds set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Show bounds set to {value}");
                 }
             }
         }
@@ -64,7 +64,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 if (_showHierarchy != value)
                 {
                     _showHierarchy = value;
-                    Console.WriteLine($"UIDebugOverlay: Show hierarchy set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Show hierarchy set to {value}");
                 }
             }
         }
@@ -81,7 +81,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
         {
             _elements = new List<UIElement>();
             _inputState = new UIInputState();
-            Console.WriteLine("UIDebugOverlay: Initialized");
+            System.Diagnostics.Debug.WriteLine("UIDebugOverlay: Initialized");
         }
 
         /// <summary>
@@ -94,22 +94,22 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIDebugOverlay: Cannot add null element");
+                    System.Diagnostics.Debug.WriteLine("UIDebugOverlay: Cannot add null element");
                     return;
                 }
 
                 if (_elements.Contains(element))
                 {
-                    Console.WriteLine("UIDebugOverlay: Element already exists in overlay");
+                    System.Diagnostics.Debug.WriteLine("UIDebugOverlay: Element already exists in overlay");
                     return;
                 }
 
                 _elements.Add(element);
-                Console.WriteLine($"UIDebugOverlay: Added element, total: {_elements.Count}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Added element, total: {_elements.Count}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error adding element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error adding element - {ex.Message}");
             }
         }
 
@@ -123,13 +123,13 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIDebugOverlay: Cannot remove null element");
+                    System.Diagnostics.Debug.WriteLine("UIDebugOverlay: Cannot remove null element");
                     return;
                 }
 
                 if (_elements.Remove(element))
                 {
-                    Console.WriteLine($"UIDebugOverlay: Removed element, remaining: {_elements.Count}");
+                    System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Removed element, remaining: {_elements.Count}");
 
                     // Clear selection if this element was selected
                     if (_selectedElement == element)
@@ -139,12 +139,12 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 }
                 else
                 {
-                    Console.WriteLine("UIDebugOverlay: Element not found in overlay");
+                    System.Diagnostics.Debug.WriteLine("UIDebugOverlay: Element not found in overlay");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error removing element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error removing element - {ex.Message}");
             }
         }
 
@@ -162,11 +162,11 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 // Update selection with keyboard
                 UpdateSelection();
 
-                Console.WriteLine("UIDebugOverlay: Updated overlay");
+                System.Diagnostics.Debug.WriteLine("UIDebugOverlay: Updated overlay");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error during update - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error during update - {ex.Message}");
             }
         }
 
@@ -182,7 +182,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
 
                 // This would use the actual rendering system
                 // For now, just log the overlay state
-                Console.WriteLine($"UIDebugOverlay: Rendering overlay with {_elements.Count} elements");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Rendering overlay with {_elements.Count} elements");
 
                 // Render each element's debug info
                 foreach (var element in _elements)
@@ -192,7 +192,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error during render - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error during render - {ex.Message}");
             }
         }
 
@@ -211,11 +211,11 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
 
                 // This would render actual debug information
                 // For now, just log the debug info
-                Console.WriteLine($"UIDebugOverlay: Element '{element.GetType().Name}' at {position}, Size: {size}, Selected: {isSelected}, Hovered: {isHovered}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Element '{element.GetType().Name}' at {position}, Size: {size}, Selected: {isSelected}, Hovered: {isHovered}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error rendering element debug info - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error rendering element debug info - {ex.Message}");
             }
         }
 
@@ -245,7 +245,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error updating hover states - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error updating hover states - {ex.Message}");
             }
         }
 
@@ -274,11 +274,11 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                     SelectElementAtPosition(_inputState.MousePosition);
                 }
 
-                Console.WriteLine($"UIDebugOverlay: Updated selection with keyboard input");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Updated selection with keyboard input");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error updating selection - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error updating selection - {ex.Message}");
             }
         }
 
@@ -303,11 +303,11 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                     _selectedElement = _elements[0];
                 }
 
-                Console.WriteLine($"UIDebugOverlay: Selected next element: {_selectedElement?.GetType().Name}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Selected next element: {_selectedElement?.GetType().Name}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error selecting next element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error selecting next element - {ex.Message}");
             }
         }
 
@@ -332,11 +332,11 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                     _selectedElement = _elements[_elements.Count - 1];
                 }
 
-                Console.WriteLine($"UIDebugOverlay: Selected previous element: {_selectedElement?.GetType().Name}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Selected previous element: {_selectedElement?.GetType().Name}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error selecting previous element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error selecting previous element - {ex.Message}");
             }
         }
 
@@ -366,12 +366,12 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 if (closestElement != null)
                 {
                     _selectedElement = closestElement;
-                    Console.WriteLine($"UIDebugOverlay: Selected element at position {position}: {closestElement?.GetType().Name}");
+                    System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Selected element at position {position}: {closestElement?.GetType().Name}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error selecting element at position - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error selecting element at position - {ex.Message}");
             }
         }
 
@@ -397,7 +397,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error calculating distance - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error calculating distance - {ex.Message}");
                 return float.MaxValue;
             }
         }
@@ -412,11 +412,11 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 _elements.Clear();
                 _selectedElement = null;
 
-                Console.WriteLine("UIDebugOverlay: Cleared all elements");
+                System.Diagnostics.Debug.WriteLine("UIDebugOverlay: Cleared all elements");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error clearing elements - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error clearing elements - {ex.Message}");
             }
         }
 
@@ -432,7 +432,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugOverlay: Error creating string representation - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Error creating string representation - {ex.Message}");
                 return "UIDebugOverlay: Error";
             }
         }

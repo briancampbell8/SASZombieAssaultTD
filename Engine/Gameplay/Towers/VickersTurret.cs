@@ -22,7 +22,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
     /// </summary>
     public class VickersTurret : BaseTower
     {
-        #region Base Tower Properties
+        ///  Base Tower Properties
         
         /// <summary>Type identifier for this tower.</summary>
         public override string TowerType => "VickersTurret";
@@ -57,9 +57,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         /// <summary>Whether this tower can target ground units.</summary>
         public override bool CanTargetGround => true;
         
-        #endregion
+        /// 
 
-        #region Vickers Turret Specific Properties
+        ///  Vickers Turret Specific Properties
         
         /// <summary>Fire rate in rounds per minute.</summary>
         public int FireRate => 180;
@@ -79,9 +79,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         /// <summary>Penetration power of projectiles.</summary>
         public float Penetration => 0.3f;
         
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
         
         /// <summary>
         /// Creates a new vickers turret instance.
@@ -98,9 +98,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         {
         }
         
-        #endregion
+        /// 
 
-        #region Tower Operations (Placeholder)
+        ///  Tower Operations (Placeholder)
         
         /// <summary>
         /// Gets the behavior characteristics for this tower type.
@@ -152,9 +152,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             };
         }
         
-        #endregion
+        /// 
 
-        #region Level-based Calculations
+        ///  Level-based Calculations
         
         /// <summary>
         /// Gets the damage at a specific level.
@@ -202,9 +202,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             return benefits;
         }
         
-        #endregion
+        /// 
 
-        #region Utility Methods
+        ///  Utility Methods
         
         /// <summary>
         /// Creates a copy of this tower instance.
@@ -224,6 +224,6 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             return $"{DisplayName} (ID: {Id}, Level: {Level}/{MaxLevel}, Fire Rate: {FireRate} RPM)";
         }
         
-        #endregion
+        /// 
     }
 }

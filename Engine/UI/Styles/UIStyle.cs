@@ -32,7 +32,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 if (_backgroundColor != value)
                 {
                     _backgroundColor = value;
-                    Console.WriteLine($"UIStyle: Background color set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIStyle: Background color set to {value}");
                 }
             }
         }
@@ -48,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 if (_textColor != value)
                 {
                     _textColor = value;
-                    Console.WriteLine($"UIStyle: Text color set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIStyle: Text color set to {value}");
                 }
             }
         }
@@ -64,7 +64,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 if (_borderColor != value)
                 {
                     _borderColor = value;
-                    Console.WriteLine($"UIStyle: Border color set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIStyle: Border color set to {value}");
                 }
             }
         }
@@ -80,7 +80,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 if (_font != value)
                 {
                     _font = value ?? string.Empty;
-                    Console.WriteLine($"UIStyle: Font set to '{_font}'");
+                    System.Diagnostics.Debug.WriteLine($"UIStyle: Font set to '{_font}'");
                 }
             }
         }
@@ -96,7 +96,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 if (_fontSize != value)
                 {
                     _fontSize = Max(1.0f, value);
-                    Console.WriteLine($"UIStyle: Font size set to {_fontSize}");
+                    System.Diagnostics.Debug.WriteLine($"UIStyle: Font size set to {_fontSize}");
                 }
             }
         }
@@ -110,7 +110,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             set
             {
                 _padding = value;
-                Console.WriteLine($"UIStyle: Padding set to {value}");
+                System.Diagnostics.Debug.WriteLine($"UIStyle: Padding set to {value}");
             }
         }
 
@@ -123,7 +123,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             set
             {
                 _margin = value;
-                Console.WriteLine($"UIStyle: Margin set to {value}");
+                System.Diagnostics.Debug.WriteLine($"UIStyle: Margin set to {value}");
             }
         }
 
@@ -138,7 +138,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 if (_borderThickness != value)
                 {
                     _borderThickness = Max(0.0f, value);
-                    Console.WriteLine($"UIStyle: Border thickness set to {_borderThickness}");
+                    System.Diagnostics.Debug.WriteLine($"UIStyle: Border thickness set to {_borderThickness}");
                 }
             }
         }
@@ -154,7 +154,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 if (_cornerRadius != value)
                 {
                     _cornerRadius = Max(0.0f, value);
-                    Console.WriteLine($"UIStyle: Corner radius set to {_cornerRadius}");
+                    System.Diagnostics.Debug.WriteLine($"UIStyle: Corner radius set to {_cornerRadius}");
                 }
             }
         }
@@ -170,7 +170,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 if (_wordWrap != value)
                 {
                     _wordWrap = value;
-                    Console.WriteLine($"UIStyle: Word wrap set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIStyle: Word wrap set to {value}");
                 }
             }
         }
@@ -186,7 +186,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 if (_textAlignment != value)
                 {
                     _textAlignment = value;
-                    Console.WriteLine($"UIStyle: Text alignment set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIStyle: Text alignment set to {value}");
                 }
             }
         }
@@ -209,7 +209,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             _padding = UI.Layout.UIPadding.Zero;
             _margin = UI.Layout.UIMargin.Zero;
 
-            Console.WriteLine("UIStyle: Created new style");
+            System.Diagnostics.Debug.WriteLine("UIStyle: Created new style");
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
         public UIStyle(System.Drawing.Color backgroundColor) : this()
         {
             BackgroundColor = backgroundColor;
-            Console.WriteLine($"UIStyle: Created style with background color {backgroundColor}");
+            System.Diagnostics.Debug.WriteLine($"UIStyle: Created style with background color {backgroundColor}");
         }
 
         /// <summary>
@@ -328,12 +328,12 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 copy._wordWrap = _wordWrap;
                 copy._textAlignment = _textAlignment;
 
-                Console.WriteLine("UIStyle: Created style copy");
+                System.Diagnostics.Debug.WriteLine("UIStyle: Created style copy");
                 return copy;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyle: Error creating copy - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyle: Error creating copy - {ex.Message}");
                 return new UIStyle();
             }
         }
@@ -348,7 +348,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             {
                 if (other == null)
                 {
-                    Console.WriteLine("UIStyle: Cannot merge null style");
+                    System.Diagnostics.Debug.WriteLine("UIStyle: Cannot merge null style");
                     return;
                 }
 
@@ -377,11 +377,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 if (other._wordWrap)
                     WordWrap = other._wordWrap;
 
-                Console.WriteLine("UIStyle: Merged style");
+                System.Diagnostics.Debug.WriteLine("UIStyle: Merged style");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyle: Error merging style - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyle: Error merging style - {ex.Message}");
             }
         }
 
@@ -404,11 +404,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 _wordWrap = false;
                 _textAlignment = System.Drawing.ContentAlignment.TopLeft;
 
-                Console.WriteLine("UIStyle: Reset to defaults");
+                System.Diagnostics.Debug.WriteLine("UIStyle: Reset to defaults");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyle: Error resetting style - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyle: Error resetting style - {ex.Message}");
             }
         }
 
@@ -424,7 +424,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyle: Error creating string representation - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyle: Error creating string representation - {ex.Message}");
                 return "UIStyle: Error";
             }
         }

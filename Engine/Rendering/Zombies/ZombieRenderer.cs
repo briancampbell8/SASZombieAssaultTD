@@ -14,9 +14,9 @@ namespace SASZombieAssaultTD.Engine.Rendering.Zombies
 
         public ZombieRenderer(Texture2D texture)
         {
-            ModernLoggingSystem.Log("BREAKPOINT", "Execution reached here");
-            ModernLoggingSystem.Log("BREAKPOINT", "Reached execution checkpoint");
-            ModernLoggingSystem.Log("BREAKPOINT", $"Method={nameof(MethodBase.GetCurrentMethod)}, " +
+            Engine.Diagnostics.DebugLogger.LogDebug("BREAKPOINT", "Execution reached here");
+            Engine.Diagnostics.DebugLogger.LogDebug("BREAKPOINT", "Reached execution checkpoint");
+            Engine.Diagnostics.DebugLogger.LogDebug("BREAKPOINT", $"Method={nameof(MethodBase.GetCurrentMethod)}, " +
             $"Line={new StackTrace(true).GetFrame(0)?.GetFileLineNumber()}");
             _texture = texture;
         }

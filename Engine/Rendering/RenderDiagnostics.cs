@@ -20,9 +20,11 @@ Notes:      Thread-safe performance monitoring with minimal overhead.
            Provides data for both real-time monitoring and historical analysis.
 
 */
+using SASZombieAssaultTD.Engine.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.Rendering
 {
@@ -40,6 +42,8 @@ namespace SASZombieAssaultTD.Engine.Rendering
         private float _totalFrameTime;
         private float _minFrameTime = float.MaxValue;
         private float _maxFrameTime;
+        private static object TheType;
+        private static object TheMember;
 
         // Performance thresholds
         private const int FRAME_HISTORY_SIZE = 60; // Track last 60 frames
@@ -189,6 +193,13 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             _frameTimer?.Stop();
             Reset();
+        }
+
+        internal static void Record(string v1, string v2)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
         }
     }
 }

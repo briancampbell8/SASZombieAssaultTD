@@ -57,7 +57,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                     return path;
             }
 
-            ModernLoggingSystem.Log("Warning", $"Asset key '{key}' not found in registry.");
+            Engine.Diagnostics.DebugLogger.LogDebug("Warning", $"Asset key '{key}' not found in registry.");
             throw new KeyNotFoundException($"Asset key '{key}' is not registered.");
         }
 

@@ -48,20 +48,20 @@ namespace SASZombieAssaultTD.Engine.Navigation
 
             if (transform == null)
             {
-                ModernLoggingSystem.Log("MIGRATION", "Entity missing TransformComponent.");
+                Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", "Entity missing TransformComponent.");
                 return false;
             }
 
             if (enemyType == null)
             {
-                ModernLoggingSystem.Log("MIGRATION", "Entity missing EnemyTypeComponent.");
+                Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", "Entity missing EnemyTypeComponent.");
                 return false;
             }
 
             // Skip if already migrated
             if (entity.HasComponent<NavAgentComponent>())
             {
-                ModernLoggingSystem.Log("MIGRATION", "Entity already has NavAgentComponent. Skipping.");
+                Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", "Entity already has NavAgentComponent. Skipping.");
                 return true;
             }
 
@@ -86,7 +86,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
             if (legacyMovement != null)
                 entity.RemoveComponent<MovementComponent>();
 
-            ModernLoggingSystem.Log("MIGRATION", $"Migrated entity {entity.Id} to NavAgent.");
+            Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", $"Migrated entity {entity.Id} to NavAgent.");
 
             return result;
         }
@@ -112,7 +112,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
                     migrated++;
             }
 
-            ModernLoggingSystem.Log("MIGRATION", $"Batch migration complete. Migrated {migrated} entities.");
+            Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", $"Batch migration complete. Migrated {migrated} entities.");
 
             return migrated;
         }
@@ -140,7 +140,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
                 RepathOnBlock = true
             });
 
-            ModernLoggingSystem.Log("MIGRATION", $"Created NavAgent entity at {position}");
+            Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", $"Created NavAgent entity at {position}");
 
             return entity;
         }

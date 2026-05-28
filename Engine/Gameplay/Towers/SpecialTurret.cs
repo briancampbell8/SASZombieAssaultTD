@@ -13,6 +13,8 @@ Notes:   This is a placeholder implementation for special-type towers.
 */
 
 using System;
+using System.Linq;
+
 
 namespace SASZombieAssaultTD.Engine.Gameplay.Towers
 {
@@ -22,7 +24,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
     /// </summary>
     public class SpecialTurret : BaseTower
     {
-        #region Base Tower Properties
+        ///  Base Tower Properties
         
         /// <summary>Type identifier for this tower.</summary>
         public override string TowerType => "SpecialTurret";
@@ -57,9 +59,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         /// <summary>Whether this tower can target ground units.</summary>
         public override bool CanTargetGround => true;
         
-        #endregion
+        /// 
 
-        #region Special Turret Specific Properties
+        ///  Special Turret Specific Properties
         
         /// <summary>Special ability type for this tower.</summary>
         public string SpecialAbility => "Unknown";
@@ -88,9 +90,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         /// <summary>Energy cost for special ability.</summary>
         public float SpecialEnergyCost => 50f;
         
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
         
         /// <summary>
         /// Creates a new special turret instance.
@@ -107,9 +109,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         {
         }
         
-        #endregion
+        /// 
 
-        #region Tower Operations (Placeholder)
+        ///  Tower Operations (Placeholder)
         
         /// <summary>
         /// Gets the behavior characteristics for this tower type.
@@ -179,9 +181,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             };
         }
         
-        #endregion
+        /// 
 
-        #region Level-based Calculations
+        ///  Level-based Calculations
         
         /// <summary>
         /// Gets the damage at a specific level.
@@ -237,22 +239,30 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             
             return benefits;
         }
-        
-        #endregion
 
-        #region Special Mode Management
-        
+        public virtual string GetCurrentMode()
+        {
+            return CurrentMode;
+        }
+
+        /// 
+
+        ///  Special Mode Management
+
         /// <summary>
         /// Switches to the specified mode if available.
         /// </summary>
         /// <param name="mode">Mode to switch to.</param>
         /// <returns>True if mode switch was successful.</returns>
-        public virtual bool SwitchMode(string mode)
+        public virtual bool SwitchMode(string mode, string currentMode)
         {
             if (!AvailableModes.Contains(mode))
                 return false;
-                
-            CurrentMode = mode;
+            currentMode = mode;
+            if (CurrentMode != null)
+            {
+
+            }
             return true;
         }
         
@@ -267,16 +277,16 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
                 
             if (TotalInvestment >= SpecialEnergyCost)
             {
-                TotalInvestment -= SpecialEnergyCost;
+                TotalInvestment -= (int)SpecialEnergyCost;
                 return true;
             }
             
             return false;
         }
         
-        #endregion
+        /// 
 
-        #region Utility Methods
+        ///  Utility Methods
         
         /// <summary>
         /// Creates a copy of this tower instance.
@@ -296,6 +306,6 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             return $"{DisplayName} (ID: {Id}, Level: {Level}/{MaxLevel}, Mode: {CurrentMode})";
         }
         
-        #endregion
+        /// 
     }
 }

@@ -65,7 +65,7 @@ namespace SASZombieAssaultTD.Engine.Timing
         /// </summary>
         public void Start()
         {
-            ModernLoggingSystem.Log("INFO", "TimingModule started - P11-09-02: High-precision timing initialized");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "TimingModule started - P11-09-02: High-precision timing initialized");
 
             _highPrecisionClock.Reset();
             _highPrecisionClock.Start();
@@ -111,7 +111,7 @@ namespace SASZombieAssaultTD.Engine.Timing
             // Clamp delta time to prevent spiral of death
             if (DeltaTime > 0.1f) // Cap at 100ms delta time
             {
-                ModernLoggingSystem.Log("WARNING", $"Large delta time detected: {DeltaTime:F3}s, clamping to 0.1s");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"Large delta time detected: {DeltaTime:F3}s, clamping to 0.1s");
                 DeltaTime = 0.1f;
             }
 
@@ -158,7 +158,7 @@ namespace SASZombieAssaultTD.Engine.Timing
                 _totalFrameTime = 0f;
                 _frameTimeCount = 0;
 
-                ModernLoggingSystem.Log("DEBUG", $"Timing metrics - FPS: {CurrentFPS:F1}, Avg Frame Time: {AverageFrameTime:F3}ms");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Timing metrics - FPS: {CurrentFPS:F1}, Avg Frame Time: {AverageFrameTime:F3}ms");
             }
         }
 
@@ -197,7 +197,7 @@ namespace SASZombieAssaultTD.Engine.Timing
         /// </summary>
         public void Reset()
         {
-            ModernLoggingSystem.Log("INFO", "TimingModule reset");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "TimingModule reset");
             Start();
         }
     }

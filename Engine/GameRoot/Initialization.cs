@@ -10,77 +10,169 @@ Role:     Engine startup and bootstrapping specialist.
          - Configuration loading
          - Dependency injection setup
          - Error handling and recovery
+         - Full diagnostics instrumentation
 
 Notes:    Contains all initialization logic extracted from GameRoot.
-         Follows the same initialization order as original GameRoot.
-         All startup complexity is isolated here.
+         Follows the modern async initialization order.
+         Diagnostics instrumentation added for full trace visibility.
 */
 
-using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using System;
+using System.Threading.Tasks;
 
 namespace SASZombieAssaultTD.Engine
 {
-    /// <summary>
-    /// Partial class containing initialization logic for GameRoot.
-    /// </summary>
     public partial class GameRoot
     {
-        /// <summary>
-        /// Performs the complete engine initialization sequence.
-        /// </summary>
         private void PerformInitialization()
         {
-            // Phase 1: Initialize system manager first
-            // TODO: Verify initialization method exists
-            // _systemManager.Initialize();
-            ModernLoggingSystem.LogInfo("SystemManager initialized");
+            Diagnostics_Entry("PerformInitialization");
+            DebugLogger.LogInfo("=== ENGINE INITIALIZATION START ===");
 
-            // Phase 2: Initialize core managers
-            // TODO: Verify initialization method exists
-            // _updateManager.Initialize();
-            ModernLoggingSystem.LogInfo("UpdateManager initialized");
+            try
+            {
+                // ------------------------------------------------------------
+                // PHASE 1: SYSTEM MANAGER
+                // ------------------------------------------------------------
+                Diagnostics_Write("Initializing SystemManager...");
 
-            // TODO: Verify initialization method exists
-            // _renderManager.Initialize();
-            ModernLoggingSystem.LogInfo("RenderManager initialized");
+                // *** HIGH-SIGNAL CUSTOM DIAGNOSTIC BREADCRUMB ***
+                DebugLogger.LogError(
+                    "ENGINE INIT DIAGNOSTIC — entering SystemManager.Initialize()\n" +
+                    "Subsystem: SystemManager\n" +
+                    "File: SystemManager.cs\n" +
+                    "Caller: GameRoot.PerformInitialization\n" +
+                    $"Timestamp: {DateTime.Now:O}\n" +
+                    "Details: Beginning initialization of SystemManager. If a NotImplementedException " +
+                    "occurs immediately after this message, the failure originates inside " +
+                    "SystemManager.Initialize()."
+                );
 
-            // Input manager doesn't need initialization (UIInputRouter)
-            ModernLoggingSystem.LogInfo("InputManager initialized");
+                _systemManager.Initialize();
+                Diagnostics_Write("SystemManager initialized");
+                DebugLogger.LogInfo("SystemManager initialized");
 
-            // Phase 3: Initialize game state machine
-            _stateMachine.Initialize();
-            ModernLoggingSystem.LogInfo("GameStateMachine initialized");
+                // ------------------------------------------------------------
+                // PHASE 2: UPDATE MANAGER
+                // ------------------------------------------------------------
+                Diagnostics_Write("Initializing UpdateManager...");
+                _updateManager.Initialize();
+                Diagnostics_Write("UpdateManager initialized");
+                DebugLogger.LogInfo("UpdateManager initialized");
 
-            // Phase 4: Initialize render context
-            _renderContext.Initialize();
-            ModernLoggingSystem.LogInfo("RenderContext initialized");
+                // ------------------------------------------------------------
+                // PHASE 3: RENDER MANAGER
+                // ------------------------------------------------------------
+                Diagnostics_Write("Initializing RenderManager...");
+                _renderManager.Initialize();
+                Diagnostics_Write("RenderManager initialized");
+                DebugLogger.LogInfo("RenderManager initialized");
+
+                // ------------------------------------------------------------
+                // PHASE 4: INPUT ROUTER
+                // ------------------------------------------------------------
+                Diagnostics_Write("InputManager ready");
+                DebugLogger.LogInfo("InputManager ready");
+
+                // ------------------------------------------------------------
+                // PHASE 5: GAME STATE MACHINE (ASYNC)
+                // ------------------------------------------------------------
+                Diagnostics_Write("Initializing GameStateMachine (async)...");
+                var asyncResult = _stateMachine.InitializeAsync(null);
+
+                if (asyncResult is Task task)
+                    task.GetAwaiter().GetResult();
+                else if (asyncResult is ValueTask valueTask)
+                    valueTask.GetAwaiter().GetResult();
+                else
+                    Diagnostics_Write("InitializeAsync returned non-awaitable type — treating as synchronous");
+
+                Diagnostics_Write("GameStateMachine initialized");
+                DebugLogger.LogInfo("GameStateMachine initialized");
+
+                // ------------------------------------------------------------
+                // PHASE 6: RENDER CONTEXT
+                // ------------------------------------------------------------
+                Diagnostics_Write("Initializing RenderContext...");
+                _renderContext.Initialize();
+                Diagnostics_Write("RenderContext initialized");
+                DebugLogger.LogInfo("RenderContext initialized");
+
+                DebugLogger.LogInfo("=== ENGINE INITIALIZATION COMPLETE ===");
+            }
+            catch (Exception ex)
+            {
+                Diagnostics_Exception(ex, "PerformInitialization");
+                DebugLogger.Exception(ex, "Engine initialization failure");
+                throw;
+            }
+            finally
+            {
+                Diagnostics_Exit("PerformInitialization");
+            }
         }
 
-        /// <summary>
-        /// Performs the complete engine shutdown sequence.
-        /// </summary>
         private void PerformShutdown()
         {
-            // Phase 1: Stop game loop and state machine
-            _stateMachine.Shutdown();
-            ModernLoggingSystem.LogInfo("GameStateMachine shutdown");
+            Diagnostics_Entry("PerformShutdown");
+            DebugLogger.LogInfo("=== ENGINE SHUTDOWN START ===");
 
-            // Phase 2: Shutdown managers in reverse order
-            // Input manager doesn't need shutdown (UIInputRouter)
-            ModernLoggingSystem.LogInfo("InputManager shutdown");
+            try
+            {
+                Diagnostics_Write("Shutting down GameStateMachine...");
+                _stateMachine.Shutdown();
+                Diagnostics_Write("GameStateMachine shutdown");
+                DebugLogger.LogInfo("GameStateMachine shutdown");
 
-            _renderManager.Shutdown();
-            ModernLoggingSystem.LogInfo("RenderManager shutdown");
+                Diagnostics_Write("Shutting down InputManager (no-op)");
+                DebugLogger.LogInfo("InputManager shutdown");
 
-            _updateManager.Shutdown();
-            ModernLoggingSystem.LogInfo("UpdateManager shutdown");
+                Diagnostics_Write("Shutting down RenderManager...");
+                _renderManager.Shutdown();
+                Diagnostics_Write("RenderManager shutdown");
+                DebugLogger.LogInfo("RenderManager shutdown");
 
-            _systemManager.Shutdown();
-            ModernLoggingSystem.LogInfo("SystemManager shutdown");
+                Diagnostics_Write("Shutting down UpdateManager...");
+                _updateManager.Shutdown();
+                Diagnostics_Write("UpdateManager shutdown");
+                DebugLogger.LogInfo("UpdateManager shutdown");
 
-            // Phase 3: Cleanup render context
-            _renderContext.Shutdown();
-            ModernLoggingSystem.LogInfo("RenderContext shutdown");
+                Diagnostics_Write("Shutting down SystemManager...");
+                _systemManager.Shutdown();
+                Diagnostics_Write("SystemManager shutdown");
+                DebugLogger.LogInfo("SystemManager shutdown");
+
+                Diagnostics_Write("Shutting down RenderContext...");
+                _renderContext.Shutdown();
+                Diagnostics_Write("RenderContext shutdown");
+                DebugLogger.LogInfo("RenderContext shutdown");
+
+                DebugLogger.LogInfo("=== ENGINE SHUTDOWN COMPLETE ===");
+            }
+            catch (Exception ex)
+            {
+                Diagnostics_Exception(ex, "PerformShutdown");
+                DebugLogger.Exception(ex, "Engine shutdown failure");
+                throw;
+            }
+            finally
+            {
+                Diagnostics_Exit("PerformShutdown");
+            }
         }
+
+        private void Diagnostics_Entry(string scope) =>
+            DebugLogger.LogInfo($"[ENTER] {scope}");
+
+        private void Diagnostics_Exit(string scope) =>
+            DebugLogger.LogInfo($"[EXIT] {scope}");
+
+        private void Diagnostics_Write(string message) =>
+            DebugLogger.LogInfo(message);
+
+        private void Diagnostics_Exception(Exception ex, string scope) =>
+            DebugLogger.Exception(ex, scope);
     }
 }

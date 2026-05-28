@@ -50,13 +50,13 @@ namespace SASZombieAssaultTD.Engine.State
             
             if (_states.ContainsKey(type))
             {
-                ModernLoggingSystem.Log("WARNING", $"StateMachine: State type {type} is already registered. Overwriting.");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"StateMachine: State type {type} is already registered. Overwriting.");
                 _states[type] = state;
             }
             else
             {
                 _states.Add(type, state);
-                ModernLoggingSystem.Log("INFO", $"StateMachine: Registered state {type}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateMachine: Registered state {type}");
             }
         }
         
@@ -69,22 +69,22 @@ namespace SASZombieAssaultTD.Engine.State
         {
             if (!_states.TryGetValue(type, out var newState))
             {
-                ModernLoggingSystem.Log("ERROR", $"StateMachine: Cannot change to unregistered state {type}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"StateMachine: Cannot change to unregistered state {type}");
                 throw new ArgumentException($"State type {type} is not registered", nameof(type));
             }
             
             // Exit current state if it exists
             if (_currentState != null)
             {
-                ModernLoggingSystem.Log("INFO", $"StateMachine: Exited state {_currentStateType}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateMachine: Exited state {_currentStateType}");
                 _currentState.Exit();
             }
             
             // Enter new state
             _currentState = newState;
             _currentStateType = type;
-            ModernLoggingSystem.Log("INFO", $"StateMachine: Entered state {type}");
-            ModernLoggingSystem.Log("INFO", $"StateMachine: Entering state {type}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateMachine: Entered state {type}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateMachine: Entering state {type}");
             _currentState.Enter();
         }
         
@@ -100,7 +100,7 @@ namespace SASZombieAssaultTD.Engine.State
             }
             else
             {
-                ModernLoggingSystem.Log("WARNING", "StateMachine: No current state to update");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "StateMachine: No current state to update");
             }
         }
         
@@ -120,7 +120,7 @@ namespace SASZombieAssaultTD.Engine.State
             }
             else
             {
-                ModernLoggingSystem.Log("WARNING", $"StateMachine: No current state to handle event {gameEvent.GetType().Name}");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"StateMachine: No current state to handle event {gameEvent.GetType().Name}");
             }
         }
         
@@ -178,14 +178,14 @@ namespace SASZombieAssaultTD.Engine.State
         {
             if (_currentState != null)
             {
-                ModernLoggingSystem.Log("INFO", $"StateMachine: Exiting current state {_currentStateType} during reset");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateMachine: Exiting current state {_currentStateType} during reset");
                 _currentState.Exit();
                 _currentState = null;
             }
             
             _states.Clear();
             _currentStateType = GameStateType.Boot;
-            ModernLoggingSystem.Log("INFO", "StateMachine: Reset complete - all states cleared");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachine: Reset complete - all states cleared");
         }
     }
 }

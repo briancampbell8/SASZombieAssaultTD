@@ -30,10 +30,10 @@ namespace SASZombieAssaultTD.Engine.ECS
         public EntityManager(ECSWorld ecsWorld)
         {
             _ecsWorld = ecsWorld ?? throw new ArgumentNullException(nameof(ecsWorld));
-            ModernLoggingSystem.Log("INFO", "EntityManager: Initialized");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "EntityManager: Initialized");
         }
 
-        #region Query Methods
+        ///  Query Methods
 
         public IEnumerable<Entity> GetEnemies() => _ecsWorld.GetEntitiesWith<SASZombieAssaultTD.Engine.Components.EnemyTypeComponent>();
 
@@ -113,9 +113,9 @@ namespace SASZombieAssaultTD.Engine.ECS
                 .Where(entity => entity.HasComponent<TransformComponent>() && 
                                 (entity.HasComponent<CollisionComponent>() || entity.HasComponent<PhysicsComponent>()));
 
-        #endregion
+        /// 
 
-        #region Entity Lifecycle Management
+        ///  Entity Lifecycle Management
 
         /// <summary>
         /// Adds an entity to the manager.
@@ -124,7 +124,7 @@ namespace SASZombieAssaultTD.Engine.ECS
         public void AddEntity(Entity entity)
         {
             // Entity is already managed by ECSWorld, no additional tracking needed
-            ModernLoggingSystem.Log("DEBUG", $"EntityManager: Entity {entity.Id} added");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"EntityManager: Entity {entity.Id} added");
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace SASZombieAssaultTD.Engine.ECS
         public void RemoveEntity(Entity entity)
         {
             _ecsWorld.DestroyEntity(entity);
-            ModernLoggingSystem.Log("DEBUG", $"EntityManager: Entity {entity.Id} removed");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"EntityManager: Entity {entity.Id} removed");
         }
 
         public int DestroyDeadEntities() => DestroyEntities(GetDeadEntities(), "dead");
@@ -163,7 +163,7 @@ namespace SASZombieAssaultTD.Engine.ECS
 
             if (respawnedCount > 0)
             {
-                ModernLoggingSystem.Log("INFO", $"EntityManager: Respawned {respawnedCount} dead enemies");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EntityManager: Respawned {respawnedCount} dead enemies");
             }
 
             return respawnedCount;
@@ -182,15 +182,15 @@ namespace SASZombieAssaultTD.Engine.ECS
 
             if (destroyedCount > 0)
             {
-                ModernLoggingSystem.Log("INFO", $"EntityManager: Destroyed {destroyedCount} {entityType} entities");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EntityManager: Destroyed {destroyedCount} {entityType} entities");
             }
 
             return destroyedCount;
         }
 
-        #endregion
+        /// 
 
-        #region Statistics and Debugging
+        ///  Statistics and Debugging
 
         public EntityStats GetEntityStats()
         {
@@ -231,9 +231,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             return info;
         }
 
-        #endregion
+        /// 
 
-        #region Entity and Component Access
+        ///  Entity and Component Access
 
         public Entity GetEntity(uint entityId) => _ecsWorld.GetEntity(entityId) ?? new Entity();
 
@@ -268,7 +268,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             if (entity.IsValid) entity.AddComponent(component);
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

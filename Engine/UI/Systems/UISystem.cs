@@ -32,7 +32,7 @@ namespace SASZombieAssaultTD.Engine.UI
             set
             {
                 _isVisible = value;
-                ModernLoggingSystem.Log("INFO", $"UI System visibility set to: {value}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"UI System visibility set to: {value}");
             }
         }
 
@@ -45,7 +45,7 @@ namespace SASZombieAssaultTD.Engine.UI
             set
             {
                 _inputEnabled = value;
-                ModernLoggingSystem.Log("INFO", $"UI input enabled set to: {value}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"UI input enabled set to: {value}");
             }
         }
 
@@ -81,7 +81,7 @@ namespace SASZombieAssaultTD.Engine.UI
         {
             if (_initialized)
             {
-                ModernLoggingSystem.LogWarning("UI System already initialized");
+                Engine.Diagnostics.DebugLogger.LogWarning("UI System already initialized");
                 return;
             }
 
@@ -89,11 +89,11 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 ScreenSize = new Vector3(screenWidth, screenHeight, 0);
                 _initialized = true;
-                ModernLoggingSystem.LogInfo($"UI System initialized ({screenWidth}x{screenHeight})");
+                Engine.Diagnostics.DebugLogger.LogInfo($"UI System initialized ({screenWidth}x{screenHeight})");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Exception(ex, "Failed to initialize UI System");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Failed to initialize UI System");
                 throw;
             }
         }
@@ -120,7 +120,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Exception(ex, "Failed to update UI System");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Failed to update UI System");
             }
         }
 
@@ -146,7 +146,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Exception(ex, "Failed to render UI System");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Failed to render UI System");
             }
         }
 
@@ -158,19 +158,19 @@ namespace SASZombieAssaultTD.Engine.UI
         {
             if (element == null)
             {
-                ModernLoggingSystem.LogWarning("Attempted to add null UI element");
+                Engine.Diagnostics.DebugLogger.LogWarning("Attempted to add null UI element");
                 return;
             }
 
             if (_elements.Contains(element))
             {
-                ModernLoggingSystem.LogWarning($"Element {element.Name} already exists in UI system");
+                Engine.Diagnostics.DebugLogger.LogWarning($"Element {element.Name} already exists in UI system");
                 return;
             }
 
             _elements.Add(element);
             element.Initialize();
-            ModernLoggingSystem.LogDebug($"Added UI element: {element.Name}");
+            Engine.Diagnostics.DebugLogger.LogDebug($"Added UI element: {element.Name}");
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace SASZombieAssaultTD.Engine.UI
             if (_elements.Remove(element))
             {
                 element.Cleanup();
-                ModernLoggingSystem.LogDebug($"Removed UI element: {element.Name}");
+                Engine.Diagnostics.DebugLogger.LogDebug($"Removed UI element: {element.Name}");
             }
         }
 
@@ -203,19 +203,19 @@ namespace SASZombieAssaultTD.Engine.UI
         {
             if (panel == null)
             {
-                ModernLoggingSystem.LogWarning("Attempted to add null UI panel");
+                Engine.Diagnostics.DebugLogger.LogWarning("Attempted to add null UI panel");
                 return;
             }
 
             if (_panels.ContainsKey(panel.Name()))
             {
-                ModernLoggingSystem.LogWarning($"Panel {panel.Name()} already exists in UI system");
+                Engine.Diagnostics.DebugLogger.LogWarning($"Panel {panel.Name()} already exists in UI system");
                 return;
             }
 
             _panels.Add(panel.Name(), panel);
             panel.Initialize();
-            ModernLoggingSystem.LogDebug($"Added UI panel: {panel.Name()}");
+            Engine.Diagnostics.DebugLogger.LogDebug($"Added UI panel: {panel.Name()}");
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 _panels.Remove(panelName);
                 panel.Cleanup();
-                ModernLoggingSystem.LogDebug($"Removed UI panel: {panelName}");
+                Engine.Diagnostics.DebugLogger.LogDebug($"Removed UI panel: {panelName}");
             }
         }
 
@@ -253,7 +253,7 @@ namespace SASZombieAssaultTD.Engine.UI
             if (panel != null)
             {
                 panel.IsVisible = true;
-                ModernLoggingSystem.LogDebug($"Showed panel: {panelName}");
+                Engine.Diagnostics.DebugLogger.LogDebug($"Showed panel: {panelName}");
             }
         }
 
@@ -268,7 +268,7 @@ namespace SASZombieAssaultTD.Engine.UI
             if (panel != null)
             {
                 panel.IsVisible = false;
-                ModernLoggingSystem.LogDebug($"Hid panel: {panelName}");
+                Engine.Diagnostics.DebugLogger.LogDebug($"Hid panel: {panelName}");
             }
         }
 
@@ -296,7 +296,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Exception(ex, "Failed to handle UI input");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Failed to handle UI input");
             }
         }
 
@@ -308,7 +308,7 @@ namespace SASZombieAssaultTD.Engine.UI
         public void UpdateScreenSize(int width, int height)
         {
             ScreenSize = new Vector3(width, height, 0);
-            ModernLoggingSystem.LogDebug($"Screen size updated to {width}x{height}");
+            Engine.Diagnostics.DebugLogger.LogDebug($"Screen size updated to {width}x{height}");
         }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace SASZombieAssaultTD.Engine.UI
 
             _panels.Clear();
 
-            ModernLoggingSystem.LogInfo("UI System cleared");
+            Engine.Diagnostics.DebugLogger.LogInfo("UI System cleared");
         }
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace SASZombieAssaultTD.Engine.UI
 
             Clear();
             _initialized = false;
-            ModernLoggingSystem.LogInfo("UI System shutdown");
+            Engine.Diagnostics.DebugLogger.LogInfo("UI System shutdown");
         }
 
         /// <summary>

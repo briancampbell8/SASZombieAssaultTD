@@ -43,7 +43,7 @@ namespace SASZombieAssaultTD.Engine.Audio
     /// </summary>
     public class CoreAudioEngine
     {
-        #region Private Fields
+        ///  Private Fields
         private readonly ConcurrentDictionary<uint, AudioState> _activeSounds = new();
         private readonly Queue<uint> _availableIds = new();
         private uint _nextId = 1;
@@ -55,9 +55,9 @@ namespace SASZombieAssaultTD.Engine.Audio
         private float _maxDistance = 100f;
         private float _referenceDistance = 10f;
         private float _dopplerFactor = 1f;
-        #endregion
+        /// 
 
-        #region Public Properties
+        ///  Public Properties
         public float MasterVolume
         {
             get => _masterVolume;
@@ -108,9 +108,9 @@ namespace SASZombieAssaultTD.Engine.Audio
 
         public int ActiveSoundCount => _activeSounds.Count;
         public bool IsInitialized => true;
-        #endregion
+        /// 
 
-        #region Constructor
+        ///  Constructor
         public CoreAudioEngine()
         {
             // Preload available IDs
@@ -119,9 +119,9 @@ namespace SASZombieAssaultTD.Engine.Audio
                 _availableIds.Enqueue(i);
             }
         }
-        #endregion
+        /// 
 
-        #region Public Methods
+        ///  Public Methods
         public uint PlaySound(string soundName, Vector3 position, float volume = 1f, float pitch = 1f, bool loop = false)
         {
             uint soundId = GetNextId();
@@ -281,9 +281,9 @@ namespace SASZombieAssaultTD.Engine.Audio
             _listenerForward = Vector3.Forward;
             _listenerUp = Vector3.Up;
         }
-        #endregion
+        /// 
 
-        #region Private Methods
+        ///  Private Methods
         private uint GetNextId()
         {
             return _availableIds.TryDequeue(out var id) ? id : _nextId++;
@@ -318,6 +318,6 @@ namespace SASZombieAssaultTD.Engine.Audio
         {
             return 2f; // Default duration for now
         }
-        #endregion
+        /// 
     }
 }

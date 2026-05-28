@@ -39,7 +39,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
     /// </summary>
     public class ManagerDiagnostics
     {
-        #region Private Fields
+        ///  Private Fields
 
         private readonly object _diagnosticsLock = new();
         private readonly Dictionary<string, ManagerDiagnosticInfo> _managerInfos = new();
@@ -47,9 +47,9 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         private bool _isEnabled = false;
         private DateTime _startTime = DateTime.Now;
 
-        #endregion
+        /// 
 
-        #region Public Properties
+        ///  Public Properties
 
         /// <summary>
         /// Gets whether manager diagnostics are currently enabled.
@@ -61,9 +61,9 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         /// </summary>
         public int ManagerCount => _managerInfos.Count;
 
-        #endregion
+        /// 
 
-        #region Public Methods
+        ///  Public Methods
 
         /// <summary>
         /// Initializes the manager diagnostics system.
@@ -74,7 +74,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             {
                 try
                 {
-                    SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogInfo("Initializing ManagerDiagnostics...");
+                    Engine.Diagnostics.DebugLogger.LogInfo("Initializing ManagerDiagnostics...");
 
                     _managerInfos.Clear();
                     _performanceMetrics.Clear();
@@ -82,11 +82,11 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                     _isEnabled = true;
                     _startTime = DateTime.Now;
 
-                    ModernLoggingSystem.LogInfo("ManagerDiagnostics initialized successfully");
+                    Engine.Diagnostics.DebugLogger.LogInfo("ManagerDiagnostics initialized successfully");
                 }
                 catch (Exception ex)
                 {
-                    SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogError($"ManagerDiagnostics initialization failed: {ex.Message}");
+                    Engine.Diagnostics.DebugLogger.LogError($"ManagerDiagnostics initialization failed: {ex.Message}");
                     throw;
                 }
             }
@@ -101,7 +101,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             {
                 try
                 {
-                    SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogInfo("Shutting down ManagerDiagnostics...");
+                    Engine.Diagnostics.DebugLogger.LogInfo("Shutting down ManagerDiagnostics...");
                     GenerateFinalReport();
 
                     _managerInfos.Clear();
@@ -109,11 +109,11 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
 
                     _isEnabled = false;
 
-                    SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogInfo("ManagerDiagnostics shutdown completed");
+                    Engine.Diagnostics.DebugLogger.LogInfo("ManagerDiagnostics shutdown completed");
                 }
                 catch (Exception ex)
                 {
-                    SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogError($"ManagerDiagnostics shutdown failed: {ex.Message}");
+                    Engine.Diagnostics.DebugLogger.LogError($"ManagerDiagnostics shutdown failed: {ex.Message}");
                 }
             }
         }
@@ -143,7 +143,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                     StartTime = DateTime.Now
                 };
 
-                ModernLoggingSystem.LogInfo($"Manager registered for diagnostics: {managerName}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"Manager registered for diagnostics: {managerName}");
             }
         }
 
@@ -163,7 +163,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                     info.Status = status;
                     info.LastStatusChange = DateTime.Now;
 
-                    SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogDebug($"Manager status updated: {managerName} -> {status}");
+                    Engine.Diagnostics.DebugLogger.LogDebug($"Manager status updated: {managerName} -> {status}");
                 }
             }
         }
@@ -204,7 +204,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                     info.LastError = error;
                     info.LastErrorTime = DateTime.Now;
 
-                    SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogError($"Manager error recorded: {managerName} - {error.Message}");
+                    Engine.Diagnostics.DebugLogger.LogError($"Manager error recorded: {managerName} - {error.Message}");
                 }
 
                 if (_performanceMetrics.TryGetValue(managerName, out var metrics))
@@ -263,9 +263,9 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             }
         }
 
-        #endregion
+        /// 
 
-        #region Private Methods
+        ///  Private Methods
 
         private void GenerateFinalReport()
         {
@@ -273,22 +273,22 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             {
                 var diagnostics = GetDiagnostics();
 
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogInfo("Manager diagnostics final report:");
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogInfo($"  Total run time: {diagnostics.TotalRunTime:F2}s");
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogInfo($"  Total managers: {diagnostics.ManagerCount}");
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogInfo($"  Active managers: {diagnostics.ActiveManagers}");
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogInfo($"  Inactive managers: {diagnostics.InactiveManagers}");
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogInfo($"  Total errors: {diagnostics.TotalErrors}");
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogInfo($"  Average operation time: {diagnostics.AverageOperationTime * 1000:F2}ms");
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogInfo($"  Total operation time: {diagnostics.TotalOperationTime * 1000:F2}ms");
+                Engine.Diagnostics.DebugLogger.LogInfo("Manager diagnostics final report:");
+                Engine.Diagnostics.DebugLogger.LogInfo($"  Total run time: {diagnostics.TotalRunTime:F2}s");
+                Engine.Diagnostics.DebugLogger.LogInfo($"  Total managers: {diagnostics.ManagerCount}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"  Active managers: {diagnostics.ActiveManagers}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"  Inactive managers: {diagnostics.InactiveManagers}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"  Total errors: {diagnostics.TotalErrors}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"  Average operation time: {diagnostics.AverageOperationTime * 1000:F2}ms");
+                Engine.Diagnostics.DebugLogger.LogInfo($"  Total operation time: {diagnostics.TotalOperationTime * 1000:F2}ms");
             }
             catch (Exception ex)
             {
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogError($"Failed to generate final report: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogError($"Failed to generate final report: {ex.Message}");
             }
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

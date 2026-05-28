@@ -2,14 +2,16 @@
 File:    NavigationGrid.cs
 Purpose: Grid-based navigation system for pathfinding.
 */
+using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Core;
+using System.Security.AccessControl;
 using Vector3 = SASZombieAssaultTD.Engine.VectorMath.Vector3;
 using Vector3Int = SASZombieAssaultTD.Engine.VectorMath.Vector3Int;
-using SASZombieAssaultTD.Engine.Towers;
 
 namespace SASZombieAssaultTD.Engine.Navigation
 {
@@ -21,6 +23,9 @@ namespace SASZombieAssaultTD.Engine.Navigation
     {
         // Singleton instance to satisfy callers that expect NavigationGrid.Instance
         private static NavigationGrid? _instance;
+        private object TheType;
+        private object TheMember;
+
         public static NavigationGrid? Instance
         {
             get => _instance;
@@ -130,6 +135,10 @@ namespace SASZombieAssaultTD.Engine.Navigation
             _walkable = new bool[width, height];
 
             InitializeGrid();
+        }
+
+        public NavigationGrid()
+        {
         }
 
         private void InitializeGrid()
@@ -338,16 +347,29 @@ namespace SASZombieAssaultTD.Engine.Navigation
 
         internal bool IsOccupied(int x, int y)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         internal bool IsInBounds(int x, int y)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         internal TerrainType GetTerrainType(Vector3Int gridPosition)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
+
+        internal System.Numerics.Vector2 GetRandomSpawnPoint()
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
     }
@@ -357,6 +379,8 @@ namespace SASZombieAssaultTD.Engine.Navigation
     /// </summary>
     public class NavigationCell
     {
+        internal object FCost;
+
         public Vector3Int Position { get; }
         public bool IsWalkable { get; }
         public float MovementCost { get; }
@@ -382,6 +406,12 @@ namespace SASZombieAssaultTD.Engine.Navigation
             HCost = 0;
             Parent = null;
             HeapIndex = 0;
+        }
+
+        internal bool IsInOpenSet()
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED"); return true;
+            throw new NotImplementedException();
         }
     }
 }

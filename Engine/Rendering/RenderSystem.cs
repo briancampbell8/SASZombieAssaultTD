@@ -1,6 +1,8 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.VectorMath;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.Rendering
 {
@@ -43,6 +45,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
     /// </summary>
     public static class RenderSystem
     {
+        private static object TheType;
+        private static object TheMember;
+
         public static void Initialize() { }
         public static void Shutdown() { }
         public static void BeginFrame() { }
@@ -56,5 +61,33 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public static void DrawCheckmark(Vector3 position, Color color, float size) { }
         public static void DrawX(Vector3 position, Color color, float size) { }
         public static void DrawString(string text, Vector3 position, Color color, float size = 1.0f) { DrawText(text, position, color); }
+
+        internal static void DrawRectangle(float v1, float v2, float x, float v3, System.Drawing.Color baseColor)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawSprite(Sprite towerSprite, Vector3 towerPos, Vector3 vector3, System.Drawing.Color finalColor)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawLine(Vector3 startPoint, Vector3 endPoint, System.Drawing.Color color, float v)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawCircle(float x, float y, float currentRange, System.Drawing.Color rangeColor, float v)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
     }
 }

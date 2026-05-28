@@ -62,8 +62,8 @@ namespace SASZombieAssaultTD.Engine.Gameplay
         /// </summary>
         public void Initialize()
         {
-            ModernLoggingSystem.LogInfo("ModernPlayerStateSystem initialized");
-            ModernLoggingSystem.LogInfo($"Player started with {_currentLives}/{_maxLives} lives and ${_currentCash}");
+            Engine.Diagnostics.DebugLogger.LogInfo("ModernPlayerStateSystem initialized");
+            Engine.Diagnostics.DebugLogger.LogInfo($"Player started with {_currentLives}/{_maxLives} lives and ${_currentCash}");
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             _isGameOver = false;
             _isPaused = false;
 
-            ModernLoggingSystem.LogInfo("Player state reset to defaults");
+            Engine.Diagnostics.DebugLogger.LogInfo("Player state reset to defaults");
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             if (oldLives != _currentLives)
             {
                 OnLivesChanged?.Invoke(_currentLives, _maxLives);
-                ModernLoggingSystem.LogInfo($"Player took {damage} damage. Lives: {_currentLives}/{_maxLives}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"Player took {damage} damage. Lives: {_currentLives}/{_maxLives}");
 
                 if (_currentLives <= 0)
                 {
@@ -127,7 +127,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             if (oldLives != _currentLives)
             {
                 OnLivesChanged?.Invoke(_currentLives, _maxLives);
-                ModernLoggingSystem.LogInfo($"Player healed for {amount}. Lives: {_currentLives}/{_maxLives}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"Player healed for {amount}. Lives: {_currentLives}/{_maxLives}");
             }
         }
 
@@ -144,7 +144,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             if (oldCash != _currentCash)
             {
                 OnCashChanged?.Invoke(_currentCash);
-                ModernLoggingSystem.LogInfo($"Player gained ${amount}. Current: ${_currentCash}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"Player gained ${amount}. Current: ${_currentCash}");
             }
         }
 
@@ -159,7 +159,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             _currentCash -= amount;
 
             OnCashChanged?.Invoke(_currentCash);
-            ModernLoggingSystem.LogInfo($"Player spent ${amount}. Current: ${_currentCash}");
+            Engine.Diagnostics.DebugLogger.LogInfo($"Player spent ${amount}. Current: ${_currentCash}");
 
             return true;
         }
@@ -177,7 +177,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             if (oldScore != _score)
             {
                 OnScoreChanged?.Invoke(_score);
-                ModernLoggingSystem.LogDebug($"Player gained {points} points. Total: {_score}");
+                Engine.Diagnostics.DebugLogger.LogDebug($"Player gained {points} points. Total: {_score}");
             }
         }
 
@@ -190,7 +190,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay
 
             _waveNumber++;
             OnWaveChanged?.Invoke(_waveNumber);
-            ModernLoggingSystem.LogInfo($"Advanced to wave {_waveNumber}");
+            Engine.Diagnostics.DebugLogger.LogInfo($"Advanced to wave {_waveNumber}");
 
             // Give wave completion bonus
             var waveBonus = _settings.WaveCompletionBonus * _waveNumber;
@@ -206,7 +206,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay
 
             _isGameOver = true;
             OnGameOver?.Invoke();
-            ModernLoggingSystem.LogInfo($"Game Over! Final Score: {_score}, Waves Survived: {_waveNumber - 1}");
+            Engine.Diagnostics.DebugLogger.LogInfo($"Game Over! Final Score: {_score}, Waves Survived: {_waveNumber - 1}");
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay
         {
             ResetToDefaults();
             OnGameRestarted?.Invoke();
-            ModernLoggingSystem.LogInfo("Game restarted");
+            Engine.Diagnostics.DebugLogger.LogInfo("Game restarted");
         }
 
         /// <summary>
@@ -228,7 +228,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay
 
             _isPaused = paused;
             OnPauseStateChanged?.Invoke(paused);
-            ModernLoggingSystem.LogInfo($"Game {(paused ? "paused" : "resumed")}");
+            Engine.Diagnostics.DebugLogger.LogInfo($"Game {(paused ? "paused" : "resumed")}");
         }
 
         /// <summary>
@@ -253,11 +253,11 @@ namespace SASZombieAssaultTD.Engine.Gameplay
                 var savePath = GetSavePath(saveSlot);
                 File.WriteAllText(savePath, json);
 
-                ModernLoggingSystem.LogInfo($"Player state saved to slot: {saveSlot}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"Player state saved to slot: {saveSlot}");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.LogError($"Failed to save player state: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogError($"Failed to save player state: {ex.Message}");
             }
         }
 
@@ -289,13 +289,13 @@ namespace SASZombieAssaultTD.Engine.Gameplay
                     OnScoreChanged?.Invoke(_score);
                     OnWaveChanged?.Invoke(_waveNumber);
 
-                    ModernLoggingSystem.LogInfo($"Player state loaded from slot: {saveSlot}");
+                    Engine.Diagnostics.DebugLogger.LogInfo($"Player state loaded from slot: {saveSlot}");
                     return true;
                 }
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.LogError($"Failed to load player state: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogError($"Failed to load player state: {ex.Message}");
             }
 
             return false;

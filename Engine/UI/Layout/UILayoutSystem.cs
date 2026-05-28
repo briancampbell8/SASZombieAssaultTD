@@ -23,7 +23,7 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
         public UILayoutSystem()
         {
             _layoutData = new Dictionary<UIElement, UILayoutData>();
-            Console.WriteLine("UILayoutSystem: Initialized");
+            System.Diagnostics.Debug.WriteLine("UILayoutSystem: Initialized");
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
                 if (element == null)
                     return;
 
-                Console.WriteLine($"UILayoutSystem: Calculating layout for element");
+                System.Diagnostics.Debug.WriteLine($"UILayoutSystem: Calculating layout for element");
 
                 // Calculate layout for the element
                 CalculateElementLayout(element);
@@ -49,11 +49,11 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
                 }
 
                 _needsRecalculation = false;
-                Console.WriteLine("UILayoutSystem: Layout calculation completed");
+                System.Diagnostics.Debug.WriteLine("UILayoutSystem: Layout calculation completed");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UILayoutSystem: Error calculating layout - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UILayoutSystem: Error calculating layout - {ex.Message}");
             }
         }
 
@@ -94,7 +94,7 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UILayoutSystem: Error calculating element layout - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UILayoutSystem: Error calculating element layout - {ex.Message}");
             }
         }
 
@@ -161,7 +161,7 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UILayoutSystem: Error calculating element position - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UILayoutSystem: Error calculating element position - {ex.Message}");
                 return element.Position;
             }
         }
@@ -192,7 +192,7 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UILayoutSystem: Error calculating element size - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UILayoutSystem: Error calculating element size - {ex.Message}");
                 return element.Size;
             }
         }
@@ -255,11 +255,11 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
                     InvalidateLayout(child);
                 }
 
-                Console.WriteLine("UILayoutSystem: Layout invalidated");
+                System.Diagnostics.Debug.WriteLine("UILayoutSystem: Layout invalidated");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UILayoutSystem: Error invalidating layout - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UILayoutSystem: Error invalidating layout - {ex.Message}");
             }
         }
 
@@ -277,7 +277,7 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UILayoutSystem: Error getting layout data - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UILayoutSystem: Error getting layout data - {ex.Message}");
                 return null;
             }
         }
@@ -291,11 +291,11 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
             {
                 _layoutData.Clear();
                 _needsRecalculation = true;
-                Console.WriteLine("UILayoutSystem: Layout data cleared");
+                System.Diagnostics.Debug.WriteLine("UILayoutSystem: Layout data cleared");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UILayoutSystem: Error clearing layout data - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UILayoutSystem: Error clearing layout data - {ex.Message}");
             }
         }
     }

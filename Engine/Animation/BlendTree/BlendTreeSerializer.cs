@@ -31,7 +31,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
         {
             if (blendTree == null)
             {
-                ModernLoggingSystem.Log("ERROR", "BlendTreeSerializer: Cannot serialize null blend tree");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "BlendTreeSerializer: Cannot serialize null blend tree");
                 return string.Empty;
             }
 
@@ -51,12 +51,12 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 // Serialize to JSON
                 var json = JsonSerializer.Serialize(serializableTree, _serializerOptions);
 
-                ModernLoggingSystem.Log("DEBUG", $"BlendTreeSerializer: Successfully serialized blend tree '{blendTree.TreeId}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BlendTreeSerializer: Successfully serialized blend tree '{blendTree.TreeId}'");
                 return json;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"BlendTreeSerializer: Error serializing blend tree '{blendTree.TreeId}': {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"BlendTreeSerializer: Error serializing blend tree '{blendTree.TreeId}': {ex.Message}");
                 return string.Empty;
             }
         }
@@ -72,7 +72,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
         {
             if (string.IsNullOrEmpty(json))
             {
-                ModernLoggingSystem.Log("WARNING", "BlendTreeSerializer: Cannot deserialize null or empty JSON string");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "BlendTreeSerializer: Cannot deserialize null or empty JSON string");
                 return fallbackTree;
             }
 
@@ -82,7 +82,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 var serializableTree = JsonSerializer.Deserialize<SerializableBlendTree>(json, _serializerOptions);
                 if (serializableTree == null)
                 {
-                    ModernLoggingSystem.Log("ERROR", "BlendTreeSerializer: Deserialized JSON resulted in null blend tree");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "BlendTreeSerializer: Deserialized JSON resulted in null blend tree");
                     return fallbackTree;
                 }
 
@@ -90,7 +90,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 var blendTree = ConvertFromSerializableFormat(serializableTree);
                 if (blendTree == null)
                 {
-                    ModernLoggingSystem.Log("ERROR", "BlendTreeSerializer: Failed to convert from serializable format");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "BlendTreeSerializer: Failed to convert from serializable format");
                     return fallbackTree;
                 }
 
@@ -102,17 +102,17 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                     return fallbackTree;
                 }
 
-                ModernLoggingSystem.Log("DEBUG", $"BlendTreeSerializer: Successfully deserialized blend tree '{blendTree.TreeId}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BlendTreeSerializer: Successfully deserialized blend tree '{blendTree.TreeId}'");
                 return blendTree;
             }
             catch (JsonException ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"BlendTreeSerializer: JSON error during deserialization: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"BlendTreeSerializer: JSON error during deserialization: {ex.Message}");
                 return fallbackTree;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"BlendTreeSerializer: Error deserializing blend tree: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"BlendTreeSerializer: Error deserializing blend tree: {ex.Message}");
                 return fallbackTree;
             }
         }
@@ -389,10 +389,10 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
 
         private static void LogValidationErrors(string treeId, IEnumerable<string> errors)
         {
-            ModernLoggingSystem.Log("ERROR", $"BlendTreeSerializer: Blend tree '{treeId}' failed validation");
+            Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"BlendTreeSerializer: Blend tree '{treeId}' failed validation");
             foreach (var error in errors)
             {
-                ModernLoggingSystem.Log("ERROR", $"  Validation Error: {error}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"  Validation Error: {error}");
             }
         }
     }

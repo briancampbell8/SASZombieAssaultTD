@@ -18,7 +18,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
         /// </summary>
         public static void RegisterComponent<T>() where T : class
         {
-            ModernLoggingSystem.Log("INFO", $"UIComponentRegistry: Registered component {typeof(T).Name}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"UIComponentRegistry: Registered component {typeof(T).Name}");
         }
     }
 }

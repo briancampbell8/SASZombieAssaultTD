@@ -18,7 +18,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
         /// </summary>
         public static void Initialize()
         {
-            ModernLoggingSystem.Log("INFO", "UIElementFactory: Initialized");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "UIElementFactory: Initialized");
         }
     }
 }

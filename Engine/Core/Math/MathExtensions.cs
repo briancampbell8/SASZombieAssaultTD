@@ -23,7 +23,7 @@ namespace SASZombieAssaultTD.Engine.Core.Math
     /// </summary>
     public static class MathExtensions
     {
-        #region Interpolation Methods
+        ///  Interpolation Methods
         
         /// <summary>
         /// Linearly interpolates between two values.
@@ -159,9 +159,9 @@ namespace SASZombieAssaultTD.Engine.Core.Math
             return System.Math.Clamp((value - a) / (b - a), 0f, 1f);
         }
         
-        #endregion
+        /// 
 
-        #region Approximate Comparison
+        ///  Approximate Comparison
         
         /// <summary>
         /// Determines if two floating-point values are approximately equal within a tolerance.
@@ -247,9 +247,9 @@ namespace SASZombieAssaultTD.Engine.Core.Math
             return System.Math.Abs(value) < tolerance;
         }
         
-        #endregion
+        /// 
 
-        #region Range Generation
+        ///  Range Generation
         
         /// <summary>
         /// Returns a random integer in the specified range (inclusive).
@@ -330,9 +330,9 @@ namespace SASZombieAssaultTD.Engine.Core.Math
             return EngineRandom.Bool(probability);
         }
         
-        #endregion
+        /// 
 
-        #region Common Mathematical Operations
+        ///  Common Mathematical Operations
         
         /// <summary>
         /// Maps a value from one range to another.
@@ -472,9 +472,9 @@ namespace SASZombieAssaultTD.Engine.Core.Math
             return Wrap(angle, 0f, 2f * MathF.PI);
         }
         
-        #endregion
+        /// 
 
-        #region Trigonometric Extensions
+        ///  Trigonometric Extensions
         
         /// <summary>
         /// Converts degrees to radians.
@@ -560,9 +560,9 @@ namespace SASZombieAssaultTD.Engine.Core.Math
             return WrapAngle(diff);
         }
         
-        #endregion
+        /// 
 
-        #region Power and Root Extensions
+        ///  Power and Root Extensions
         
         /// <summary>
         /// Safely calculates the square root of a value.
@@ -634,9 +634,9 @@ namespace SASZombieAssaultTD.Engine.Core.Math
             return MathF.Pow(value, power);
         }
         
-        #endregion
+        /// 
 
-        #region Utility Methods
+        ///  Utility Methods
         
         /// <summary>
         /// Returns the next power of two greater than or equal to the specified value.
@@ -745,6 +745,6 @@ namespace SASZombieAssaultTD.Engine.Core.Math
             return percentage.ToString($"F{decimalPlaces}") + "%";
         }
         
-        #endregion
+        /// 
     }
 }

@@ -1,27 +1,35 @@
-/*
-File:    ModernLoggingSystem.cs
-Author:  BDC
-Created: 2026-02-10
+/* ====================================================================================================
+ *  FILE: DebugLogger.cs
+ *  PATH: Engine/Diagnostics/DebugLogger.cs
+ *  SUBSYSTEM: Diagnostics
+ *  ROLE: Central logging façade providing structured log emission, category routing,
+ *        and integration with DiagnosticsMonitor for health tracking.
+ *
+ *  RESPONSIBILITIES:
+ *      - Emit structured log entries to the file-based DiagnosticLogger backend.
+ *      - Normalize log levels and categories for consistent output.
+ *      - Forward all log events to DiagnosticsMonitor for monitoring state updates.
+ *      - Provide a unified logging API for all engine subsystems.
+ *      - Maintain backward compatibility with legacy logging paths.
+ *
+ *  NON-RESPONSIBILITIES:
+ *      - Monitoring state storage or threshold evaluation (handled by DiagnosticsMonitor).
+ *      - File I/O lifecycle management (handled by DiagnosticLogger).
+ *      - Subsystem-specific formatting or filtering.
+ *
+ *  ARCHITECTURAL NOTES:
+ *      - All log events must pass through DebugLogger.Log(...) to ensure monitoring integration.
+ *      - DiagnosticLogger is the low-level sink; DebugLogger is the public façade.
+ *      - LogLevel enum must remain stable and deterministic.
+ * ==================================================================================================== */
 
-Purpose:
-File-based diagnostic logger writing labeled entries for tracing.
-
-Notes:
-Holds a StreamWriter open for the process lifetime to avoid
-open/write/close per call. Directory is created once in the
-static constructor. Thread-safe via lock.
-
-*/
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
-    /// <summary>
-    /// File-based diagnostic logger writing labeled entries for tracing.
-    /// </summary>
-    public static class DiagnosticLogger
+    internal static class DiagnosticLogger
     {
         private static readonly string LogPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -30,47 +38,43 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             "EngineTrace.md"
         );
 
-        private static readonly StreamWriter _writer;
         private static readonly object _lock = new();
 
-        // Recognized log categories
-        public const string Phase5 = "Phase5";
+        // Writer is now nullable and guarded
+        private static readonly StreamWriter? _writer;
+
+        // Logger health flag
+        internal static bool IsHealthy { get; private set; } = true;
 
         static DiagnosticLogger()
         {
             try
             {
                 string? dir = Path.GetDirectoryName(LogPath);
-
                 if (!string.IsNullOrEmpty(dir))
-                {
                     Directory.CreateDirectory(dir);
-                }
 
-                _writer = new StreamWriter(LogPath, append: true) { AutoFlush = true };
+                _writer = new StreamWriter(LogPath, append: true)
+                {
+                    AutoFlush = true
+                };
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Failed to initialize DiagnosticLogger: {ex.Message}");
-                throw;
+                DebugLogger.LogError("DiagnosticLogger.Init", $"Failed to initialize DiagnosticLogger: {ex.Message}");
+
+                _writer = null;
+                IsHealthy = false;
             }
         }
 
-        /// <summary>
-        /// Logs a diagnostic entry with a label and details.
-        /// </summary>
-        /// <param name="label">The label for the log entry.</param>
-        /// <param name="details">The details of the log entry.</param>
-        /// <param name="filePath">The source file path of the caller (auto-populated).</param>
-        public static void Log(
-            string label,
-            string details,
-            [CallerFilePath] string filePath = ""
-        )
+        public static void Write(string label, string details, string fileName)
         {
+            if (_writer == null)
+                return;
+
             try
             {
-                string fileName = Path.GetFileName(filePath);
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
 
                 string entry =
@@ -86,46 +90,145 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Failed to log entry: {ex.Message}");
+                DebugLogger.LogError("DiagnosticLogger.Write", $"Failed to write log entry: {ex.Message}");
+                IsHealthy = false;
             }
         }
 
-        /// <summary>
-        /// Flushes and closes the underlying stream. Call once at engine shutdown.
-        /// </summary>
         public static void Shutdown()
         {
+            if (_writer == null)
+                return;
+
             try
             {
                 lock (_lock)
                 {
-                    _writer?.Dispose();
+                    _writer.Dispose();
                 }
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Failed to shutdown DiagnosticLogger: {ex.Message}");
+                DebugLogger.LogError("DiagnosticLogger.Shutdown", $"Failed to shutdown DiagnosticLogger: {ex.Message}");
+                IsHealthy = false;
             }
         }
     }
 
-    /// <summary>
-    /// DebugLogger alias for DiagnosticLogger for backward compatibility.
-    /// </summary>
     public static class DebugLogger
     {
-        public const string Phase5 = DiagnosticLogger.Phase5;
+        private static object TheType;
+        private static object TheMember;
 
-        public static void Log(string label, string details, [CallerFilePath] string filePath = "")
+        public enum LogLevel { Debug, Info, Warning, Error, Critical }
+
+        // ====================================================================================================
+        // CORE LOGGING ENTRY POINT
+        // ====================================================================================================
+        public static void Log(LogLevel level, string category, string message,
+            [CallerFilePath] string filePath = "")
         {
-            DiagnosticLogger.Log(label, details, filePath);
+            string fileName = Path.GetFileName(filePath);
+
+            DiagnosticLogger.Write(
+                level.ToString().ToUpper(),
+                $"{category}: {message}",
+                fileName
+            );
+
+            DiagnosticsMonitor.RegisterLogEvent(
+                ConvertToDiagnosticCategory(level),
+                message
+            );
         }
 
-        public static void LogInfo(string message) => DiagnosticLogger.Log("INFO", message);
-        public static void LogError(string message) => DiagnosticLogger.Log("ERROR", message);
-        public static void LogDebug(string message) => DiagnosticLogger.Log("DEBUG", message);
-        public static void LogWarning(string message) => DiagnosticLogger.Log("WARNING", message);
+        private static DiagnosticCategory ConvertToDiagnosticCategory(LogLevel level)
+        {
+            return level switch
+            {
+                LogLevel.Debug => DiagnosticCategory.Debug,
+                LogLevel.Info => DiagnosticCategory.Info,
+                LogLevel.Warning => DiagnosticCategory.Warning,
+                LogLevel.Error => DiagnosticCategory.Error,
+                LogLevel.Critical => DiagnosticCategory.Exception,
+                _ => DiagnosticCategory.Debug
+            };
+        }
+
+        // ====================================================================================================
+        // MODERN PUBLIC WRAPPERS
+        // ====================================================================================================
+        public static void Debug(string category, string message) =>
+            Log(LogLevel.Debug, category, message);
+
+        public static void Info(string category, string message) =>
+            Log(LogLevel.Info, category, message);
+
+        public static void Warning(string category, string message) =>
+            Log(LogLevel.Warning, category, message);
+
+        public static void Error(string category, string message) =>
+            Log(LogLevel.Error, category, message);
+
+        public static void Critical(string category, string message) =>
+            Log(LogLevel.Critical, category, message);
 
         public static void Shutdown() => DiagnosticLogger.Shutdown();
+
+        // ====================================================================================================
+        // COMPLETE LEGACY COMPATIBILITY LAYER
+        // ====================================================================================================
+
+        internal static void LogDebug(string category, string message) =>
+            Log(LogLevel.Debug, category, message);
+
+        internal static void LogDebug(string message) =>
+            Log(LogLevel.Debug, "DEBUG", message);
+
+        internal static void LogError(string category, Exception ex) =>
+            Log(LogLevel.Error, category, $"{ex.GetType().Name}: {ex.Message}");
+
+        internal static void LogError(string message) =>
+            Log(LogLevel.Error, "ERROR", message);
+
+        internal static void LogWarning(string message) =>
+            Log(LogLevel.Warning, "WARNING", message);
+
+        internal static void LogException(string category, Exception ex) =>
+            Log(LogLevel.Critical, category, $"{ex.GetType().Name}: {ex.Message}");
+
+        internal static void Exception(Exception ex, string context) =>
+            Log(LogLevel.Critical, "EXCEPTION", $"{context}: {ex.Message}");
+
+        internal static void Log(string category, string message) =>
+            Log(LogLevel.Info, category, message);
+
+        internal static void Log(string level, string category, string message)
+        {
+            if (!Enum.TryParse<LogLevel>(level, true, out var parsed))
+                parsed = LogLevel.Info;
+
+            Log(parsed, category, message);
+        }
+
+        internal static void Initialize() =>
+            Log(LogLevel.Info, "INIT", "Initialization event");
+
+        internal static void LogInfo(string v) =>
+            Log(LogLevel.Info, "INFO", v);
+
+        internal static void Trace(string v1, string v2) =>
+            Log(LogLevel.Debug, v1, v2);
+
+        internal static void LogError(string v1, string v2)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+            throw new NotImplementedException();
+        }
+
+        internal static void DebugLog(string v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

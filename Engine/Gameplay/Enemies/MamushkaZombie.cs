@@ -22,7 +22,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
     /// </summary>
     public class MamushkaZombie
     {
-        #region Properties
+        ///  Properties
         
         /// <summary>Unique identifier for this enemy instance.</summary>
         public string Id { get; private set; }
@@ -72,9 +72,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
         /// <summary>Whether this enemy can split multiple times.</summary>
         public bool CanSplitMultiple => false;
         
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
         
         /// <summary>
         /// Creates a new mamushka zombie instance.
@@ -93,9 +93,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             Id = id ?? GenerateId();
         }
         
-        #endregion
+        /// 
 
-        #region Enemy Behavior (Placeholder)
+        ///  Enemy Behavior (Placeholder)
         
         /// <summary>
         /// Gets the behavior characteristics for this enemy type.
@@ -161,9 +161,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             };
         }
         
-        #endregion
+        /// 
 
-        #region Utility Methods
+        ///  Utility Methods
         
         /// <summary>
         /// Generates a unique ID for this enemy instance.
@@ -192,6 +192,6 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             return $"{DisplayName} (ID: {Id}, Threat: {ThreatLevel}, Splits: {SplitCount})";
         }
         
-        #endregion
+        /// 
     }
 }

@@ -48,20 +48,20 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             {
                 if (_initialized)
                 {
-                    ModernLoggingSystem.Log("INFO", "UISystemInitializer: Already initialized");
+                    Engine.Diagnostics.DebugLogger.LogDebug("INFO", "UISystemInitializer: Already initialized");
                     return true;
                 }
             }
 
             try
             {
-                ModernLoggingSystem.Log("INFO", "UISystemInitializer: Starting UI system initialization");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "UISystemInitializer: Starting UI system initialization");
                 
                 // Phase 1: Initialize font management
                 var fontInitSuccess = await InitializeFontSystemAsync();
                 if (!fontInitSuccess)
                 {
-                    ModernLoggingSystem.Log("ERROR", "UISystemInitializer: Font system initialization failed");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "UISystemInitializer: Font system initialization failed");
                     return false;
                 }
 
@@ -69,7 +69,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
                 var elementFactorySuccess = InitializeElementFactories();
                 if (!elementFactorySuccess)
                 {
-                    ModernLoggingSystem.Log("ERROR", "UISystemInitializer: Element factory initialization failed");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "UISystemInitializer: Element factory initialization failed");
                     return false;
                 }
 
@@ -77,7 +77,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
                 var componentRegistrationSuccess = RegisterUIComponents();
                 if (!componentRegistrationSuccess)
                 {
-                    ModernLoggingSystem.Log("ERROR", "UISystemInitializer: Component registration failed");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "UISystemInitializer: Component registration failed");
                     return false;
                 }
 
@@ -85,7 +85,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
                 var eventSystemSuccess = InitializeEventSystems();
                 if (!eventSystemSuccess)
                 {
-                    ModernLoggingSystem.Log("ERROR", "UISystemInitializer: Event system initialization failed");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "UISystemInitializer: Event system initialization failed");
                     return false;
                 }
 
@@ -94,12 +94,12 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
                     _initialized = true;
                 }
 
-                ModernLoggingSystem.Log("INFO", "UISystemInitializer: UI system initialization completed successfully");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "UISystemInitializer: UI system initialization completed successfully");
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"UISystemInitializer: Critical initialization failure - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UISystemInitializer: Critical initialization failure - {ex.Message}");
                 return false;
             }
         }
@@ -112,7 +112,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
         {
             try
             {
-                ModernLoggingSystem.Log("DEBUG", "UISystemInitializer: Initializing font system");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "UISystemInitializer: Initializing font system");
                 
                 await FontManager.InitializeAsync();
                 
@@ -127,18 +127,18 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
 
                 if (allFontsLoaded)
                 {
-                    ModernLoggingSystem.Log("DEBUG", "UISystemInitializer: All fonts loaded successfully");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "UISystemInitializer: All fonts loaded successfully");
                     return true;
                 }
                 else
                 {
-                    ModernLoggingSystem.Log("WARNING", "UISystemInitializer: Some fonts failed to load");
+                    Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "UISystemInitializer: Some fonts failed to load");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"UISystemInitializer: Font system initialization failed - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UISystemInitializer: Font system initialization failed - {ex.Message}");
                 return false;
             }
         }
@@ -151,17 +151,17 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
         {
             try
             {
-                ModernLoggingSystem.Log("DEBUG", "UISystemInitializer: Initializing UI element factories");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "UISystemInitializer: Initializing UI element factories");
                 
                 // Initialize UI element factories
                 UIElementFactory.Initialize();
                 
-                ModernLoggingSystem.Log("DEBUG", "UISystemInitializer: UI element factories initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "UISystemInitializer: UI element factories initialized");
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"UISystemInitializer: Element factory initialization failed - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UISystemInitializer: Element factory initialization failed - {ex.Message}");
                 return false;
             }
         }
@@ -174,7 +174,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
         {
             try
             {
-                ModernLoggingSystem.Log("DEBUG", "UISystemInitializer: Registering UI components");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "UISystemInitializer: Registering UI components");
                 
                 // Register core UI components
                 UIComponentRegistry.RegisterComponent<HUDController>();
@@ -182,12 +182,12 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
                 UIComponentRegistry.RegisterComponent<UpgradePanel>();
                 UIComponentRegistry.RegisterComponent<PlacementInfoDisplay>();
                 
-                ModernLoggingSystem.Log("DEBUG", "UISystemInitializer: UI components registered successfully");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "UISystemInitializer: UI components registered successfully");
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"UISystemInitializer: Component registration failed - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UISystemInitializer: Component registration failed - {ex.Message}");
                 return false;
             }
         }
@@ -200,17 +200,17 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
         {
             try
             {
-                ModernLoggingSystem.Log("DEBUG", "UISystemInitializer: Initializing UI event systems");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "UISystemInitializer: Initializing UI event systems");
                 
                 // Initialize event routing and handling
                 UIEventSystem.Initialize();
                 
-                ModernLoggingSystem.Log("DEBUG", "UISystemInitializer: UI event systems initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "UISystemInitializer: UI event systems initialized");
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"UISystemInitializer: Event system initialization failed - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UISystemInitializer: Event system initialization failed - {ex.Message}");
                 return false;
             }
         }

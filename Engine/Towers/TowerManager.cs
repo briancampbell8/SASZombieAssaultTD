@@ -26,7 +26,7 @@ namespace SASZombieAssaultTD.Engine.Towers
     /// </summary>
     public class TowerManager
     {
-        #region Private Fields
+        ///  Private Fields
 
         private readonly List<Tower> _towers = new List<Tower>();
         private readonly ECSWorld _ecsWorld;
@@ -34,9 +34,9 @@ namespace SASZombieAssaultTD.Engine.Towers
         private uint _nextTowerId = 1;
         private bool _isInitialized = false;
 
-        #endregion
+        /// 
 
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Gets all active towers.
@@ -53,9 +53,9 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// </summary>
         public uint NextTowerId => _nextTowerId;
 
-        #endregion
+        /// 
 
-        #region Constructor
+        ///  Constructor
 
         /// <summary>
         /// Initializes the tower manager.
@@ -70,9 +70,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             Initialize();
         }
 
-        #endregion
+        /// 
 
-        #region Initialization
+        ///  Initialization
 
         /// <summary>
         /// Initialize the tower manager.
@@ -81,13 +81,13 @@ namespace SASZombieAssaultTD.Engine.Towers
         {
             if (_isInitialized) return;
 
-            ModernLoggingSystem.Log("INFO", "TowerManager: Initializing tower management system");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "TowerManager: Initializing tower management system");
             _isInitialized = true;
         }
 
-        #endregion
+        /// 
 
-        #region Tower Lifecycle Management
+        ///  Tower Lifecycle Management
 
         /// <summary>
         /// Places a new tower at the specified position.
@@ -99,13 +99,13 @@ namespace SASZombieAssaultTD.Engine.Towers
         {
             if (!ValidatePlacement(position, towerType))
             {
-                ModernLoggingSystem.Log("WARNING", "TowerManager: Failed to place tower at {position}: Invalid placement");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "TowerManager: Failed to place tower at {position}: Invalid placement");
                 return null;
             }
 
             if (!CanAffordTower(towerType))
             {
-                ModernLoggingSystem.Log("WARNING", "TowerManager: Failed to place tower at {position}: Cannot afford");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "TowerManager: Failed to place tower at {position}: Cannot afford");
                 return null;
             }
 
@@ -132,7 +132,7 @@ namespace SASZombieAssaultTD.Engine.Towers
                 var cost = GetTowerCost(towerType);
                 EconomyManager.RemoveCash(cost);
                 
-                ModernLoggingSystem.Log("INFO", "TowerManager: Placed {towerType} tower at {position} (ID: {towerId})");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "TowerManager: Placed {towerType} tower at {position} (ID: {towerId})");
                 
                 // Fire event
                 OnTowerPlaced?.Invoke(tower);
@@ -141,7 +141,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", "TowerManager: Error placing tower: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "TowerManager: Error placing tower: {ex.Message}");
                 return null;
             }
         }
@@ -157,13 +157,13 @@ namespace SASZombieAssaultTD.Engine.Towers
             var tower = GetTower(towerId);
             if (tower == null)
             {
-                ModernLoggingSystem.Log("WARNING", "TowerManager: Cannot upgrade tower {towerId}: Tower not found");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "TowerManager: Cannot upgrade tower {towerId}: Tower not found");
                 return false;
             }
 
             if (!CanAffordUpgrade(upgrade))
             {
-                ModernLoggingSystem.Log("WARNING", "TowerManager: Cannot upgrade tower {towerId}: Cannot afford upgrade");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "TowerManager: Cannot upgrade tower {towerId}: Cannot afford upgrade");
                 return false;
             }
 
@@ -175,7 +175,7 @@ namespace SASZombieAssaultTD.Engine.Towers
                 // Deduct cost
                 EconomyManager.RemoveCash(upgrade.Cost);
                 
-                ModernLoggingSystem.Log("INFO", "TowerManager: Upgraded tower {towerId} with {upgrade.Type}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "TowerManager: Upgraded tower {towerId} with {upgrade.Type}");
                 
                 // Fire event
                 OnTowerUpgraded?.Invoke(tower, upgrade);
@@ -184,7 +184,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", "TowerManager: Error upgrading tower {towerId}: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "TowerManager: Error upgrading tower {towerId}: {ex.Message}");
                 return false;
             }
         }
@@ -199,7 +199,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             var tower = GetTower(towerId);
             if (tower == null)
             {
-                ModernLoggingSystem.Log("WARNING", "TowerManager: Cannot destroy tower {towerId}: Tower not found");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "TowerManager: Cannot destroy tower {towerId}: Tower not found");
                 return false;
             }
 
@@ -230,7 +230,7 @@ namespace SASZombieAssaultTD.Engine.Towers
                 var refund = GetTowerRefund(tower.Type);
                 EconomyManager.AddCash(refund);
                 
-                ModernLoggingSystem.Log("INFO", "TowerManager: Destroyed tower {towerId} at {tower.Position}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "TowerManager: Destroyed tower {towerId} at {tower.Position}");
                 
                 // Fire event
                 OnTowerDestroyed?.Invoke(tower);
@@ -239,14 +239,14 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", "TowerManager: Error destroying tower {towerId}: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "TowerManager: Error destroying tower {towerId}: {ex.Message}");
                 return false;
             }
         }
 
-        #endregion
+        /// 
 
-        #region Tower Queries
+        ///  Tower Queries
 
         /// <summary>
         /// Gets a tower by ID.
@@ -279,9 +279,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             return _towers.Where(t => t.Type == towerType);
         }
 
-        #endregion
+        /// 
 
-        #region Placement Validation
+        ///  Placement Validation
 
         /// <summary>
         /// Validates if a tower can be placed at the specified position.
@@ -365,9 +365,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             return 2.0f; // Default minimum distance
         }
 
-        #endregion
+        /// 
 
-        #region Economy Integration
+        ///  Economy Integration
 
         /// <summary>
         /// Checks if the player can afford a tower.
@@ -419,9 +419,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             return (int)(cost * 0.5f); // 50% refund
         }
 
-        #endregion
+        /// 
 
-        #region Events
+        ///  Events
 
         /// <summary>
         /// Event fired when a tower is placed.
@@ -438,22 +438,22 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// </summary>
         public event Action<Tower> OnTowerDestroyed;
 
-        #endregion
+        /// 
 
-        #region Cleanup
+        ///  Cleanup
 
         /// <summary>
         /// Cleans up the tower manager.
         /// </summary>
         public void Cleanup()
         {
-            ModernLoggingSystem.Log("INFO", "TowerManager: Cleaning up tower management system");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "TowerManager: Cleaning up tower management system");
             
             _towers.Clear();
             _nextTowerId = 1;
             _isInitialized = false;
         }
 
-        #endregion
+        /// 
     }
 }

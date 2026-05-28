@@ -18,7 +18,7 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// </summary>
         public static object GetTowerData(string towerType)
         {
-            ModernLoggingSystem.Log("INFO", $"TowerDatabase: Getting data for {towerType}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"TowerDatabase: Getting data for {towerType}");
             // Placeholder implementation
             return new object();
         }

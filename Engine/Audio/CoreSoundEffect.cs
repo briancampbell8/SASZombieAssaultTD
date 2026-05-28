@@ -61,7 +61,7 @@ namespace SASZombieAssaultTD.Engine.Audio
     /// </summary>
     public class CoreSoundEffect
     {
-        #region Private Fields
+        ///  Private Fields
         private readonly string _soundName;
         private readonly float _duration;
         private readonly ConcurrentDictionary<uint, SoundEffectParameters> _activeEffects = new();
@@ -69,9 +69,9 @@ namespace SASZombieAssaultTD.Engine.Audio
         private uint _nextId = 1;
         private bool _isLoaded;
         private float _masterVolume = 1f;
-        #endregion
+        /// 
 
-        #region Public Properties
+        ///  Public Properties
         public string SoundName => _soundName;
         public float Duration => _duration;
         public bool IsLoaded => _isLoaded;
@@ -82,9 +82,9 @@ namespace SASZombieAssaultTD.Engine.Audio
         }
 
         public int ActiveEffectCount => _activeEffects.Count;
-        #endregion
+        /// 
 
-        #region Constructor
+        ///  Constructor
         public CoreSoundEffect(string soundName, float duration = 2f)
         {
             _soundName = soundName ?? throw new ArgumentNullException(nameof(soundName));
@@ -99,9 +99,9 @@ namespace SASZombieAssaultTD.Engine.Audio
             // Simulate loading
             _isLoaded = LoadSoundData(soundName);
         }
-        #endregion
+        /// 
 
-        #region Public Methods
+        ///  Public Methods
         public uint Play(Vector3 position, SoundEffectParameters parameters = default)
         {
             if (!_isLoaded) return 0;
@@ -256,20 +256,20 @@ namespace SASZombieAssaultTD.Engine.Audio
             StopAll();
             _isLoaded = false;
         }
-        #endregion
+        /// 
 
-        #region Private Methods
+        ///  Private Methods
         private uint GetNextId() => _availableIds.TryDequeue(out var id) ? id : _nextId++;
 
         private void ReturnId(uint id) => _availableIds.Enqueue(id);
 
         private bool LoadSoundData(string soundName) => !string.IsNullOrEmpty(soundName);
-        #endregion
+        /// 
 
-        #region Static Methods
+        ///  Static Methods
         public static CoreSoundEffect Load(string soundName) => new(soundName);
 
         public static CoreSoundEffect Load(string soundName, float duration) => new(soundName, duration);
-        #endregion
+        /// 
     }
 }

@@ -67,7 +67,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             _mouseDelta = new System.Drawing.PointF(0, 0);
             _mouseWheelDelta = 0f;
 
-            Console.WriteLine($"UIInputState: Initialized with {mouseButtonCount} mouse buttons and {keyCount} keys");
+            System.Diagnostics.Debug.WriteLine($"UIInputState: Initialized with {mouseButtonCount} mouse buttons and {keyCount} keys");
         }
 
         /// <summary>
@@ -96,11 +96,11 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 Array.Copy(mouseButtons, _mouseButtons, System.Math.Min(mouseButtons.Length, _mouseButtons.Length));
                 Array.Copy(keys, _keys, System.Math.Min(keys.Length, _keys.Length));
 
-                Console.WriteLine($"UIInputState: Updated input state");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Updated input state");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputState: Error updating input state - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Error updating input state - {ex.Message}");
             }
         }
 
@@ -118,12 +118,12 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     return _mouseButtons[buttonIndex];
                 }
 
-                Console.WriteLine($"UIInputState: Invalid mouse button index {buttonIndex}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Invalid mouse button index {buttonIndex}");
                 return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputState: Error checking mouse button - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Error checking mouse button - {ex.Message}");
                 return false;
             }
         }
@@ -143,12 +143,12 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     return _mouseButtons[buttonIndex] && !_previousMouseButtons[buttonIndex];
                 }
 
-                Console.WriteLine($"UIInputState: Invalid mouse button index {buttonIndex}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Invalid mouse button index {buttonIndex}");
                 return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputState: Error checking just pressed mouse button - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Error checking just pressed mouse button - {ex.Message}");
                 return false;
             }
         }
@@ -168,12 +168,12 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     return !_mouseButtons[buttonIndex] && _previousMouseButtons[buttonIndex];
                 }
 
-                Console.WriteLine($"UIInputState: Invalid mouse button index {buttonIndex}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Invalid mouse button index {buttonIndex}");
                 return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputState: Error checking just released mouse button - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Error checking just released mouse button - {ex.Message}");
                 return false;
             }
         }
@@ -192,12 +192,12 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     return _keys[keyCode];
                 }
 
-                Console.WriteLine($"UIInputState: Invalid key code {keyCode}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Invalid key code {keyCode}");
                 return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputState: Error checking key - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Error checking key - {ex.Message}");
                 return false;
             }
         }
@@ -217,12 +217,12 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     return _keys[keyCode] && !_previousKeys[keyCode];
                 }
 
-                Console.WriteLine($"UIInputState: Invalid key code {keyCode}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Invalid key code {keyCode}");
                 return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputState: Error checking just pressed key - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Error checking just pressed key - {ex.Message}");
                 return false;
             }
         }
@@ -242,12 +242,12 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     return !_keys[keyCode] && _previousKeys[keyCode];
                 }
 
-                Console.WriteLine($"UIInputState: Invalid key code {keyCode}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Invalid key code {keyCode}");
                 return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputState: Error checking just released key - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Error checking just released key - {ex.Message}");
                 return false;
             }
         }
@@ -268,11 +268,11 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 _mouseDelta = new System.Drawing.PointF(0, 0);
                 _mouseWheelDelta = 0f;
 
-                Console.WriteLine("UIInputState: Cleared all input state");
+                System.Diagnostics.Debug.WriteLine("UIInputState: Cleared all input state");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputState: Error clearing input state - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Error clearing input state - {ex.Message}");
             }
         }
 
@@ -303,7 +303,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIInputState: Error creating string representation - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIInputState: Error creating string representation - {ex.Message}");
                 return "UIInputState: Error";
             }
         }

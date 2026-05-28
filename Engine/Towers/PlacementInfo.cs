@@ -15,7 +15,7 @@ namespace SASZombieAssaultTD.Engine.Towers
     /// </summary>
     public class PlacementInfo
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Grid position where tower is being placed.
@@ -86,9 +86,9 @@ namespace SASZombieAssaultTD.Engine.Towers
         public float Damage { get; set; }
         public float FireRate { get; set; }
 
-        #endregion
+        /// 
 
-        #region Constructor
+        ///  Constructor
 
         /// <summary>
         /// Creates a new placement info instance.
@@ -102,9 +102,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             TowerData = towerData ?? throw new System.ArgumentNullException(nameof(towerData));
         }
 
-        #endregion
+        /// 
 
-        #region Methods
+        ///  Methods
 
         /// <summary>
         /// Adds a warning message.
@@ -140,6 +140,6 @@ namespace SASZombieAssaultTD.Engine.Towers
             return details;
         }
 
-        #endregion
+        /// 
     }
 }

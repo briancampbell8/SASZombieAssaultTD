@@ -35,7 +35,7 @@ namespace SASZombieAssaultTD.Engine.ECS
     /// </summary>
     public abstract class ECSSystem
     {
-        #region Public Properties
+        ///  Public Properties
 
         /// <summary>
         /// Indicates whether the system is enabled.
@@ -62,9 +62,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// </summary>
         public uint UpdateCount { get; private set; }
 
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
 
         protected ECSSystem(SystemPriority priority = SystemPriority.Normal)
         {
@@ -75,9 +75,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             UpdateCount = 0;
         }
 
-        #endregion
+        /// 
 
-        #region Instance Properties
+        ///  Instance Properties
 
         /// <summary>
         /// Indicates whether the system is disabled.
@@ -89,9 +89,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// </summary>
         public bool IsReady => IsEnabled && IsInitialized;
 
-        #endregion
+        /// 
 
-        #region Instance Methods
+        ///  Instance Methods
 
         /// <summary>
         /// Initializes the system.
@@ -190,9 +190,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         public override string ToString() =>
             $"{GetType().Name}(Priority:{Priority}, Enabled:{IsEnabled}, Initialized:{IsInitialized})";
 
-        #endregion
+        /// 
 
-        #region Virtual Methods
+        ///  Virtual Methods
 
         protected virtual void OnInitialize() { }
         protected virtual void OnUpdate(float deltaTime) { }
@@ -202,7 +202,7 @@ namespace SASZombieAssaultTD.Engine.ECS
         protected virtual void OnDestroy() { }
         protected virtual void OnReset() { }
 
-        #endregion
+        /// 
     }
 
     /// <summary>
@@ -210,13 +210,13 @@ namespace SASZombieAssaultTD.Engine.ECS
     /// </summary>
     public abstract class ECSSystem<T> : ECSSystem where T : ECSSystem<T>
     {
-        #region Constructors
+        ///  Constructors
 
         protected ECSSystem(SystemPriority priority = SystemPriority.Normal) : base(priority) { }
 
-        #endregion
+        /// 
 
-        #region Type Safety
+        ///  Type Safety
 
         /// <summary>
         /// Creates a new instance of the system with the specified priority.
@@ -226,7 +226,7 @@ namespace SASZombieAssaultTD.Engine.ECS
         public T WithPriority(SystemPriority priority) =>
             (T)Activator.CreateInstance(typeof(T), priority);
 
-        #endregion
+        /// 
     }
 
     /// <summary>
@@ -234,7 +234,7 @@ namespace SASZombieAssaultTD.Engine.ECS
     /// </summary>
     public static class ECSSystemFactory
     {
-        #region Static Methods
+        ///  Static Methods
 
         /// <summary>
         /// Creates a new instance of a typed system.
@@ -264,6 +264,6 @@ namespace SASZombieAssaultTD.Engine.ECS
             return system;
         }
 
-        #endregion
+        /// 
     }
 }

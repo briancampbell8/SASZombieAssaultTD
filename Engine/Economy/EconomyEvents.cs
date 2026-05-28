@@ -107,7 +107,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             var args = new CashChangedEventArgs(oldAmount, newAmount, source);
             OnCashChanged?.Invoke(null, args);
-            ModernLoggingSystem.Log("INFO", $"EconomyEvents: Cash changed from {oldAmount} to {newAmount} via {source}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EconomyEvents: Cash changed from {oldAmount} to {newAmount} via {source}");
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             var args = new PurchaseEventArgs(itemId, itemName, cost, false);
             OnPurchaseAttempted?.Invoke(null, args);
-            ModernLoggingSystem.Log("INFO", $"EconomyEvents: Purchase attempted - {itemName} ({cost})");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EconomyEvents: Purchase attempted - {itemName} ({cost})");
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.Economy
                 OnInsufficientFunds?.Invoke(null, args);
             }
 
-            ModernLoggingSystem.Log("INFO", $"EconomyEvents: Purchase {(isSuccessful ? "completed" : "failed")} - {itemName} ({cost})");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EconomyEvents: Purchase {(isSuccessful ? "completed" : "failed")} - {itemName} ({cost})");
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             var args = new EconomyStateEventArgs(stateName, stateData);
             OnEconomyStateChanged?.Invoke(null, args);
-            ModernLoggingSystem.Log("INFO", $"EconomyEvents: State changed to {stateName}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EconomyEvents: State changed to {stateName}");
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         public static void TriggerTransactionCompleted(Transaction transaction)
         {
             OnTransactionCompleted?.Invoke(null, transaction);
-            ModernLoggingSystem.Log("INFO", $"EconomyEvents: Transaction completed - {transaction}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EconomyEvents: Transaction completed - {transaction}");
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             OnInsufficientFunds = null;
             OnEconomyStateChanged = null;
             OnTransactionCompleted = null;
-            ModernLoggingSystem.Log("INFO", "EconomyEvents: All events cleared");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "EconomyEvents: All events cleared");
         }
     }
 }

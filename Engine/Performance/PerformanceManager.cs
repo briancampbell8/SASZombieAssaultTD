@@ -48,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         {
             if (_isInitialized) return;
 
-            Console.WriteLine("Initializing Performance Manager");
+            System.Diagnostics.Debug.WriteLine("Initializing Performance Manager");
 
             try
             {
@@ -62,11 +62,11 @@ namespace SASZombieAssaultTD.Engine.Performance
                 SetInitialBudget();
 
                 _isInitialized = true;
-                Console.WriteLine("Performance Manager initialized successfully");
+                System.Diagnostics.Debug.WriteLine("Performance Manager initialized successfully");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to initialize Performance Manager: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to initialize Performance Manager: {ex.Message}");
                 throw;
             }
         }
@@ -98,7 +98,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating Performance Manager: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error updating Performance Manager: {ex.Message}");
             }
         }
 
@@ -171,20 +171,21 @@ namespace SASZombieAssaultTD.Engine.Performance
         /// </summary>
         private void InitializeObjectPools()
         {
-            Console.WriteLine("Initializing object pools");
+            System.Diagnostics.Debug.WriteLine("Initializing object pools");
 
             // Create specialized pools for common game objects
             _pools["Projectile"] = new ProjectilePool();
             _pools["Enemy"] = new EnemyPool();
             _pools["Effect"] = new ObjectPool<object>();
 
-            // Create generic pools for other objects
-            _pools["Tower"] = new ObjectPool<Tower>();
+            // Create generic pools for other objects - changed to object to support abstract types
+            _pools["Tower"] = new ObjectPool<object>();
             _pools["Grenade"] = new ObjectPool<object>();
-            _pools["Particle"] = new ObjectPool<Particle>();
+            _pools["Particle"] = new ObjectPool<object>();
 
-            Console.WriteLine($"Initialized {_pools.Count} object pools");
+            System.Diagnostics.Debug.WriteLine($"Initialized {_pools.Count} object pools");
         }
+
 
         /// <summary>
         /// Initialize performance monitoring systems.
@@ -221,7 +222,7 @@ namespace SASZombieAssaultTD.Engine.Performance
                 _budget.MaxEffects = 100;
             }
 
-            Console.WriteLine($"Performance budget set: {_budget}");
+            System.Diagnostics.Debug.WriteLine($"Performance budget set: {_budget}");
         }
 
         /// <summary>
@@ -229,7 +230,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         /// </summary>
         private void HandlePerformanceIssue()
         {
-            Console.WriteLine("Performance issue detected, optimizing...");
+            System.Diagnostics.Debug.WriteLine("Performance issue detected, optimizing...");
 
             // Reduce pool sizes
             foreach (var kvp in _pools)

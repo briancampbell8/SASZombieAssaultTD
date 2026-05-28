@@ -27,7 +27,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _startingLives = 20;
             _maxLives = 50;
             _currentLives = _startingLives;
-            ModernLoggingSystem.Log("INFO", $"PlayerLives: Initialized with {_startingLives} starting lives");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlayerLives: Initialized with {_startingLives} starting lives");
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _startingLives = System.Math.Max(1, System.Math.Min(lives, _maxLives));
             _currentLives = _startingLives;
             OnLivesChanged?.Invoke(_currentLives);
-            ModernLoggingSystem.Log("INFO", $"PlayerLives: Set starting lives to {_startingLives}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlayerLives: Set starting lives to {_startingLives}");
         }
 
         /// <summary>
@@ -80,12 +80,12 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _currentLives = System.Math.Max(0, _currentLives - amount);
             OnLivesChanged?.Invoke(_currentLives);
-            ModernLoggingSystem.Log("INFO", $"PlayerLives: Removed {amount} life(s) - Remaining: {_currentLives}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlayerLives: Removed {amount} life(s) - Remaining: {_currentLives}");
 
             if (_currentLives <= 0)
             {
                 OnGameOver?.Invoke();
-                ModernLoggingSystem.Log("WARNING", "PlayerLives: Game over - No lives remaining");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "PlayerLives: Game over - No lives remaining");
             }
         }
 
@@ -97,7 +97,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _currentLives = System.Math.Min(_maxLives, _currentLives + amount);
             OnLivesChanged?.Invoke(_currentLives);
-            ModernLoggingSystem.Log("INFO", $"PlayerLives: Added {amount} life(s) - Total: {_currentLives}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlayerLives: Added {amount} life(s) - Total: {_currentLives}");
         }
 
         /// <summary>
@@ -108,12 +108,12 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _currentLives = System.Math.Max(0, System.Math.Min(lives, _maxLives));
             OnLivesChanged?.Invoke(_currentLives);
-            ModernLoggingSystem.Log("INFO", $"PlayerLives: Set lives to {_currentLives}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlayerLives: Set lives to {_currentLives}");
 
             if (_currentLives <= 0)
             {
                 OnGameOver?.Invoke();
-                ModernLoggingSystem.Log("WARNING", "PlayerLives: Game over - No lives remaining");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "PlayerLives: Game over - No lives remaining");
             }
         }
 
@@ -124,7 +124,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _currentLives = _startingLives;
             OnLivesChanged?.Invoke(_currentLives);
-            ModernLoggingSystem.Log("INFO", $"PlayerLives: Reset to starting lives - {_currentLives}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlayerLives: Reset to starting lives - {_currentLives}");
         }
 
         /// <summary>

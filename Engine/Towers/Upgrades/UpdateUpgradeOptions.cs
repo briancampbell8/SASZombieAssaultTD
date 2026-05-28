@@ -25,7 +25,7 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
             {
                 if (tower == null)
                 {
-                    ModernLoggingSystem.Log("ERROR", "UpdateUpgradeOptions: Tower is null");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "UpdateUpgradeOptions: Tower is null");
                     return new List<object>();
                 }
                 
@@ -33,12 +33,12 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
                 var filteredUpgrades = FilterUpgradesByPrerequisites(availableUpgrades, tower);
                 var sortedUpgrades = SortUpgradesByPriority(filteredUpgrades);
                 
-                ModernLoggingSystem.Log("INFO", $"UpdateUpgradeOptions: Updated {sortedUpgrades.Count} upgrade options for tower");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"UpdateUpgradeOptions: Updated {sortedUpgrades.Count} upgrade options for tower");
                 return sortedUpgrades;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"UpdateUpgradeOptions: Failed to update upgrade options - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UpdateUpgradeOptions: Failed to update upgrade options - {ex.Message}");
                 return new List<object>();
             }
         }
@@ -62,12 +62,12 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
                     allUpgradeOptions[towerType] = options;
                 }
                 
-                ModernLoggingSystem.Log("INFO", $"UpdateUpgradeOptions: Updated upgrade options for {allUpgradeOptions.Count} tower types");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"UpdateUpgradeOptions: Updated upgrade options for {allUpgradeOptions.Count} tower types");
                 return allUpgradeOptions;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"UpdateUpgradeOptions: Failed to update all upgrade options - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UpdateUpgradeOptions: Failed to update all upgrade options - {ex.Message}");
                 return new Dictionary<string, List<object>>();
             }
         }
@@ -92,12 +92,12 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
                     }
                 }
                 
-                ModernLoggingSystem.Log("INFO", $"UpdateUpgradeOptions: Found {availableUpgrades.Count} upgrades available at level {playerLevel}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"UpdateUpgradeOptions: Found {availableUpgrades.Count} upgrades available at level {playerLevel}");
                 return availableUpgrades;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"UpdateUpgradeOptions: Failed to update upgrade options by level - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UpdateUpgradeOptions: Failed to update upgrade options by level - {ex.Message}");
                 return new List<object>();
             }
         }
@@ -122,12 +122,12 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
                     }
                 }
                 
-                ModernLoggingSystem.Log("INFO", $"UpdateUpgradeOptions: Found {affordableUpgrades.Count} affordable upgrades");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"UpdateUpgradeOptions: Found {affordableUpgrades.Count} affordable upgrades");
                 return affordableUpgrades;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"UpdateUpgradeOptions: Failed to update upgrade options by resources - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UpdateUpgradeOptions: Failed to update upgrade options by resources - {ex.Message}");
                 return new List<object>();
             }
         }
@@ -229,7 +229,7 @@ namespace SASZombieAssaultTD.Engine.Towers.Upgrades
         /// </summary>
         public static void ForceRefresh()
         {
-            ModernLoggingSystem.Log("INFO", "UpdateUpgradeOptions: Force refreshing all upgrade options");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "UpdateUpgradeOptions: Force refreshing all upgrade options");
             // Placeholder implementation for force refresh
         }
         

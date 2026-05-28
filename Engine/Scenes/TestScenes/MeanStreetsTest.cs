@@ -40,14 +40,15 @@ namespace SASZombieAssaultTD.Engine.Scenes.TestScenes
         public void ConfigureDefaultSpawns()
         {
             SpawnPoints.Clear();
-            SpawnPoints.Add(new Vector3(100f, 100f, 0f));
-            SpawnPoints.Add(new Vector3(200f, 150f, 0f));
-            SpawnPoints.Add(new Vector3(300f, 200f, 0f));
+            SpawnPoints.Add(new PointF { x = 100f, y = 100f });
+            SpawnPoints.Add(new PointF { x = 200f, y = 150f });
+            SpawnPoints.Add(new PointF { x = 300f, y = 200f });
         }
+
 
         public void Run()
         {
-            Console.WriteLine("[MeanStreetsTest] Running test scene with " + SpawnPoints.Count + " spawn points.");
+            System.Diagnostics.Debug.WriteLine("[MeanStreetsTest] Running test scene with " + SpawnPoints.Count + " spawn points.");
         }
     }
 }

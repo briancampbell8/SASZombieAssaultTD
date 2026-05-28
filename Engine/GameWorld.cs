@@ -22,7 +22,7 @@ namespace SASZombieAssaultTD.Engine
         
         private GameWorld()
         {
-            ModernLoggingSystem.Log("INFO", "GameWorld: Initialized");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "GameWorld: Initialized");
         }
         
         /// <summary>
@@ -31,7 +31,7 @@ namespace SASZombieAssaultTD.Engine
         public void AddEntity(object entity)
         {
             _entities.Add(entity);
-            ModernLoggingSystem.Log("INFO", $"GameWorld: Added entity {entity.GetType().Name}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"GameWorld: Added entity {entity.GetType().Name}");
         }
         
         /// <summary>
@@ -40,7 +40,7 @@ namespace SASZombieAssaultTD.Engine
         public void RemoveEntity(object entity)
         {
             _entities.Remove(entity);
-            ModernLoggingSystem.Log("INFO", $"GameWorld: Removed entity {entity.GetType().Name}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"GameWorld: Removed entity {entity.GetType().Name}");
         }
     }
 }

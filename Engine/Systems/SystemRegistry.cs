@@ -16,16 +16,16 @@ namespace SASZombieAssaultTD.Engine.Systems
     /// </summary>
     public sealed class SystemRegistry : SASZombieAssaultTD.Engine.Interfaces.ISystemRegistry
     {
-        #region Private Fields
+        ///  Private Fields
 
         private readonly Dictionary<Type, object> _services = new();
         private readonly Dictionary<Type, ServiceStatus> _serviceStatuses = new();
         private int _initializedServices = 0;
         private int _failedServices = 0;
 
-        #endregion
+        /// 
 
-        #region Service Registration
+        ///  Service Registration
 
         /// <summary>
         /// Registers a service with the registry.
@@ -69,9 +69,9 @@ namespace SASZombieAssaultTD.Engine.Systems
             return _services.Values;
         }
 
-        #endregion
+        /// 
 
-        #region ISystemRegistry Implementation
+        ///  ISystemRegistry Implementation
 
         /// <summary>
         /// Retrieves a system of type T from the registry.
@@ -137,9 +137,9 @@ namespace SASZombieAssaultTD.Engine.Systems
             InitializeAll();
         }
 
-        #endregion
+        /// 
 
-        #region Service Lifecycle
+        ///  Service Lifecycle
 
         /// <summary>
         /// Initializes all registered services.
@@ -187,9 +187,9 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
         }
 
-        #endregion
+        /// 
 
-        #region Statistics
+        ///  Statistics
 
         /// <summary>
         /// Gets system registry statistics.
@@ -205,7 +205,7 @@ namespace SASZombieAssaultTD.Engine.Systems
             };
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

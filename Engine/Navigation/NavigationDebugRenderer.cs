@@ -91,7 +91,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
             ShowFlowFields = true;
             ShowStats = true;
 
-            ModernLoggingSystem.Log("INFO", "NavigationDebugRenderer: Initialized");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "NavigationDebugRenderer: Initialized");
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"NavigationDebugRenderer: Error during rendering: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"NavigationDebugRenderer: Error during rendering: {ex.Message}");
             }
         }
 

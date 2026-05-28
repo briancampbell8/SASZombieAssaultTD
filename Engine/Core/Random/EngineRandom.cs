@@ -12,8 +12,10 @@ Notes:   This is the canonical random system for the entire engine.
          All random operations should use this unified EngineRandom system.
 */
 
-using System;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.VectorMath;
+using System;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.Core.Random
 {
@@ -23,7 +25,7 @@ namespace SASZombieAssaultTD.Engine.Core.Random
     /// </summary>
     public static class EngineRandom
     {
-        #region Private Fields
+        ///  Private Fields
         
         private static readonly System.Random _globalRandom = new System.Random();
         private static System.Random? _deterministicRandom;
@@ -33,11 +35,13 @@ namespace SASZombieAssaultTD.Engine.Core.Random
         
         // Thread-local random for performance
         [ThreadStatic] private static System.Random? _threadLocalRandom;
-        
-        #endregion
+        private static object TheType;
+        private static object TheMember;
 
-        #region Public Properties
-        
+        /// 
+
+        ///  Public Properties
+
         /// <summary>
         /// Whether deterministic random generation is currently enabled.
         /// </summary>
@@ -48,9 +52,9 @@ namespace SASZombieAssaultTD.Engine.Core.Random
         /// </summary>
         public static int? DeterministicSeed => _deterministicSeed;
         
-        #endregion
+        /// 
 
-        #region Basic Random Methods
+        ///  Basic Random Methods
         
         /// <summary>
         /// Returns a random floating-point number between 0.0 and 1.0 (inclusive).
@@ -131,9 +135,9 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return GetCurrentRandom().Next(0, 2) == 0 ? -1 : 1;
         }
         
-        #endregion
+        /// 
 
-        #region Distribution Methods
+        ///  Distribution Methods
         
         /// <summary>
         /// Returns a random value from a normal (Gaussian) distribution.
@@ -230,9 +234,9 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return successes;
         }
         
-        #endregion
+        /// 
 
-        #region Selection Methods
+        ///  Selection Methods
         
         /// <summary>
         /// Returns a random element from the specified array.
@@ -371,9 +375,9 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return result;
         }
         
-        #endregion
+        /// 
 
-        #region Geometric Methods
+        ///  Geometric Methods
         
         /// <summary>
         /// Returns a random point on a unit circle.
@@ -463,9 +467,9 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return new Vector4(x, y, z, w);
         }
         
-        #endregion
+        /// 
 
-        #region Deterministic Control
+        ///  Deterministic Control
         
         /// <summary>
         /// Enables deterministic random generation with the specified seed.
@@ -518,9 +522,9 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return new System.Random();
         }
         
-        #endregion
+        /// 
 
-        #region Utility Methods
+        ///  Utility Methods
         
         /// <summary>
         /// Returns the current random instance based on deterministic settings.
@@ -582,11 +586,18 @@ namespace SASZombieAssaultTD.Engine.Core.Random
                 Range = max - min
             };
         }
-        
-        #endregion
 
-        #region Nested Classes
-        
+        internal static System.Numerics.Vector2 RangeVector2(float v1, float v2)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
+
+        /// 
+
+        ///  Nested Classes
+
         /// <summary>
         /// Statistics about randomness quality.
         /// </summary>
@@ -612,6 +623,6 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             }
         }
         
-        #endregion
+        /// 
     }
 }

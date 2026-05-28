@@ -108,7 +108,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
 
             _previousLives = current;
 
-            Console.WriteLine($"Lives updated: {current}/{max}");
+            System.Diagnostics.Debug.WriteLine($"Lives updated: {current}/{max}");
         }
 
         /// <summary>

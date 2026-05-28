@@ -2,13 +2,14 @@
 File:    AnimationControllerComponent.cs
 Purpose: P11-16-02 - Animation controller component for ECS entities.
 */
-using SASZombieAssaultTD.Engine.Animation.Events;
 using SASZombieAssaultTD.Engine.Animation.Core;
+using SASZombieAssaultTD.Engine.Animation.Events;
+using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.ECS;
 using IEntity = SASZombieAssaultTD.Engine.ECS.Entity;
 
 namespace SASZombieAssaultTD.Engine.Animation.Components
@@ -46,6 +47,8 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         private string _crossFadeClipName = string.Empty;
         private int _loopCount = 0;
         internal bool IsActive;
+        private object TheContainingType;
+        private object TheContainingMember;
 
         /// <summary>
         /// Gets the name of the currently playing clip.
@@ -107,7 +110,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         /// </summary>
         public AnimationControllerComponent()
         {
-            ModernLoggingSystem.Log("DEBUG", "AnimationControllerComponent: Initialized");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "AnimationControllerComponent: Initialized");
         }
 
         /// <summary>
@@ -120,7 +123,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 throw new ArgumentNullException(nameof(clip));
 
             _clips[clip.Name] = clip;
-            ModernLoggingSystem.Log("DEBUG", $"AnimationControllerComponent: Added clip '{clip.Name}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationControllerComponent: Added clip '{clip.Name}'");
         }
 
         /// <summary>
@@ -131,7 +134,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             if (!_clips.TryGetValue(clipName, out var clip))
             {
-                ModernLoggingSystem.Log("WARNING", $"AnimationControllerComponent: Clip '{clipName}' not found");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AnimationControllerComponent: Clip '{clipName}' not found");
                 return;
             }
 
@@ -146,7 +149,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             // Fire animation started event
             OnAnimationStarted?.Invoke(this, clipName);
 
-            ModernLoggingSystem.Log("DEBUG", $"AnimationControllerComponent: Started playing '{clipName}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationControllerComponent: Started playing '{clipName}'");
         }
 
         /// <summary>
@@ -163,7 +166,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             _crossFadeDuration = 0f;
             _crossFadeClipName = string.Empty;
 
-            ModernLoggingSystem.Log("DEBUG", $"AnimationControllerComponent: Stopped animation");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationControllerComponent: Stopped animation");
         }
 
         /// <summary>
@@ -175,7 +178,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 return;
 
             _isPaused = true;
-            ModernLoggingSystem.Log("DEBUG", $"AnimationControllerComponent: Paused animation");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationControllerComponent: Paused animation");
         }
 
         /// <summary>
@@ -187,7 +190,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 return;
 
             _isPaused = false;
-            ModernLoggingSystem.Log("DEBUG", $"AnimationControllerComponent: Resumed animation");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationControllerComponent: Resumed animation");
         }
 
         /// <summary>
@@ -197,7 +200,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         public void SetSpeed(float speed)
         {
             _playbackSpeed = System.MathF.Max(0.1f, speed);
-            ModernLoggingSystem.Log("DEBUG", $"AnimationControllerComponent: Set speed to {_playbackSpeed:F2}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationControllerComponent: Set speed to {_playbackSpeed:F2}");
         }
 
         /// <summary>
@@ -209,7 +212,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             if (!_clips.TryGetValue(targetClipName, out var targetClip))
             {
-                ModernLoggingSystem.Log("WARNING", $"AnimationController: Target clip '{targetClipName}' not found for cross-fade");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AnimationController: Target clip '{targetClipName}' not found for cross-fade");
                 return;
             }
 
@@ -226,7 +229,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 _crossFadeTime = 0f;
             }
 
-            ModernLoggingSystem.Log("DEBUG", $"AnimationControllerComponent: Started cross-fade to '{targetClipName}' ({duration}s)");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationControllerComponent: Started cross-fade to '{targetClipName}' ({duration}s)");
         }
 
         /// <summary>
@@ -264,7 +267,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 var loopEvent = new AnimationEvent("Loop", "Loop", _playbackTime);
                 OnAnimationEventFired?.Invoke(this, loopEvent);
 
-                ModernLoggingSystem.Log("DEBUG", $"AnimationControllerComponent: Loop {_loopCount} for '{currentClip.Name}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationControllerComponent: Loop {_loopCount} for '{currentClip.Name}'");
             }
 
             // Check for completion
@@ -276,7 +279,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 // Fire completion event
                 OnAnimationCompleted?.Invoke(this, currentClip.Name);
 
-                ModernLoggingSystem.Log("DEBUG", $"AnimationControllerComponent: Completed '{currentClip.Name}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationControllerComponent: Completed '{currentClip.Name}'");
             }
         }
 
@@ -374,7 +377,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         public void SetParameter(string name, float value)
         {
             _parameters[name] = value;
-            ModernLoggingSystem.Log("DEBUG", $"AnimationControllerComponent: Set parameter '{name}' = {value}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationControllerComponent: Set parameter '{name}' = {value}");
         }
 
         /// <summary>
@@ -399,7 +402,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 {
                     // Fire event if we're very close to the event time
                     OnAnimationEventFired?.Invoke(this, evt);
-                    ModernLoggingSystem.Log("DEBUG", $"AnimationControllerComponent: Fired event '{evt.EventName}' at time {evt.Timestamp:F3}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationControllerComponent: Fired event '{evt.EventName}' at time {evt.Timestamp:F3}");
                 }
             }
         }
@@ -427,7 +430,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                     _crossFadeClipName = string.Empty;
 
                     OnAnimationCompleted?.Invoke(this, targetClip.Name);
-                    ModernLoggingSystem.Log("DEBUG", $"AnimationControllerComponent: Cross-fade completed to '{targetClip.Name}'");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationControllerComponent: Cross-fade completed to '{targetClip.Name}'");
                 }
             }
         }
@@ -542,16 +545,19 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
 
         internal IEnumerable<object> GetPendingEvents()
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
             throw new NotImplementedException();
         }
 
         internal void UpdatePlaybackTime(float deltaTime)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
             throw new NotImplementedException();
         }
 
         internal void ClearPendingEvents()
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
             throw new NotImplementedException();
         }
     }

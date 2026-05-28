@@ -15,9 +15,11 @@ Notes:    This file is used by Waves, AI, and difficulty scaling.
           Single responsibility: analytics management.
 */
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.HazardsControl
 {
@@ -26,6 +28,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
     /// </summary>
     public class HazardTypeBreakdown
     {
+        private static object TheType;
+        private static object TheMember;
+
         public int FireHazards { get; set; }
         public int IceHazards { get; set; }
         public int ElectricHazards { get; set; }
@@ -42,6 +47,8 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
 
         public static implicit operator Dictionary<object, object>(HazardTypeBreakdown v)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
     }
@@ -222,7 +229,7 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         /// </summary>
         public event Action<Hazard> OnHazardDestructionRecorded;
 
-        #region Private Methods
+        ///  Private Methods
 
         private float CalculateEffectivenessScore(HazardEffectivenessRecord record)
         {
@@ -256,7 +263,7 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
                 .Average(r => r.EffectivenessScore);
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>
@@ -335,6 +342,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
     /// </summary>
     public class HazardDensityData
     {
+        private object TheType;
+        private object TheMember;
+
         public float Area { get; set; }
         public int ClusterCount { get; set; }
         public List<string> NearestHazards { get; set; } = new List<string>();
@@ -342,11 +352,15 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
 
         internal object CalculateHazardDensity(Rectangle area)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         internal void UpdateDensityForNewHazard(Hazard hazard)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
     }

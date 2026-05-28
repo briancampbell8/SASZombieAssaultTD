@@ -26,17 +26,18 @@ Notes:      This system does not apply physics forces - only detection and event
            Supports both discrete and continuous collision detection modes.
 
 */
+using SASZombieAssaultTD.Engine.Components;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.ECS;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.Physics.Components;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
-using SASZombieAssaultTD.Engine.Extensions;
 using System.Linq;
 using System.Threading.Tasks;
-using SASZombieAssaultTD.Engine.Components;
-using SASZombieAssaultTD.Engine.ECS;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Physics.Components;
 
 namespace SASZombieAssaultTD.Engine.Physics
 {
@@ -52,7 +53,16 @@ namespace SASZombieAssaultTD.Engine.Physics
         public uint UpdateCount { get; private set; } = 0;
         public int ActualCollisions => _currentCollisions.Count;
 
-        int IECSSystem.Priority => throw new NotImplementedException();
+
+        int IECSSystem.Priority
+        {
+            get
+            {
+                NotImplementedGuard.Hit($"{nameof(IECSSystem)}.{nameof(IECSSystem.Priority)}: priority not implemented yet.");
+                return default; // placeholder to satisfy the compiler
+            }
+        }
+
 
         private readonly EntityManager _entityManager;
         private readonly EventRouter _eventRouting;
@@ -151,10 +161,10 @@ namespace SASZombieAssaultTD.Engine.Physics
                 var collisionA = _entityManager.GetComponent<ColliderComponent>(entityIdA);
                 var collisionB = _entityManager.GetComponent<ColliderComponent>(entityIdB);
                 var transformA = _entityManager.GetComponent<SASZombieAssaultTD.Engine.Components.TransformComponent>(entityIdA);
-                var transformB = _entityManager.GetComponent<SASZombieAssaultTD.Engine.Components.TransformComponent> (entityIdB);
- 
+                var transformB = _entityManager.GetComponent<SASZombieAssaultTD.Engine.Components.TransformComponent>(entityIdB);
+
                 if (collisionA == null || collisionB == null ||
-                    transformA.Equals(default(SASZombieAssaultTD.Engine.ECS.TransformComponent)) || transformB.Equals(default(SASZombieAssaultTD.Engine.ECS.TransformComponent)) ||
+                    transformA == null || transformB == null ||
                     !collisionA.Enabled || !collisionB.Enabled)
                 {
                     return false;

@@ -23,7 +23,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             if (_isInitialized)
                 return;
 
-            ModernLoggingSystem.Log("INFO", "MainMenuScene: Initializing main menu");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuScene: Initializing main menu");
             CreateMenuElements();
             _isInitialized = true;
         }
@@ -99,12 +99,12 @@ namespace SASZombieAssaultTD.Engine.Scenes
             // if (input.IsUpPressed)
             // {
             //     _selectedOption = (_selectedOption - 1 + _menuElements.Count) % _menuElements.Count;
-            //     ModernLoggingSystem.Log("DEBUG", $"MainMenuScene: Selected option {_selectedOption}");
+            //     Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"MainMenuScene: Selected option {_selectedOption}");
             // }
             // else if (input.IsDownPressed)
             // {
             //     _selectedOption = (_selectedOption + 1) % _menuElements.Count;
-            //     ModernLoggingSystem.Log("DEBUG", $"MainMenuScene: Selected option {_selectedOption}");
+            //     Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"MainMenuScene: Selected option {_selectedOption}");
             // }
             // else if (input.IsSelectPressed && _selectedOption >= 0 && _selectedOption < _menuElements.Count)
             // {
@@ -133,22 +133,22 @@ namespace SASZombieAssaultTD.Engine.Scenes
 
         private void OnStartGameClick()
         {
-            ModernLoggingSystem.Log("INFO", "MainMenuScene: Start Game clicked - transitioning to Gameplay");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuScene: Start Game clicked - transitioning to Gameplay");
         }
 
         private void OnOptionsClick()
         {
-            ModernLoggingSystem.Log("INFO", "MainMenuScene: Options clicked - opening options menu");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuScene: Options clicked - opening options menu");
         }
 
         private void OnQuitClick()
         {
-            ModernLoggingSystem.Log("INFO", "MainMenuScene: Quit clicked - initiating shutdown");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuScene: Quit clicked - initiating shutdown");
         }
 
         public override void Cleanup()
         {
-            ModernLoggingSystem.Log("INFO", "MainMenuScene: Cleaning up main menu");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuScene: Cleaning up main menu");
             _menuElements.Clear();
             _selectedOption = 0;
             _isInitialized = false;

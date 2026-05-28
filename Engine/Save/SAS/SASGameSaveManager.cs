@@ -47,7 +47,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         {
             if (_isInitialized) return;
 
-            Console.WriteLine("Initializing SAS Game Save Manager");
+            System.Diagnostics.Debug.WriteLine("Initializing SAS Game Save Manager");
 
             try
             {
@@ -58,11 +58,11 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 LoadAllSaves();
 
                 _isInitialized = true;
-                Console.WriteLine($"SAS Game Save Manager initialized with {_saveCache.Count} saves");
+                System.Diagnostics.Debug.WriteLine($"SAS Game Save Manager initialized with {_saveCache.Count} saves");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to initialize SAS Game Save Manager: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to initialize SAS Game Save Manager: {ex.Message}");
                 throw;
             }
         }
@@ -77,14 +77,14 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         {
             if (string.IsNullOrEmpty(saveName))
             {
-                Console.WriteLine("Save name cannot be empty");
+                System.Diagnostics.Debug.WriteLine("Save name cannot be empty");
                 return false;
             }
 
             // Check if save already exists
             if (_saveCache.ContainsKey(saveName))
             {
-                Console.WriteLine($"Save '{saveName}' already exists");
+                System.Diagnostics.Debug.WriteLine($"Save '{saveName}' already exists");
                 return false;
             }
 
@@ -111,12 +111,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 // Trigger event
                 OnSaveCreated?.Invoke(saveName);
 
-                Console.WriteLine($"Created save: {saveName}");
+                System.Diagnostics.Debug.WriteLine($"Created save: {saveName}");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error creating save '{saveName}': {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error creating save '{saveName}': {ex.Message}");
                 return false;
             }
         }
@@ -130,7 +130,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         {
             if (string.IsNullOrEmpty(saveName))
             {
-                Console.WriteLine("Save name cannot be empty");
+                System.Diagnostics.Debug.WriteLine("Save name cannot be empty");
                 return null;
             }
 
@@ -144,7 +144,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             var filePath = GetSaveFilePath(saveName);
             if (!File.Exists(filePath))
             {
-                Console.WriteLine($"Save file not found: {filePath}");
+                System.Diagnostics.Debug.WriteLine($"Save file not found: {filePath}");
                 return null;
             }
 
@@ -162,19 +162,19 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     // Trigger event
                     OnSaveLoaded?.Invoke(saveName);
 
-                    Console.WriteLine($"Loaded save: {saveName}");
+                    System.Diagnostics.Debug.WriteLine($"Loaded save: {saveName}");
                     return save;
                 }
                 else
                 {
-                    Console.WriteLine($"Failed to deserialize save: {saveName}");
+                    System.Diagnostics.Debug.WriteLine($"Failed to deserialize save: {saveName}");
                     OnSaveCorrupted?.Invoke(saveName);
                     return null;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading save '{saveName}': {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error loading save '{saveName}': {ex.Message}");
                 OnSaveCorrupted?.Invoke(saveName);
                 return null;
             }
@@ -189,13 +189,13 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         {
             if (string.IsNullOrEmpty(saveName))
             {
-                Console.WriteLine("Save name cannot be empty");
+                System.Diagnostics.Debug.WriteLine("Save name cannot be empty");
                 return false;
             }
 
             if (!_saveCache.ContainsKey(saveName))
             {
-                Console.WriteLine($"Save '{saveName}' does not exist");
+                System.Diagnostics.Debug.WriteLine($"Save '{saveName}' does not exist");
                 return false;
             }
 
@@ -219,12 +219,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 // Update cache
                 _saveCache[saveName] = save;
 
-                Console.WriteLine($"Updated save: {saveName}");
+                System.Diagnostics.Debug.WriteLine($"Updated save: {saveName}");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating save '{saveName}': {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error updating save '{saveName}': {ex.Message}");
                 return false;
             }
         }
@@ -238,13 +238,13 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         {
             if (string.IsNullOrEmpty(saveName))
             {
-                Console.WriteLine("Save name cannot be empty");
+                System.Diagnostics.Debug.WriteLine("Save name cannot be empty");
                 return false;
             }
 
             if (!_saveCache.ContainsKey(saveName))
             {
-                Console.WriteLine($"Save '{saveName}' does not exist");
+                System.Diagnostics.Debug.WriteLine($"Save '{saveName}' does not exist");
                 return false;
             }
 
@@ -264,12 +264,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 // Trigger event
                 OnSaveDeleted?.Invoke(saveName);
 
-                Console.WriteLine($"Deleted save: {saveName}");
+                System.Diagnostics.Debug.WriteLine($"Deleted save: {saveName}");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error deleting save '{saveName}': {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error deleting save '{saveName}': {ex.Message}");
                 return false;
             }
         }
@@ -284,13 +284,13 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         {
             if (string.IsNullOrEmpty(saveName))
             {
-                Console.WriteLine("Save name cannot be empty");
+                System.Diagnostics.Debug.WriteLine("Save name cannot be empty");
                 return false;
             }
 
             if (!_saveCache.ContainsKey(saveName))
             {
-                Console.WriteLine($"Save '{saveName}' does not exist");
+                System.Diagnostics.Debug.WriteLine($"Save '{saveName}' does not exist");
                 return false;
             }
 
@@ -316,12 +316,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 _saveCache[backupName] = backup;
                 _saveFilePaths[backupName] = backupFilePath;
 
-                Console.WriteLine($"Created backup: {backupName}");
+                System.Diagnostics.Debug.WriteLine($"Created backup: {backupName}");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error creating backup for '{saveName}': {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error creating backup for '{saveName}': {ex.Message}");
                 return false;
             }
         }
@@ -464,7 +464,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 DeleteSave(saveName);
             }
 
-            Console.WriteLine($"Cleaned up {corruptedSaves.Count} corrupted saves");
+            System.Diagnostics.Debug.WriteLine($"Cleaned up {corruptedSaves.Count} corrupted saves");
             return corruptedSaves.Count;
         }
 
@@ -478,7 +478,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         {
             if (!_saveCache.TryGetValue(saveName, out var save))
             {
-                Console.WriteLine($"Save '{saveName}' not found");
+                System.Diagnostics.Debug.WriteLine($"Save '{saveName}' not found");
                 return false;
             }
 
@@ -486,12 +486,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             {
                 var json = save.SerializeToJson();
                 File.WriteAllText(exportPath, json);
-                Console.WriteLine($"Exported save '{saveName}' to {exportPath}");
+                System.Diagnostics.Debug.WriteLine($"Exported save '{saveName}' to {exportPath}");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error exporting save '{saveName}': {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error exporting save '{saveName}': {ex.Message}");
                 return false;
             }
         }
@@ -506,7 +506,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         {
             if (!File.Exists(importPath))
             {
-                Console.WriteLine($"Import file not found: {importPath}");
+                System.Diagnostics.Debug.WriteLine($"Import file not found: {importPath}");
                 return false;
             }
 
@@ -517,7 +517,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
                 if (save == null)
                 {
-                    Console.WriteLine($"Failed to deserialize save from {importPath}");
+                    System.Diagnostics.Debug.WriteLine($"Failed to deserialize save from {importPath}");
                     return false;
                 }
 
@@ -529,7 +529,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 // Check if save name already exists
                 if (_saveCache.ContainsKey(newSaveName))
                 {
-                    Console.WriteLine($"Save '{newSaveName}' already exists");
+                    System.Diagnostics.Debug.WriteLine($"Save '{newSaveName}' already exists");
                     return false;
                 }
 
@@ -541,12 +541,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 // Save to file
                 File.WriteAllText(filePath, json);
 
-                Console.WriteLine($"Imported save as '{newSaveName}'");
+                System.Diagnostics.Debug.WriteLine($"Imported save as '{newSaveName}'");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error importing save from {importPath}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error importing save from {importPath}: {ex.Message}");
                 return false;
             }
         }
@@ -577,7 +577,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             LoadAllSaves();
         }
 
-        #region Private Methods
+        ///  Private Methods
 
         /// <summary>
         /// Load all saves from disk.
@@ -605,7 +605,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error loading save from {filePath}: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Error loading save from {filePath}: {ex.Message}");
                 }
             }
         }
@@ -626,7 +626,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return sanitized;
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

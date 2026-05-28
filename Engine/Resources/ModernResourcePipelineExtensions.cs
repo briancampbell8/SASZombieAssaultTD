@@ -25,7 +25,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ModernResourcePipeline: Failed to load sound '{soundPath}': {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"ModernResourcePipeline: Failed to load sound '{soundPath}': {ex.Message}");
                 return null;
             }
         }

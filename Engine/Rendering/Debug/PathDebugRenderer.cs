@@ -8,16 +8,16 @@ namespace SASZombieAssaultTD.Engine.Rendering.Debug
     {
         public PathDebugRenderer()
         {
-            ModernLoggingSystem.Log("BREAKPOINT", "Execution reached here");
-            ModernLoggingSystem.Log("BREAKPOINT", "Reached execution checkpoint");
-            ModernLoggingSystem.Log("BREAKPOINT", $"Method={nameof(MethodBase.GetCurrentMethod)}, Line={new StackTrace(true).GetFrame(0)?.GetFileLineNumber()}");
+            Engine.Diagnostics.DebugLogger.LogDebug("BREAKPOINT", "Execution reached here");
+            Engine.Diagnostics.DebugLogger.LogDebug("BREAKPOINT", "Reached execution checkpoint");
+            Engine.Diagnostics.DebugLogger.LogDebug("BREAKPOINT", $"Method={nameof(MethodBase.GetCurrentMethod)}, Line={new StackTrace(true).GetFrame(0)?.GetFileLineNumber()}");
         }
 
         public void Update()
         {
-            ModernLoggingSystem.Log("BREAKPOINT", "Execution reached here");
-            ModernLoggingSystem.Log("BREAKPOINT", "Reached execution checkpoint");
-            ModernLoggingSystem.Log("BREAKPOINT", $"Method={nameof(MethodBase.GetCurrentMethod)}, Line={new StackTrace(true).GetFrame(0)?.GetFileLineNumber()}");
+            Engine.Diagnostics.DebugLogger.LogDebug("BREAKPOINT", "Execution reached here");
+            Engine.Diagnostics.DebugLogger.LogDebug("BREAKPOINT", "Reached execution checkpoint");
+            Engine.Diagnostics.DebugLogger.LogDebug("BREAKPOINT", $"Method={nameof(MethodBase.GetCurrentMethod)}, Line={new StackTrace(true).GetFrame(0)?.GetFileLineNumber()}");
         }
     }
 }

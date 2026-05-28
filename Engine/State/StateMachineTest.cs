@@ -15,7 +15,7 @@ namespace SASZombieAssaultTD.Engine.State
         /// </summary>
         public static void RunVerificationTests()
         {
-            ModernLoggingSystem.Log("INFO", "StateMachineTest: Starting verification tests");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineTest: Starting verification tests");
             
             try
             {
@@ -31,18 +31,18 @@ namespace SASZombieAssaultTD.Engine.State
                 // Test 4: Event handling
                 TestEventHandling();
                 
-                ModernLoggingSystem.Log("INFO", "StateMachineTest: All verification tests passed");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineTest: All verification tests passed");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"StateMachineTest: Verification failed - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"StateMachineTest: Verification failed - {ex.Message}");
                 throw;
             }
         }
         
         private static void TestStateMachineCreation()
         {
-            ModernLoggingSystem.Log("INFO", "StateMachineTest: Testing state machine creation");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineTest: Testing state machine creation");
             
             var stateMachine = new StateMachine();
             
@@ -57,12 +57,12 @@ namespace SASZombieAssaultTD.Engine.State
                 throw new Exception("Expected null current state before initialization");
             }
             
-            ModernLoggingSystem.Log("INFO", "StateMachineTest: State machine creation test passed");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineTest: State machine creation test passed");
         }
         
         private static void TestStateRegistration()
         {
-            ModernLoggingSystem.Log("INFO", "StateMachineTest: Testing state registration");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineTest: Testing state registration");
             
             var stateMachine = new StateMachine();
             
@@ -90,12 +90,12 @@ namespace SASZombieAssaultTD.Engine.State
                 throw new Exception($"Expected at least 2 registered states, got {registeredStates.Length}");
             }
             
-            ModernLoggingSystem.Log("INFO", "StateMachineTest: State registration test passed");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineTest: State registration test passed");
         }
         
         private static void TestStateTransitions()
         {
-            ModernLoggingSystem.Log("INFO", "StateMachineTest: Testing state transitions");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineTest: Testing state transitions");
             
             var stateMachine = new StateMachine();
             
@@ -133,12 +133,12 @@ namespace SASZombieAssaultTD.Engine.State
                 throw new Exception($"Expected Paused state, got {stateMachine.CurrentStateType}");
             }
             
-            ModernLoggingSystem.Log("INFO", "StateMachineTest: State transitions test passed");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineTest: State transitions test passed");
         }
         
         private static void TestEventHandling()
         {
-            ModernLoggingSystem.Log("INFO", "StateMachineTest: Testing event handling");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineTest: Testing event handling");
             
             var stateMachine = new StateMachine();
             
@@ -179,7 +179,7 @@ namespace SASZombieAssaultTD.Engine.State
                 throw new Exception($"Expected Gameplay state after Resume event, got {stateMachine.CurrentStateType}");
             }
             
-            ModernLoggingSystem.Log("INFO", "StateMachineTest: Event handling test passed");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineTest: Event handling test passed");
         }
     }
 }

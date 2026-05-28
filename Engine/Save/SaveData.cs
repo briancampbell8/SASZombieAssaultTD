@@ -130,7 +130,7 @@ namespace SASZombieAssaultTD.Engine.Save
             _customData = new Dictionary<string, object>();
             Version = 1;
 
-            ModernLoggingSystem.Log("DEBUG", "SaveData: Created new save data instance");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "SaveData: Created new save data instance");
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace SASZombieAssaultTD.Engine.Save
             {
                 _highScore = score;
                 MarkAsModified();
-                ModernLoggingSystem.Log("INFO", $"SaveData: New high score: {score}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SaveData: New high score: {score}");
                 return true;
             }
             return false;
@@ -255,7 +255,7 @@ namespace SASZombieAssaultTD.Engine.Save
             _customData.Clear();
             MarkAsModified();
 
-            ModernLoggingSystem.Log("INFO", "SaveData: Reset all progress to defaults");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SaveData: Reset all progress to defaults");
         }
 
         /// <summary>
@@ -469,7 +469,7 @@ namespace SASZombieAssaultTD.Engine.Save
             _showFPS = false;
             _autoPause = true;
 
-            ModernLoggingSystem.Log("DEBUG", "GameSettings: Created with default values");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "GameSettings: Created with default values");
         }
 
         /// <summary>
@@ -488,7 +488,7 @@ namespace SASZombieAssaultTD.Engine.Save
             _showFPS = false;
             _autoPause = true;
 
-            ModernLoggingSystem.Log("INFO", "GameSettings: Reset to default values");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "GameSettings: Reset to default values");
         }
 
         /// <summary>

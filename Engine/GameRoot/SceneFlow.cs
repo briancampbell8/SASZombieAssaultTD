@@ -20,6 +20,8 @@ using System;
 using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Scenes;
 using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Systems;
+using SASZombieAssaultTD.Engine.UI.Input;
 
 namespace SASZombieAssaultTD.Engine
 {
@@ -28,6 +30,14 @@ namespace SASZombieAssaultTD.Engine
     /// </summary>
     public partial class GameRoot
     {
+        public GameRoot(SystemRegistry systemRegistry, SystemManager systemManager, UpdateManager updateManager, RenderManager renderManager, UIInputRouter inputRouter, IGameStateMachine gameStateMachine, Rendering.RenderContextD3D11Adapter renderContextAdapter)
+        {
+            _systemRegistry = systemRegistry;
+            _systemManager = systemManager;
+            _updateManager = updateManager;
+            _renderManager = renderManager;
+        }
+
         /// <summary>
         /// Gets the scene manager for scene operations.
         /// </summary>
@@ -45,8 +55,8 @@ namespace SASZombieAssaultTD.Engine
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Failed to retrieve SceneManager: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "SceneManager retrieval");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to retrieve SceneManager: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "SceneManager retrieval");
                 return null;
             }
         }
@@ -61,7 +71,7 @@ namespace SASZombieAssaultTD.Engine
             var sceneManager = GetSceneManager();
             if (sceneManager == null)
             {
-                ModernLoggingSystem.Log("ERROR", "Cannot switch scene - SceneManager not available");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Cannot switch scene - SceneManager not available");
                 return false;
             }
 
@@ -78,7 +88,7 @@ namespace SASZombieAssaultTD.Engine
             var sceneManager = GetSceneManager();
             if (sceneManager == null)
             {
-                ModernLoggingSystem.Log("ERROR", "Cannot load scene - SceneManager not available");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Cannot load scene - SceneManager not available");
                 return null;
             }
 
@@ -95,7 +105,7 @@ namespace SASZombieAssaultTD.Engine
             var sceneManager = GetSceneManager();
             if (sceneManager == null)
             {
-                ModernLoggingSystem.Log("ERROR", "Cannot unload scene - SceneManager not available");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Cannot unload scene - SceneManager not available");
                 return false;
             }
 

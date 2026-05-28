@@ -23,7 +23,7 @@ namespace SASZombieAssaultTD.Engine.ECS
     /// </summary>
     public abstract class ECSComponent
     {
-        #region Public Fields
+        ///  Public Fields
 
         /// <summary>
         /// The entity that owns this component.
@@ -40,18 +40,18 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// </summary>
         public uint ComponentId { get; private set; }
 
-        #endregion
+        /// 
 
-        #region Static Properties
+        ///  Static Properties
 
         /// <summary>
         /// The next available component ID.
         /// </summary>
         public static uint NextComponentId { get; private set; } = 1;
 
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
 
         protected ECSComponent(Entity owner, uint componentId = 0)
         {
@@ -60,9 +60,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             ComponentId = componentId == 0 ? NextComponentId++ : componentId;
         }
 
-        #endregion
+        /// 
 
-        #region Instance Properties
+        ///  Instance Properties
 
         /// <summary>
         /// Indicates whether the component is disabled.
@@ -74,9 +74,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// </summary>
         public bool IsValid => Owner.IsValid;
 
-        #endregion
+        /// 
 
-        #region Instance Methods
+        ///  Instance Methods
 
         /// <summary>
         /// Enables the component.
@@ -118,7 +118,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             IsValid ? $"{GetType().Name}(ComponentId:{ComponentId}, Owner:{Owner.Id})"
                     : $"{GetType().Name}(Invalid)";
 
-        #endregion
+        /// 
     }
 
     /// <summary>
@@ -126,13 +126,13 @@ namespace SASZombieAssaultTD.Engine.ECS
     /// </summary>
     public abstract class ECSComponent<T> : ECSComponent where T : ECSComponent<T>
     {
-        #region Constructors
+        ///  Constructors
 
         protected ECSComponent(Entity owner, uint componentId = 0) : base(owner, componentId) { }
 
-        #endregion
+        /// 
 
-        #region Type Safety
+        ///  Type Safety
 
         /// <summary>
         /// Creates a new instance of the component with a specified owner.
@@ -150,7 +150,7 @@ namespace SASZombieAssaultTD.Engine.ECS
         public T WithComponentId(uint componentId) =>
             (T)Activator.CreateInstance(typeof(T), Owner, componentId);
 
-        #endregion
+        /// 
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ namespace SASZombieAssaultTD.Engine.ECS
     public static class ECSComponentFactory
     {
 
-        #region Static Methods
+        ///  Static Methods
 
         /// <summary>
         /// Creates a new instance of a typed component with a specified component ID.
@@ -193,6 +193,6 @@ namespace SASZombieAssaultTD.Engine.ECS
             return component;
         }
 
-        #endregion
+        /// 
     }
 }

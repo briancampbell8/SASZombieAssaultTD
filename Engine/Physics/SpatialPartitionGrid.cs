@@ -1,3 +1,4 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.VectorMath;
 using System;
@@ -216,8 +217,8 @@ namespace SASZombieAssaultTD.Engine.Physics
 
         private static (uint, uint) CreateOrderedPair(uint id1, uint id2) => id1 < id2 ? (id1, id2) : (id2, id1);
 
-        private void LogInfo(string message) => SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("INFO", message);
-        private void LogDebug(string message) => SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("DEBUG", message);
+        private void LogInfo(string message) => Engine.Diagnostics.DebugLogger.LogDebug("INFO", message);
+        private void LogDebug(string message) => Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", message);
     }
 
     internal sealed class GridCell
@@ -246,6 +247,9 @@ namespace SASZombieAssaultTD.Engine.Physics
 
     public sealed class SpatialGridStats
     {
+        private static object TheContainingType;
+        private static object TheContainingMember;
+
         public int TotalCells { get; set; }
         public int OccupiedCells { get; set; }
         public int TotalEntities { get; set; }
@@ -258,5 +262,12 @@ namespace SASZombieAssaultTD.Engine.Physics
 
         public override string ToString() =>
             $"Grid: {OccupiedCells}/{TotalCells} occupied, {TotalEntities} entities, avg {AverageEntitiesPerCell:F2}/cell";
+
+        public static explicit operator SpatialGridStats(string v)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
     }
 }

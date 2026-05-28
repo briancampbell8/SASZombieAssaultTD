@@ -1,0 +1,50 @@
+[DEBUG] MAIN STARTED
+[DEBUG] Creating framebuffer...
+[DEBUG] Framebuffer created
+[DEBUG] Creating engine systems...
+[DEBUG] Engine systems created
+[DEBUG] Creating GameRoot...
+[DEBUG] GameRoot created
+[DEBUG] Initializing GameRoot...
+[StaticLayoutLoader] JSON loaded: 209 chars
+[StaticLayoutLoader] Deserialized Images count: 1
+Loaded texture: Assets/Static/MeanStreets.png (800x500)
+[StaticLayoutLoader] Loaded texture via TextureManager: Assets/Static/MeanStreets.png = True
+StaticLayout loaded 1 images
+StaticLayout loaded images: 1
+[DEBUG] GameRoot initialized
+[DEBUG] Creating Win32Window...
+Win32Window constructor executing
+[DEBUG] Win32Window created, calling Create()...
+RegisterClassExW succeeded
+WndProc: msg=36
+WndProc: msg=129
+WndProc: msg=131
+WndProc: msg=1
+CreateWindowExW succeeded: 5443024
+WndProc: msg=24
+WndProc: msg=70
+WndProc: msg=70
+WndProc: msg=28
+WndProc: msg=134
+WndProc: msg=127
+WndProc: msg=127
+WndProc: msg=127
+WndProc: msg=6
+WndProc: msg=641
+WndProc: msg=642
+WndProc: msg=7
+WndProc: msg=133
+WndProc: msg=20
+WndProc: msg=71
+WndProc: msg=5
+WndProc: msg=3
+WndProc: msg=15
+[DEBUG] Win32Window.Create() completed
+[DEBUG] Starting game loop...
+WndProc: msg=127
+WndProc: msg=799
+WndProc: msg=49244
+WndProc: msg=648
+WndProc: msg=127
+WndProc: msg=127

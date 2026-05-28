@@ -5,6 +5,7 @@ Features:  Type conversion and operator overloads for mismatched types.
 */
 
 using SASZombieAssaultTD.Engine.Components;
+using SASZombieAssaultTD.Engine.Resources;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -294,14 +295,16 @@ namespace SASZombieAssaultTD.Engine.Extensions
     /// <summary>
     /// Asset type enumeration.
     /// </summary>
-    public enum AssetType
-    {
-        Unknown,
-        Texture,
-        Sound,
-        Model,
-        Font
-    }
+    /// 
+    // NOTE: AssetType already defined in Engine/Resources/Manager/AssetType.cs
+    // public enum AssetType
+    //{
+    //    Unknown,
+    //    Texture,
+    //    Sound,
+    //    Model,
+    //    Font
+    //}
 
     /// <summary>
     /// Engine state enumeration.

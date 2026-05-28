@@ -1,0 +1,11 @@
+BGFXGraphicsDevice ctor hit.
+BGFXGraphicsDevice ctor hit.
+BGFXGraphicsDevice ctor hit.
+BGFXGraphicsDevice ctor hit.
+BGFXGraphicsDevice ctor hit.
+BGFXGraphicsDevice ctor hit.
+BGFXGraphicsDevice ctor hit.
+BGFXGraphicsDevice ctor hit.
+BGFXGraphicsDevice ctor hit.
+BGFXGraphicsDevice ctor hit.
+BGFXGraphicsDevice ctor hit.

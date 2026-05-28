@@ -29,7 +29,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
 
         public GameScene()
         {
-            ModernLoggingSystem.Log("Info", "[GameScene] Constructor reached.");
+            Engine.Diagnostics.DebugLogger.LogDebug("Info", "[GameScene] Constructor reached.");
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// </summary>
         public override void OnEnter()
         {
-            ModernLoggingSystem.Log("Info", "[GameScene] OnEnter: Game scene starting...");
+            Engine.Diagnostics.DebugLogger.LogDebug("Info", "[GameScene] OnEnter: Game scene starting...");
 
             // Load all assets from the registry as a single bundle.
             // AssetRegistry does not contain GetAllAsBundle(); use the available API.
@@ -46,7 +46,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             // Reset frame stats for this scene
             _frameStats = new FrameStats();
 
-            ModernLoggingSystem.Log("Info", "[GameScene] OnEnter: Game scene initialization complete.");
+            Engine.Diagnostics.DebugLogger.LogDebug("Info", "[GameScene] OnEnter: Game scene initialization complete.");
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// </summary>
         public override void OnExit()
         {
-            ModernLoggingSystem.Log("Info", "[GameScene] OnExit: Game scene shutting down...");
+            Engine.Diagnostics.DebugLogger.LogDebug("Info", "[GameScene] OnExit: Game scene shutting down...");
         }
 
         /// <summary>

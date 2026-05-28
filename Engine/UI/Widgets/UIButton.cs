@@ -29,7 +29,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 {
                     _label = value ?? string.Empty;
                     InvalidateLayout();
-                    Console.WriteLine($"UIButton: Label set to '{_label}'");
+                    System.Diagnostics.Debug.WriteLine($"UIButton: Label set to '{_label}'");
                 }
             }
         }
@@ -45,7 +45,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 if (_normalColor != value)
                 {
                     _normalColor = value;
-                    Console.WriteLine($"UIButton: Normal color set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIButton: Normal color set to {value}");
                 }
             }
         }
@@ -61,7 +61,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 if (_hoverColor != value)
                 {
                     _hoverColor = value;
-                    Console.WriteLine($"UIButton: Hover color set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIButton: Hover color set to {value}");
                 }
             }
         }
@@ -77,7 +77,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 if (_pressedColor != value)
                 {
                     _pressedColor = value;
-                    Console.WriteLine($"UIButton: Pressed color set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIButton: Pressed color set to {value}");
                 }
             }
         }
@@ -93,7 +93,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 if (_disabledColor != value)
                 {
                     _disabledColor = value;
-                    Console.WriteLine($"UIButton: Disabled color set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIButton: Disabled color set to {value}");
                 }
             }
         }
@@ -109,7 +109,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 if (_textColor != value)
                 {
                     _textColor = value;
-                    Console.WriteLine($"UIButton: Text color set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIButton: Text color set to {value}");
                 }
             }
         }
@@ -126,7 +126,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 {
                     _font = value ?? string.Empty;
                     InvalidateLayout();
-                    Console.WriteLine($"UIButton: Font set to '{_font}'");
+                    System.Diagnostics.Debug.WriteLine($"UIButton: Font set to '{_font}'");
                 }
             }
         }
@@ -143,7 +143,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 {
                     _fontSize = System.Math.Max(1.0f, value);
                     InvalidateLayout();
-                    Console.WriteLine($"UIButton: Font size set to {_fontSize}");
+                    System.Diagnostics.Debug.WriteLine($"UIButton: Font size set to {_fontSize}");
                 }
             }
         }
@@ -158,7 +158,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         /// </summary>
         public UIButton() : base()
         {
-            Console.WriteLine("UIButton: Created new button element");
+            System.Diagnostics.Debug.WriteLine("UIButton: Created new button element");
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         public UIButton(string label) : this()
         {
             Label = label;
-            Console.WriteLine($"UIButton: Created button with label '{label}'");
+            System.Diagnostics.Debug.WriteLine($"UIButton: Created button with label '{label}'");
         }
 
         /// <summary>
@@ -180,16 +180,16 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             {
                 if (IsDisabled)
                 {
-                    Console.WriteLine("UIButton: Cannot click disabled button");
+                    System.Diagnostics.Debug.WriteLine("UIButton: Cannot click disabled button");
                     return;
                 }
 
                 OnClicked();
-                Console.WriteLine($"UIButton: Button clicked with label '{_label}'");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Button clicked with label '{_label}'");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIButton: Error during click - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Error during click - {ex.Message}");
             }
         }
 
@@ -224,7 +224,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIButton: Error during update - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Error during update - {ex.Message}");
             }
         }
 
@@ -252,7 +252,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIButton: Error during render - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Error during render - {ex.Message}");
             }
         }
 
@@ -266,11 +266,11 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 var currentColor = GetCurrentColor();
                 // This would use the actual rendering system
                 // For now, just log the background color
-                Console.WriteLine($"UIButton: Rendering background {currentColor} at {AbsolutePosition}");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Rendering background {currentColor} at {AbsolutePosition}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIButton: Error rendering background - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Error rendering background - {ex.Message}");
             }
         }
 
@@ -286,11 +286,11 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
 
                 // This would use the actual text rendering system
                 // For now, just log the text
-                Console.WriteLine($"UIButton: Rendering text '{_label}' with color {_textColor} at {AbsolutePosition}");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Rendering text '{_label}' with color {_textColor} at {AbsolutePosition}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIButton: Error rendering text - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Error rendering text - {ex.Message}");
             }
         }
 
@@ -303,11 +303,11 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             {
                 // This would use the actual rendering system
                 // For now, just log the border
-                Console.WriteLine($"UIButton: Rendering border at {AbsolutePosition}");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Rendering border at {AbsolutePosition}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIButton: Error rendering border - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Error rendering border - {ex.Message}");
             }
         }
 
@@ -332,7 +332,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIButton: Error in OnClicked - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Error in OnClicked - {ex.Message}");
             }
         }
 
@@ -350,7 +350,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIButton: Error in OnMousePress - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Error in OnMousePress - {ex.Message}");
             }
         }
 
@@ -369,7 +369,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIButton: Error in OnMouseRelease - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIButton: Error in OnMouseRelease - {ex.Message}");
             }
         }
     }

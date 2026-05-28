@@ -50,7 +50,7 @@ namespace SASZombieAssaultTD.Engine.State
             OnTransitionCompleted += HandleTransitionCompleted;
             OnTransitionFailed += HandleTransitionFailed;
             
-            ModernLoggingSystem.Log("INFO", "EnhancedStateMachine: Initialized with profiler and factory");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "EnhancedStateMachine: Initialized with profiler and factory");
         }
         
         /// <summary>

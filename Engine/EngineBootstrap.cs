@@ -44,7 +44,7 @@ namespace SASZombieAssaultTD.Engine
             _systemManager = new Systems.SystemManager();
             _updateManager = new Systems.UpdateManager();
             _renderManager = new Systems.RenderManager();
-            _renderContext = new UIRenderContext();
+            _renderContext = (Interfaces.IRenderContext)new UIRenderContext();
         }
 
         /// <summary>

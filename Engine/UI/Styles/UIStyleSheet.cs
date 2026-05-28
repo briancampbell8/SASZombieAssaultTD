@@ -30,7 +30,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             _styles = new Dictionary<string, UIStyle>();
             _typeStyles = new Dictionary<Type, UIStyle>();
 
-            Console.WriteLine("UIStyleSheet: Created new style sheet");
+            System.Diagnostics.Debug.WriteLine("UIStyleSheet: Created new style sheet");
         }
 
         /// <summary>
@@ -44,22 +44,22 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             {
                 if (string.IsNullOrEmpty(name))
                 {
-                    Console.WriteLine("UIStyleSheet: Cannot add style with null or empty name");
+                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot add style with null or empty name");
                     return;
                 }
 
                 if (style == null)
                 {
-                    Console.WriteLine("UIStyleSheet: Cannot add null style");
+                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot add null style");
                     return;
                 }
 
                 _styles[name] = style;
-                Console.WriteLine($"UIStyleSheet: Added style '{name}'");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Added style '{name}'");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleSheet: Error adding style '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error adding style '{name}' - {ex.Message}");
             }
         }
 
@@ -74,22 +74,22 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             {
                 if (type == null)
                 {
-                    Console.WriteLine("UIStyleSheet: Cannot add type style with null type");
+                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot add type style with null type");
                     return;
                 }
 
                 if (style == null)
                 {
-                    Console.WriteLine("UIStyleSheet: Cannot add null type style");
+                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot add null type style");
                     return;
                 }
 
                 _typeStyles[type] = style;
-                Console.WriteLine($"UIStyleSheet: Added type style for '{type.Name}'");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Added type style for '{type.Name}'");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleSheet: Error adding type style for '{type?.Name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error adding type style for '{type?.Name}' - {ex.Message}");
             }
         }
 
@@ -104,7 +104,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             {
                 if (string.IsNullOrEmpty(name))
                 {
-                    Console.WriteLine("UIStyleSheet: Cannot get style with null or empty name");
+                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot get style with null or empty name");
                     return null;
                 }
 
@@ -113,7 +113,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleSheet: Error getting style '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error getting style '{name}' - {ex.Message}");
                 return null;
             }
         }
@@ -129,7 +129,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             {
                 if (type == null)
                 {
-                    Console.WriteLine("UIStyleSheet: Cannot get style for null type");
+                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot get style for null type");
                     return null;
                 }
 
@@ -138,7 +138,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleSheet: Error getting style for type '{type.Name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error getting style for type '{type.Name}' - {ex.Message}");
                 return null;
             }
         }
@@ -164,25 +164,25 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             {
                 if (string.IsNullOrEmpty(name))
                 {
-                    Console.WriteLine("UIStyleSheet: Cannot remove style with null or empty name");
+                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot remove style with null or empty name");
                     return false;
                 }
 
                 bool removed = _styles.Remove(name);
                 if (removed)
                 {
-                    Console.WriteLine($"UIStyleSheet: Removed style '{name}'");
+                    System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Removed style '{name}'");
                 }
                 else
                 {
-                    Console.WriteLine($"UIStyleSheet: Style '{name}' not found");
+                    System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Style '{name}' not found");
                 }
 
                 return removed;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleSheet: Error removing style '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error removing style '{name}' - {ex.Message}");
                 return false;
             }
         }
@@ -198,25 +198,25 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             {
                 if (type == null)
                 {
-                    Console.WriteLine("UIStyleSheet: Cannot remove type style for null type");
+                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot remove type style for null type");
                     return false;
                 }
 
                 bool removed = _typeStyles.Remove(type);
                 if (removed)
                 {
-                    Console.WriteLine($"UIStyleSheet: Removed type style for '{type.Name}'");
+                    System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Removed type style for '{type.Name}'");
                 }
                 else
                 {
-                    Console.WriteLine($"UIStyleSheet: Type style for '{type.Name}' not found");
+                    System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Type style for '{type.Name}' not found");
                 }
 
                 return removed;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleSheet: Error removing type style for '{type?.Name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error removing type style for '{type?.Name}' - {ex.Message}");
                 return false;
             }
         }
@@ -237,7 +237,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleSheet: Error checking style '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error checking style '{name}' - {ex.Message}");
                 return false;
             }
         }
@@ -258,7 +258,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleSheet: Error checking type style for '{type?.Name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error checking type style for '{type?.Name}' - {ex.Message}");
                 return false;
             }
         }
@@ -275,7 +275,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleSheet: Error getting style names - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error getting style names - {ex.Message}");
                 return new List<string>();
             }
         }
@@ -290,11 +290,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 _styles.Clear();
                 _typeStyles.Clear();
 
-                Console.WriteLine("UIStyleSheet: Cleared all styles");
+                System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cleared all styles");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleSheet: Error clearing styles - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error clearing styles - {ex.Message}");
             }
         }
 
@@ -320,12 +320,12 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                     copy.AddTypeStyle(kvp.Key, kvp.Value.Copy());
                 }
 
-                Console.WriteLine("UIStyleSheet: Created style sheet copy");
+                System.Diagnostics.Debug.WriteLine("UIStyleSheet: Created style sheet copy");
                 return copy;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleSheet: Error creating copy - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error creating copy - {ex.Message}");
                 return new UIStyleSheet();
             }
         }
@@ -342,7 +342,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleSheet: Error creating string representation - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error creating string representation - {ex.Message}");
                 return "UIStyleSheet: Error";
             }
         }

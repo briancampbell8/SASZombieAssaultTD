@@ -26,7 +26,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
     /// Modernized deterministic framebuffer representation with proper resource management.
     /// Implements IRenderContext for full compatibility with existing engine systems.
     /// </summary>
-    public sealed class Framebuffer : IRenderContext, IDisposable
+    public sealed partial class Framebuffer : IRenderContext, IDisposable
     {
         bool _disposed;
         private event EventHandler<ResizeEventArgs>? _resizeEvent;

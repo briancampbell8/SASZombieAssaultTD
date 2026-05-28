@@ -37,7 +37,7 @@ namespace SASZombieAssaultTD.Engine.Components
     /// </summary>
     public class ParticleEmitterComponent
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Emission rate (particles per second).
@@ -89,9 +89,9 @@ namespace SASZombieAssaultTD.Engine.Components
         /// </summary>
         public float EmissionAccumulator { get; set; } = 0.0f;
 
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
 
         /// <summary>
         /// Creates a new ParticleEmitterComponent with default values.
@@ -141,9 +141,9 @@ namespace SASZombieAssaultTD.Engine.Components
             IsActive = isActive;
         }
 
-        #endregion
+        /// 
 
-        #region Methods
+        ///  Methods
 
         /// <summary>
         /// Resets the particle emitter to its default state.
@@ -162,7 +162,7 @@ namespace SASZombieAssaultTD.Engine.Components
             return $"ParticleEmitter(Rate: {EmissionRate}, Max: {MaxParticles}, Active: {IsActive})";
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

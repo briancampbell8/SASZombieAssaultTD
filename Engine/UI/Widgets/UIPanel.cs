@@ -1,3 +1,4 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
 using System;
 
 namespace SASZombieAssaultTD.Engine.UI.Widgets
@@ -12,6 +13,8 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         private System.Drawing.Color _borderColor = System.Drawing.Color.Black;
         private float _borderThickness = 0.0f;
         private bool _hasBorder = false;
+        private object TheContainingType;
+        private object TheContainingMember;
 
         /// <summary>
         /// Gets or sets the background color
@@ -24,7 +27,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 if (_backgroundColor != value)
                 {
                     _backgroundColor = value;
-                    Console.WriteLine($"UIPanel: Background color set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIPanel: Background color set to {value}");
                 }
             }
         }
@@ -40,7 +43,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 if (_borderColor != value)
                 {
                     _borderColor = value;
-                    Console.WriteLine($"UIPanel: Border color set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIPanel: Border color set to {value}");
                 }
             }
         }
@@ -57,7 +60,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 {
                     _borderThickness = System.Math.Max(0.0f, value);
                     _hasBorder = _borderThickness > 0;
-                    Console.WriteLine($"UIPanel: Border thickness set to {_borderThickness}");
+                    System.Diagnostics.Debug.WriteLine($"UIPanel: Border thickness set to {_borderThickness}");
                 }
             }
         }
@@ -72,7 +75,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         /// </summary>
         public UIPanel() : base()
         {
-            Console.WriteLine("UIPanel: Created new panel element");
+            System.Diagnostics.Debug.WriteLine("UIPanel: Created new panel element");
         }
 
         /// <summary>
@@ -82,7 +85,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         public UIPanel(System.Drawing.Color backgroundColor) : this()
         {
             BackgroundColor = backgroundColor;
-            Console.WriteLine($"UIPanel: Created panel with background color {backgroundColor}");
+            System.Diagnostics.Debug.WriteLine($"UIPanel: Created panel with background color {backgroundColor}");
         }
 
         /// <summary>
@@ -98,11 +101,11 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 BorderThickness = thickness;
                 _hasBorder = thickness > 0;
 
-                Console.WriteLine($"UIPanel: Border set to color {color}, thickness {thickness}");
+                System.Diagnostics.Debug.WriteLine($"UIPanel: Border set to color {color}, thickness {thickness}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIPanel: Error setting border - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIPanel: Error setting border - {ex.Message}");
             }
         }
 
@@ -116,11 +119,11 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 BorderThickness = 0.0f;
                 _hasBorder = false;
 
-                Console.WriteLine("UIPanel: Border removed");
+                System.Diagnostics.Debug.WriteLine("UIPanel: Border removed");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIPanel: Error removing border - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIPanel: Error removing border - {ex.Message}");
             }
         }
 
@@ -139,7 +142,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIPanel: Error during update - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIPanel: Error during update - {ex.Message}");
             }
         }
 
@@ -167,7 +170,7 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIPanel: Error during render - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIPanel: Error during render - {ex.Message}");
             }
         }
 
@@ -180,11 +183,11 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             {
                 // This would use the actual rendering system
                 // For now, just log the background color
-                Console.WriteLine($"UIPanel: Rendering background {_backgroundColor} at {AbsolutePosition}");
+                System.Diagnostics.Debug.WriteLine($"UIPanel: Rendering background {_backgroundColor} at {AbsolutePosition}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIPanel: Error rendering background - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIPanel: Error rendering background - {ex.Message}");
             }
         }
 
@@ -197,11 +200,11 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             {
                 // This would use the actual rendering system
                 // For now, just log the border properties
-                Console.WriteLine($"UIPanel: Rendering border {_borderColor}, thickness {_borderThickness} at {AbsolutePosition}");
+                System.Diagnostics.Debug.WriteLine($"UIPanel: Rendering border {_borderColor}, thickness {_borderThickness} at {AbsolutePosition}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIPanel: Error rendering border - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIPanel: Error rendering border - {ex.Message}");
             }
         }
 
@@ -213,6 +216,13 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         {
             // Override in derived classes for panel animations
             // Examples: fade in/out, color transitions, pulse effects
+        }
+
+        internal void SetBorder(Color currentColor, float v)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
         }
     }
 }

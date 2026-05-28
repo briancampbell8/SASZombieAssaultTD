@@ -13,7 +13,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
         public RenderSurface(int width, int height)
         {
-            ModernLoggingSystem.Log("Info", $"[RenderSurface] Creating surface {width}x{height}");
+            Engine.Diagnostics.DebugLogger.LogDebug("Info", $"[RenderSurface] Creating surface {width}x{height}");
 
             if (width <= 0)
                 throw new ArgumentOutOfRangeException(nameof(width));
@@ -38,7 +38,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             // by clearing to match the context's expected initial state.
             _offscreenBuffer?.ClearScreen();
 
-            ModernLoggingSystem.Log("Info",
+            Engine.Diagnostics.DebugLogger.LogDebug("Info",
             $"[RenderSurface] Bound off-screen surface ({Width}x{Height}).");
         }
 
@@ -51,7 +51,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _offscreenBuffer = null;
             _disposed = true;
 
-            ModernLoggingSystem.Log("Info",
+            Engine.Diagnostics.DebugLogger.LogDebug("Info",
             "[RenderSurface] Disposed.");
         }
     }

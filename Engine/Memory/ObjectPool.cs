@@ -88,7 +88,7 @@ namespace SASZombieAssaultTD.Engine.Memory
             _createFunc = createFunc ?? (() => new T());
             _resetAction = resetAction;
             _disposeAction = disposeAction;
-            ModernLoggingSystem.Log("INFO", $"ObjectPool<{typeof(T).Name}>: Initialized with max capacity {_maxCapacity}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ObjectPool<{typeof(T).Name}>: Initialized with max capacity {_maxCapacity}");
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace SASZombieAssaultTD.Engine.Memory
             _inUse[obj] = true;
             UpdatePeakUsage();
             ObjectRented?.Invoke(this, obj);
-            ModernLoggingSystem.Log("TRACE", $"ObjectPool<{typeof(T).Name}>: Rented object (available: {_available.Count}, in use: {_inUse.Count})");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"ObjectPool<{typeof(T).Name}>: Rented object (available: {_available.Count}, in use: {_inUse.Count})");
 
             return obj;
         }
@@ -133,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.Memory
         {
             if (obj == null)
             {
-                ModernLoggingSystem.Log("WARNING", $"ObjectPool<{typeof(T).Name}>: Cannot return null object");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"ObjectPool<{typeof(T).Name}>: Cannot return null object");
                 return;
             }
 
@@ -148,7 +148,7 @@ namespace SASZombieAssaultTD.Engine.Memory
         {
             if (!_inUse.TryRemove(obj, out _))
             {
-                ModernLoggingSystem.Log("WARNING", $"ObjectPool<{typeof(T).Name}>: Object not found in use set");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"ObjectPool<{typeof(T).Name}>: Object not found in use set");
                 return;
             }
 
@@ -164,7 +164,7 @@ namespace SASZombieAssaultTD.Engine.Memory
             }
 
             ObjectReturned?.Invoke(this, obj);
-            ModernLoggingSystem.Log("TRACE", $"ObjectPool<{typeof(T).Name}>: Returned object (available: {_available.Count}, in use: {_inUse.Count})");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"ObjectPool<{typeof(T).Name}>: Returned object (available: {_available.Count}, in use: {_inUse.Count})");
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace SASZombieAssaultTD.Engine.Memory
             }
 
             _inUse.Clear();
-            ModernLoggingSystem.Log("INFO", $"ObjectPool<{typeof(T).Name}>: Cleared pool");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ObjectPool<{typeof(T).Name}>: Cleared pool");
         }
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace SASZombieAssaultTD.Engine.Memory
                 ObjectCreated?.Invoke(this, obj);
             }
 
-            ModernLoggingSystem.Log("INFO", $"ObjectPool<{typeof(T).Name}>: Pre-warmed with {count} objects");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ObjectPool<{typeof(T).Name}>: Pre-warmed with {count} objects");
         }
 
         /// <summary>

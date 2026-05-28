@@ -17,7 +17,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
     /// </summary>
     public class BackgroundRenderer
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Gets or sets whether the background renderer is active.
@@ -44,9 +44,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
         /// </summary>
         public Vector3 ParallaxSpeed { get; set; } = new Vector3(10.0f, 5.0f, 0f);
 
-        #endregion
+        /// 
 
-        #region Fields
+        ///  Fields
 
         private bool _isInitialized = false;
         private float _transitionTime = 0f;
@@ -54,9 +54,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
         private Color _startColor;
         private Color _targetColor;
 
-        #endregion
+        /// 
 
-        #region Initialization
+        ///  Initialization
 
         /// <summary>
         /// Initializes the background renderer with the specified background.
@@ -66,7 +66,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             if (string.IsNullOrEmpty(backgroundName))
             {
-                ModernLoggingSystem.Log("ERROR", "BackgroundRenderer: Background name cannot be null or empty");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "BackgroundRenderer: Background name cannot be null or empty");
                 return;
             }
 
@@ -92,12 +92,12 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _startColor = BackgroundColor;
             _targetColor = BackgroundColor;
 
-            ModernLoggingSystem.Log("DEBUG", $"BackgroundRenderer: Initialized background '{backgroundName}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BackgroundRenderer: Initialized background '{backgroundName}'");
         }
 
-        #endregion
+        /// 
 
-        #region Control Methods
+        ///  Control Methods
 
         /// <summary>
         /// Starts the background animation.
@@ -106,14 +106,14 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             if (!_isInitialized)
             {
-                ModernLoggingSystem.Log("WARNING", "BackgroundRenderer: Cannot start - not initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "BackgroundRenderer: Cannot start - not initialized");
                 return;
             }
 
             IsActive = true;
             AnimationTime = 0f;
 
-            ModernLoggingSystem.Log("DEBUG", $"BackgroundRenderer: Started background '{BackgroundName}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BackgroundRenderer: Started background '{BackgroundName}'");
         }
 
         /// <summary>
@@ -127,12 +127,12 @@ namespace SASZombieAssaultTD.Engine.Rendering
             IsActive = false;
             AnimationTime = 0f;
 
-            ModernLoggingSystem.Log("DEBUG", $"BackgroundRenderer: Stopped background '{BackgroundName}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BackgroundRenderer: Stopped background '{BackgroundName}'");
         }
 
-        #endregion
+        /// 
 
-        #region Update Methods
+        ///  Update Methods
 
         /// <summary>
         /// Updates the background animation.
@@ -175,9 +175,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
             );
         }
 
-        #endregion
+        /// 
 
-        #region Rendering
+        ///  Rendering
 
         /// <summary>
         /// Renders the background.
@@ -195,7 +195,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"BackgroundRenderer: Failed to render background '{BackgroundName}': {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"BackgroundRenderer: Failed to render background '{BackgroundName}': {ex.Message}");
             }
         }
 
@@ -206,12 +206,12 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             // This would integrate with the actual rendering context
             // For now, we'll just log the rendering attempt
-            ModernLoggingSystem.Log("DEBUG", $"BackgroundRenderer: Rendering background '{BackgroundName}' with color {BackgroundColor}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BackgroundRenderer: Rendering background '{BackgroundName}' with color {BackgroundColor}");
         }
 
-        #endregion
+        /// 
 
-        #region Utility Methods
+        ///  Utility Methods
 
         /// <summary>
         /// Transitions the background color to a new color.
@@ -228,7 +228,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _transitionDuration = duration;
             _transitionTime = 0f;
 
-            ModernLoggingSystem.Log("DEBUG", $"BackgroundRenderer: Starting color transition to {targetColor} over {duration}s");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BackgroundRenderer: Starting color transition to {targetColor} over {duration}s");
         }
 
         /// <summary>
@@ -248,6 +248,6 @@ namespace SASZombieAssaultTD.Engine.Rendering
             return info;
         }
 
-        #endregion
+        /// 
     }
 }

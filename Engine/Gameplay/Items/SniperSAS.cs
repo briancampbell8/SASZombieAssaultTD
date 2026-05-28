@@ -22,7 +22,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
     /// </summary>
     public class SniperSAS
     {
-        #region Properties
+        ///  Properties
         
         /// <summary>Unique identifier for this soldier instance.</summary>
         public string Id { get; private set; }
@@ -96,9 +96,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
         /// <summary>Current aim progress (0.0-1.0).</summary>
         public float AimProgress { get; private set; }
         
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
         
         /// <summary>
         /// Creates a new sniper SAS instance.
@@ -151,9 +151,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             AimProgress = 0f;
         }
         
-        #endregion
+        /// 
 
-        #region Unit Operations (Placeholder)
+        ///  Unit Operations (Placeholder)
         
         /// <summary>
         /// Activates this unit.
@@ -292,9 +292,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             return false;
         }
         
-        #endregion
+        /// 
 
-        #region Unit Characteristics
+        ///  Unit Characteristics
         
         /// <summary>
         /// Gets the behavior characteristics for this unit type.
@@ -379,9 +379,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             };
         }
         
-        #endregion
+        /// 
 
-        #region Level-based Calculations
+        ///  Level-based Calculations
         
         /// <summary>
         /// Gets the maximum health at a specific level.
@@ -443,9 +443,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             return level * 150; // Higher exp requirement for specialist unit
         }
         
-        #endregion
+        /// 
 
-        #region Utility Methods
+        ///  Utility Methods
         
         /// <summary>
         /// Generates a unique ID for this unit instance.
@@ -476,6 +476,6 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             return $"{DisplayName} (ID: {Id}, Level: {Level}, Control: {control}, Status: {status})";
         }
         
-        #endregion
+        /// 
     }
 }

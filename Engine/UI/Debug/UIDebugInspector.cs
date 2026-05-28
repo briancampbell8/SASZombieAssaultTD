@@ -27,7 +27,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 if (_isVisible != value)
                 {
                     _isVisible = value;
-                    Console.WriteLine($"UIDebugInspector: Visibility set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Visibility set to {value}");
                 }
             }
         }
@@ -43,7 +43,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 if (_isInspecting != value)
                 {
                     _isInspecting = value;
-                    Console.WriteLine($"UIDebugInspector: Inspect mode set to {value}");
+                    System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Inspect mode set to {value}");
                 }
             }
         }
@@ -60,7 +60,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
         public UIDebugInspector(UIDebugOverlay debugOverlay)
         {
             _debugOverlay = debugOverlay ?? throw new ArgumentNullException(nameof(debugOverlay));
-            Console.WriteLine("UIDebugInspector: Initialized");
+            System.Diagnostics.Debug.WriteLine("UIDebugInspector: Initialized");
         }
 
         /// <summary>
@@ -73,18 +73,18 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIDebugInspector: Cannot select null element");
+                    System.Diagnostics.Debug.WriteLine("UIDebugInspector: Cannot select null element");
                     return;
                 }
 
                 _inspectedElement = element;
                 _isInspecting = true;
 
-                Console.WriteLine($"UIDebugInspector: Selected element for inspection: {element.GetType().Name}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Selected element for inspection: {element.GetType().Name}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugInspector: Error selecting element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Error selecting element - {ex.Message}");
             }
         }
 
@@ -102,11 +102,11 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                     UpdateInspection(deltaTime);
                 }
 
-                Console.WriteLine("UIDebugInspector: Updated inspector");
+                System.Diagnostics.Debug.WriteLine("UIDebugInspector: Updated inspector");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugInspector: Error during update - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Error during update - {ex.Message}");
             }
         }
 
@@ -123,12 +123,12 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 {
                     // This would update inspection details
                     // For now, just log the inspection
-                    Console.WriteLine($"UIDebugInspector: Inspecting {_inspectedElement.GetType().Name}");
+                    System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Inspecting {_inspectedElement.GetType().Name}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugInspector: Error during inspection - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Error during inspection - {ex.Message}");
             }
         }
 
@@ -144,7 +144,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
 
                 // This would use the actual rendering system
                 // For now, just log the inspector state
-                Console.WriteLine($"UIDebugInspector: Rendering inspector with {_inspectedElement?.GetType().Name}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Rendering inspector with {_inspectedElement?.GetType().Name}");
 
                 // Render selection indicator
                 if (_inspectedElement != null)
@@ -155,11 +155,11 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 // Render inspection details
                 RenderInspectionDetails();
 
-                Console.WriteLine("UIDebugInspector: Rendered inspector");
+                System.Diagnostics.Debug.WriteLine("UIDebugInspector: Rendered inspector");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugInspector: Error during render - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Error during render - {ex.Message}");
             }
         }
 
@@ -172,11 +172,11 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             {
                 // This would render a selection indicator near the selected element
                 // For now, just log the selection
-                Console.WriteLine($"UIDebugInspector: Rendering selection indicator for {_inspectedElement?.GetType().Name}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Rendering selection indicator for {_inspectedElement?.GetType().Name}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugInspector: Error rendering selection indicator - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Error rendering selection indicator - {ex.Message}");
             }
         }
 
@@ -192,18 +192,18 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
 
                 // This would render actual inspection details
                 // For now, just log the element type
-                Console.WriteLine($"UIDebugInspector: Element type: {_inspectedElement.GetType().Name}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Element type: {_inspectedElement.GetType().Name}");
 
                 // Render element properties
                 var position = _inspectedElement.AbsolutePosition;
                 var size = _inspectedElement.Size;
                 var isVisible = _inspectedElement.IsVisible;
 
-                Console.WriteLine($"UIDebugInspector: Position: {position}, Size: {size}, Visible: {isVisible}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Position: {position}, Size: {size}, Visible: {isVisible}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugInspector: Error rendering inspection details - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Error rendering inspection details - {ex.Message}");
             }
         }
 
@@ -220,11 +220,11 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 _isInspecting = false;
                 _inspectedElement = null;
 
-                Console.WriteLine("UIDebugInspector: Exited inspection mode");
+                System.Diagnostics.Debug.WriteLine("UIDebugInspector: Exited inspection mode");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugInspector: Error exiting inspection - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Error exiting inspection - {ex.Message}");
             }
         }
 
@@ -240,7 +240,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIDebugInspector: Error creating string representation - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Error creating string representation - {ex.Message}");
                 return "UIDebugInspector: Error";
             }
         }

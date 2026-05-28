@@ -32,7 +32,7 @@ namespace SASZombieAssaultTD.Engine.Towers
     /// </summary>
     public class TowerData
     {
-        #region Basic Properties
+        ///  Basic Properties
 
         /// <summary>
         /// Unique identifier for the tower type.
@@ -119,9 +119,9 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// </summary>
         public Vector3Int GridSize { get; set; } = new Vector3Int(1, 1, 0);
 
-        #endregion
+        /// 
 
-        #region Power Grid Requirements
+        ///  Power Grid Requirements
 
         /// <summary>
         /// Whether the tower requires power grid connection.
@@ -138,9 +138,9 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// </summary>
         public TerrainType RequiredTerrain { get; set; }
 
-        #endregion
+        /// 
 
-        #region Upgrade Paths
+        ///  Upgrade Paths
 
         /// <summary>
         /// List of possible upgrade paths.
@@ -152,9 +152,9 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// </summary>
         public int UpgradeLevel { get; set; }
 
-        #endregion
+        /// 
 
-        #region Constructor
+        ///  Constructor
 
         /// <summary>
         /// Creates a new tower data instance.
@@ -165,9 +165,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             TowerId = towerId ?? throw new ArgumentNullException(nameof(towerId));
         }
 
-        #endregion
+        /// 
 
-        #region Validation
+        ///  Validation
 
         /// <summary>
         /// Validates the tower data.
@@ -195,6 +195,6 @@ namespace SASZombieAssaultTD.Engine.Towers
             public int Cost { get; set; }
         }
 
-        #endregion
+        /// 
     }
 }

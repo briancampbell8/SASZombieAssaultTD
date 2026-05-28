@@ -114,8 +114,8 @@ namespace SASZombieAssaultTD.Engine.Systems
         {
             _criticalErrorCount++;
 
-            ModernLoggingSystem.LogError($"CRITICAL ERROR in {context}: {ex.Message}");
-            ModernLoggingSystem.LogError("Initiating emergency shutdown due to critical error");
+            Engine.Diagnostics.DebugLogger.LogError($"CRITICAL ERROR in {context}: {ex.Message}");
+            Engine.Diagnostics.DebugLogger.LogError("Initiating emergency shutdown due to critical error");
 
             // Perform emergency shutdown
             PerformEmergencyShutdown(ex);
@@ -128,21 +128,21 @@ namespace SASZombieAssaultTD.Engine.Systems
         /// <param name="context">The error context.</param>
         private void HandleSeriousError(Exception ex, string context)
         {
-            ModernLoggingSystem.LogError($"SERIOUS ERROR in {context}: {ex.Message}");
+            Engine.Diagnostics.DebugLogger.LogError($"SERIOUS ERROR in {context}: {ex.Message}");
 
             // Attempt recovery
             if (AttemptErrorRecovery(ex))
             {
-                ModernLoggingSystem.LogInfo("Error recovery successful, continuing game loop");
+                Engine.Diagnostics.DebugLogger.LogInfo("Error recovery successful, continuing game loop");
             }
             else
             {
-                ModernLoggingSystem.LogWarning("Error recovery failed, considering shutdown");
+                Engine.Diagnostics.DebugLogger.LogWarning("Error recovery failed, considering shutdown");
 
                 // Check if we've had too many serious errors
                 if (_totalErrorCount > 10) // Arbitrary threshold
                 {
-                    ModernLoggingSystem.LogError("Too many serious errors, shutting down");
+                    Engine.Diagnostics.DebugLogger.LogError("Too many serious errors, shutting down");
                     PerformGracefulShutdown();
                 }
             }
@@ -155,7 +155,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         /// <param name="context">The error context.</param>
         private void HandleMinorError(Exception ex, string context)
         {
-            ModernLoggingSystem.LogWarning($"Minor error in {context}: {ex.Message}");
+            Engine.Diagnostics.DebugLogger.LogWarning($"Minor error in {context}: {ex.Message}");
 
             // Minor errors are just logged and ignored
             // Game loop continues normally
@@ -170,7 +170,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         {
             try
             {
-                ModernLoggingSystem.LogInfo("Attempting error recovery...");
+                Engine.Diagnostics.DebugLogger.LogInfo("Attempting error recovery...");
 
                 // Recovery strategies based on error type
                 if (ex is InvalidOperationException)
@@ -190,7 +190,7 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
             catch (Exception recoveryEx)
             {
-                ModernLoggingSystem.LogError($"Error recovery failed: {recoveryEx.Message}");
+                Engine.Diagnostics.DebugLogger.LogError($"Error recovery failed: {recoveryEx.Message}");
                 return false;
             }
         }
@@ -203,7 +203,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         {
             try
             {
-                ModernLoggingSystem.LogInfo("Resetting game state for error recovery");
+                Engine.Diagnostics.DebugLogger.LogInfo("Resetting game state for error recovery");
 
                 // This would implement game state reset logic
                 // For now, just return true as a placeholder
@@ -212,7 +212,7 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.LogError($"Game state reset failed: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogError($"Game state reset failed: {ex.Message}");
                 return false;
             }
         }
@@ -225,7 +225,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         {
             try
             {
-                ModernLoggingSystem.LogInfo("Increasing timeout tolerance for error recovery");
+                Engine.Diagnostics.DebugLogger.LogInfo("Increasing timeout tolerance for error recovery");
 
                 // This would implement timeout tolerance increase
                 // For now, just return true as a placeholder
@@ -234,7 +234,7 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.LogError($"Timeout tolerance increase failed: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogError($"Timeout tolerance increase failed: {ex.Message}");
                 return false;
             }
         }
@@ -247,7 +247,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         {
             try
             {
-                ModernLoggingSystem.LogInfo("Performing generic error recovery");
+                Engine.Diagnostics.DebugLogger.LogInfo("Performing generic error recovery");
 
                 // Generic recovery: pause briefly and continue
                 System.Threading.Thread.Sleep(100);
@@ -256,7 +256,7 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.LogError($"Generic error recovery failed: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogError($"Generic error recovery failed: {ex.Message}");
                 return false;
             }
         }
@@ -268,9 +268,9 @@ namespace SASZombieAssaultTD.Engine.Systems
         /// <param name="context">The error context.</param>
         private void LogFrameError(Exception ex, string context)
         {
-            ModernLoggingSystem.LogError($"Frame error in {context} at frame {_frameCount}: {ex.Message}");
-            ModernLoggingSystem.LogError($"Error details - Type: {ex.GetType().Name}, Stack: {ex.StackTrace}");
-            ModernLoggingSystem.LogError($"Context - FPS: {FramesPerSecond:F2}, Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
+            Engine.Diagnostics.DebugLogger.LogError($"Frame error in {context} at frame {_frameCount}: {ex.Message}");
+            Engine.Diagnostics.DebugLogger.LogError($"Error details - Type: {ex.GetType().Name}, Stack: {ex.StackTrace}");
+            Engine.Diagnostics.DebugLogger.LogError($"Context - FPS: {FramesPerSecond:F2}, Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
         }
 
         /// <summary>

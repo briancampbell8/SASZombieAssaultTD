@@ -76,13 +76,13 @@ namespace SASZombieAssaultTD.Engine.Systems
                     // Update input statistics
                     UpdateInputStatistics(inputStartTime);
 
-                    ModernLoggingSystem.LogDebug($"Input processed in {deltaTime:F4}s");
+                    Engine.Diagnostics.DebugLogger.LogDebug($"Input processed in {deltaTime:F4}s");
                 }
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Input processing failed: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Input processing");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Input processing failed: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Input processing");
                 _diagnostics.RecordFrameError(ex);
             }
         }
@@ -130,8 +130,8 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Failed to get mouse position: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Mouse position");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to get mouse position: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Mouse position");
                 return System.Drawing.Point.Empty;
             }
         }
@@ -149,8 +149,8 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Failed to get key states: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Key states");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to get key states: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Key states");
                 return new bool[256];
             }
         }
@@ -176,7 +176,7 @@ namespace SASZombieAssaultTD.Engine.Systems
             if (_input != null)
             {
                 _input.SetEnabled(enabled);
-                ModernLoggingSystem.LogInfo($"Input processing {(enabled ? "enabled" : "disabled")}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"Input processing {(enabled ? "enabled" : "disabled")}");
             }
         }
 

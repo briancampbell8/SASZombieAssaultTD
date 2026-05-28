@@ -187,7 +187,7 @@ namespace SASZombieAssaultTD.Engine.UI.Components
             // TODO: SizeF type not found - using Vector3 instead
             Size = new System.Drawing.SizeF(TextSize.X, TextSize.Y);
 
-            ModernLoggingSystem.Log("DEBUG", $"Label: Created '{Id}' with text '{_text}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Label: Created '{Id}' with text '{_text}'");
         }
 
         /// <summary>
@@ -263,7 +263,7 @@ namespace SASZombieAssaultTD.Engine.UI.Components
         private void InvalidateTextCache()
         {
             TextSize = MeasureText();
-            ModernLoggingSystem.Log("TRACE", $"Label: Invalidated text cache for '{Id}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"Label: Invalidated text cache for '{Id}'");
         }
 
         /// <summary>
@@ -302,17 +302,17 @@ namespace SASZombieAssaultTD.Engine.UI.Components
     /// <summary>
     /// Text alignment options.
     /// </summary>
-    public enum TextAlignment
-    {
-        /// <summary>Align text to the left.</summary>
-        Left,
+    //public enum TextAlignment DUPLICATE
+    //{
+    //    /// <summary>Align text to the left.</summary>
+    //    Left,
 
-        /// <summary>Align text to the center.</summary>
-        Center,
+    //    /// <summary>Align text to the center.</summary>
+    //    Center,
 
-        /// <summary>Align text to the right.</summary>
-        Right
-    }
+    //    /// <summary>Align text to the right.</summary>
+    //    Right
+    //}
 }
 
 

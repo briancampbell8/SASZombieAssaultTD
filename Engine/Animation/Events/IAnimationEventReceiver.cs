@@ -236,7 +236,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             catch (Exception ex)
             {
                 // Log error but don't rethrow to maintain system stability
-                SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.Log("ERROR",
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR",
                     $"AnimationEventReceiver: Error in receiver '{ReceiverName}' ({ReceiverId}) processing event '{animationEvent.EventName}': {ex.Message}");
             }
         }

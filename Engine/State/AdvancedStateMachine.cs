@@ -66,7 +66,7 @@ namespace SASZombieAssaultTD.Engine.State
         public void SetStateFactory(StateFactory stateFactory)
         {
             _stateFactory = stateFactory ?? throw new ArgumentNullException(nameof(stateFactory));
-            ModernLoggingSystem.Log("INFO", "AdvancedStateMachine: StateFactory set");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "AdvancedStateMachine: StateFactory set");
         }
 
         /// <summary>
@@ -103,11 +103,11 @@ namespace SASZombieAssaultTD.Engine.State
                 // Fire transition completed event
                 OnTransitionCompleted?.Invoke(transition);
 
-                ModernLoggingSystem.Log("INFO", $"AdvancedStateMachine: Transition completed - {transition}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"AdvancedStateMachine: Transition completed - {transition}");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"AdvancedStateMachine: Transition failed - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AdvancedStateMachine: Transition failed - {ex.Message}");
                 OnTransitionFailed?.Invoke(transition, ex);
                 throw;
             }

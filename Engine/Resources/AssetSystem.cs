@@ -2,6 +2,8 @@
 // Purpose: Implements a robust asset key system with type safety and validation.
 // Features: Provides asset key comparison, validation, and implicit conversions.
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,24 +52,26 @@ namespace SASZombieAssaultTD.Engine.Assets
     /// <summary>
     /// Asset type enumeration with extensibility support.
     /// </summary>
-    public enum AssetType
-    {
-        Unknown = 0,
-        Texture = 1,
-        Audio = 2,
-        Font = 3,
-        Shader = 4,
-        Model = 5,
-        Animation = 6,
-        Script = 7,
-        Config = 8,
-        Data = 9,
-        Scene = 10,
-        UI = 11,
-        Particle = 12,
-        Video = 13,
-        Material = 14
-    }
+    /// 
+    // NOTE: AssetType already defined in Engine/Resources/Manager/AssetType.cs
+    //public enum AssetType
+    //{
+    //    Unknown = 0,
+    //    Texture = 1,
+    //    Audio = 2,
+    //    Font = 3,
+    //    Shader = 4,
+    //    Model = 5,
+    //    Animation = 6,
+    //    Script = 7,
+    //    Config = 8,
+    //    Data = 9,
+    //    Scene = 10,
+    //    UI = 11,
+    //    Particle = 12,
+    //    Video = 13,
+    //    Material = 14
+    //}
 
     /// <summary>
     /// Comprehensive asset metadata with validation and extensibility.
@@ -174,6 +178,8 @@ namespace SASZombieAssaultTD.Engine.Assets
         private static readonly Dictionary<AssetKey, AssetMetadata> _assets = new();
         private static readonly Dictionary<AssetType, List<AssetKey>> _assetsByType = new();
         private static readonly object _lock = new();
+        private static object TheContainingType;
+        private static object TheContainingMember;
 
         /// <summary>
         /// Registers an asset with metadata.
@@ -186,7 +192,7 @@ namespace SASZombieAssaultTD.Engine.Assets
             var validation = metadata.Validate();
             if (!validation.IsValid)
             {
-                Console.WriteLine($"Asset validation failed: {string.Join(", ", validation.Errors)}");
+                System.Diagnostics.Debug.WriteLine($"Asset validation failed: {string.Join(", ", validation.Errors)}");
                 return false;
             }
 
@@ -267,6 +273,13 @@ namespace SASZombieAssaultTD.Engine.Assets
                 _assets.Clear();
                 _assetsByType.Clear();
             }
+        }
+
+        internal static void Register(string v1, string v2)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
         }
 
         /// <summary>

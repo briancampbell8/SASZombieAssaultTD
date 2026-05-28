@@ -19,7 +19,7 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// </summary>
         public static object CreateTower(string towerType, Vector3 position)
         {
-            ModernLoggingSystem.Log("INFO", $"TowerFactory: Creating {towerType} at {position}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"TowerFactory: Creating {towerType} at {position}");
             // Placeholder implementation
             return new object();
         }

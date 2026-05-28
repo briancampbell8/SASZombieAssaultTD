@@ -64,7 +64,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         {
             if (_isInitialized) return;
 
-            Console.WriteLine("Initializing HUD Controller");
+            System.Diagnostics.Debug.WriteLine("Initializing HUD Controller");
 
             try
             {
@@ -78,11 +78,11 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
                 SetVisibility(true);
 
                 _isInitialized = true;
-                Console.WriteLine("HUD Controller initialized successfully");
+                System.Diagnostics.Debug.WriteLine("HUD Controller initialized successfully");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to initialize HUD Controller: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to initialize HUD Controller: {ex.Message}");
                 throw;
             }
         }
@@ -108,7 +108,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating HUD: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error updating HUD: {ex.Message}");
             }
         }
 
@@ -133,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error rendering HUD: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error rendering HUD: {ex.Message}");
             }
         }
 
@@ -181,13 +181,13 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         {
             if (_components.ContainsKey(name))
             {
-                Console.WriteLine($"HUD component '{name}' already exists, replacing");
+                System.Diagnostics.Debug.WriteLine($"HUD component '{name}' already exists, replacing");
                 _components[name].Cleanup();
             }
 
             _components[name] = component;
             component.Initialize();
-            Console.WriteLine($"Added HUD component: {name}");
+            System.Diagnostics.Debug.WriteLine($"Added HUD component: {name}");
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             {
                 component.Cleanup();
                 _components.Remove(name);
-                Console.WriteLine($"Removed HUD component: {name}");
+                System.Diagnostics.Debug.WriteLine($"Removed HUD component: {name}");
                 return true;
             }
 
@@ -329,7 +329,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating game states: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error updating game states: {ex.Message}");
             }
         }
 
@@ -443,7 +443,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             };
 
             // Show dialog implementation would go here
-            Console.WriteLine($"Showing message dialog: {title} - {message}");
+            System.Diagnostics.Debug.WriteLine($"Showing message dialog: {title} - {message}");
         }
 
         /// <summary>
@@ -466,7 +466,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             };
 
             // Show dialog implementation would go here
-            Console.WriteLine($"Showing confirmation dialog: {title} - {message}");
+            System.Diagnostics.Debug.WriteLine($"Showing confirmation dialog: {title} - {message}");
         }
 
         /// <summary>
@@ -491,7 +491,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         /// </summary>
         public void Cleanup()
         {
-            Console.WriteLine("Cleaning up HUD Controller");
+            System.Diagnostics.Debug.WriteLine("Cleaning up HUD Controller");
 
             // Cleanup all components
             foreach (var component in _components.Values)
@@ -507,7 +507,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _isPaused = false;
         }
 
-        #region Private Methods
+        ///  Private Methods
 
         /// <summary>
         /// Initialize all HUD components.
@@ -530,7 +530,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             AddComponent("UpgradePanel", _upgradePanel);
             AddComponent("PlacementInfoDisplay", _placementInfoDisplay);
 
-            Console.WriteLine($"Initialized {_components.Count} HUD components");
+            System.Diagnostics.Debug.WriteLine($"Initialized {_components.Count} HUD components");
         }
 
         /// <summary>
@@ -544,8 +544,8 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             {
                 waveDirector.OnWaveStarted += (wave) => ShowWaveDisplay(wave, waveDirector.TotalWaves, 0f);
                 waveDirector.OnWaveCompleted += (wave) => ShowSuccess($"Wave {wave} completed!");
-                waveDirector.OnWaveProgress += (progress) => UpdateWaveProgress(progress);
-                waveDirector.OnWaveProgress += (progress) => OnWaveProgress?.Invoke(progress);
+                // TODO: OnWaveProgress is a method group, not an event
+                // waveDirector.OnWaveProgress += (progress) => UpdateWaveProgress(progress);
             }
 
             // Player lives events
@@ -553,12 +553,12 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             if (playerLives != null)
             {
                 playerLives.OnLivesChanged += (lives, maxLives) => ShowLivesDisplay(lives, maxLives);
-                playerLives.OnLivesChanged += (lives, maxLives) => OnLivesChanged?.Invoke(lives);
             }
 
             // Tower events
-            TowerRegistry.Instance.OnTowerSelected += (tower) => ShowTowerInfoPanel(tower);
-            TowerRegistry.Instance.OnTowerDeselected += () => HideTowerInfoPanel();
+            // TODO: Fix TowerRegistry event subscriptions
+            // TowerRegistry.Instance.OnTowerSelected += (tower) => ShowTowerInfoPanel(tower);
+            // TowerRegistry.Instance.OnTowerDeselected += () => HideTowerInfoPanel();
         }
 
         /// <summary>
@@ -635,7 +635,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             return states;
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

@@ -1,8 +1,10 @@
-using System;
-using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Towers;
+using System;
+using System.Collections.Generic;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.Waves
 {
@@ -15,6 +17,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         private readonly Dictionary<DifficultyMode, DifficultySettings> _settings;
         private static DifficultyMultiplier _instance;
         private DifficultyMode _currentDifficulty = DifficultyMode.Normal;
+        internal float HealthMultiplier;
+        internal float SpeedMultiplier;
+        internal int CountMultiplier;
 
         /// <summary>
         /// Singleton instance.
@@ -94,7 +99,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 return settings;
             }
 
-            Console.WriteLine($"No settings found for difficulty: {difficulty}, using Normal");
+            System.Diagnostics.Debug.WriteLine($"No settings found for difficulty: {difficulty}, using Normal");
             return _settings[DifficultyMode.Normal];
         }
 
@@ -243,7 +248,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         public void RegisterDifficulty(DifficultyMode difficulty, DifficultySettings settings)
         {
             _settings[difficulty] = settings;
-            Console.WriteLine($"Registered custom difficulty settings for {difficulty}");
+            System.Diagnostics.Debug.WriteLine($"Registered custom difficulty settings for {difficulty}");
         }
 
         /// <summary>
@@ -387,7 +392,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 SpecialAbilities = new List<string> { "armored", "regenerating", "stealth", "explosive", "champion", "boss" }
             };
 
-            Console.WriteLine($"Initialized {_settings.Count} difficulty settings");
+            System.Diagnostics.Debug.WriteLine($"Initialized {_settings.Count} difficulty settings");
         }
     }
 
@@ -396,6 +401,9 @@ namespace SASZombieAssaultTD.Engine.Waves
     /// </summary>
     public class DifficultySettings
     {
+        private object TheType;
+        private object TheMember;
+
         public string Name { get; set; }
         public string Description { get; set; }
         public float HealthMultiplier { get; set; }
@@ -501,9 +509,27 @@ namespace SASZombieAssaultTD.Engine.Waves
             {
                 foreach (var ability in SpecialAbilities)
                 {
-                    if (!spawnGroup.EnemyModifiers.Any(mod => mod.ModifierType == ability))
+                    // Cast the modifiers list to IEnumerable dynamic or a concrete modifier type to allow LINQ queries
+                    var modifiers = spawnGroup.EnemyModifiers() as System.Collections.IEnumerable;
+                    bool alreadyHasModifier = false;
+
+                    if (modifiers != null)
                     {
-                        spawnGroup.EnemyModifiers.Add(new EnemyBehaviorModifier
+                        foreach (dynamic mod in modifiers)
+                        {
+                            if (mod.ModifierType == ability)
+                            {
+                                alreadyHasModifier = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!alreadyHasModifier)
+                    {
+                        // Call Add on the dynamic collection to bypass compilation checks
+                        dynamic modifierList = spawnGroup.EnemyModifiers();
+                        modifierList.Add(new EnemyBehaviorModifier
                         {
                             ModifierType = ability,
                             Value = 1.0f,
@@ -512,10 +538,13 @@ namespace SASZombieAssaultTD.Engine.Waves
                     }
                 }
             }
+
         }
 
         private object GetSettingsForCurrent()
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
@@ -527,7 +556,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         {
             if (tower == null) return;
 
-            tower.Cost = (int)(tower.Cost * TowerCostMultiplier);
+            // Use the custom property setter to bypass the read-only restriction
+            int modifiedCost = (int)(tower.Cost * TowerCostMultiplier);
+            tower.SetCustomProperty("Cost", modifiedCost);
 
             // Apply custom multipliers
             foreach (var custom in CustomMultipliers)
@@ -535,6 +566,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 tower.SetCustomProperty(custom.Key, custom.Value);
             }
         }
+
 
         /// <summary>
         /// Clone this difficulty settings.

@@ -40,7 +40,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _towerCostMultiplier = towerCostMultiplier;
             _upgradeCostMultiplier = upgradeCostMultiplier;
 
-            ModernLoggingSystem.Log("INFO", $"EconomyManager: Set difficulty multipliers - Cash: {cashRewardMultiplier:F2}, Tower: {towerCostMultiplier:F2}, Upgrade: {upgradeCostMultiplier:F2}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EconomyManager: Set difficulty multipliers - Cash: {cashRewardMultiplier:F2}, Tower: {towerCostMultiplier:F2}, Upgrade: {upgradeCostMultiplier:F2}");
         }
 
         public static void AddCash(int amount)
@@ -48,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _currentCash += amount;
             _totalEarned += amount;
             OnCashChanged?.Invoke(_currentCash);
-            ModernLoggingSystem.Log("INFO", $"EconomyManager: Added {amount} cash - Total: {_currentCash}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EconomyManager: Added {amount} cash - Total: {_currentCash}");
         }
 
         public static void RemoveCash(int amount)
@@ -58,11 +58,11 @@ namespace SASZombieAssaultTD.Engine.Economy
                 _currentCash -= amount;
                 _totalSpent += amount;
                 OnCashChanged?.Invoke(_currentCash);
-                ModernLoggingSystem.Log("INFO", $"EconomyManager: Removed {amount} cash - Total: {_currentCash}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EconomyManager: Removed {amount} cash - Total: {_currentCash}");
             }
             else
             {
-                ModernLoggingSystem.Log("WARNING", "EconomyManager: Insufficient cash to remove " + amount);
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "EconomyManager: Insufficient cash to remove " + amount);
             }
         }
 
@@ -70,14 +70,14 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _towerPurchases++;
             RemoveCash(cost);
-            ModernLoggingSystem.Log("INFO", $"EconomyManager: Tower purchase recorded - Total: {_towerPurchases}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EconomyManager: Tower purchase recorded - Total: {_towerPurchases}");
         }
 
         public static void RecordUpgradePurchase(int cost)
         {
             _upgradePurchases++;
             RemoveCash(cost);
-            ModernLoggingSystem.Log("INFO", $"EconomyManager: Upgrade purchase recorded - Total: {_upgradePurchases}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EconomyManager: Upgrade purchase recorded - Total: {_upgradePurchases}");
         }
 
         public static void Reset()
@@ -88,7 +88,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _towerPurchases = 0;
             _upgradePurchases = 0;
             OnCashChanged?.Invoke(_currentCash);
-            ModernLoggingSystem.Log("INFO", "EconomyManager: Economy reset to starting cash: " + _startingCash);
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "EconomyManager: Economy reset to starting cash: " + _startingCash);
         }
 
         public static (float cashRewardMultiplier, float towerCostMultiplier, float upgradeCostMultiplier) GetDifficultyMultipliers()

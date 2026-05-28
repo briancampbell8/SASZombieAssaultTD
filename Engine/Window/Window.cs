@@ -130,7 +130,7 @@ namespace SASZombieAssaultTD.Engine.Window
             _isFocused = false;
             _handle = IntPtr.Zero;
 
-            ModernLoggingSystem.LogInfo("Window: Initialized with default settings");
+            Engine.Diagnostics.DebugLogger.LogInfo("Window: Initialized with default settings");
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace SASZombieAssaultTD.Engine.Window
         {
             if (_isOpened)
             {
-                ModernLoggingSystem.Log("WARNING", "Window: Window is already open");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "Window: Window is already open");
                 return false;
             }
 
@@ -160,14 +160,14 @@ namespace SASZombieAssaultTD.Engine.Window
                 _handle = new IntPtr(1); // Simulate window handle
                 _isOpened = true;
 
-                ModernLoggingSystem.Log("INFO", $"Window: Opened '{_title}' ({width}x{height}) at ({_position.X},{_position.Y})");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"Window: Opened '{_title}' ({width}x{height}) at ({_position.X},{_position.Y})");
                 OnWindowOpened?.Invoke();
 
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Window: Failed to open window - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Window: Failed to open window - {ex.Message}");
                 return false;
             }
         }
@@ -180,7 +180,7 @@ namespace SASZombieAssaultTD.Engine.Window
         {
             if (!_isOpened)
             {
-                ModernLoggingSystem.Log("WARNING", "Window: Window is not open");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "Window: Window is not open");
                 return false;
             }
 
@@ -191,14 +191,14 @@ namespace SASZombieAssaultTD.Engine.Window
                 _isOpened = false;
                 _handle = IntPtr.Zero;
 
-                ModernLoggingSystem.Log("INFO", $"Window: Closed '{_title}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"Window: Closed '{_title}'");
                 OnWindowClosed?.Invoke();
 
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Window: Failed to close window - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Window: Failed to close window - {ex.Message}");
                 return false;
             }
         }
@@ -210,7 +210,7 @@ namespace SASZombieAssaultTD.Engine.Window
         public void SetShouldClose(bool shouldClose)
         {
             _shouldClose = shouldClose;
-            ModernLoggingSystem.Log("INFO", $"Window: ShouldClose set to {shouldClose}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"Window: ShouldClose set to {shouldClose}");
             OnShouldClose?.Invoke(shouldClose);
         }
 
@@ -233,7 +233,7 @@ namespace SASZombieAssaultTD.Engine.Window
                 if (newFocusState != _isFocused)
                 {
                     _isFocused = newFocusState;
-                    ModernLoggingSystem.Log("DEBUG", $"Window: Focus changed to {newFocusState}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Window: Focus changed to {newFocusState}");
                     OnFocusChanged?.Invoke(newFocusState);
                 }
 
@@ -242,7 +242,7 @@ namespace SASZombieAssaultTD.Engine.Window
                 if (newSize != _size)
                 {
                     _size = newSize;
-                    ModernLoggingSystem.Log("DEBUG", $"Window: Resized to {newSize.X}x{newSize.Y}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Window: Resized to {newSize.X}x{newSize.Y}");
                     OnWindowResized?.Invoke(newSize);
                 }
 
@@ -254,7 +254,7 @@ namespace SASZombieAssaultTD.Engine.Window
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Window: Failed to poll events - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Window: Failed to poll events - {ex.Message}");
             }
         }
 
@@ -267,7 +267,7 @@ namespace SASZombieAssaultTD.Engine.Window
                 return;
 
             // Platform-specific title update would go here
-            ModernLoggingSystem.Log("DEBUG", $"Window: Updated title to '{_title}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Window: Updated title to '{_title}'");
         }
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace SASZombieAssaultTD.Engine.Window
                 return;
 
             // Platform-specific size update would go here
-            ModernLoggingSystem.Log("DEBUG", $"Window: Updated size to {_size.X}x{_size.Y}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Window: Updated size to {_size.X}x{_size.Y}");
         }
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace SASZombieAssaultTD.Engine.Window
                 return;
 
             // Platform-specific position update would go here
-            ModernLoggingSystem.Log("DEBUG", $"Window: Updated position to ({_position.X},{_position.Y})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Window: Updated position to ({_position.X},{_position.Y})");
         }
 
         /// <summary>

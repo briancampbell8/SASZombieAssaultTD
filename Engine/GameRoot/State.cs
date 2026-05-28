@@ -102,6 +102,7 @@ namespace SASZombieAssaultTD.Engine
         /// </summary>
         /// <returns>True if game over.</returns>
         bool IsGameOver();
+        object InitializeAsync(object value);
     }
 
     /// <summary>
@@ -121,19 +122,19 @@ namespace SASZombieAssaultTD.Engine
         {
             if (!_isInitialized)
             {
-                ModernLoggingSystem.LogError("Cannot start game - engine not initialized");
+                Engine.Diagnostics.DebugLogger.LogError("Cannot start game - engine not initialized");
                 return;
             }
 
             try
             {
                 _stateMachine.StartGame();
-                ModernLoggingSystem.LogInfo("Game started successfully");
+                Engine.Diagnostics.DebugLogger.LogInfo("Game started successfully");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Failed to start game: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Game start");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to start game: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Game start");
             }
         }
 
@@ -144,19 +145,19 @@ namespace SASZombieAssaultTD.Engine
         {
             if (!_isInitialized)
             {
-                ModernLoggingSystem.Log("ERROR", "Cannot pause game - engine not initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Cannot pause game - engine not initialized");
                 return;
             }
 
             try
             {
                 _stateMachine.PauseGame();
-                ModernLoggingSystem.LogInfo("Game paused successfully");
+                Engine.Diagnostics.DebugLogger.LogInfo("Game paused successfully");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Failed to pause game: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Game pause");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to pause game: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Game pause");
             }
         }
 
@@ -167,19 +168,19 @@ namespace SASZombieAssaultTD.Engine
         {
             if (!_isInitialized)
             {
-                ModernLoggingSystem.Log("ERROR", "Cannot resume game - engine not initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Cannot resume game - engine not initialized");
                 return;
             }
 
             try
             {
                 _stateMachine.ResumeGame();
-                ModernLoggingSystem.LogInfo("Game resumed successfully");
+                Engine.Diagnostics.DebugLogger.LogInfo("Game resumed successfully");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Failed to resume game: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Game resume");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to resume game: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Game resume");
             }
         }
 
@@ -190,19 +191,19 @@ namespace SASZombieAssaultTD.Engine
         {
             if (!_isInitialized)
             {
-                ModernLoggingSystem.Log("ERROR", "Cannot reset game - engine not initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Cannot reset game - engine not initialized");
                 return;
             }
 
             try
             {
                 _stateMachine.ResetGame();
-                ModernLoggingSystem.LogInfo("Game reset successfully");
+                Engine.Diagnostics.DebugLogger.LogInfo("Game reset successfully");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Failed to reset game: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Game reset");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to reset game: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Game reset");
             }
         }
 
@@ -213,19 +214,19 @@ namespace SASZombieAssaultTD.Engine
         {
             if (!_isInitialized)
             {
-                ModernLoggingSystem.Log("ERROR", "Cannot trigger game over - engine not initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Cannot trigger game over - engine not initialized");
                 return;
             }
 
             try
             {
                 _stateMachine.GameOver();
-                ModernLoggingSystem.LogInfo("Game over triggered successfully");
+                Engine.Diagnostics.DebugLogger.LogInfo("Game over triggered successfully");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Failed to trigger game over: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Game over");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to trigger game over: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Game over");
             }
         }
 
@@ -236,19 +237,19 @@ namespace SASZombieAssaultTD.Engine
         {
             if (!_isInitialized)
             {
-                ModernLoggingSystem.Log("ERROR", "Cannot transition to next level - engine not initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "Cannot transition to next level - engine not initialized");
                 return;
             }
 
             try
             {
                 _stateMachine.NextLevel();
-                ModernLoggingSystem.LogInfo("Transitioned to next level successfully");
+                Engine.Diagnostics.DebugLogger.LogInfo("Transitioned to next level successfully");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Failed to transition to next level: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Next level transition");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to transition to next level: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Next level transition");
             }
         }
 

@@ -33,7 +33,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
 
             foreach (var def in _defs.Values)
             {
-                ModernLoggingSystem.Log("Info", $"[EnemyDefinitionRegistry] Loaded: {def.Id} ({def.Name})");
+                Engine.Diagnostics.DebugLogger.LogDebug("Info", $"[EnemyDefinitionRegistry] Loaded: {def.Id} ({def.Name})");
             }
         }
 

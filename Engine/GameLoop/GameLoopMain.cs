@@ -16,14 +16,16 @@ Notes:    This is the main partial class that external systems interact with.
          No deep implementation details - pure orchestration.
 */
 
+using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Timing;
+using SASZombieAssaultTD.Engine.UI.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Timing;
-using SASZombieAssaultTD.Engine.UI.Input;
 
 namespace SASZombieAssaultTD.Engine.Systems
 {
@@ -52,6 +54,10 @@ namespace SASZombieAssaultTD.Engine.Systems
         private int _totalFrames = 0;
         private float _currentFPS = 0f;
         private float _targetFrameTime = 16.67f;
+        private object LineNumber;
+        private object optionalState;
+        private object TheType;
+        private object TheMember;
 
         /// <summary>
         /// Initializes a new instance of GameLoop with all required dependencies.
@@ -67,7 +73,7 @@ namespace SASZombieAssaultTD.Engine.Systems
             _diagnostics = diagnostics ?? throw new ArgumentNullException(nameof(diagnostics));
             _input = input;
 
-            ModernLoggingSystem.LogInfo("GameLoop initialized with all dependencies");
+            Engine.Diagnostics.DebugLogger.LogInfo("GameLoop initialized with all dependencies");
         }
 
         /// <summary>
@@ -117,21 +123,31 @@ namespace SASZombieAssaultTD.Engine.Systems
 
                 try
                 {
-                    ModernLoggingSystem.LogInfo("Starting GameLoop initialization...");
+                    Engine.Diagnostics.DebugLogger.LogInfo("Starting GameLoop initialization...");
 
                     // Delegate to Initialization partial
                     PerformInitialization();
 
                     _isInitialized = true;
-                    ModernLoggingSystem.LogInfo("GameLoop initialization completed successfully");
+                    Engine.Diagnostics.DebugLogger.LogInfo("GameLoop initialization completed successfully");
                 }
                 catch (Exception ex)
                 {
-                    ModernLoggingSystem.LogError($"GameLoop initialization failed: {ex.Message}");
+                    Engine.Diagnostics.DebugLogger.Trace($"DIAG:{nameof(YourMethodName)}.Checkpoint",
+                    $"Reached checkpoint at line {LineNumber}, state={{ {optionalState} }}");
+
+                    Engine.Diagnostics.DebugLogger.LogError($"GameLoop initialization failed: {ex.Message}");
                     Shutdown(); // Cleanup on failure
                     throw;
                 }
             }
+        }
+
+        private object YourMethodName()
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -146,17 +162,17 @@ namespace SASZombieAssaultTD.Engine.Systems
 
                 try
                 {
-                    ModernLoggingSystem.LogInfo("Starting GameLoop shutdown...");
+                    Engine.Diagnostics.DebugLogger.LogInfo("Starting GameLoop shutdown...");
 
                     // Delegate to Initialization partial
                     PerformShutdown();
 
                     _isInitialized = false;
-                    ModernLoggingSystem.LogInfo("GameLoop shutdown completed successfully");
+                    Engine.Diagnostics.DebugLogger.LogInfo("GameLoop shutdown completed successfully");
                 }
                 catch (Exception ex)
                 {
-                    ModernLoggingSystem.LogError($"GameLoop shutdown failed: {ex.Message}");
+                    Engine.Diagnostics.DebugLogger.LogError($"GameLoop shutdown failed: {ex.Message}");
                 }
             }
         }
@@ -206,7 +222,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         /// </summary>
         public void Render()
         {
-            Console.WriteLine("Rendering game loop...");
+            System.Diagnostics.Debug.WriteLine("Rendering game loop...");
         }
 
         /// <summary>
@@ -222,7 +238,7 @@ namespace SASZombieAssaultTD.Engine.Systems
                 if (_isRunning) return;
                 
                 _isRunning = true;
-                Console.WriteLine("Starting game loop...");
+                System.Diagnostics.Debug.WriteLine("Starting game loop...");
             }
         }
 
@@ -236,7 +252,7 @@ namespace SASZombieAssaultTD.Engine.Systems
                 if (!_isRunning) return;
                 
                 _isRunning = false;
-                Console.WriteLine("Pausing game loop...");
+                System.Diagnostics.Debug.WriteLine("Pausing game loop...");
             }
         }
 
@@ -248,7 +264,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         {
             if (!_isRunning) return;
             
-            Console.WriteLine($"Updating game loop with delta time: {deltaTime}");
+            System.Diagnostics.Debug.WriteLine($"Updating game loop with delta time: {deltaTime}");
         }
 
         /// <summary>
@@ -258,7 +274,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         {
             if (!_isRunning) return;
             
-            Console.WriteLine("Handling game loop input...");
+            System.Diagnostics.Debug.WriteLine("Handling game loop input...");
         }
 
         /// <summary>
@@ -292,7 +308,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         private void PerformInitialization()
         {
             // Initialize all engine subsystems
-            ModernLoggingSystem.LogInfo("Performing complete engine initialization...");
+            Engine.Diagnostics.DebugLogger.LogInfo("Performing complete engine initialization...");
         }
 
         /// <summary>
@@ -301,7 +317,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         private void PerformShutdown()
         {
             // Shutdown all engine subsystems
-            ModernLoggingSystem.LogInfo("Performing complete engine shutdown...");
+            Engine.Diagnostics.DebugLogger.LogInfo("Performing complete engine shutdown...");
         }
 
         /// <summary>
@@ -312,7 +328,7 @@ namespace SASZombieAssaultTD.Engine.Systems
             private readonly GameLoop _gameLoop;
             private readonly FrameTimingManager _timingManager = new();
             private readonly PerformanceMonitor _performanceMonitor = new();
-            private readonly AdaptiveQualityManager _qualityManager = new();
+            public readonly AdaptiveQualityManager _qualityManager = new();
             private volatile float _targetFrameTime = 16.67f; // 60 FPS
             private volatile bool _adaptiveQualityEnabled = true;
 
@@ -354,10 +370,7 @@ namespace SASZombieAssaultTD.Engine.Systems
 
                     // Performance monitoring and adaptive quality
                     _performanceMonitor.RecordFrameTime(adjustedDeltaTime);
-                    if (_adaptiveQualityEnabled)
-                    {
-                        await _qualityManager.AdjustQualityAsync(_performanceMonitor.GetMetrics());
-                    }
+              
 
                     // Frame rate limiting and sleep management
                     await ManageFrameTiming(stopwatch);
@@ -558,7 +571,8 @@ namespace SASZombieAssaultTD.Engine.Systems
                 // Adjust UI rendering quality
                 await Task.CompletedTask;
             }
-        }
+
+                }
 
         /// <summary>
         /// Advanced frame timing manager with sophisticated time management.
@@ -608,7 +622,9 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
         }
 
-        #region Advanced Game Loop Classes
+        /// <summary>
+        /// Advanced Game Loop Classes
+        /// </summary>
 
         private sealed class CircularBuffer<T>
         {
@@ -692,6 +708,6 @@ namespace SASZombieAssaultTD.Engine.Systems
             Ultra
         }
 
-        #endregion
+        /// 
     }
 }

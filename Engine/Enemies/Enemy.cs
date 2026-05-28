@@ -18,7 +18,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
     /// </summary>
     public class   Enemy
     {
-        #region Constructors
+        ///  Constructors
 
         /// <summary>
         /// Creates a new enemy.
@@ -39,9 +39,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
         {
         }
 
-        #endregion
+        /// 
 
-        #region Static Factory
+        ///  Static Factory
 
         /// <summary>
         /// Static factory to ensure Enemy class is properly accessible.
@@ -60,9 +60,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             return new Enemy(entity);
         }
 
-        #endregion
+        /// 
 
-        #region Core Properties
+        ///  Core Properties
 
         /// <summary>
         /// The underlying ECS entity.
@@ -93,6 +93,11 @@ namespace SASZombieAssaultTD.Engine.Enemies
         /// Whether this enemy is a champion variant.
         /// </summary>
         public bool IsChampion { get; set; } = false;
+
+        /// <summary>
+        /// Champion level for this enemy (0 if not a champion).
+        /// </summary>
+        public int ChampionLevel { get; set; } = 0;
 
         /// <summary>
         /// Whether the enemy is dead.
@@ -149,9 +154,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
         /// </summary>
         public int TotalKills { get; set; } = 0;
 
-        #endregion
+        /// 
 
-        #region Spawn Tracking
+        ///  Spawn Tracking
 
         /// <summary>
         /// The spawn group that created this enemy.
@@ -161,7 +166,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
         /// <summary>
         /// The wave that spawned this enemy.
         /// </summary>
-        public object SourceWave { get; set; }
+        public int SourceWave { get; set; }
 
         /// <summary>
         /// Index within the spawn group.
@@ -183,9 +188,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
         /// </summary>
         public float Lifetime => IsDead ? DeathTime - SpawnTime : 0.0f;
 
-        #endregion
+        /// 
 
-        #region Movement & Pathing
+        ///  Movement & Pathing
 
         /// <summary>
         /// Current velocity.
@@ -197,9 +202,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
         /// </summary>
         public float PathProgress { get; set; } = 0.0f;
 
-        #endregion
+        /// 
 
-        #region Behavior & AI
+        ///  Behavior & AI
 
         private Dictionary<string, object> _customProperties = new();
         private List<EnemyBehaviorModifier> _behaviorModifiers = new();
@@ -255,9 +260,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             return default;
         }
 
-        #endregion
+        /// 
 
-        #region Visual Effects
+        ///  Visual Effects
 
         private List<object> _visualEffects = new();
 
@@ -286,9 +291,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             SetCustomProperty("ChainLightningRange", range);
         }
 
-        #endregion
+        /// 
 
-        #region Appearance
+        ///  Appearance
 
         /// <summary>
         /// Sets the enemy scale.
@@ -315,9 +320,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             SetCustomProperty("TintColor", new Vector4(r, g, b, a));
         }
 
-        #endregion
+        /// 
 
-        #region Lifecycle
+        ///  Lifecycle
 
         /// <summary>
         /// Marks this enemy as dead.
@@ -400,6 +405,6 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
         }
 
-        #endregion
+        /// 
     }
 }

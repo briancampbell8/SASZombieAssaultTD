@@ -42,7 +42,7 @@ namespace SASZombieAssaultTD.Engine
             _updateManager.UpdateAll(deltaTime);
 
             // Input is handled by UIInputRouter automatically
-            ModernLoggingSystem.LogDebug($"Frame update completed in {deltaTime:F4}s");
+            Engine.Diagnostics.DebugLogger.LogDebug($"Frame update completed in {deltaTime:F4}s");
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace SASZombieAssaultTD.Engine
             // Render all renderable systems
             _renderManager.RenderAll();
 
-            ModernLoggingSystem.LogDebug("Frame render completed");
+            Engine.Diagnostics.DebugLogger.LogDebug("Frame render completed");
         }
     }
 }

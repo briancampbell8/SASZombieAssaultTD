@@ -20,7 +20,7 @@ namespace SASZombieAssaultTD.Engine.Difficulty
         
         private DifficultyManager()
         {
-            ModernLoggingSystem.Log("INFO", "DifficultyManager: Initialized");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "DifficultyManager: Initialized");
         }
     }
     

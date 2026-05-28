@@ -31,7 +31,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             _batcher = new UIBatcher();
             _context = new UIRenderContext();
-            Console.WriteLine("UIRenderer: Initialized");
+            System.Diagnostics.Debug.WriteLine("UIRenderer: Initialized");
         }
 
         /// <summary>
@@ -43,18 +43,18 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 if (!_isInitialized)
                 {
-                    Console.WriteLine("UIRenderer: Cannot begin frame - not initialized");
+                    System.Diagnostics.Debug.WriteLine("UIRenderer: Cannot begin frame - not initialized");
                     return;
                 }
 
                 _context.Reset();
                 _batcher.Clear();
 
-                Console.WriteLine("UIRenderer: Began new render frame");
+                System.Diagnostics.Debug.WriteLine("UIRenderer: Began new render frame");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error beginning frame - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error beginning frame - {ex.Message}");
             }
         }
 
@@ -67,7 +67,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 if (!_isInitialized)
                 {
-                    Console.WriteLine("UIRenderer: Cannot end frame - not initialized");
+                    System.Diagnostics.Debug.WriteLine("UIRenderer: Cannot end frame - not initialized");
                     return;
                 }
 
@@ -77,11 +77,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                 // Submit batches to rendering system
                 SubmitBatches();
 
-                Console.WriteLine("UIRenderer: Ended render frame");
+                System.Diagnostics.Debug.WriteLine("UIRenderer: Ended render frame");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error ending frame - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error ending frame - {ex.Message}");
             }
         }
 
@@ -95,17 +95,17 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIRenderer: Cannot render null element");
+                    System.Diagnostics.Debug.WriteLine("UIRenderer: Cannot render null element");
                     return;
                 }
 
                 if (!element.IsVisible)
                 {
-                    Console.WriteLine("UIRenderer: Element is not visible, skipping render");
+                    System.Diagnostics.Debug.WriteLine("UIRenderer: Element is not visible, skipping render");
                     return;
                 }
 
-                Console.WriteLine($"UIRenderer: Rendering element at {element.AbsolutePosition}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Rendering element at {element.AbsolutePosition}");
 
                 // Set up render context for this element
                 _context.SetTransform(RenderSystem.Matrix.CreateTranslation(element.AbsolutePosition.X, element.AbsolutePosition.Y, 0f));
@@ -116,7 +116,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error rendering element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error rendering element - {ex.Message}");
             }
         }
 
@@ -133,11 +133,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                 var rect = new System.Drawing.RectangleF(0, 0, element.Size.Width, element.Size.Height);
                 _batcher.DrawRectangle(rect, System.Drawing.Color.White);
 
-                Console.WriteLine($"UIRenderer: Rendered element as rectangle {rect}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Rendered element as rectangle {rect}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error rendering element by type - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error rendering element by type - {ex.Message}");
             }
         }
 
@@ -154,16 +154,16 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 if (string.IsNullOrEmpty(text))
                 {
-                    Console.WriteLine("UIRenderer: Cannot render null or empty text");
+                    System.Diagnostics.Debug.WriteLine("UIRenderer: Cannot render null or empty text");
                     return;
                 }
 
                 _batcher.DrawText(text, position, font, color);
-                Console.WriteLine($"UIRenderer: Rendered text '{text}' at {position}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Rendered text '{text}' at {position}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error rendering text - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error rendering text - {ex.Message}");
             }
         }
 
@@ -178,11 +178,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             try
             {
                 _batcher.DrawRectangle(rect, color, texture);
-                Console.WriteLine($"UIRenderer: Rendered rectangle {rect} with color {color}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Rendered rectangle {rect} with color {color}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error rendering rectangle - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error rendering rectangle - {ex.Message}");
             }
         }
 
@@ -198,11 +198,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             try
             {
                 _batcher.DrawLine(start, end, color, thickness);
-                Console.WriteLine($"UIRenderer: Rendered line from {start} to {end}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Rendered line from {start} to {end}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error rendering line - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error rendering line - {ex.Message}");
             }
         }
 
@@ -216,11 +216,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 // TODO: Implement SetClipRect method
                 // _context.SetClipRect(rect);
-                Console.WriteLine($"UIRenderer: Set clip rect {rect}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Set clip rect {rect}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error setting clip rect - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error setting clip rect - {ex.Message}");
             }
         }
 
@@ -232,11 +232,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             try
             {
                 _context.ClearClipRect();
-                Console.WriteLine("UIRenderer: Cleared clip rect");
+                System.Diagnostics.Debug.WriteLine("UIRenderer: Cleared clip rect");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error clearing clip rect - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error clearing clip rect - {ex.Message}");
             }
         }
 
@@ -249,11 +249,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             try
             {
                 _context.SetAlpha(alpha);
-                Console.WriteLine($"UIRenderer: Set global alpha to {alpha}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Set global alpha to {alpha}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error setting global alpha - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error setting global alpha - {ex.Message}");
             }
         }
 
@@ -268,12 +268,12 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                 {
                     // This would integrate with the engine's actual rendering system
                     // For now, just log the batch submission
-                    Console.WriteLine($"UIRenderer: Submitting batch with {batch.Count} draw calls");
+                    System.Diagnostics.Debug.WriteLine($"UIRenderer: Submitting batch with {batch.Count} draw calls");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error submitting batches - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error submitting batches - {ex.Message}");
             }
         }
 
@@ -286,16 +286,16 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 if (_isInitialized)
                 {
-                    Console.WriteLine("UIRenderer: Already initialized");
+                    System.Diagnostics.Debug.WriteLine("UIRenderer: Already initialized");
                     return;
                 }
 
                 _isInitialized = true;
-                Console.WriteLine("UIRenderer: Initialized successfully");
+                System.Diagnostics.Debug.WriteLine("UIRenderer: Initialized successfully");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error during initialization - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error during initialization - {ex.Message}");
             }
         }
 
@@ -308,7 +308,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 if (!_isInitialized)
                 {
-                    Console.WriteLine("UIRenderer: Already shut down");
+                    System.Diagnostics.Debug.WriteLine("UIRenderer: Already shut down");
                     return;
                 }
 
@@ -316,11 +316,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                 _batcher.Clear();
                 _context.Reset();
 
-                Console.WriteLine("UIRenderer: Shut down successfully");
+                System.Diagnostics.Debug.WriteLine("UIRenderer: Shut down successfully");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRenderer: Error during shutdown - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error during shutdown - {ex.Message}");
             }
         }
     }

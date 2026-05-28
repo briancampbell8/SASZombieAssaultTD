@@ -1,7 +1,9 @@
+using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using SASZombieAssaultTD.Engine.Core;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.Rendering
 {
@@ -26,7 +28,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
         private bool _screenshotEnabled;
         private string _screenshotPath;
         private bool _gpuTimingEnabled;
-        private readonly List<long> _gpuFrameTimes;
+        private List<long> _gpuFrameTimes;
+        private static object TheType;
+        private static object TheMember;
 
         /// <summary>
         /// Gets the GPU context handle.
@@ -75,7 +79,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             set
             {
                 _renderScale = System.MathF.Max(0.1f, System.MathF.Min(3.0f, value));
-                ModernLoggingSystem.Log("DEBUG", $"Renderer: Render scale set to {_renderScale:F2}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Renderer: Render scale set to {_renderScale:F2}");
             }
         }
 
@@ -88,7 +92,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             set
             {
                 _colorGradingEnabled = value;
-                ModernLoggingSystem.Log("DEBUG", $"Renderer: Color grading {(value ? "enabled" : "disabled")}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Renderer: Color grading {(value ? "enabled" : "disabled")}");
             }
         }
 
@@ -163,7 +167,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             if (_isInitialized)
             {
-                ModernLoggingSystem.Log("WARNING", "Renderer: Already initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "Renderer: Already initialized");
                 return false;
             }
 
@@ -190,14 +194,14 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 _renderTarget = new IntPtr(2); // Simulate render target
                 _isInitialized = true;
 
-                ModernLoggingSystem.Log("INFO", $"Renderer: Initialized ({width}x{height}) with VSync={vsync}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"Renderer: Initialized ({width}x{height}) with VSync={vsync}");
                 OnRendererInitialized?.Invoke();
 
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Renderer: Failed to initialize - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Renderer: Failed to initialize - {ex.Message}");
                 return false;
             }
         }
@@ -210,7 +214,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             if (!_isInitialized)
             {
-                ModernLoggingSystem.Log("WARNING", "Renderer: Not initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "Renderer: Not initialized");
                 return false;
             }
 
@@ -225,14 +229,14 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
                 _isInitialized = false;
 
-                ModernLoggingSystem.Log("INFO", "Renderer: Shutdown completed");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "Renderer: Shutdown completed");
                 OnRendererShutdown?.Invoke();
 
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Renderer: Failed to shutdown - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Renderer: Failed to shutdown - {ex.Message}");
                 return false;
             }
         }
@@ -245,7 +249,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             if (!_isInitialized)
             {
-                ModernLoggingSystem.Log("WARNING", "Renderer: Cannot clear - not initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "Renderer: Cannot clear - not initialized");
                 return;
             }
 
@@ -255,11 +259,11 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
                 // Platform-specific clear operation would go here
                 // For now, we'll just log the operation
-                ModernLoggingSystem.Log("DEBUG", $"Renderer: Cleared with color {clearColor}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Renderer: Cleared with color {clearColor}");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Renderer: Failed to clear - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Renderer: Failed to clear - {ex.Message}");
             }
         }
 
@@ -271,7 +275,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             if (!_isInitialized)
             {
-                ModernLoggingSystem.Log("WARNING", "Renderer: Cannot present - not initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "Renderer: Cannot present - not initialized");
                 return false;
             }
 
@@ -281,12 +285,12 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 // This would swap the back buffer with the front buffer
                 // VSync would be handled here if enabled
 
-                ModernLoggingSystem.Log("DEBUG", "Renderer: Presented frame");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "Renderer: Presented frame");
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Renderer: Failed to present - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Renderer: Failed to present - {ex.Message}");
                 return false;
             }
         }
@@ -311,12 +315,12 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
                 _gpuContext = new IntPtr(1); // Simulate GPU context
 
-                ModernLoggingSystem.Log("INFO", "Renderer: GPU context initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "Renderer: GPU context initialized");
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Renderer: Failed to initialize GPU context - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Renderer: Failed to initialize GPU context - {ex.Message}");
                 return false;
             }
         }
@@ -330,7 +334,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             if (!_isInitialized)
             {
-                ModernLoggingSystem.Log("WARNING", "Renderer: Cannot set viewport - not initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "Renderer: Cannot set viewport - not initialized");
                 return;
             }
 
@@ -339,11 +343,11 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 _viewportSize = new Vector3(width, height, 0f);
 
                 // Platform-specific viewport setting would go here
-                ModernLoggingSystem.Log("DEBUG", $"Renderer: Viewport set to {width}x{height}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Renderer: Viewport set to {width}x{height}");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Renderer: Failed to set viewport - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Renderer: Failed to set viewport - {ex.Message}");
             }
         }
 
@@ -356,7 +360,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 return;
 
             // Platform-specific frame begin would go here
-            ModernLoggingSystem.Log("TRACE", "Renderer: Began frame");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", "Renderer: Began frame");
         }
 
         /// <summary>
@@ -368,7 +372,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 return;
 
             // Platform-specific frame end would go here
-            ModernLoggingSystem.Log("TRACE", "Renderer: Ended frame");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", "Renderer: Ended frame");
         }
 
         /// <summary>
@@ -403,12 +407,12 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
                 // Platform-specific screenshot capture would go here
                 // This would capture the current render target and save to file
-                ModernLoggingSystem.Log("INFO", $"Renderer: Screenshot saved to {fullPath}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"Renderer: Screenshot saved to {fullPath}");
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Renderer: Failed to take screenshot - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Renderer: Failed to take screenshot - {ex.Message}");
                 return false;
             }
         }
@@ -431,7 +435,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             if (brightness.HasValue)
                 _colorGradeBrightness = System.MathF.Max(-1.0f, System.MathF.Min(1.0f, brightness.Value));
 
-            ModernLoggingSystem.Log("DEBUG", $"Renderer: Applied color grading - Enabled={enabled}, Tint={_colorGradeTint}, Contrast={_colorGradeContrast:F2}, Brightness={_colorGradeBrightness:F2}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Renderer: Applied color grading - Enabled={enabled}, Tint={_colorGradeTint}, Contrast={_colorGradeContrast:F2}, Brightness={_colorGradeBrightness:F2}");
         }
 
         /// <summary>
@@ -444,7 +448,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
             // Platform-specific GPU timing start would go here
             // This would insert a GPU timer query
-            ModernLoggingSystem.Log("TRACE", "Renderer: Began GPU timing");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", "Renderer: Began GPU timing");
         }
 
         /// <summary>
@@ -467,7 +471,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 _gpuFrameTimes.RemoveAt(0);
             }
 
-            ModernLoggingSystem.Log("TRACE", $"Renderer: Ended GPU timing - {frameTime}μs");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"Renderer: Ended GPU timing - {frameTime}μs");
         }
 
         /// <summary>
@@ -518,7 +522,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public void SetScreenshotPath(string path)
         {
             _screenshotPath = path ?? "screenshots";
-            ModernLoggingSystem.Log("DEBUG", $"Renderer: Screenshot path set to {_screenshotPath}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Renderer: Screenshot path set to {_screenshotPath}");
         }
 
         /// <summary>
@@ -533,18 +537,18 @@ namespace SASZombieAssaultTD.Engine.Rendering
             {
                 var validatedFPS = System.Math.Max(1, targetFPS);
 
-                ModernLoggingSystem.Log("DEBUG", $"Renderer: Applied frame pacing - Target: {validatedFPS}, VSync: {vsyncEnabled}, Adaptive: {adaptiveVSync}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Renderer: Applied frame pacing - Target: {validatedFPS}, VSync: {vsyncEnabled}, Adaptive: {adaptiveVSync}");
                 // Frame pacing logic would go here
                 // This would integrate with the render loop to cap FPS
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Renderer: Failed to apply frame pacing - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Renderer: Failed to apply frame pacing - {ex.Message}");
             }
         }
 
         // Missing rendering methods
-        public void DrawRectangle(Rectangle rect, Color color)
+        public void DrawRectangle(int x, Rectangle rect, Color color)
         {
             // Implementation would draw rectangle using GPU context
             // This is a placeholder for the missing method
@@ -560,6 +564,43 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             // Implementation would draw text using GPU context
             // This is a placeholder for the missing method
+        }
+
+        internal static void DrawRectangle(VectorMath.Vector3 previewPosition1,
+            VectorMath.Vector3 previewPosition2, VectorMath.Vector3 previewSize, Color towerColor, float v)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawSprite(string sprite, VectorMath.Vector3 previewPosition, 
+            VectorMath.Vector3 previewSize, Color towerColor, float v)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawString(string statusText, VectorMath.Vector3 statusPosition, Color statusTextColor, CachedFont statusFont)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawRectangle(int x1, int y1, int x2, int y2, Color borderColor, float v)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawRectangle(int x1, int y1, int x2, int y2, Color backgroundColor)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
         }
     }
 }

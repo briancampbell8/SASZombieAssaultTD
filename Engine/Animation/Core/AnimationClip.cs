@@ -83,7 +83,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             Tags = new List<string>();
             Metadata = new Dictionary<string, object>();
 
-            ModernLoggingSystem.Log("DEBUG", $"AnimationClip: Created '{name}' ({duration}s, looping: {isLooping})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationClip: Created '{name}' ({duration}s, looping: {isLooping})");
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
                 throw new ArgumentNullException(nameof(frame));
 
             Frames.Add(frame);
-            ModernLoggingSystem.Log("DEBUG", $"AnimationClip '{Name}': Added frame at time {frame.Time}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationClip '{Name}': Added frame at time {frame.Time}");
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
                 throw new ArgumentNullException(nameof(animationEvent));
 
             Events.Add(animationEvent);
-            ModernLoggingSystem.Log("DEBUG", $"AnimationClip '{Name}': Added event '{animationEvent.EventName}' at time {animationEvent.Timestamp}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationClip '{Name}': Added event '{animationEvent.EventName}' at time {animationEvent.Timestamp}");
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
                 throw new ArgumentException("Tag cannot be null or empty");
 
             Tags.Add(tag);
-            ModernLoggingSystem.Log("DEBUG", $"AnimationClip '{Name}': Added tag '{tag}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationClip '{Name}': Added tag '{tag}'");
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             if (Metadata != null)
             {
                 Metadata[key] = value;
-                ModernLoggingSystem.Log("DEBUG", $"AnimationClip '{Name}': Set metadata '{key}' = {value}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationClip '{Name}': Set metadata '{key}' = {value}");
             }
         }
 
@@ -189,7 +189,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
                 throw new ArgumentNullException(nameof(track));
 
             Tracks[track.Type] = track;
-            ModernLoggingSystem.Log("DEBUG", $"AnimationClip '{Name}': Added track '{track.Name}' of type {track.Type}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationClip '{Name}': Added track '{track.Name}' of type {track.Type}");
         }
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             ColorTint = 0xFFFFFFFF;
             Metadata = new Dictionary<string, object>();
 
-            ModernLoggingSystem.Log("DEBUG", $"AnimationFrame: Created at time {time:F3}, duration {duration:F3}s");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationFrame: Created at time {time:F3}, duration {duration:F3}s");
         }
 
         /// <summary>

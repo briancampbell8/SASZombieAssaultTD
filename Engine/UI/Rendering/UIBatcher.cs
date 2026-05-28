@@ -30,7 +30,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             _drawCalls = new List<UIDrawCall>();
             _batches = new Dictionary<string, UIBatch>();
-            Console.WriteLine("UIBatcher: Initialized");
+            System.Diagnostics.Debug.WriteLine("UIBatcher: Initialized");
         }
 
         /// <summary>
@@ -43,18 +43,18 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 if (drawCall == null)
                 {
-                    Console.WriteLine("UIBatcher: Cannot add null draw call");
+                    System.Diagnostics.Debug.WriteLine("UIBatcher: Cannot add null draw call");
                     return;
                 }
 
                 _drawCalls.Add(drawCall);
                 _needsSorting = true;
 
-                Console.WriteLine($"UIBatcher: Added draw call, total: {_drawCalls.Count}");
+                System.Diagnostics.Debug.WriteLine($"UIBatcher: Added draw call, total: {_drawCalls.Count}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIBatcher: Error adding draw call - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error adding draw call - {ex.Message}");
             }
         }
 
@@ -81,7 +81,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIBatcher: Error drawing rectangle - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error drawing rectangle - {ex.Message}");
             }
         }
 
@@ -110,7 +110,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIBatcher: Error drawing text - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error drawing text - {ex.Message}");
             }
         }
 
@@ -139,7 +139,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIBatcher: Error drawing line - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error drawing line - {ex.Message}");
             }
         }
 
@@ -150,7 +150,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             try
             {
-                Console.WriteLine($"UIBatcher: Batching {_drawCalls.Count} draw calls");
+                System.Diagnostics.Debug.WriteLine($"UIBatcher: Batching {_drawCalls.Count} draw calls");
 
                 // Clear existing batches
                 _batches.Clear();
@@ -182,11 +182,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                     batch.DrawCalls.Add(drawCall);
                 }
 
-                Console.WriteLine($"UIBatcher: Created {_batches.Count} batches");
+                System.Diagnostics.Debug.WriteLine($"UIBatcher: Created {_batches.Count} batches");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIBatcher: Error batching draw calls - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error batching draw calls - {ex.Message}");
             }
         }
 
@@ -202,7 +202,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIBatcher: Error getting batches - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error getting batches - {ex.Message}");
                 return new List<UIBatch>();
             }
         }
@@ -218,11 +218,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                 _batches.Clear();
                 _needsSorting = true;
 
-                Console.WriteLine("UIBatcher: Cleared all draw calls and batches");
+                System.Diagnostics.Debug.WriteLine("UIBatcher: Cleared all draw calls and batches");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIBatcher: Error clearing - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error clearing - {ex.Message}");
             }
         }
 
@@ -251,7 +251,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIBatcher: Error getting batch key - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error getting batch key - {ex.Message}");
                 return "default";
             }
         }

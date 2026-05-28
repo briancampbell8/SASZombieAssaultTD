@@ -113,7 +113,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             IsSuccessful = true;
             ErrorMessage = string.Empty;
 
-            ModernLoggingSystem.Log("DEBUG", $"Transaction: Created {type} transaction - {resourceType} {amount} from {source} to {destination}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Transaction: Created {type} transaction - {resourceType} {amount} from {source} to {destination}");
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             IsSuccessful = false;
             ErrorMessage = errorMessage;
 
-            ModernLoggingSystem.Log("WARNING", $"Transaction: Failed {type} transaction - {errorMessage}");
+            Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"Transaction: Failed {type} transaction - {errorMessage}");
         }
 
         /// <summary>

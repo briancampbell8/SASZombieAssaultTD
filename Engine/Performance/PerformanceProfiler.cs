@@ -173,7 +173,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             _cpuUsageSample = 0f;
 
             InitializeMetrics();
-            ModernLoggingSystem.Log("INFO", $"PerformanceProfiler: Initialized with target FPS {targetFPS}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PerformanceProfiler: Initialized with target FPS {targetFPS}");
         }
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace SASZombieAssaultTD.Engine.Performance
                 UpdateSmoothedDeltaTime(duration / 1000f);
             }
 
-            ModernLoggingSystem.Log("TRACE", $"PerformanceProfiler: Recorded {operationName}: {duration:F2}ms");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"PerformanceProfiler: Recorded {operationName}: {duration:F2}ms");
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             _smoothedDeltaTime = 1f / _targetFPS;
             _frameSkipProtection = 0;
 
-            ModernLoggingSystem.Log("INFO", "PerformanceProfiler: Reset all metrics");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PerformanceProfiler: Reset all metrics");
         }
 
         /// <summary>
@@ -337,7 +337,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         public void SetDeltaTimeSmoothing(float smoothingFactor)
         {
             _deltaTimeSmoothingFactor = System.Math.Clamp(smoothingFactor, 0f, 1f);
-            ModernLoggingSystem.Log("DEBUG", $"PerformanceProfiler: Set delta time smoothing to {_deltaTimeSmoothingFactor:F2}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"PerformanceProfiler: Set delta time smoothing to {_deltaTimeSmoothingFactor:F2}");
         }
 
         /// <summary>
@@ -492,7 +492,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         }
     }
 
-    #region Advanced Performance Monitoring
+    ///  Advanced Performance Monitoring
 
     /// <summary>
     /// Advanced performance monitoring system with sophisticated analysis and optimization.
@@ -513,4 +513,4 @@ namespace SASZombieAssaultTD.Engine.Performance
 
     }
 }
-#endregion
+/// 

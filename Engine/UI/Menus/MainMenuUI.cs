@@ -20,16 +20,16 @@ namespace SASZombieAssaultTD.Engine.UI
     /// </summary>
     public class MainMenuUI
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Whether the main menu is visible.
         /// </summary>
         public bool IsVisible { get; set; }
 
-        #endregion
+        /// 
 
-        #region Events
+        ///  Events
 
         /// <summary>
         /// Event triggered when start game is selected.
@@ -51,9 +51,9 @@ namespace SASZombieAssaultTD.Engine.UI
         /// </summary>
         public event Action OnExit;
 
-        #endregion
+        /// 
 
-        #region Constructor
+        ///  Constructor
 
         /// <summary>
         /// Creates a new MainMenuUI instance.
@@ -63,9 +63,9 @@ namespace SASZombieAssaultTD.Engine.UI
             IsVisible = false;
         }
 
-        #endregion
+        /// 
 
-        #region Public Methods
+        ///  Public Methods
 
         /// <summary>
         /// Shows the main menu.
@@ -145,6 +145,6 @@ namespace SASZombieAssaultTD.Engine.UI
             // Handle menu input
         }
 
-        #endregion
+        /// 
     }
 }

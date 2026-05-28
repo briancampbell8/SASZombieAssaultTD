@@ -1,7 +1,9 @@
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Dictionary;
+using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.UI.HUD
 {
@@ -19,6 +21,8 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         protected Color _backgroundColor = Color.Transparent;
         protected float _opacity = 1.0f;
         protected Rectangle _bounds = Rectangle.Empty;
+        private object TheType;
+        private object TheMember;
 
         /// <summary>
         /// Gets or sets whether the component is visible.
@@ -362,6 +366,13 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             UpdateBounds();
             UpdateLayout();
             _needsLayoutUpdate = false;
+        }
+
+        internal void Cleanup()
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
         }
     }
 }

@@ -31,7 +31,7 @@ namespace SASZombieAssaultTD.Engine.State
         /// </summary>
         public void Enter()
         {
-            ModernLoggingSystem.Log("INFO", "PausedState: Entered - Freezing gameplay and showing pause menu");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PausedState: Entered - Freezing gameplay and showing pause menu");
             
             // Freeze gameplay systems
             // In a real implementation, this would:
@@ -48,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.State
         /// </summary>
         public void Exit()
         {
-            ModernLoggingSystem.Log("INFO", "PausedState: Exited - Resuming gameplay and hiding pause menu");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PausedState: Exited - Resuming gameplay and hiding pause menu");
             
             // Resume gameplay systems
             // In a real implementation, this would:
@@ -73,7 +73,7 @@ namespace SASZombieAssaultTD.Engine.State
             // - Update background dimming effects
             
             // Note: Game world updates are intentionally skipped during pause
-            ModernLoggingSystem.Log("DEBUG", "PausedState: Update called - gameplay remains frozen");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "PausedState: Update called - gameplay remains frozen");
         }
         
         /// <summary>
@@ -93,17 +93,17 @@ namespace SASZombieAssaultTD.Engine.State
                 // Handle unpause request from gameplay input (e.g., Escape key)
                 if (gameplayInputEvent.Action == GameplayAction.Pause)
                 {
-                    ModernLoggingSystem.Log("INFO", "PausedState: Resume requested - transitioning back to Gameplay");
+                    Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PausedState: Resume requested - transitioning back to Gameplay");
                     _stateMachine.ChangeState(GameStateType.Gameplay);
                 }
                 else
                 {
-                    ModernLoggingSystem.Log("DEBUG", $"PausedState: Ignoring gameplay event {gameplayInputEvent.Action} while paused");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"PausedState: Ignoring gameplay event {gameplayInputEvent.Action} while paused");
                 }
             }
             else
             {
-                ModernLoggingSystem.Log("DEBUG", $"PausedState: Ignoring event {gameEvent.GetType().Name} while paused");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"PausedState: Ignoring event {gameEvent.GetType().Name} while paused");
             }
         }
         
@@ -116,28 +116,28 @@ namespace SASZombieAssaultTD.Engine.State
             switch (pauseInputEvent.Action)
             {
                 case PauseAction.Resume:
-                ModernLoggingSystem.Log("INFO", "PausedState: Resume requested - transitioning back to Gameplay");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PausedState: Resume requested - transitioning back to Gameplay");
                 _stateMachine.ChangeState(GameStateType.Gameplay);
                 break;
                 
                 case PauseAction.QuitToMenu:
-                ModernLoggingSystem.Log("INFO", "PausedState: Quit to menu requested - transitioning to MainMenu");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PausedState: Quit to menu requested - transitioning to MainMenu");
                 _stateMachine.ChangeState(GameStateType.MainMenu);
                 break;
                 
                 case PauseAction.Options:
-                ModernLoggingSystem.Log("INFO", "PausedState: Options requested - not implemented yet");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PausedState: Options requested - not implemented yet");
                 // Placeholder for options menu from pause state
                 break;
                 
                 case PauseAction.Restart:
-                ModernLoggingSystem.Log("INFO", "PausedState: Restart requested - transitioning to Gameplay");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PausedState: Restart requested - transitioning to Gameplay");
                 // In a real implementation, this would restart the current level/mission
                 _stateMachine.ChangeState(GameStateType.Gameplay);
                 break;
                 
                 default:
-                ModernLoggingSystem.Log("DEBUG", $"PausedState: Unknown pause action {pauseInputEvent.Action}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"PausedState: Unknown pause action {pauseInputEvent.Action}");
                 break;
             }
         }

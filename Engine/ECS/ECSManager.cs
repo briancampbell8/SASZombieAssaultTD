@@ -12,12 +12,14 @@ Notes:    This replaces all fragmented manager implementations across the engine
             All engine code must use this unified Manager type.
 */
 
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Utility;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.ECS.Components;
+using SASZombieAssaultTD.Engine.Utility;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.ECS
 {
@@ -52,16 +54,18 @@ namespace SASZombieAssaultTD.Engine.ECS
     /// </summary>
     public class ECSManager
     {
-        #region Private Fields
+        ///  Private Fields
 
         private readonly ECSWorld _world;
         private readonly Dictionary<Type, object> _systemCache = new();
         private ManagerStats _stats = ManagerStats.Empty;
         private bool _isInitialized;
+        private object TheType;
+        private object TheMember;
 
-        #endregion
+        /// 
 
-        #region Public Properties
+        ///  Public Properties
 
         public ECSWorld World => _world;
         public ManagerStats Stats => _stats;
@@ -69,9 +73,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         public int EntityCount => _world.EntityCount;
         public int SystemCount => _world.SystemCount;
 
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
 
         public ECSManager()
         {
@@ -83,9 +87,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             _world = world ?? throw new ArgumentNullException(nameof(world));
         }
 
-        #endregion
+        /// 
 
-        #region Lifecycle Management
+        ///  Lifecycle Management
 
         public void Initialize()
         {
@@ -141,9 +145,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             _stats = ManagerStats.Empty;
         }
 
-        #endregion
+        /// 
 
-        #region Entity Management
+        ///  Entity Management
 
         public Entity CreateEntity()
         {
@@ -179,9 +183,9 @@ namespace SASZombieAssaultTD.Engine.ECS
 
         public IReadOnlyDictionary<Type, ECSComponent> GetAllComponents(Entity entity) => (IReadOnlyDictionary<Type, ECSComponent>)_world.GetAllComponents(entity);
 
-        #endregion
+        /// 
 
-        #region System Management
+        ///  System Management
 
         public bool AddSystem(ECSSystem system)
         {
@@ -217,6 +221,8 @@ namespace SASZombieAssaultTD.Engine.ECS
 
         private void CacheSystem(Type systemType, IECSSystem system)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
@@ -226,9 +232,9 @@ namespace SASZombieAssaultTD.Engine.ECS
 
         public IReadOnlyCollection<ECSSystem> GetSystemsByPriority() => (IReadOnlyCollection<ECSSystem>)_world.GetSystemsByPriority();
 
-        #endregion
+        /// 
 
-        #region Queries
+        ///  Queries
 
         public IReadOnlyCollection<Entity> FindEntitiesWithComponent<T>() where T : BaseComponent => (IReadOnlyCollection<Entity>)_world.FindEntitiesWithComponent<T>();
 
@@ -240,9 +246,9 @@ namespace SASZombieAssaultTD.Engine.ECS
 
         public IReadOnlyCollection<ECSSystem> GetActiveSystems() => (IReadOnlyCollection<ECSSystem>)_world.ActiveSystems;
 
-        #endregion
+        /// 
 
-        #region Private Methods
+        ///  Private Methods
 
         private void CacheSystem(Type systemType, ECSSystem system) => _systemCache[systemType] = system;
 
@@ -255,9 +261,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             _stats.MinUpdateTime = System.Math.Min(_stats.MinUpdateTime, updateTime);
         }
 
-        #endregion
+        /// 
 
-        #region Statistics
+        ///  Statistics
 
         public ManagerStats GetStats() => _stats;
 
@@ -266,6 +272,6 @@ namespace SASZombieAssaultTD.Engine.ECS
         public override string ToString() =>
             $"ECSManager(World:{_world.EntityCount} entities, {_world.SystemCount} systems, Initialized:{_isInitialized})";
 
-        #endregion
+        /// 
     }
 }

@@ -29,7 +29,7 @@ namespace SASZombieAssaultTD.Engine.State
         /// </summary>
         public void Enter()
         {
-            ModernLoggingSystem.Log("INFO", "BootState: Entered - Starting resource loading");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "BootState: Entered - Starting resource loading");
             _resourcesLoaded = false;
             
             // Start resource loading (minimal startup logic)
@@ -42,7 +42,7 @@ namespace SASZombieAssaultTD.Engine.State
         /// </summary>
         public void Exit()
         {
-            ModernLoggingSystem.Log("INFO", "BootState: Exited - Resource loading complete");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "BootState: Exited - Resource loading complete");
         }
         
         /// <summary>
@@ -55,7 +55,7 @@ namespace SASZombieAssaultTD.Engine.State
             // Check if resource loading is complete
             if (_resourcesLoaded)
             {
-                ModernLoggingSystem.Log("INFO", "BootState: Resources loaded, transitioning to MainMenu");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "BootState: Resources loaded, transitioning to MainMenu");
                 _stateMachine.ChangeState(GameStateType.MainMenu);
             }
             else
@@ -76,7 +76,7 @@ namespace SASZombieAssaultTD.Engine.State
         {
             // Boot state typically ignores input events
             // In a real implementation, you might handle specific boot-time events
-            ModernLoggingSystem.Log("DEBUG", $"BootState: Ignoring event {gameEvent.GetType().Name} during boot");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BootState: Ignoring event {gameEvent.GetType().Name} during boot");
         }
         
         /// <summary>
@@ -85,7 +85,7 @@ namespace SASZombieAssaultTD.Engine.State
         /// </summary>
         private void LoadResources()
         {
-            ModernLoggingSystem.Log("INFO", "BootState: Loading core resources...");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "BootState: Loading core resources...");
             
             // Placeholder for resource loading logic
             // In a real implementation, this would:
@@ -96,7 +96,7 @@ namespace SASZombieAssaultTD.Engine.State
             
             // Simulate loading completion
             _resourcesLoaded = true;
-            ModernLoggingSystem.Log("INFO", "BootState: Core resources loaded successfully");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "BootState: Core resources loaded successfully");
         }
     }
 }

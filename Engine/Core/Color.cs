@@ -12,8 +12,10 @@ Notes:   This replaces all fragmented color implementations across the engine.
          Provides conversion helpers for System.Drawing.Color when needed.
 */
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 using System;
 using System.Drawing;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.Core
 {
@@ -23,7 +25,7 @@ namespace SASZombieAssaultTD.Engine.Core
     /// </summary>
     public readonly struct Color : IEquatable<Color>
     {
-        #region Components
+        ///  Components
         
         /// <summary>Red component (0.0 - 1.0).</summary>
         public readonly float R;
@@ -37,9 +39,9 @@ namespace SASZombieAssaultTD.Engine.Core
         /// <summary>Alpha component (0.0 - 1.0, where 0.0 is transparent and 1.0 is opaque).</summary>
         public readonly float A;
         
-        #endregion
+        /// 
 
-        #region Predefined Colors
+        ///  Predefined Colors
         
         /// <summary>Completely transparent color (0, 0, 0, 0).</summary>
         public static readonly Color Transparent = new(0f, 0f, 0f, 0f);
@@ -97,11 +99,13 @@ namespace SASZombieAssaultTD.Engine.Core
         
         /// <summary>Light blue color (0.678, 0.847, 0.902, 1).</summary>
         public static readonly Color LightBlue = new(0.678f, 0.847f, 0.902f, 1f);
-        
-        #endregion
+        private static object TheType;
+        private static object TheMember;
 
-        #region Constructors
-        
+        /// 
+
+        ///  Constructors
+
         /// <summary>
         /// Creates a new color with specified RGB components and full alpha (1.0).
         /// </summary>
@@ -161,9 +165,9 @@ namespace SASZombieAssaultTD.Engine.Core
             A = other.A;
         }
         
-        #endregion
+        /// 
 
-        #region Properties
+        ///  Properties
         
         /// <summary>
         /// Gets the grayscale value of this color (luminance).
@@ -185,9 +189,9 @@ namespace SASZombieAssaultTD.Engine.Core
         /// </summary>
         public float Brightness => (R + G + B) / 3f;
         
-        #endregion
+        /// 
 
-        #region Color Operations
+        ///  Color Operations
         
         /// <summary>
         /// Linearly interpolates between two colors.
@@ -263,9 +267,9 @@ namespace SASZombieAssaultTD.Engine.Core
             return new Color(Grayscale, Grayscale, Grayscale, A);
         }
         
-        #endregion
+        /// 
 
-        #region Conversions
+        ///  Conversions
         
         /// <summary>
         /// Converts this engine Color to System.Drawing.Color for external API compatibility.
@@ -309,9 +313,9 @@ namespace SASZombieAssaultTD.Engine.Core
             }
         }
         
-        #endregion
+        /// 
 
-        #region Equality and Hashing
+        ///  Equality and Hashing
         
         /// <summary>
         /// Determines if two colors are approximately equal within a small tolerance.
@@ -333,20 +337,27 @@ namespace SASZombieAssaultTD.Engine.Core
         
         public override int GetHashCode() => System.HashCode.Combine(R, G, B, A);
         
-        #endregion
+        /// 
 
-        #region Operators
+        ///  Operators
         
         public static bool operator ==(Color left, Color right) => left.Equals(right);
         public static bool operator !=(Color left, Color right) => !left.Equals(right);
         
         public static Color operator *(Color color, float scalar) => color.WithBrightness(scalar);
         public static Color operator *(float scalar, Color color) => color.WithBrightness(scalar);
-        
-        #endregion
 
-        #region Static Constructors
-        
+        public static implicit operator System.Drawing.Color(Color v)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
+
+        /// 
+
+        ///  Static Constructors
+
         /// <summary>
         /// Creates a Color from ARGB byte values.
         /// </summary>
@@ -375,15 +386,15 @@ namespace SASZombieAssaultTD.Engine.Core
             return new Color(r, g, b, a);
         }
         
-        #endregion
+        /// 
 
-        #region String Representation
+        ///  String Representation
         
         public override string ToString()
         {
             return $"Color(R: {R:F3}, G: {G:F3}, B: {B:F3}, A: {A:F3})";
         }
         
-        #endregion
+        /// 
     }
 }

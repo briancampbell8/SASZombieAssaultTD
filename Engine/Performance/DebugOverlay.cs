@@ -162,7 +162,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             _position = new Vector3(10f, 10f, 0f);
             _scale = 1f;
 
-            ModernLoggingSystem.Log("INFO", "DebugOverlay: Initialized");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "DebugOverlay: Initialized");
         }
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"DebugOverlay: Failed to render - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"DebugOverlay: Failed to render - {ex.Message}");
             }
         }
 
@@ -258,7 +258,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         {
             _visible = !_visible;
             OnVisibilityChanged?.Invoke(_visible);
-            ModernLoggingSystem.Log("INFO", $"DebugOverlay: Visibility set to {_visible}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"DebugOverlay: Visibility set to {_visible}");
         }
 
         /// <summary>
@@ -313,7 +313,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         {
             // This would render a semi-transparent background
             // For now, we'll just log the operation
-            ModernLoggingSystem.Log("TRACE", "DebugOverlay: Rendered background");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", "DebugOverlay: Rendered background");
         }
 
         /// <summary>
@@ -385,7 +385,7 @@ namespace SASZombieAssaultTD.Engine.Performance
 
             // This would render the actual graph
             // For now, we'll just log the operation
-            ModernLoggingSystem.Log("TRACE", $"DebugOverlay: Rendered {title} graph with {data.Count} data points");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"DebugOverlay: Rendered {title} graph with {data.Count} data points");
         }
 
         /// <summary>
@@ -450,7 +450,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             {
                 var linePosition = new Vector3(position.X, position.Y + i * 15f * _scale, position.Z);
                 // This would render the text using the sprite batch
-                ModernLoggingSystem.Log("TRACE", $"DebugOverlay: Rendered text '{lines[i]}' at {linePosition}");
+                Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"DebugOverlay: Rendered text '{lines[i]}' at {linePosition}");
             }
         }
 

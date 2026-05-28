@@ -37,7 +37,7 @@ namespace SASZombieAssaultTD.Engine.UI
     /// </summary>
     public class StatisticsDisplay
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Whether the statistics display is visible.
@@ -59,9 +59,9 @@ namespace SASZombieAssaultTD.Engine.UI
         /// </summary>
         public TimeSpan Time { get; set; }
 
-        #endregion
+        /// 
 
-        #region Constructor
+        ///  Constructor
 
         /// <summary>
         /// Creates a new StatisticsDisplay instance.
@@ -74,9 +74,9 @@ namespace SASZombieAssaultTD.Engine.UI
             Time = TimeSpan.Zero;
         }
 
-        #endregion
+        /// 
 
-        #region Public Methods
+        ///  Public Methods
 
         /// <summary>
         /// Shows the statistics display.
@@ -155,6 +155,6 @@ namespace SASZombieAssaultTD.Engine.UI
             Time = TimeSpan.Zero;
         }
 
-        #endregion
+        /// 
     }
 }

@@ -34,7 +34,7 @@ namespace SASZombieAssaultTD.Engine
         {
             try
             {
-                ModernLoggingSystem.LogInfo("Starting core system registration...");
+                Engine.Diagnostics.DebugLogger.LogInfo("Starting core system registration...");
 
                 // Register scene manager
                 RegisterSceneManager();
@@ -42,12 +42,12 @@ namespace SASZombieAssaultTD.Engine
                 // Register other core systems as needed
                 RegisterAdditionalSystems();
 
-                ModernLoggingSystem.LogInfo("Core system registration completed successfully");
+                Engine.Diagnostics.DebugLogger.LogInfo("Core system registration completed successfully");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Core system registration failed: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Core system registration");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Core system registration failed: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Core system registration");
                 throw;
             }
         }
@@ -59,7 +59,7 @@ namespace SASZombieAssaultTD.Engine
         {
             var sceneManager = new SceneManager();
             _systemRegistry.RegisterService<SceneManager>(sceneManager);
-            ModernLoggingSystem.LogInfo("SceneManager registered with system registry");
+            Engine.Diagnostics.DebugLogger.LogInfo("SceneManager registered with system registry");
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace SASZombieAssaultTD.Engine
         {
             // Register other systems here as they are added
             // This is a placeholder for future system registration
-            ModernLoggingSystem.LogInfo("Additional systems registration completed");
+            Engine.Diagnostics.DebugLogger.LogInfo("Additional systems registration completed");
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace SASZombieAssaultTD.Engine
                 throw new ArgumentNullException(nameof(service));
 
             _systemRegistry.RegisterService(service);
-            ModernLoggingSystem.LogInfo($"Service of type {typeof(T).Name} registered with system registry");
+            Engine.Diagnostics.DebugLogger.LogInfo($"Service of type {typeof(T).Name} registered with system registry");
         }
     }
 }

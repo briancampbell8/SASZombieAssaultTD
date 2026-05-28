@@ -6,14 +6,15 @@ Features: ECS integration, animation state updates, time-based progression.
 P11-04-07-B: System updates animation states for entities with AnimationControllerComponent.
 Manages animation time progression and state machine updates with comprehensive logging.
 */
-using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.Animation.Components;
 using SASZombieAssaultTD.Engine.Animation.Core;
 using SASZombieAssaultTD.Engine.Animation.Events;
 using SASZombieAssaultTD.Engine.Animation.Systems;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.ECS;
+using SASZombieAssaultTD.Engine.Events;
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Events;
 using System.Linq;
 
 namespace SASZombieAssaultTD.Engine.Animation.Systems
@@ -26,6 +27,8 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
     {
         private readonly ECSWorld _world;
         private float _timeScale = 1.0f;
+        private object TheContainingType;
+        private object TheContainingMember;
 
         /// <summary>
         /// Initializes the animation update system.
@@ -85,6 +88,8 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
 
         private Action<AnimationControllerComponent, AnimationEvent> GetOnAnimationEventFired()
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 

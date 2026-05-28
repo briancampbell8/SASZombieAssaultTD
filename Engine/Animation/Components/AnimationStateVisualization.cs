@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Interfaces;
 using SASZombieAssaultTD.Engine.VectorMath;
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 // FORCE THIS FILE TO USE SYSTEM.DRAWING.COLOR
 using DrawingColor = System.Drawing.Color;
@@ -184,7 +185,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 }
                 catch (Exception ex)
                 {
-                    SASZombieAssaultTD.Engine.Core.ModernLoggingSystem.LogError(
+                    Engine.Diagnostics.DebugLogger.LogError(
                         $"Failed to render animation state visualization: {ex.Message}", ex);
                 }
             }

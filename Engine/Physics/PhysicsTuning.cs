@@ -46,7 +46,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
             catch (System.Exception ex)
             {
-                System.Console.WriteLine($"PhysicsTuning: Error initializing - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"PhysicsTuning: Error initializing - {ex.Message}");
 
                 // Fallback to safe defaults
                 GravityStrength = 9.81f;
@@ -61,11 +61,11 @@ namespace SASZombieAssaultTD.Engine.Physics
         /// </summary>
         private static void LogTuningSummary()
         {
-            System.Console.WriteLine("PhysicsTuning: Initialized with configuration:");
-            System.Console.WriteLine($"  Gravity Strength: {GravityStrength}");
-            System.Console.WriteLine($"  Default Friction: {DefaultFriction}");
-            System.Console.WriteLine($"  Default Bounciness: {DefaultBounciness}");
-            System.Console.WriteLine($"  Max Slope Angle: {MaxSlopeAngleDegrees}°");
+            System.Diagnostics.Debug.WriteLine("PhysicsTuning: Initialized with configuration:");
+            System.Diagnostics.Debug.WriteLine($"  Gravity Strength: {GravityStrength}");
+            System.Diagnostics.Debug.WriteLine($"  Default Friction: {DefaultFriction}");
+            System.Diagnostics.Debug.WriteLine($"  Default Bounciness: {DefaultBounciness}");
+            System.Diagnostics.Debug.WriteLine($"  Max Slope Angle: {MaxSlopeAngleDegrees}°");
         }
 
         /// <summary>
@@ -84,12 +84,12 @@ namespace SASZombieAssaultTD.Engine.Physics
                 DefaultBounciness = System.Math.Clamp(defaultBounciness, 0f, 1f);
                 MaxSlopeAngleDegrees = System.Math.Clamp(maxSlopeAngleDegrees, 0f, 90f);
 
-                System.Console.WriteLine("PhysicsTuning: Updated configuration:");
+                System.Diagnostics.Debug.WriteLine("PhysicsTuning: Updated configuration:");
                 LogTuningSummary();
             }
             catch (System.Exception ex)
             {
-                System.Console.WriteLine($"PhysicsTuning: Error updating tuning - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"PhysicsTuning: Error updating tuning - {ex.Message}");
             }
         }
 

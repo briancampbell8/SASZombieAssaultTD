@@ -66,7 +66,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
         /// <param name="zombie">The spawned zombie.</param>
         private void LogSpawn(ZombieMovement zombie)
         {
-            Console.WriteLine($"[ZombieSpawner] Spawned zombie at {SpawnPoint} (total: {_spawned.Count})");
+            System.Diagnostics.Debug.WriteLine($"[ZombieSpawner] Spawned zombie at {SpawnPoint} (total: {_spawned.Count})");
         }
     }
 }

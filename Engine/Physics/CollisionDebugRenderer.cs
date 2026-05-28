@@ -33,7 +33,7 @@ namespace SASZombieAssaultTD.Engine.Physics
         public CollisionDebugRenderer(ECSWorld ecsWorld)
         {
             _ecsWorld = ecsWorld ?? throw new ArgumentNullException(nameof(ecsWorld));
-            ModernLoggingSystem.Log("INFO", "CollisionDebugRenderer: Initialized");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "CollisionDebugRenderer: Initialized");
         }
 
         public void Render(IRenderContext context)
@@ -48,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"CollisionDebugRenderer: Error during rendering: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"CollisionDebugRenderer: Error during rendering: {ex.Message}");
             }
         }
 
@@ -163,20 +163,27 @@ namespace SASZombieAssaultTD.Engine.Physics
             context.DrawCircle(topCenter, radius, new Color(color));
             context.DrawCircle(bottomCenter, radius, new Color(color));
         }
-
         private void RenderDebugStats(IRenderContext context)
         {
             var collisionSystem = _ecsWorld.GetSystem<CollisionSystem>();
-            var gridStats = _ecsWorld.SpatialGrid.GetStats();
+            string? gridStats = _ecsWorld.SpatialGrid.GetStats(); // Get the raw stats string
 
-            var statsText = $"  Actual Collisions: {collisionSystem?.ActualCollisions ?? 0}\n" +
-                            "\nSpatial Grid Stats:\n" +
-                            $"  Total Cells: {gridStats?.TotalCells ?? 0}\n" +
-                            $"  Occupied Cells: {gridStats?.OccupiedCells ?? 0}\n" +
-                            $"  Total Entities: {gridStats?.TotalEntities ?? 0}\n" +
-                            $"  Avg Entities/Cell: {(gridStats?.AverageEntitiesPerCell).ToString("F2") ?? "0.00"}\n" +
-                            $"  Max Entities/Cell: {gridStats?.MaxEntitiesPerCell ?? 0}\n" +
-                            $"\nDebug Options: Grid={ShowGrid} Shapes={ShowShapes} Contacts={ShowContacts} Bounds={ShowBounds}";
+            // Call the extension methods explicitly as static functions to resolve ambiguity
+            int totalCells = gridStats != null ? Engine.Extensions.StringExtensions.TotalCells(gridStats) : 0;
+            int occupiedCells = gridStats != null ? Engine.Extensions.StringExtensions.OccupiedCells(gridStats) : 0;
+            int totalEntities = gridStats != null ? Engine.Extensions.StringExtensions.TotalEntities(gridStats) : 0;
+            float avgEntities = gridStats != null ? Engine.Extensions.StringExtensions.AverageEntitiesPerCell(gridStats) : 0.0f;
+            int maxEntities = gridStats != null ? Engine.Extensions.StringExtensions.MaxEntitiesPerCell(gridStats) : 0;
+
+            var statsText =
+                $"  Actual Collisions: {collisionSystem?.ActualCollisions ?? 0}\n" +
+                "\nSpatial Grid Stats:\n" +
+                $"  Total Cells: {totalCells}\n" +
+                $"  Occupied Cells: {occupiedCells}\n" +
+                $"  Total Entities: {totalEntities}\n" +
+                $"  Avg Entities/Cell: {avgEntities.ToString("F2")}\n" +
+                $"  Max Entities/Cell: {maxEntities}\n" +
+                $"\nDebug Options: Grid={ShowGrid} Shapes={ShowShapes} Contacts={ShowContacts} Bounds={ShowBounds}";
 
             var y = 10;
             foreach (var line in statsText.Split('\n'))
@@ -185,6 +192,8 @@ namespace SASZombieAssaultTD.Engine.Physics
                 y += 15;
             }
         }
+
+
 
         public string GetDebugInfo() =>
             $"CollisionDebugRenderer Debug Info:\n" +

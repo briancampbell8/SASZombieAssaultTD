@@ -20,16 +20,16 @@ namespace SASZombieAssaultTD.Engine.UI
     /// </summary>
     public class PauseMenuUI
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Whether the pause menu is visible.
         /// </summary>
         public bool IsVisible { get; set; }
 
-        #endregion
+        /// 
 
-        #region Events
+        ///  Events
 
         /// <summary>
         /// Event triggered when resume is selected.
@@ -56,9 +56,9 @@ namespace SASZombieAssaultTD.Engine.UI
         /// </summary>
         public event Action OnQuitToMenu;
 
-        #endregion
+        /// 
 
-        #region Constructor
+        ///  Constructor
 
         /// <summary>
         /// Creates a new PauseMenuUI instance.
@@ -68,9 +68,9 @@ namespace SASZombieAssaultTD.Engine.UI
             IsVisible = false;
         }
 
-        #endregion
+        /// 
 
-        #region Public Methods
+        ///  Public Methods
 
         /// <summary>
         /// Shows the pause menu.
@@ -159,6 +159,6 @@ namespace SASZombieAssaultTD.Engine.UI
             // Handle pause menu input
         }
 
-        #endregion
+        /// 
     }
 }

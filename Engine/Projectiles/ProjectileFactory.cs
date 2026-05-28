@@ -1,9 +1,12 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Performance;
+using SASZombieAssaultTD.Engine.Projectiles;
+using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Performance;
-using SASZombieAssaultTD.Engine.Towers;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.Projectiles
 {
@@ -15,6 +18,8 @@ namespace SASZombieAssaultTD.Engine.Projectiles
     {
         private readonly Dictionary<ProjectileType, ProjectileTemplate> _templates;
         private static ProjectileFactory _instance;
+        private object TheType;
+        private object TheMember;
 
         /// <summary>
         /// Singleton instance.
@@ -40,7 +45,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         {
             if (!_templates.TryGetValue(type, out var template))
             {
-                Console.WriteLine($"No template found for projectile type: {type}");
+                System.Diagnostics.Debug.WriteLine($"No template found for projectile type: {type}");
                 return null;
             }
 
@@ -67,9 +72,16 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error creating projectile: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error creating projectile: {ex.Message}");
                 return null;
             }
+        }
+
+        private Projectile GetProjectileFromPool(ProjectileType type)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -142,7 +154,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error creating projectile burst: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error creating projectile burst: {ex.Message}");
                 return projectiles;
             }
         }
@@ -188,7 +200,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error creating projectile ring: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error creating projectile ring: {ex.Message}");
                 return projectiles;
             }
         }
@@ -274,7 +286,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         public void RegisterTemplate(ProjectileType type, ProjectileTemplate template)
         {
             _templates[type] = template;
-            Console.WriteLine($"Registered custom template for projectile type: {type}");
+            System.Diagnostics.Debug.WriteLine($"Registered custom template for projectile type: {type}");
         }
 
         /// <summary>
@@ -392,7 +404,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                 TrailEffect = new TrailEffect(Color.Magenta, 0.3f)
             };
 
-            Console.WriteLine($"Initialized {_templates.Count} projectile templates");
+            System.Diagnostics.Debug.WriteLine($"Initialized {_templates.Count} projectile templates");
         }
 
         /// <summary>
@@ -440,10 +452,43 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         /// <summary>
         /// Get a projectile from the appropriate pool.
         /// </summary>
-        private Projectile GetProjectileFromPool(ProjectileType type)
+        /// 
+        public class ProjectileSystem
+            
         {
-            return ProjectileSystem.Instance?.GetProjectileFromPool(type) ??
-                   PerformanceManager.Instance?.Get<Projectile>();
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public string Author { get; set; }
+            public string Version { get; set; }
+            public string Website { get; set; }
+            public string License { get; set; }
+            = string.Empty;
+            public string[] Tags { get; set; } = Array.Empty<string>();
+            public bool IsEnabled { get; set; }
+            public string[] Dependencies { get; set; } = Array.Empty<string>();
+            public string[] DependenciesOptional { get; set; } = Array.Empty<string>();
+            public string[] DependenciesHidden { get; set; } = Array.Empty<string>();
+
+            public ProjectileSystem()
+            {
+                Name = string.Empty;
+                Description = string.Empty;
+                Author = string.Empty;
+                Version = string.Empty;
+                Website = string.Empty;
+                License = string.Empty;
+                Tags = Array.Empty<string>();
+                IsEnabled = true;
+                Dependencies = Array.Empty<string>();
+                DependenciesOptional = Array.Empty<string>();
+                DependenciesHidden = Array.Empty<string>();
+            }
+        }
+      
+           
+
+                 
+        
         }
     }
 
@@ -494,4 +539,4 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         public bool IsPiercing { get; set; }
         public int MaxPierces { get; set; }
     }
-}
+

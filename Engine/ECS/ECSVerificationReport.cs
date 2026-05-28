@@ -22,7 +22,7 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// <returns>Verification report.</returns>
         public static string RunVerification()
         {
-            ModernLoggingSystem.Log("INFO", "ECSVerificationReport: Starting comprehensive verification");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "ECSVerificationReport: Starting comprehensive verification");
 
             var report = new StringBuilder();
             AppendHeader(report);
@@ -37,7 +37,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             AppendComplianceVerification(report);
             AppendSummaryAndRecommendations(report);
 
-            ModernLoggingSystem.Log("INFO", "ECSVerificationReport: Verification completed");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "ECSVerificationReport: Verification completed");
             return report.ToString();
         }
 

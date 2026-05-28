@@ -1,0 +1,292 @@
+=== ENGINE FOLDER TREE ===
+Generated: 05/15/2026 15:04:59
+
+>>> Rendering
+  [Rendering]
+    - BackendCommand.cs
+    - BackgroundRenderer.cs
+    - BasicFontProvider.cs
+    - CompositeBuilder.cs
+    - CompositeCreator.cs
+    - CompositeImageLoader.cs
+    - CompositeMergeTool.cs
+    - CompositePipeline.cs
+    - CompositeSurface.cs
+    - DebugHUDRenderer.cs
+    - EngineTexture.cs
+    - Font.cs
+    - FontCache.cs
+    - GraphicsTypes.cs
+    - IFontProvider.cs
+    - IGraphicsDevice.cs
+    - IPlatformRenderer.cs
+    - IRenderContext.cs
+    - IRenderTarget.cs
+    - ParticleSystem.cs
+    - RenderCommandQueue.cs
+    - RenderDiagnostics.cs
+    - Renderer.cs
+    - RendererSelector.cs
+    - RenderInitValidator.cs
+    - RenderPipelineConfig.cs
+    - RenderQueue.cs
+    - RenderSurface.cs
+    - RenderSystem.cs
+    - Sprite.cs
+    - SpriteBatchOptimizer.cs
+    - SpriteBatchRenderer.cs
+    - SpriteCache.cs
+    - StaticLayout.cs
+    - TextAlignment.cs
+    - TextRenderer.cs
+    - Texture2D.cs
+    - TextureCache.cs
+    - TextureHelpers.cs
+    - TextureManager.cs
+    - TrailEffect.cs
+    - WindowHost.cs
+    [BGFX]
+      - BackendCommand.cs
+      - BGFX.cs
+      - BGFXActivationGuard.cs
+      - BGFXCallbackHandler.cs
+      - BGFXCommandExecutor.cs
+      - BGFXCommandMap.cs
+      - BGFXDeviceCore.cs
+      - BGFXFramebuffer.cs
+      - BGFXFramebufferUploader.cs
+      - BGFXGraphicsDeviceCore.cs
+      - BGFXHandles.cs
+      - BGFXInitializationHarness.cs
+      - BGFXNative.cs
+      - BGFXNoOp.cs
+      - BGFXPresentation.cs
+      - BGFXResourceCache.cs
+      - BGFXRuntimeSafety.cs
+      - BGFXShaderManager.cs
+      - BGFXState.cs
+      - IRenderTarget.cs
+    [D3D11]
+      - D3D11DeviceCore.cs
+      - D3D11Presentation.cs
+      - D3D11UIRenderBackendCore.cs
+      - PipelineState.cs
+      - RenderStats.cs
+    [Debug]
+      - PathDebugRenderer.cs
+    [Framebuffer]
+      - FramebuffeControl.cs
+      - FramebufferCore.cs
+      - FramebufferLifecycle.cs
+      - FramebufferPrimitives.cs
+      - FramebufferText.cs
+      - FramebufferTexture.cs
+    [Interfaces]
+      - ICompositeCreator.cs
+      - ICompositeImageLoader.cs
+      - ICompositeMergeTool.cs
+      - ICompositeSurface.cs
+      - IEngineTexture.cs
+    [Systems]
+      - RenderingSystem.cs
+    [Zombies]
+      - ZombieRenderer.cs
+
+>>> UI
+  [UI]
+    - HUDColorInputProcessor.cs
+    - HUDConfigManager.cs
+    - HUDLayout.cs
+    - HUDManager.cs
+    - HUDPanel_Cash.cs
+    - HUDPanel_Finalizer.cs
+    - HUDPanel_Main.cs
+    - HUDTextElement.cs
+    - StaticLayoutLoader.cs
+    - StaticLayoutRenderer.cs
+    - UIFinalizer.cs
+    - UIMaterial.cs
+    - UIState.cs
+    [Assets]
+      - ModernUIAssetLoader.cs
+      - UIAssetLoader.cs
+      - UIFont.cs
+      - UISprite.cs
+    [Components]
+      - Button.cs
+      - Label.cs
+      - ModernButton.cs
+      - Panel.cs
+      - PointF.cs
+      - UIElement.cs
+      - UIElementBase.cs
+      - UIRoot.cs
+    [Core]
+      - Anchor.cs
+      - ButtonStyle.cs
+      - Dock.cs
+      - Gradient.cs
+      - IEasingFunction.cs
+      - Margin.cs
+      - Shadow.cs
+      - Size.cs
+      - VerticalAlignment.cs
+    [Debug]
+      - UIDebugInspector.cs
+      - UIDebugOverlay.cs
+    [HUD]
+      - CashDisplay.cs
+      - HUD_Main.cs
+      - HUDComponent.cs
+      - HUDComponents.cs
+      - HUDController.cs
+      - LivesDisplay.cs
+      - PlacementInfoDisplay.cs
+      - TowerInfoPanel.cs
+      - UpgradePanel.cs
+      - WaveDisplay.cs
+    [Input]
+      - UIFocusManager.cs
+      - UIInputRouter.cs
+      - UIInputState.cs
+    [Layout]
+      - UILayoutSystem.cs
+      - UILayoutTypes.cs
+    [Managers]
+      - FontManager.cs
+      - ModernUIManager.cs
+    [Menus]
+      - GameOverUI.cs
+      - MainMenuUI.cs
+      - Menus.cs
+      - PauseMenuUI.cs
+    [Rendering]
+      - D3D11RenderContextBridge.cs
+      - Font.cs
+      - GameOverScreenRenderer.cs
+      - GetTransitionProgress.cs
+      - GetUpgradeInfoText.cs
+      - GetUpgradeInfoTextColor.cs
+      - GetUpgradeStatusColor.cs
+      - HealthBarRenderer.cs
+      - HUDRenderAdapter.cs
+      - InventoryPanelRenderer.cs
+      - IRenderContext.cs
+      - IRenderTarget.cs
+      - ItemTooltipRenderer.cs
+      - ITexture2D.cs
+      - MetaProgressionRenderer.cs
+      - PathDebugRenderer.cs
+      - PixelFormat.cs
+      - RenderAuditLogger.cs
+      - RenderBackground.cs
+      - RenderCommandBuffer.cs
+      - RenderCommandType.cs
+      - RenderPerformanceMonitor.cs
+      - RenderResourcePool.cs
+      - ResourceDisplayRenderer.cs
+      - RespawnCountdownRenderer.cs
+      - RoundCompleteNotificationRenderer.cs
+      - Texture.cs
+      - UIBatcher.cs
+      - UIFontRenderer.cs
+      - UIMaterial.cs
+      - UIRenderContext.cs
+      - UIRenderer.cs
+      - UIShaderSystem.cs
+      - UITextureAtlasManager.cs
+      [Modern]
+        - ModernUIRenderer_Batching.cs
+        - ModernUIRenderer_Commands.cs
+        - ModernUIRenderer_Core.cs
+        - ModernUIRenderer_Elements.cs
+        - ModernUIRenderer_Initialization.cs
+        - ModernUIRenderer_Performance.cs
+        - ModernUIRenderer_Resources.cs
+    [Statistics]
+      - GameOverScreenStatistics.cs
+      - HealthBarRendererStatistics.cs
+      - KillFeedStatistics.cs
+      - RespawnCountdownStatistics.cs
+      - RoundCompleteStatistics.cs
+      - ScoreDisplayStatistics.cs
+      - StatisticsDisplay_Main.cs
+    [Styles]
+      - UIStyle.cs
+      - UIStyleResolver.cs
+      - UIStyleSheet.cs
+    [Systems]
+      - KillFeedSystem.cs
+      - LayoutSystem.cs
+      - ScoreDisplaySystem.cs
+      - UIComponentRegistry.cs
+      - UIElementFactory.cs
+      - UIEventSystem.cs
+      - UIManager.cs
+      - UISystem.cs
+      - UISystemInitializer.cs
+    [Widgets]
+      - UIButton.cs
+      - UIPanel.cs
+      - UIText.cs
+      - UIWidgetBase.cs
+
+>>> UI\Rendering
+  [Rendering]
+    - D3D11RenderContextBridge.cs
+    - Font.cs
+    - GameOverScreenRenderer.cs
+    - GetTransitionProgress.cs
+    - GetUpgradeInfoText.cs
+    - GetUpgradeInfoTextColor.cs
+    - GetUpgradeStatusColor.cs
+    - HealthBarRenderer.cs
+    - HUDRenderAdapter.cs
+    - InventoryPanelRenderer.cs
+    - IRenderContext.cs
+    - IRenderTarget.cs
+    - ItemTooltipRenderer.cs
+    - ITexture2D.cs
+    - MetaProgressionRenderer.cs
+    - PathDebugRenderer.cs
+    - PixelFormat.cs
+    - RenderAuditLogger.cs
+    - RenderBackground.cs
+    - RenderCommandBuffer.cs
+    - RenderCommandType.cs
+    - RenderPerformanceMonitor.cs
+    - RenderResourcePool.cs
+    - ResourceDisplayRenderer.cs
+    - RespawnCountdownRenderer.cs
+    - RoundCompleteNotificationRenderer.cs
+    - Texture.cs
+    - UIBatcher.cs
+    - UIFontRenderer.cs
+    - UIMaterial.cs
+    - UIRenderContext.cs
+    - UIRenderer.cs
+    - UIShaderSystem.cs
+    - UITextureAtlasManager.cs
+    [Modern]
+      - ModernUIRenderer_Batching.cs
+      - ModernUIRenderer_Commands.cs
+      - ModernUIRenderer_Core.cs
+      - ModernUIRenderer_Elements.cs
+      - ModernUIRenderer_Initialization.cs
+      - ModernUIRenderer_Performance.cs
+      - ModernUIRenderer_Resources.cs
+
+>>> UI\Components
+  [Components]
+    - Button.cs
+    - Label.cs
+    - ModernButton.cs
+    - Panel.cs
+    - PointF.cs
+    - UIElement.cs
+    - UIElementBase.cs
+    - UIRoot.cs
+
+>>> UI\Modern (NOT FOUND)
+
+=== END OF TREE ===

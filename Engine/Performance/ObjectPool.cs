@@ -1,10 +1,12 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Enemies;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.Projectiles;
+using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Projectiles;
-using SASZombieAssaultTD.Engine.Enemies;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Towers;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.Performance
 {
@@ -108,7 +110,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error returning object to pool: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error returning object to pool: {ex.Message}");
             }
         }
 
@@ -233,7 +235,7 @@ namespace SASZombieAssaultTD.Engine.Performance
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"ECS integration failed when activating projectile: {ex.Message}");
+                        System.Diagnostics.Debug.WriteLine($"ECS integration failed when activating projectile: {ex.Message}");
                     }
                 }
             }
@@ -255,13 +257,20 @@ namespace SASZombieAssaultTD.Engine.Performance
 
     public class Projectile
     {
+        private object TheType;
+        private object TheMember;
+
         internal void Activate(Vector3 position, Vector3 direction, Tower source, Enemy target)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         internal void Reset()
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
     }

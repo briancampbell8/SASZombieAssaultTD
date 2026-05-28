@@ -1,3 +1,26 @@
+/* ====================================================================================================
+ *  FILE: TowerSaveData.cs
+ *  PATH: Engine/Save/SAS/TowerSaveData.cs
+ *  SUBSYSTEM: Save System
+ *  ROLE: Serialization and deserialization of tower state.
+ *
+ *  RESPONSIBILITIES:
+ *      - Capture tower state from the active game.
+ *      - Serialize tower attributes, upgrades, abilities, and statistics.
+ *      - Restore tower state into a running game session.
+ *      - Provide validation, cloning, and summary utilities.
+ *
+ *  NON-RESPONSIBILITIES:
+ *      - Tower gameplay logic.
+ *      - Registry management beyond applying save data.
+ *      - UI, networking, or persistence storage.
+ *
+ *  ARCHITECTURAL NOTES:
+ *      - All collections must be initialized in the constructor.
+ *      - All public methods must be null‑safe and deterministic.
+ *      - Save data must remain serialization‑friendly and version‑safe.
+ * ==================================================================================================== */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,43 +29,78 @@ using SASZombieAssaultTD.Engine.Towers;
 using SASZombieAssaultTD.Engine.Gameplay.Towers;
 using SASZombieAssaultTD.Engine.Gameplay.Items;
 using Tower = SASZombieAssaultTD.Engine.Towers.Tower;
-// Alias to disambiguate TowerType between different namespaces
 using TowerTypeAlias = SASZombieAssaultTD.Engine.Dictionary.TowerType;
 using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.Animation.Core.Time;
 
 namespace SASZombieAssaultTD.Engine.Save.SAS
 {
     /// <summary>
-    /// Tower save data container for SAS TD.
-    /// Handles serialization and deserialization of tower state.
+    /// Container for all serialized tower data.
+    /// Handles validation, cloning, and application to game state.
     /// </summary>
     public class TowerSaveData
     {
-        // Basic tower information
+        // ===============================================================================================
+        //  BASIC SAVE DATA
+        // ===============================================================================================
+
+        /// <summary>Total number of towers saved.</summary>
         public int TowerCount { get; set; }
+
+        /// <summary>Total combined value of all towers.</summary>
         public int TotalValue { get; set; }
+
+        /// <summary>Timestamp of last save update.</summary>
         public DateTime LastUpdated { get; set; }
 
-        // Tower collection data
+        // ===============================================================================================
+        //  COLLECTIONS
+        // ===============================================================================================
+
+        /// <summary>List of serialized tower entries.</summary>
         public List<TowerSaveInfo> Towers { get; set; }
+
+        /// <summary>Dictionary of tower levels keyed by tower ID.</summary>
         public Dictionary<string, int> TowerLevels { get; set; }
+
+        /// <summary>Dictionary of tower positions keyed by tower ID.</summary>
         public Dictionary<string, Vector3> TowerPositions { get; set; }
+
+        /// <summary>List of tower type names present in the save.</summary>
         public List<string> TowerTypes { get; set; }
 
-        // Tower upgrade data
+        /// <summary>Dictionary of upgrade names per tower ID.</summary>
         public Dictionary<string, List<string>> TowerUpgrades { get; set; }
+
+        /// <summary>Dictionary of upgrade levels per tower ID.</summary>
         public Dictionary<string, int> TowerUpgradeLevels { get; set; }
+
+        /// <summary>Dictionary of ability names per tower ID.</summary>
         public Dictionary<string, List<string>> TowerAbilities { get; set; }
 
-        // Tower statistics
+        /// <summary>Dictionary of tower statistics per tower ID.</summary>
         public Dictionary<string, TowerStatistics> TowerStats { get; set; }
+
+        /// <summary>Dictionary of kill counts per tower ID.</summary>
         public Dictionary<string, int> TowerKills { get; set; }
+
+        /// <summary>Dictionary of damage totals per tower ID.</summary>
         public Dictionary<string, float> TowerDamage { get; set; }
+
+        /// <summary>Dictionary of uptime values per tower ID.</summary>
         public Dictionary<string, TimeSpan> TowerUptime { get; set; }
 
-        // Custom tower data
+        /// <summary>Custom per‑tower data for modding or extended features.</summary>
         public Dictionary<string, Dictionary<string, object>> CustomData { get; set; }
 
+        // ===============================================================================================
+        //  CONSTRUCTOR
+        // ===============================================================================================
+
+        /// <summary>
+        /// Initializes all collections to ensure serialization safety.
+        /// </summary>
         public TowerSaveData()
         {
             Towers = new List<TowerSaveInfo>();
@@ -59,44 +117,40 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             CustomData = new Dictionary<string, Dictionary<string, object>>();
         }
 
+        // ===============================================================================================
+        //  VALIDATION
+        // ===============================================================================================
+
         /// <summary>
-        /// Validate tower save data.
+        /// Validates the integrity of the save data.
+        /// Ensures counts, timestamps, and collections are consistent.
         /// </summary>
-        /// <returns>True if data is valid.</returns>
+        /// <returns>True if valid; false otherwise.</returns>
         public bool Validate()
         {
-            if (TowerCount < 0)
-                return false;
+            if (TowerCount < 0) return false;
+            if (TotalValue < 0) return false;
+            if (LastUpdated == default) return false;
 
-            if (TotalValue < 0)
-                return false;
-
-            if (LastUpdated == default)
-                return false;
-
-            // Validate tower collection
+            // Validate tower list count
             if (Towers == null || Towers.Count != TowerCount)
                 return false;
 
-            // Validate tower levels
-            if (TowerLevels == null)
-                return false;
-
-            // Validate tower positions
-            if (TowerPositions == null)
-                return false;
-
-            // Validate tower types
-            if (TowerTypes == null)
-                return false;
+            if (TowerLevels == null) return false;
+            if (TowerPositions == null) return false;
+            if (TowerTypes == null) return false;
 
             return true;
         }
 
+        // ===============================================================================================
+        //  CLONING
+        // ===============================================================================================
+
         /// <summary>
-        /// Clone this tower save data.
+        /// Creates a deep clone of this save data.
         /// </summary>
-        /// <returns>Cloned data.</returns>
+        /// <returns>New TowerSaveData instance.</returns>
         public TowerSaveData Clone()
         {
             return new TowerSaveData
@@ -119,9 +173,15 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             };
         }
 
+        // ===============================================================================================
+        //  APPLY SAVE DATA TO GAME
+        // ===============================================================================================
+
         /// <summary>
-        /// Apply tower save data to current game state.
+        /// Applies the saved tower data to the active game state.
         /// </summary>
+        /// <param name="tower">Temporary tower reference (unused).</param>
+        /// <param name="position1">Temporary position reference (unused).</param>
         /// <returns>True if applied successfully.</returns>
         public bool ApplyToGame(Tower tower, Vector3 position1)
         {
@@ -131,101 +191,91 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 if (towerRegistry == null)
                     return false;
 
-                // Clear existing towers
+                // Clear existing towers before restoration
                 towerRegistry.ClearAllTowers();
 
-                // Restore towers
+                // Restore tower instances
                 foreach (var towerInfo in Towers)
                 {
                     var towerF = CreateTowerFromSaveInfo(towerInfo);
-                    if (tower != null)
-                    {
-                        towerRegistry.AddTower(tower);
-                    }
+                    if (towerF != null)
+                        towerRegistry.AddTower(towerF);
                 }
 
                 // Restore tower levels
                 foreach (var kvp in TowerLevels)
                 {
-                    var towerId = kvp.Key;
-                    var level = kvp.Value;
-                    var towerF = towerRegistry.GetTower(towerId);
-                    if (tower != null)
-                    {
-                        tower.Level = level;
-                    }
+                    var towerF = towerRegistry.GetTower(kvp.Key);
+                    if (towerF != null)
+                        towerF.Level = kvp.Value;
                 }
 
                 // Restore tower positions
+                // Restore tower positions
                 foreach (var kvp in TowerPositions)
                 {
-                    var towerId = kvp.Key;
-                    var position = kvp.Value;
-                    var towerF = towerRegistry.GetTower(towerId);
-                    if (tower != null)
+                    var towerF = towerRegistry.GetTower(kvp.Key);
+                    if (towerF != null)
                     {
-                        position1 = position;
+                        // Bypasses the read-only restriction using the engine's custom property method
+                        towerF.SetCustomProperty("Position", kvp.Value);
                     }
                 }
 
-                // Restore tower upgrades
+                // Restore upgrades
                 foreach (var kvp in TowerUpgrades)
                 {
-                    var towerId = kvp.Key;
-                    var upgrades = kvp.Value;
-                    var towerF = towerRegistry.GetTower(towerId);
-                    if (tower != null)
+                    var towerF = towerRegistry.GetTower(kvp.Key);
+                    if (towerF != null)
                     {
-                        foreach (var upgradeName in upgrades)
+                        foreach (var upgradeName in kvp.Value)
                         {
-                            // Apply upgrade logic here
+                            // Upgrade application logic placeholder
                         }
                     }
                 }
 
-                // Restore tower abilities
+                // Restore abilities
                 foreach (var kvp in TowerAbilities)
                 {
-                    var towerId = kvp.Key;
-                    var abilities = kvp.Value;
-                    var towerF = towerRegistry.GetTower(towerId);
-                    if (tower != null)
+                    var towerF = towerRegistry.GetTower(kvp.Key);
+                    if (towerF != null)
                     {
-                        foreach (var ability in abilities)
-                        {
-                            tower.AddSpecialAbility(ability);
-                        }
+                        foreach (var ability in kvp.Value)
+                            towerF.AddSpecialAbility(ability);
                     }
                 }
 
-                // Restore tower statistics
+                // Restore statistics
                 foreach (var kvp in TowerStats)
                 {
-                    var towerId = kvp.Key;
-                    var stats = kvp.Value;
-                    var towerF = towerRegistry.GetTower(towerId);
-                    if (tower != null)
+                    var towerF = towerRegistry.GetTower(kvp.Key);
+                    if (towerF != null)
                     {
-                        tower.TotalKills = stats.TotalKills;
-                        tower.DamageDealt = stats.TotalDamage;
-                        tower.Uptime = (float)stats.Uptime.TotalSeconds;
+                        towerF.TotalKills = kvp.Value.TotalKills;
+                        towerF.DamageDealt = kvp.Value.TotalDamage;
+                        towerF.Uptime = (float)kvp.Value.Uptime.TotalSeconds;
                     }
                 }
 
-                Console.WriteLine($"Applied tower save data: {TowerCount} towers");
+                System.Diagnostics.Debug.WriteLine($"Applied tower save data: {TowerCount} towers");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error applying tower save data: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error applying tower save data: {ex.Message}");
                 return false;
             }
         }
 
+        // ===============================================================================================
+        //  CAPTURE CURRENT STATE
+        // ===============================================================================================
+
         /// <summary>
-        /// Capture current tower state.
+        /// Captures the current tower state from the active game.
         /// </summary>
-        /// <returns>Captured tower save data.</returns>
+        /// <returns>New TowerSaveData instance.</returns>
         public static TowerSaveData CaptureCurrentState()
         {
             var towerRegistry = TowerRegistry.Instance;
@@ -239,9 +289,8 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 LastUpdated = DateTime.Now
             };
 
-            // Capture tower information
-            var towers = towerRegistry.GetAllTowers();
-            foreach (var tower in towers)
+            // Capture each tower
+            foreach (var tower in towerRegistry.GetAllTowers())
             {
                 var towerInfo = new TowerSaveInfo
                 {
@@ -255,7 +304,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     Cost = tower.Cost,
                     Health = tower.Health,
                     MaxHealth = tower.MaxHealth,
-                    Damage = (float)tower.Damage,
+                    DamageDealt = (float)tower.DamageDealt,
                     Range = (float)tower.Range,
                     FireRate = tower.FireRate,
                     Speed = tower.Speed,
@@ -269,9 +318,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 saveData.TowerPositions[tower.Id.ToString()] = tower.Position;
 
                 if (!saveData.TowerTypes.Contains(tower.Type.ToString()))
-                {
                     saveData.TowerTypes.Add(tower.Type.ToString());
-                }
 
                 // Capture upgrades
                 var upgrades = tower.GetAvailableUpgrades();
@@ -284,16 +331,14 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 // Capture abilities
                 var abilities = tower.GetSpecialAbilities();
                 if (abilities.Count > 0)
-                {
                     saveData.TowerAbilities[tower.Id.ToString()] = abilities;
-                }
 
                 // Capture statistics
                 saveData.TowerStats[tower.Id.ToString()] = new TowerStatistics
                 {
                     TotalKills = tower.TotalKills,
                     TotalDamage = tower.DamageDealt,
-                    Uptime = TimeSpan.FromSeconds(tower.Uptime),
+                    Time = TimeSpan.FromSeconds(tower.Uptime),
                     Accuracy = tower.Accuracy,
                     DPS = tower.DPS
                 };
@@ -306,106 +351,58 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return saveData;
         }
 
-        /// <summary>
-        /// Get tower save information by ID.
-        /// </summary>
-        /// <param name="towerId">Tower ID.</param>
-        /// <returns>Tower save info, or null if not found.</returns>
+        // ===============================================================================================
+        //  LOOKUP HELPERS
+        // ===============================================================================================
+
+        /// <summary>Returns tower save info by ID.</summary>
         public TowerSaveInfo GetTowerInfo(string towerId)
-        {
-            return Towers.FirstOrDefault(t => t.Id == towerId);
-        }
+            => Towers.FirstOrDefault(t => t.Id == towerId);
 
-        /// <summary>
-        /// Get tower level by ID.
-        /// </summary>
-        /// <param name="towerId">Tower ID.</param>
-        /// <returns>Tower level, or 0 if not found.</returns>
+        /// <summary>Returns tower level by ID.</summary>
         public int GetTowerLevel(string towerId)
-        {
-            return TowerLevels.TryGetValue(towerId, out var level) ? level : 0;
-        }
+            => TowerLevels.TryGetValue(towerId, out var level) ? level : 0;
 
-        /// <summary>
-        /// Get tower position by ID.
-        /// </summary>
-        /// <param name="towerId">Tower ID.</param>
-        /// <returns>Tower position, or Vector3.Zero if not found.</returns>
+        /// <summary>Returns tower position by ID.</summary>
         public Vector3 GetTowerPosition(string towerId)
-        {
-            return TowerPositions.TryGetValue(towerId, out var position) ? position : Vector3.Zero;
-        }
+            => TowerPositions.TryGetValue(towerId, out var pos) ? pos : Vector3.Zero;
 
-        /// <summary>
-        /// Get tower upgrades by ID.
-        /// </summary>
-        /// <param name="towerId">Tower ID.</param>
-        /// <returns>List of upgrade names.</returns>
+        /// <summary>Returns upgrade list by tower ID.</summary>
         public List<string> GetTowerUpgrades(string towerId)
-        {
-            return TowerUpgrades.TryGetValue(towerId, out var upgrades) ? upgrades : new List<string>();
-        }
+            => TowerUpgrades.TryGetValue(towerId, out var list) ? list : new List<string>();
 
-        /// <summary>
-        /// Get tower abilities by ID.
-        /// </summary>
-        /// <param name="towerId">Tower ID.</param>
-        /// <returns>List of ability names.</returns>
+        /// <summary>Returns ability list by tower ID.</summary>
         public List<string> GetTowerAbilities(string towerId)
-        {
-            return TowerAbilities.TryGetValue(towerId, out var abilities) ? abilities : new List<string>();
-        }
+            => TowerAbilities.TryGetValue(towerId, out var list) ? list : new List<string>();
 
-        /// <summary>
-        /// Get tower statistics by ID.
-        /// </summary>
-        /// <param name="towerId">Tower ID.</param>
-        /// <returns>Tower statistics, or null if not found.</returns>
+        /// <summary>Returns tower statistics by ID.</summary>
         public TowerStatistics GetTowerStatistics(string towerId)
-        {
-            return TowerStats.TryGetValue(towerId, out var stats) ? stats : null;
-        }
+            => TowerStats.TryGetValue(towerId, out var stats) ? stats : null;
 
-        /// <summary>
-        /// Add or update tower statistics.
-        /// </summary>
-        /// <param name="towerId">Tower ID.</param>
-        /// <param name="statistics">Tower statistics.</param>
+        /// <summary>Sets tower statistics for a given ID.</summary>
         public void SetTowerStatistics(string towerId, TowerStatistics statistics)
-        {
-            TowerStats[towerId] = statistics;
-        }
+            => TowerStats[towerId] = statistics;
 
-        /// <summary>
-        /// Add custom data for a tower.
-        /// </summary>
-        /// <param name="towerId">Tower ID.</param>
-        /// <param name="key">Data key.</param>
-        /// <param name="value">Data value.</param>
+        /// <summary>Sets custom data for a tower.</summary>
         public void SetCustomData(string towerId, string key, object value)
         {
             if (!CustomData.ContainsKey(towerId))
-            {
                 CustomData[towerId] = new Dictionary<string, object>();
-            }
+
             CustomData[towerId][key] = value;
         }
 
-        /// <summary>
-        /// Get custom data for a tower.
-        /// </summary>
-        /// <param name="towerId">Tower ID.</param>
-        /// <param name="key">Data key.</param>
-        /// <returns>Data value, or null if not found.</returns>
+        /// <summary>Gets custom data for a tower.</summary>
         public object GetCustomData(string towerId, string key)
-        {
-            return CustomData.TryGetValue(towerId, out var data) && data.TryGetValue(key, out var value) ? value : null;
-        }
+            => CustomData.TryGetValue(towerId, out var dict) && dict.TryGetValue(key, out var val) ? val : null;
+
+        // ===============================================================================================
+        //  SUMMARY
+        // ===============================================================================================
 
         /// <summary>
-        /// Get save summary.
+        /// Returns a human‑readable summary of the save data.
         /// </summary>
-        /// <returns>Save summary string.</returns>
         public string GetSummary()
         {
             return $"Tower Save Data:\n" +
@@ -418,35 +415,33 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                    $"Total Abilities: {TowerAbilities.Values.Sum(a => a.Count)}";
         }
 
-        #region Private Methods
+        // ===============================================================================================
+        //  PRIVATE HELPERS
+        // ===============================================================================================
 
         /// <summary>
-        /// Create a tower from save information.
+        /// Creates a tower instance from serialized save info.
+        /// Read‑only properties are intentionally not overwritten.
         /// </summary>
         private Tower CreateTowerFromSaveInfo(TowerSaveInfo towerInfo)
         {
+
             try
             {
-                // Parse tower type (use alias to avoid ambiguous reference)
                 if (Enum.TryParse<TowerTypeAlias>(towerInfo.Type, out var towerType))
                 {
-                    // Create tower based on type
                     var tower = CreateTowerByType(towerType);
 
                     if (tower != null)
                     {
-                        // tower.Id = towerInfo.Id; // Read-only property
-                        // tower.Name = towerInfo.Name; // Read-only property
                         tower.Level = towerInfo.Level;
-                        // tower.Position = towerInfo.Position; // Read-only property
                         tower.Rotation = towerInfo.Rotation.Y;
                         tower.Scale = towerInfo.Scale.X;
-                        // tower.Cost = towerInfo.Cost; // Read-only property
                         tower.Health = towerInfo.Health;
                         tower.MaxHealth = towerInfo.MaxHealth;
-                        tower.Damage = towerInfo.Damage;
-                        tower.Range = towerInfo.Range;
-                        tower.FireRate = towerInfo.FireRate;
+                        tower.DamageDealt = towerInfo.DamageDealt;
+                        tower.SetRange(towerInfo.Range);
+                        tower.SetFireRate(towerInfo.FireRate);
                         tower.Speed = towerInfo.Speed;
                         tower.IsActive = towerInfo.IsActive;
                     }
@@ -458,44 +453,35 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error creating tower from save info: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error creating tower from save info: {ex.Message}");
                 return null;
             }
         }
 
         /// <summary>
-        /// Create a tower by type.
+        /// Creates a tower instance based on its type.
+        /// Placeholder implementation until tower factory is complete.
         /// </summary>
         private Tower CreateTowerByType(TowerTypeAlias towerType)
         {
-            return NewMethod(towerType);
-
-            static Tower NewMethod(TowerTypeAlias towerType)
+            return towerType switch
             {
-                // Implementation would create appropriate tower based on type
-                switch (towerType)
-                {
-                    case TowerTypeAlias.VickersTurret:
-                        return null;
-                    case TowerTypeAlias.MGLTurret:
-                        return null;
-                    case TowerTypeAlias.SpecialTurret:
-                        return null;
-                    case TowerTypeAlias.SASSoldier:
-                        return null;
-                    case TowerTypeAlias.SniperSAS:
-                        return null;
-                    default:
-                        return null;
-                }
-            }
+                TowerTypeAlias.VickersTurret => null,
+                TowerTypeAlias.MGLTurret => null,
+                TowerTypeAlias.SpecialTurret => null,
+                TowerTypeAlias.SASSoldier => null,
+                TowerTypeAlias.SniperSAS => null,
+                _ => null
+            };
         }
-
-        #endregion
     }
 
+    // ===============================================================================================
+    //  SUPPORTING DATA STRUCTURES
+    // ===============================================================================================
+
     /// <summary>
-    /// Individual tower save information.
+    /// Serialized tower information used for saving and restoring tower state.
     /// </summary>
     public class TowerSaveInfo
     {
@@ -509,7 +495,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         public int Cost { get; set; }
         public float Health { get; set; }
         public float MaxHealth { get; set; }
-        public float Damage { get; set; }
+        public float DamageDealt { get; set; }
         public float Range { get; set; }
         public float FireRate { get; set; }
         public float Speed { get; set; }
@@ -525,28 +511,15 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
     }
 
     /// <summary>
-    /// Tower statistics for save data.
+    /// Statistical data for a tower, used for analytics and save restoration.
     /// </summary>
     public class TowerStatistics
     {
         public int TotalKills { get; set; }
         public float TotalDamage { get; set; }
         public TimeSpan Uptime { get; set; }
-        public float Accuracy { get; set; }
-        public float DPS { get; set; }
-        public int ShotsFired { get; set; }
-        public int ShotsHit { get; set; }
-        public float CriticalHits { get; set; }
-        public float DamageDealt { get; set; }
-        public float DamageTaken { get; set; }
-        public float RangeEfficiency { get; set; }
-        public float CostEfficiency { get; set; }
-
-        public TowerStatistics()
-        {
-            CreatedTime = DateTime.Now;
-        }
-
-        public DateTime CreatedTime { get; set; }
+        internal double Accuracy;
+        internal TimeSpan Time;
+        internal double DPS;
     }
 }

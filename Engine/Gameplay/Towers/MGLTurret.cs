@@ -22,7 +22,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
     /// </summary>
     public class MGLTurret : BaseTower
     {
-        #region Base Tower Properties
+        ///  Base Tower Properties
         
         /// <summary>Type identifier for this tower.</summary>
         public override string TowerType => "MGLTurret";
@@ -57,9 +57,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         /// <summary>Whether this tower can target ground units.</summary>
         public override bool CanTargetGround => true;
         
-        #endregion
+        /// 
 
-        #region MGL Turret Specific Properties
+        ///  MGL Turret Specific Properties
         
         /// <summary>Splash damage radius of grenades.</summary>
         public float SplashRadius = 2.5f;
@@ -88,9 +88,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         /// <summary>Maximum bounce count.</summary>
         public int MaxBounceCount = 1;
         
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
         
         /// <summary>
         /// Creates a new MGL turret instance.
@@ -107,9 +107,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         {
         }
         
-        #endregion
+        /// 
 
-        #region Tower Operations (Placeholder)
+        ///  Tower Operations (Placeholder)
         
         /// <summary>
         /// Gets the behavior characteristics for this tower type.
@@ -181,9 +181,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             };
         }
         
-        #endregion
+        /// 
 
-        #region Level-based Calculations
+        ///  Level-based Calculations
         
         /// <summary>
         /// Gets the damage at a specific level.
@@ -231,9 +231,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             return benefits;
         }
         
-        #endregion
+        /// 
 
-        #region Utility Methods
+        ///  Utility Methods
         
         /// <summary>
         /// Creates a copy of this tower instance.
@@ -253,6 +253,6 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             return $"{DisplayName} (ID: {Id}, Level: {Level}/{MaxLevel}, Splash: {SplashRadius:F1}m)";
         }
         
-        #endregion
+        /// 
     }
 }

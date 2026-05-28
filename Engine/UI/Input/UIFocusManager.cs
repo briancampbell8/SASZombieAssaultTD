@@ -29,7 +29,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
         public UIFocusManager()
         {
             _focusableElements = new List<UIElement>();
-            Console.WriteLine("UIFocusManager: Initialized");
+            System.Diagnostics.Debug.WriteLine("UIFocusManager: Initialized");
         }
 
         /// <summary>
@@ -42,22 +42,22 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIFocusManager: Cannot register null element");
+                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Cannot register null element");
                     return;
                 }
 
                 if (_focusableElements.Contains(element))
                 {
-                    Console.WriteLine("UIFocusManager: Element already registered");
+                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Element already registered");
                     return;
                 }
 
                 _focusableElements.Add(element);
-                Console.WriteLine($"UIFocusManager: Registered focusable element, total: {_focusableElements.Count}");
+                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Registered focusable element, total: {_focusableElements.Count}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFocusManager: Error registering element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error registering element - {ex.Message}");
             }
         }
 
@@ -71,13 +71,13 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIFocusManager: Cannot unregister null element");
+                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Cannot unregister null element");
                     return;
                 }
 
                 if (_focusableElements.Remove(element))
                 {
-                    Console.WriteLine($"UIFocusManager: Unregistered focusable element, remaining: {_focusableElements.Count}");
+                    System.Diagnostics.Debug.WriteLine($"UIFocusManager: Unregistered focusable element, remaining: {_focusableElements.Count}");
 
                     // Clear focus if this element was focused
                     if (_focusedElement == element)
@@ -87,12 +87,12 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 }
                 else
                 {
-                    Console.WriteLine("UIFocusManager: Element not found in focusable elements");
+                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Element not found in focusable elements");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFocusManager: Error unregistering element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error unregistering element - {ex.Message}");
             }
         }
 
@@ -106,13 +106,13 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIFocusManager: Cannot focus null element");
+                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Cannot focus null element");
                     return;
                 }
 
                 if (!_focusableElements.Contains(element))
                 {
-                    Console.WriteLine("UIFocusManager: Cannot focus unregistered element");
+                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Cannot focus unregistered element");
                     return;
                 }
 
@@ -126,11 +126,11 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 _focusedElement = element;
                 element.OnFocused();
 
-                Console.WriteLine($"UIFocusManager: Set focus to element at {element.AbsolutePosition}");
+                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Set focus to element at {element.AbsolutePosition}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFocusManager: Error setting focus - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error setting focus - {ex.Message}");
             }
         }
 
@@ -146,16 +146,16 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     _focusedElement.OnFocusLost();
                     _focusedElement = null;
 
-                    Console.WriteLine("UIFocusManager: Cleared focus");
+                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Cleared focus");
                 }
                 else
                 {
-                    Console.WriteLine("UIFocusManager: No element currently focused");
+                    System.Diagnostics.Debug.WriteLine("UIFocusManager: No element currently focused");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFocusManager: Error clearing focus - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error clearing focus - {ex.Message}");
             }
         }
 
@@ -191,7 +191,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFocusManager: Error focusing next element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error focusing next element - {ex.Message}");
             }
         }
 
@@ -227,7 +227,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFocusManager: Error focusing previous element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error focusing previous element - {ex.Message}");
             }
         }
 
@@ -243,7 +243,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFocusManager: Error during update - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error during update - {ex.Message}");
             }
         }
 
@@ -275,7 +275,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFocusManager: Error creating string representation - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error creating string representation - {ex.Message}");
                 return "UIFocusManager: Error";
             }
         }

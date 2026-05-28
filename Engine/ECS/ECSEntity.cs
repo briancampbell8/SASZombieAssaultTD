@@ -27,7 +27,7 @@ namespace SASZombieAssaultTD.Engine.ECS
     /// </summary>
     public struct Entity : IEquatable<Entity>
     {
-        #region Public Fields
+        ///  Public Fields
 
         /// <summary>
         /// The unique identifier for the entity.
@@ -69,9 +69,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// </summary>
         public Vector3 Position { get; set; }
 
-        #endregion
+        /// 
 
-        #region Static Properties
+        ///  Static Properties
 
         /// <summary>
         /// Represents an invalid entity.
@@ -88,9 +88,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// </summary>
         public static Entity MaxValue => new Entity(uint.MaxValue, true);
 
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entity"/> struct.
@@ -123,9 +123,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             Position = other.Position;
         }
 
-        #endregion
+        /// 
 
-        #region Instance Properties
+        ///  Instance Properties
 
         /// <summary>
         /// Indicates whether the entity is invalid.
@@ -137,9 +137,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// </summary>
         public bool IsZero => Id == 0;
 
-        #endregion
+        /// 
 
-        #region Instance Methods
+        ///  Instance Methods
 
         /// <summary>
         /// Creates a new entity with the specified ID.
@@ -173,9 +173,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// <inheritdoc/>
         public override string ToString() => IsValid ? $"Entity({Id})" : "Entity(Invalid)";
 
-        #endregion
+        /// 
 
-        #region Static Methods
+        ///  Static Methods
 
         /// <summary>
         /// Creates a new entity from the specified ID.
@@ -234,9 +234,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         /// </summary>
         public static explicit operator Entity(uint id) => new Entity(id);
 
-        #endregion
+        /// 
 
-        #region Component API
+        ///  Component API
 
         private static readonly Dictionary<uint, Dictionary<Type, object>> _entityComponents = new();
 
@@ -334,9 +334,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             _entityComponents.Remove(Id);
         }
 
-        #endregion
+        /// 
 
-        #region Lifecycle
+        ///  Lifecycle
 
         /// <summary>
         /// Indicates whether this entity is alive.
@@ -368,6 +368,6 @@ namespace SASZombieAssaultTD.Engine.ECS
             ClearComponents();
         }
 
-        #endregion
+        /// 
     }
 }

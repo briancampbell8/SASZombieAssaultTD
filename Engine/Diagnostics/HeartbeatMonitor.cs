@@ -7,7 +7,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
     /// </summary>
     public sealed class HeartbeatMonitor
     {
-        #region Public Properties
+        ///  Public Properties
 
         /// <summary>
         /// Total number of heartbeat ticks observed since startup.
@@ -29,9 +29,9 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         /// </summary>
         public TimeSpan? LastDelta { get; private set; }
 
-        #endregion
+        /// 
 
-        #region Public Methods
+        ///  Public Methods
 
         /// <summary>
         /// Records a heartbeat tick at the current UTC time.
@@ -74,7 +74,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             return FirstTickUtc.HasValue ? DateTime.UtcNow - FirstTickUtc.Value : null;
         }
 
-        #endregion
+        /// 
     }
 }
 

@@ -161,7 +161,7 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         /// </summary>
         public event Action<int> OnComprehensiveCleanup;
 
-        #region Private Methods
+        ///  Private Methods
 
         private int CleanupHazards(List<Hazard> hazards, Func<Hazard, bool> shouldRemove, Action<Hazard> onRemove)
         {
@@ -217,7 +217,7 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             return removedCount;
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

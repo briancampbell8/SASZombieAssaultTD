@@ -196,16 +196,19 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     {
                         enemy.TotalKills = stats.TotalKills;
                         enemy.DamageDealt = stats.DamageDealt;
-                        enemy.Lifetime = stats.Lifetime;
+
+                        // Bypasses the read-only property restriction by using a custom setter method
+                        enemy.SetCustomProperty("Lifetime", stats.Lifetime);
                     }
                 }
 
-                Console.WriteLine($"Applied enemy save data: {TotalSpawned} enemies");
+
+                System.Diagnostics.Debug.WriteLine($"Applied enemy save data: {TotalSpawned} enemies");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error applying enemy save data: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error applying enemy save data: {ex.Message}");
                 return false;
             }
         }
@@ -486,7 +489,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                    $"Spawn Positions: {positions.Count}";
         }
 
-        #region Private Methods
+        ///  Private Methods
 
         /// <summary>
         /// Create an enemy from save information.
@@ -521,7 +524,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error creating enemy from save info: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error creating enemy from save info: {ex.Message}");
                 return null;
             }
         }
@@ -555,7 +558,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

@@ -87,12 +87,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 // Apply unlocks
                 Unlocks?.ApplyToGame();
 
-                Console.WriteLine($"Applied save: {SaveName}");
+                System.Diagnostics.Debug.WriteLine($"Applied save: {SaveName}");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error applying save data: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error applying save data: {ex.Message}");
                 return false;
             }
         }
@@ -148,7 +148,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error serializing save data: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error serializing save data: {ex.Message}");
                 return string.Empty;
             }
         }
@@ -179,7 +179,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error deserializing save data: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error deserializing save data: {ex.Message}");
                 return null;
             }
         }
@@ -297,7 +297,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return backup;
         }
 
-        #region Private Methods
+        ///  Private Methods
 
         static void CapturePlayerState(SASGameSave save)
         {
@@ -436,7 +436,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 return $"{time.Seconds}s";
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

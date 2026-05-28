@@ -41,7 +41,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _maxQueueSize = System.Math.Max(1, maxQueueSize);
             _batchingEnabled = enableBatching;
 
-            ModernLoggingSystem.Log("INFO", $"RenderCommandQueue: Initialized with max size {_maxQueueSize}, batching={_batchingEnabled}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RenderCommandQueue: Initialized with max size {_maxQueueSize}, batching={_batchingEnabled}");
         }
 
         /// <summary>
@@ -53,18 +53,18 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             if (command == null)
             {
-                ModernLoggingSystem.Log("WARNING", "RenderCommandQueue: Cannot enqueue null command");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "RenderCommandQueue: Cannot enqueue null command");
                 return false;
             }
 
             if (_commandQueue.Count >= _maxQueueSize)
             {
-                ModernLoggingSystem.Log("WARNING", "RenderCommandQueue: Queue is full, dropping command");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "RenderCommandQueue: Queue is full, dropping command");
                 return false;
             }
 
             _commandQueue.Enqueue(command);
-            ModernLoggingSystem.Log("TRACE", $"RenderCommandQueue: Enqueued {command.GetType().Name}");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"RenderCommandQueue: Enqueued {command.GetType().Name}");
 
             return true;
         }
@@ -79,7 +79,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 return null;
 
             var command = _commandQueue.Dequeue();
-            ModernLoggingSystem.Log("TRACE", $"RenderCommandQueue: Dequeued {command.GetType().Name}");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"RenderCommandQueue: Dequeued {command.GetType().Name}");
 
             return command;
         }
@@ -91,7 +91,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             var count = _commandQueue.Count;
             _commandQueue.Clear();
-            ModernLoggingSystem.Log("DEBUG", $"RenderCommandQueue: Cleared {count} commands");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"RenderCommandQueue: Cleared {count} commands");
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             if (renderer == null)
             {
-                ModernLoggingSystem.Log("WARNING", "RenderCommandQueue: Cannot process with null renderer");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "RenderCommandQueue: Cannot process with null renderer");
                 return 0;
             }
 
@@ -121,12 +121,12 @@ namespace SASZombieAssaultTD.Engine.Rendering
                     }
                     catch (Exception ex)
                     {
-                        ModernLoggingSystem.Log("ERROR", $"RenderCommandQueue: Failed to execute command - {ex.Message}");
+                        Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"RenderCommandQueue: Failed to execute command - {ex.Message}");
                     }
                 }
             }
 
-            ModernLoggingSystem.Log("DEBUG", $"RenderCommandQueue: Processed {processedCount} commands");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"RenderCommandQueue: Processed {processedCount} commands");
             return processedCount;
         }
 
@@ -190,7 +190,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public void Execute(Renderer renderer)
         {
             // This would use the renderer to draw a rectangle
-            ModernLoggingSystem.Log("TRACE", $"DrawRectangle: Drawing rect at {Position} size {Size}");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"DrawRectangle: Drawing rect at {Position} size {Size}");
         }
     }
 
@@ -215,7 +215,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public void Execute(Renderer renderer)
         {
             // This would use the renderer to draw a texture
-            ModernLoggingSystem.Log("TRACE", $"DrawTexture: Drawing texture at {Position} size {Size}");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"DrawTexture: Drawing texture at {Position} size {Size}");
         }
     }
 

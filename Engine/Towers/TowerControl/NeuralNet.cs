@@ -298,7 +298,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             // Play purchase sound
             AudioSystem.PlaySound("upgrade_purchased");
 
-            Console.WriteLine($"Purchased upgrade: {Name} for ${Cost}");
+            System.Diagnostics.Debug.WriteLine($"Purchased upgrade: {Name} for ${Cost}");
             return true;
         }
 

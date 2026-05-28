@@ -32,7 +32,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         public void PerformStop()
         {
             _isRunning = false;
-            ModernLoggingSystem.LogInfo("Game loop stopped gracefully");
+            Engine.Diagnostics.DebugLogger.LogInfo("Game loop stopped gracefully");
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         {
             try
             {
-                ModernLoggingSystem.LogInfo("Starting graceful shutdown...");
+                Engine.Diagnostics.DebugLogger.LogInfo("Starting graceful shutdown...");
 
                 // Stop the game loop first
                 _isRunning = false;
@@ -53,12 +53,12 @@ namespace SASZombieAssaultTD.Engine.Systems
                 // Log final statistics
                 LogFinalStatistics();
 
-                ModernLoggingSystem.LogInfo("Graceful shutdown completed");
+                Engine.Diagnostics.DebugLogger.LogInfo("Graceful shutdown completed");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Graceful shutdown failed: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Graceful shutdown");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Graceful shutdown failed: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Graceful shutdown");
             }
         }
 
@@ -70,8 +70,8 @@ namespace SASZombieAssaultTD.Engine.Systems
         {
             try
             {
-                ModernLoggingSystem.Log("ERROR", $"Emergency shutdown triggered by critical error: {error.Message}");
-                ModernLoggingSystem.Exception(error, "Emergency shutdown");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Emergency shutdown triggered by critical error: {error.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(error, "Emergency shutdown");
 
                 // Force stop immediately
                 _isRunning = false;
@@ -80,12 +80,12 @@ namespace SASZombieAssaultTD.Engine.Systems
                 // Log emergency shutdown
                 LogEmergencyShutdown(error);
 
-                ModernLoggingSystem.LogInfo("Emergency shutdown completed");
+                Engine.Diagnostics.DebugLogger.LogInfo("Emergency shutdown completed");
             }
             catch (Exception shutdownEx)
             {
-                ModernLoggingSystem.Log("ERROR", $"Emergency shutdown failed: {shutdownEx.Message}");
-                ModernLoggingSystem.Exception(shutdownEx, "Emergency shutdown");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Emergency shutdown failed: {shutdownEx.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(shutdownEx, "Emergency shutdown");
             }
         }
 
@@ -114,7 +114,7 @@ namespace SASZombieAssaultTD.Engine.Systems
         /// </summary>
         private void LogFinalStatistics()
         {
-            ModernLoggingSystem.LogInfo($"Final statistics - Frames: {_frameCount}, Avg FPS: {FramesPerSecond:F2}, Errors: {_diagnostics.ErrorCount}");
+            Engine.Diagnostics.DebugLogger.LogInfo($"Final statistics - Frames: {_frameCount}, Avg FPS: {FramesPerSecond:F2}, Errors: {_diagnostics.ErrorCount}");
         }
 
         /// <summary>
@@ -123,8 +123,8 @@ namespace SASZombieAssaultTD.Engine.Systems
         /// <param name="error">The critical error.</param>
         private void LogEmergencyShutdown(Exception error)
         {
-            ModernLoggingSystem.Log("INFO", $"Emergency shutdown - Error: {error.GetType().Name}, Message: {error.Message}");
-            ModernLoggingSystem.Log("INFO", $"Context - Frame: {_frameCount}, FPS: {FramesPerSecond:F2}, Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"Emergency shutdown - Error: {error.GetType().Name}, Message: {error.Message}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"Context - Frame: {_frameCount}, FPS: {FramesPerSecond:F2}, Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
         }
 
         /// <summary>
@@ -157,11 +157,11 @@ namespace SASZombieAssaultTD.Engine.Systems
 
                 if (!IsValidStateTransition(oldState, newState))
                 {
-                    ModernLoggingSystem.LogWarning($"Invalid state transition: {oldState} -> {newState}");
+                    Engine.Diagnostics.DebugLogger.LogWarning($"Invalid state transition: {oldState} -> {newState}");
                     return false;
                 }
 
-                ModernLoggingSystem.LogInfo($"Forcing state transition: {oldState} -> {newState}");
+                Engine.Diagnostics.DebugLogger.LogInfo($"Forcing state transition: {oldState} -> {newState}");
 
                 // Apply state changes
                 switch (newState)

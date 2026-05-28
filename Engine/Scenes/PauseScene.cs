@@ -28,9 +28,9 @@ namespace SASZombieAssaultTD.Engine.Scenes
 
         public PauseScene()
         {
-            ModernLoggingSystem.Log("BREAKPOINT", "Execution reached PauseScene constructor");
-            ModernLoggingSystem.Log("BREAKPOINT", "Reached execution checkpoint");
-            ModernLoggingSystem.Log(
+            Engine.Diagnostics.DebugLogger.Log("BREAKPOINT", "Execution reached PauseScene constructor");
+            Engine.Diagnostics.DebugLogger.Log("BREAKPOINT", "Reached execution checkpoint");
+            Engine.Diagnostics.DebugLogger.Log(
             "BREAKPOINT",
             $"Method={nameof(MethodBase.GetCurrentMethod)}, " +
             $"Line={new StackTrace(true).GetFrame(0)?.GetFileLineNumber()}"
@@ -43,7 +43,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         public override void OnEnter()
         {
             _resumeRequested = false;
-            ModernLoggingSystem.Log("BREAKPOINT", "PauseScene.OnEnter() completed");
+            Engine.Diagnostics.DebugLogger.Log("BREAKPOINT", "PauseScene.OnEnter() completed");
         }
 
         /// <summary>
@@ -53,18 +53,23 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             // Cleanup pause resources
             _resumeRequested = false;
-            ModernLoggingSystem.Log("Info", "[PauseScene] OnExit: Pause scene shutting down.");
+            Engine.Diagnostics.DebugLogger.Log("Info", "[PauseScene] OnExit: Pause scene shutting down.");
+        }
+
+        public override void OnUpdate(float deltaTime)
+        {
+            OnUpdate(deltaTime);
         }
 
         /// <summary>
         /// P11-11-02: Called every frame to update pause menu logic.
         /// </summary>
         /// <param name="deltaTime">Time elapsed since last frame.</param>
-        public override void OnUpdate(float deltaTime)
+        public void OnUpdate(float deltaTime, InputData inputData)
         {
             // Handle pause menu input - check if the user has requested to resume.
             // P11-11-06: Input is now accessible through the Input property
-            if (Input != null)
+            if (inputData != null)
             {
                 // Check for ESC key press to resume game
                 if (SASZombieAssaultTD.Engine.Input.InputSystem.IsKeyPressed(KeyCode.Escape))
@@ -75,7 +80,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
 
             if (_resumeRequested)
             {
-                ModernLoggingSystem.Log("Info", "[PauseScene] Resume requested.");
+                Engine.Diagnostics.DebugLogger.LogDebug("Info", "[PauseScene] Resume requested.");
                 // Queue transition back to previous scene via SceneManager
                 SceneManager?.QueueScene(previousGameScene.Name);
             }

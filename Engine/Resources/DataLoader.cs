@@ -16,12 +16,14 @@ using System.Text.Json;
 
 namespace SASZombieAssaultTD.Engine.Assets
 {
-    public static class DataLoader
+    public static partial class DataLoader
     {
         /// <summary>
         /// Loads data from the specified file path.
         /// Returns the parsed object for JSON files or the raw text content.
         /// </summary>
+        /// <param name="path">The path to the data file.</param>
+        /// <returns>The parsed object or raw text content.</returns>
         public static object Load(string path)
         {
             if (!File.Exists(path))

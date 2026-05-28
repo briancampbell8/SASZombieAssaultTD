@@ -44,14 +44,14 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             IsGrounded = false;
             IsJumping = true;
             JumpVelocity = System.MathF.Sqrt(2f * GRAVITY * JumpHeight);
-            ModernLoggingSystem.Log("DEBUG", $"JumpState: Entering jump state with height {JumpHeight:F2}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"JumpState: Entering jump state with height {JumpHeight:F2}");
         }
 
         public void Exit()
         {
             JumpVelocity = 0f;
             IsJumping = false;
-            ModernLoggingSystem.Log("DEBUG", $"JumpState: Exiting jump state after {JumpTime:F2}s");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"JumpState: Exiting jump state after {JumpTime:F2}s");
         }
 
         public void Update(float deltaTime, float timeInState)
@@ -75,7 +75,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             if (IsAttacking)
             {
-                ModernLoggingSystem.Log("DEBUG", "JumpState: Transition condition met for AttackState");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "JumpState: Transition condition met for AttackState");
                 return _attackState;
             }
 
@@ -83,17 +83,17 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             {
                 if (_moveState.IsMoving)
                 {
-                    ModernLoggingSystem.Log("DEBUG", "JumpState: Transition condition met for MoveState (landing while moving)");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "JumpState: Transition condition met for MoveState (landing while moving)");
                     return _moveState;
                 }
 
-                ModernLoggingSystem.Log("DEBUG", "JumpState: Transition condition met for IdleState (landing while idle)");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "JumpState: Transition condition met for IdleState (landing while idle)");
                 return _idleState;
             }
 
             if (JumpTime >= JUMP_DURATION_THRESHOLD)
             {
-                ModernLoggingSystem.Log("DEBUG", $"JumpState: Transition condition met for IdleState (jump duration exceeded {JUMP_DURATION_THRESHOLD}s)");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"JumpState: Transition condition met for IdleState (jump duration exceeded {JUMP_DURATION_THRESHOLD}s)");
                 return _idleState;
             }
 

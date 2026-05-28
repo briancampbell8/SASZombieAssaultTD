@@ -130,7 +130,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         {
             if (!_strategies.TryGetValue(patternType, out var strategy))
             {
-                Console.WriteLine($"No strategy found for pattern type: {patternType}");
+                System.Diagnostics.Debug.WriteLine($"No strategy found for pattern type: {patternType}");
                 return GetDefaultPositions(enemyCount);
             }
 
@@ -140,7 +140,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error generating spawn positions for {patternType}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error generating spawn positions for {patternType}: {ex.Message}");
                 return GetDefaultPositions(enemyCount);
             }
         }
@@ -153,7 +153,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         public void RegisterStrategy(SpawnPatternType patternType, ISpawnPatternStrategy strategy)
         {
             _strategies[patternType] = strategy;
-            Console.WriteLine($"Registered custom strategy for {patternType}");
+            System.Diagnostics.Debug.WriteLine($"Registered custom strategy for {patternType}");
         }
 
         /// <summary>
@@ -246,7 +246,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             _strategies[SpawnPatternType.Cluster] = new GridSpawnStrategy();
             _strategies[SpawnPatternType.VFormation] = new VFormationSpawnStrategy();
 
-            Console.WriteLine($"Initialized {_strategies.Count} spawn pattern strategies");
+            System.Diagnostics.Debug.WriteLine($"Initialized {_strategies.Count} spawn pattern strategies");
         }
     }
 
@@ -452,8 +452,8 @@ namespace SASZombieAssaultTD.Engine.Waves
             for (int i = 0; i < enemyCount; i++)
             {
                 // Generate random position within cluster radius
-                var angle = System.Random.value * 2f * System.MathF.PI;
-                var distance = System.Random.value * radius;
+                var angle = EngineRandom.Range(0f, 1f) * 2f * System.MathF.PI;
+                var distance = EngineRandom.Range(0f, 1f) * radius;
 
                 var position = new Vector3(
                     centerPoint.X + MathF.Cos(angle) * distance,

@@ -430,7 +430,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             return clone;
         }
 
-        #region Private Helper Methods
+        ///  Private Helper Methods
 
         private float ApplyPatternDelay(float baseDelay, int enemyIndex)
         {
@@ -568,7 +568,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             // enemy.SetChampionVisuals(); // TODO: implement champion visuals
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

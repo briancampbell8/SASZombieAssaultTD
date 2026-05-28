@@ -36,7 +36,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         {
             if (_isInitialized) return;
 
-            Console.WriteLine("Initializing Wave Loader");
+            System.Diagnostics.Debug.WriteLine("Initializing Wave Loader");
 
             try
             {
@@ -47,11 +47,11 @@ namespace SASZombieAssaultTD.Engine.Waves
                 LoadAllWaveScripts();
 
                 _isInitialized = true;
-                Console.WriteLine($"Wave Loader initialized with {_waveScripts.Count} wave scripts");
+                System.Diagnostics.Debug.WriteLine($"Wave Loader initialized with {_waveScripts.Count} wave scripts");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to initialize Wave Loader: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to initialize Wave Loader: {ex.Message}");
                 throw;
             }
         }
@@ -71,12 +71,12 @@ namespace SASZombieAssaultTD.Engine.Waves
 
                 if (loadedFromFiles.Count > 0)
                 {
-                    Console.WriteLine($"Loaded {loadedFromFiles.Count} wave scripts from JSON files");
+                    System.Diagnostics.Debug.WriteLine($"Loaded {loadedFromFiles.Count} wave scripts from JSON files");
                     return loadedFromFiles;
                 }
 
                 // Fallback to default wave scripts
-                Console.WriteLine("No JSON files found, creating default wave scripts");
+                System.Diagnostics.Debug.WriteLine("No JSON files found, creating default wave scripts");
                 var defaultWaves = CreateDefaultWaveScripts();
 
                 foreach (var wave in defaultWaves)
@@ -91,7 +91,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error loading wave scripts: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error loading wave scripts: {ex.Message}");
                 return new List<WaveScript>();
             }
         }
@@ -123,17 +123,17 @@ namespace SASZombieAssaultTD.Engine.Waves
                     if (waveScript != null)
                     {
                         _waveScripts[waveNumber] = waveScript;
-                        Console.WriteLine($"Loaded wave {waveNumber} from file");
+                        System.Diagnostics.Debug.WriteLine($"Loaded wave {waveNumber} from file");
                         return waveScript;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error loading wave {waveNumber} from file: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Error loading wave {waveNumber} from file: {ex.Message}");
                 }
             }
 
-            Console.WriteLine($"Wave {waveNumber} not found");
+            System.Diagnostics.Debug.WriteLine($"Wave {waveNumber} not found");
             return null;
         }
 
@@ -161,12 +161,12 @@ namespace SASZombieAssaultTD.Engine.Waves
                 // Update cache
                 _waveScripts[waveScript.WaveNumber] = waveScript;
 
-                Console.WriteLine($"Saved wave {waveScript.WaveNumber} to file");
+                System.Diagnostics.Debug.WriteLine($"Saved wave {waveScript.WaveNumber} to file");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving wave {waveScript.WaveNumber}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error saving wave {waveScript.WaveNumber}: {ex.Message}");
                 return false;
             }
         }
@@ -187,7 +187,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 }
             }
 
-            Console.WriteLine($"Saved {_waveScripts.Count} wave scripts to files (Success: {success})");
+            System.Diagnostics.Debug.WriteLine($"Saved {_waveScripts.Count} wave scripts to files (Success: {success})");
             return success;
         }
 
@@ -206,16 +206,16 @@ namespace SASZombieAssaultTD.Engine.Waves
                 {
                     File.Delete(filePath);
                     _waveScripts.Remove(waveNumber);
-                    Console.WriteLine($"Deleted wave {waveNumber} file");
+                    System.Diagnostics.Debug.WriteLine($"Deleted wave {waveNumber} file");
                     return true;
                 }
 
-                Console.WriteLine($"Wave {waveNumber} file not found");
+                System.Diagnostics.Debug.WriteLine($"Wave {waveNumber} file not found");
                 return false;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error deleting wave {waveNumber}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error deleting wave {waveNumber}: {ex.Message}");
                 return false;
             }
         }
@@ -340,7 +340,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error exporting wave scripts to JSON: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error exporting wave scripts to JSON: {ex.Message}");
                 return string.Empty;
             }
         }
@@ -369,12 +369,12 @@ namespace SASZombieAssaultTD.Engine.Waves
                 }
 
                 SaveAllWaveScripts();
-                Console.WriteLine($"Imported {waves.Count} wave scripts from JSON");
+                System.Diagnostics.Debug.WriteLine($"Imported {waves.Count} wave scripts from JSON");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error importing wave scripts from JSON: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error importing wave scripts from JSON: {ex.Message}");
                 return false;
             }
         }
@@ -389,17 +389,17 @@ namespace SASZombieAssaultTD.Engine.Waves
             {
                 _waveScripts.Clear();
                 LoadAllWaveScripts();
-                Console.WriteLine("Reloaded wave scripts from files");
+                System.Diagnostics.Debug.WriteLine("Reloaded wave scripts from files");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error reloading wave scripts: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error reloading wave scripts: {ex.Message}");
                 return false;
             }
         }
 
-        #region Private Methods
+        ///  Private Methods
 
         /// <summary>
         /// Load wave scripts from JSON files.
@@ -410,12 +410,12 @@ namespace SASZombieAssaultTD.Engine.Waves
 
             if (!Directory.Exists(_waveDataPath))
             {
-                Console.WriteLine($"Wave data directory not found: {_waveDataPath}");
+                System.Diagnostics.Debug.WriteLine($"Wave data directory not found: {_waveDataPath}");
                 return waves;
             }
 
             var files = Directory.GetFiles(_waveDataPath, "*.json");
-            Console.WriteLine($"Found {files.Length} wave JSON files");
+            System.Diagnostics.Debug.WriteLine($"Found {files.Length} wave JSON files");
 
             foreach (var file in files)
             {
@@ -445,7 +445,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error loading wave from {file}: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Error loading wave from {file}: {ex.Message}");
                 }
             }
 
@@ -645,7 +645,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             return new List<ZombieType>(types);
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

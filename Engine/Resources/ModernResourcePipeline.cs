@@ -1,11 +1,13 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.Rendering;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Extensions;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -254,7 +256,8 @@ namespace SASZombieAssaultTD.Engine.Resources
         {
             // Implementation would load texture from disk
             await Task.Delay(1); // Simulate async operation
-            return new Texture2D(new Rendering.Texture2D(1, 1, new byte[0], new byte[0])); // Return actual texture
+            return Texture2D.LoadFromFile(path, null); // Return actual texture
+            //return new Texture2D(new Rendering.Texture2D(1, 1, new byte[0], new byte[0])); // Return actual texture
         }
 
         public bool CanLoad(Type type) => type == typeof(Texture2D);
@@ -264,11 +267,20 @@ namespace SASZombieAssaultTD.Engine.Resources
     public class Font { }
     public class Texture2D
     {
+        private static object TheType;
+        private static object TheMember;
         private Rendering.Texture2D texture2D;
 
         public Texture2D(Rendering.Texture2D texture2D)
         {
             this.texture2D = texture2D;
+        }
+
+        internal static Texture2D LoadFromFile(string path, TextureCache textureCache)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
         }
     }
 }

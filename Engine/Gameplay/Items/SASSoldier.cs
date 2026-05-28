@@ -22,7 +22,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
     /// </summary>
     public class SASSoldier
     {
-        #region Properties
+        ///  Properties
         
         /// <summary>Unique identifier for this soldier instance.</summary>
         public string Id { get; private set; }
@@ -84,9 +84,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
         /// <summary>Whether this unit can target ground units.</summary>
         public bool CanTargetGround => true;
         
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
         
         /// <summary>
         /// Creates a new SAS soldier instance.
@@ -133,9 +133,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             IsPlayerControlled = isPlayerControlled;
         }
         
-        #endregion
+        /// 
 
-        #region Unit Operations (Placeholder)
+        ///  Unit Operations (Placeholder)
         
         /// <summary>
         /// Activates this unit.
@@ -223,9 +223,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             return false;
         }
         
-        #endregion
+        /// 
 
-        #region Unit Characteristics
+        ///  Unit Characteristics
         
         /// <summary>
         /// Gets the behavior characteristics for this unit type.
@@ -284,9 +284,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             };
         }
         
-        #endregion
+        /// 
 
-        #region Level-based Calculations
+        ///  Level-based Calculations
         
         /// <summary>
         /// Gets the maximum health at a specific level.
@@ -348,9 +348,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             return level * 100; // Simple linear progression
         }
         
-        #endregion
+        /// 
 
-        #region Utility Methods
+        ///  Utility Methods
         
         /// <summary>
         /// Generates a unique ID for this unit instance.
@@ -380,6 +380,6 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             return $"{DisplayName} (ID: {Id}, Level: {Level}, Control: {control})";
         }
         
-        #endregion
+        /// 
     }
 }

@@ -1,3 +1,4 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
 using System;
 using System.IO;
 
@@ -21,6 +22,8 @@ namespace SASZombieAssaultTD.Engine.Rendering
         private bool _disposed = false;
         private string? _filePath;
         private TextureFormat _format = TextureFormat.BGRA32;
+        private static object TheContainingType;
+        private static object TheContainingMember;
 
         public string Name { get; private set; }
         public int Width { get; private set; }
@@ -212,6 +215,13 @@ namespace SASZombieAssaultTD.Engine.Rendering
             Height = 0;
             _filePath = null;
             _disposed = true;
+        }
+
+        internal static object Create(int v1, int v2, int[] ints, string path)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
         }
     }
 }

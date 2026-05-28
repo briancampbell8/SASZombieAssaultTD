@@ -89,21 +89,21 @@ namespace SASZombieAssaultTD.Engine.State
             var builder = StateMachineBuilder.Create()
             .WithDefaultStates()
             .WithInitialState(GameStateType.Boot);
-            
+
             if (enableProfiling)
-            builder.WithProfiling();
-            
+                builder.WithProfiling();
+
             if (enableDebugging)
-            builder.WithDebugging();
-            
+                builder.WithDebugging();
+
             var stateMachine = builder.BuildEnhanced();
-            
-            ModernLoggingSystem.Log("INFO", $"StateMachineIntegration: Created GameRoot state machine - " +
+
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateMachineIntegration: Created GameRoot state machine - " +
             $"Profiling: {enableProfiling}, Debugging: {enableDebugging}");
-            
+
             return stateMachine;
         }
-        
+
         /// <summary>
         /// Integrates the state machine with the input system.
         /// </summary>
@@ -112,15 +112,15 @@ namespace SASZombieAssaultTD.Engine.State
         public static void IntegrateWithInputSystem(StateMachine stateMachine, UIInputRouter inputManager)
         {
             if (stateMachine == null)
-            throw new ArgumentNullException(nameof(stateMachine));
+                throw new ArgumentNullException(nameof(stateMachine));
             if (inputManager == null)
-            throw new ArgumentNullException(nameof(inputManager));
-            
+                throw new ArgumentNullException(nameof(inputManager));
+
             // This would set up event handlers to convert input events to state machine events
             // For now, we'll just log the integration
-            ModernLoggingSystem.Log("INFO", "StateMachineIntegration: Integrated with Input system");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineIntegration: Integrated with Input system");
         }
-        
+
         /// <summary>
         /// Integrates the state machine with the audio system.
         /// </summary>
@@ -129,13 +129,13 @@ namespace SASZombieAssaultTD.Engine.State
         {
             if (stateMachine == null)
                 throw new ArgumentNullException(nameof(stateMachine));
-            
+
             // AudioSystem is a static utility; do not accept it as a parameter.
             // This is where you'd wire up callbacks or use AudioSystem static methods directly.
             // For now, we'll just log the integration.
-            ModernLoggingSystem.Log("INFO", "StateMachineIntegration: Integrated with Audio system");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineIntegration: Integrated with Audio system");
         }
-        
+
         /// <summary>
         /// Integrates the state machine with the UI system.
         /// </summary>
@@ -144,15 +144,15 @@ namespace SASZombieAssaultTD.Engine.State
         public static void IntegrateWithUISystem(StateMachine stateMachine, SASZombieAssaultTD.Engine.UI.UISystem uiSystem)
         {
             if (stateMachine == null)
-            throw new ArgumentNullException(nameof(stateMachine));
+                throw new ArgumentNullException(nameof(stateMachine));
             if (uiSystem == null)
-            throw new ArgumentNullException(nameof(uiSystem));
-            
+                throw new ArgumentNullException(nameof(uiSystem));
+
             // This would set up UI callbacks for state changes
             // For now, we'll just log the integration
-            ModernLoggingSystem.Log("INFO", "StateMachineIntegration: Integrated with UI system");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineIntegration: Integrated with UI system");
         }
-        
+
         /// <summary>
         /// Creates a state machine configuration for different environments.
         /// </summary>
@@ -163,25 +163,25 @@ namespace SASZombieAssaultTD.Engine.State
             switch (environment)
             {
                 case StateMachineEnvironment.Development:
-                return StateMachineBuilderExtensions.CreateDevelopment().BuildEnhanced();
-                
+                    return StateMachineBuilderExtensions.CreateDevelopment().BuildEnhanced();
+
                 case StateMachineEnvironment.Testing:
-                return StateMachineBuilder.Create()
-                .WithDefaultStates()
-                .WithInitialState(GameStateType.Boot)
-                .WithProfiling()
-                .WithDebugging()
-                .WithMaxHistorySize(500)
-                .BuildEnhanced();
-                
+                    return StateMachineBuilder.Create()
+                    .WithDefaultStates()
+                    .WithInitialState(GameStateType.Boot)
+                    .WithProfiling()
+                    .WithDebugging()
+                    .WithMaxHistorySize(500)
+                    .BuildEnhanced();
+
                 case StateMachineEnvironment.Production:
-                return StateMachineBuilderExtensions.CreateProduction().BuildEnhanced();
-                
+                    return StateMachineBuilderExtensions.CreateProduction().BuildEnhanced();
+
                 default:
-                return StateMachineBuilderExtensions.CreateDefault().BuildEnhanced();
+                    return StateMachineBuilderExtensions.CreateDefault().BuildEnhanced();
             }
         }
-        
+
         /// <summary>
         /// Migrates an existing StateMachine to an EnhancedStateMachine.
         /// </summary>
@@ -190,10 +190,10 @@ namespace SASZombieAssaultTD.Engine.State
         public static EnhancedStateMachine MigrateToEnhanced(StateMachine existingStateMachine)
         {
             if (existingStateMachine == null)
-            throw new ArgumentNullException(nameof(existingStateMachine));
-            
+                throw new ArgumentNullException(nameof(existingStateMachine));
+
             var enhancedStateMachine = new EnhancedStateMachine();
-            
+
             // Copy registered states
             var registeredStates = existingStateMachine.GetRegisteredStates();
             foreach (var stateType in registeredStates)
@@ -204,18 +204,18 @@ namespace SASZombieAssaultTD.Engine.State
                     enhancedStateMachine.RegisterState(stateType, state);
                 }
             }
-            
+
             // Preserve current state
             if (existingStateMachine.CurrentState != null)
             {
                 enhancedStateMachine.ChangeState(existingStateMachine.CurrentStateType);
             }
-            
-            ModernLoggingSystem.Log("INFO", $"StateMachineIntegration: Migrated StateMachine to EnhancedStateMachine with {registeredStates.Length} states");
-            
+
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateMachineIntegration: Migrated StateMachine to EnhancedStateMachine with {registeredStates.Length} states");
+
             return enhancedStateMachine;
         }
-        
+
         /// <summary>
         /// Creates a state machine monitoring dashboard.
         /// </summary>
@@ -224,11 +224,11 @@ namespace SASZombieAssaultTD.Engine.State
         public static StateMachineDashboard CreateMonitoringDashboard(StateMachine stateMachine)
         {
             if (stateMachine == null)
-            throw new ArgumentNullException(nameof(stateMachine));
-            
+                throw new ArgumentNullException(nameof(stateMachine));
+
             return new StateMachineDashboard(stateMachine);
         }
-        
+
         /// <summary>
         /// Sets up automatic performance monitoring for a state machine.
         /// </summary>
@@ -237,14 +237,14 @@ namespace SASZombieAssaultTD.Engine.State
         public static void SetupPerformanceMonitoring(EnhancedStateMachine stateMachine, int reportIntervalMs = 60000)
         {
             if (stateMachine == null)
-            throw new ArgumentNullException(nameof(stateMachine));
-            
+                throw new ArgumentNullException(nameof(stateMachine));
+
             // This would set up a timer to periodically report performance metrics
             // For now, we'll just log the setup
-            ModernLoggingSystem.Log("INFO", $"StateMachineIntegration: Set up performance monitoring with {reportIntervalMs}ms interval");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateMachineIntegration: Set up performance monitoring with {reportIntervalMs}ms interval");
         }
     }
-    
+
     /// <summary>
     /// Environment types for state machine configuration.
     /// </summary>
@@ -252,14 +252,14 @@ namespace SASZombieAssaultTD.Engine.State
     {
         /// <summary>Development environment with full debugging.</summary>
         Development,
-        
+
         /// <summary>Testing environment with moderate debugging.</summary>
         Testing,
-        
+
         /// <summary>Production environment with minimal overhead.</summary>
         Production
     }
-    
+
     /// <summary>
     /// Monitoring dashboard for state machine metrics.
     /// </summary>
@@ -267,7 +267,7 @@ namespace SASZombieAssaultTD.Engine.State
     {
         private readonly StateMachine _stateMachine;
         private readonly DateTime _createdTime;
-        
+
         /// <summary>
         /// Initializes a new monitoring dashboard.
         /// </summary>
@@ -277,7 +277,7 @@ namespace SASZombieAssaultTD.Engine.State
             _stateMachine = stateMachine ?? throw new ArgumentNullException(nameof(stateMachine));
             _createdTime = DateTime.UtcNow;
         }
-        
+
         /// <summary>
         /// Gets the current dashboard status.
         /// </summary>
@@ -286,12 +286,12 @@ namespace SASZombieAssaultTD.Engine.State
         {
             var uptime = DateTime.UtcNow - _createdTime;
             var stats = _stateMachine.GetStatistics();
-            
+
             return $"Dashboard Status - Uptime: {uptime:hh\\:mm\\:ss}, " +
             $"Current State: {stats.CurrentState}, " +
             $"Transitions: {stats.TotalTransitions}";
         }
-        
+
         /// <summary>
         /// Generates a detailed dashboard report.
         /// </summary>
@@ -305,7 +305,7 @@ namespace SASZombieAssaultTD.Engine.State
                 $"Dashboard Uptime: {DateTime.UtcNow - _createdTime:hh\\:mm\\:ss}",
                 ""
             };
-            
+
             if (_stateMachine is EnhancedStateMachine enhancedStateMachine)
             {
                 report.Add(enhancedStateMachine.GenerateComprehensiveReport());
@@ -317,11 +317,11 @@ namespace SASZombieAssaultTD.Engine.State
                 report.Add($"Registered States: {stats.RegisteredStates}");
                 report.Add($"Valid Transitions: {stats.ValidTransitions}");
             }
-            
+
             return string.Join(Environment.NewLine, report);
         }
     }
-    
+
     /// <summary>
     /// Extension methods for GameRoot to simplify state machine integration.
     /// </summary>
@@ -335,15 +335,15 @@ namespace SASZombieAssaultTD.Engine.State
         public static void InitializeWithEnhancedStateMachine(this GameRoot gameRoot, StateMachineEnvironment environment = StateMachineEnvironment.Production)
         {
             if (gameRoot == null)
-            throw new ArgumentNullException(nameof(gameRoot));
-            
+                throw new ArgumentNullException(nameof(gameRoot));
+
             var enhancedStateMachine = StateMachineIntegration.CreateEnvironmentStateMachine(environment);
-            
+
             // Replace the existing state machine (this would require modifying GameRoot to allow this)
             // For now, we'll just log the initialization
-            ModernLoggingSystem.Log("INFO", $"GameRoot: Initialized with enhanced state machine for {environment} environment");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"GameRoot: Initialized with enhanced state machine for {environment} environment");
         }
-        
+
         /// <summary>
         /// Gets state machine statistics from GameRoot.
         /// </summary>
@@ -352,19 +352,21 @@ namespace SASZombieAssaultTD.Engine.State
         public static string GetStateMachineReport(this GameRoot gameRoot)
         {
             if (gameRoot == null)
-            throw new ArgumentNullException(nameof(gameRoot));
-            
-            var stateMachine = gameRoot.StateMachine;
-            if (stateMachine is EnhancedStateMachine enhancedStateMachine)
+                throw new ArgumentNullException(nameof(gameRoot));
+
+            // Invoke the delegate function to get the actual state machine instance
+            // Invoke the delegate function once using parenthesis
+            var actualStateMachine = gameRoot.StateMachine();
+
+            if (actualStateMachine is EnhancedStateMachine enhancedStateMachine)
             {
                 return enhancedStateMachine.GenerateComprehensiveReport();
             }
-            else
-            {
-                var stats = stateMachine.GetStatistics();
-                return $"Basic StateMachine Report: Current={stats.CurrentState}, " +
-                $"Registered={stats.RegisteredStates}, Transitions={stats.TotalTransitions}";
-            }
+
+            // Fixed fallback report showing the raw machine instance string representation
+            return $"Basic StateMachine Report: Instance={actualStateMachine}";
+
+
         }
     }
 }

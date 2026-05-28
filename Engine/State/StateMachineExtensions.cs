@@ -25,7 +25,7 @@ namespace SASZombieAssaultTD.Engine.State
             {
                 if (!StateTransitionRules.IsTransitionAllowed(stateMachine.CurrentStateType, targetState))
                 {
-                    ModernLoggingSystem.Log("WARNING", $"StateMachine: Transition disallowed - {StateTransitionRules.GetValidationMessage(stateMachine.CurrentStateType, targetState)}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"StateMachine: Transition disallowed - {StateTransitionRules.GetValidationMessage(stateMachine.CurrentStateType, targetState)}");
                     return false;
                 }
                 
@@ -34,7 +34,7 @@ namespace SASZombieAssaultTD.Engine.State
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"StateMachine: Transition failed - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"StateMachine: Transition failed - {ex.Message}");
                 return false;
             }
         }

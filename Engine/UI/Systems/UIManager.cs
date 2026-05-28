@@ -54,7 +54,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
                 if (_soundEnabled != value)
                 {
                     _soundEnabled = value;
-                    ModernLoggingSystem.Log("DEBUG", $"UIManager: UI sounds {(value ? "enabled" : "disabled")}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"UIManager: UI sounds {(value ? "enabled" : "disabled")}");
                 }
             }
         }
@@ -65,7 +65,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             set
             {
                 _soundVolume = System.Math.Clamp(value, 0f, 1f);
-                ModernLoggingSystem.Log("DEBUG", $"UIManager: UI sound volume set to {_soundVolume:F2}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"UIManager: UI sound volume set to {_soundVolume:F2}");
             }
         }
 
@@ -79,14 +79,14 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
         {
             if (_isInitialized)
             {
-                ModernLoggingSystem.Log("WARNING", "UIManager: Already initialized");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "UIManager: Already initialized");
                 return;
             }
 
             _viewportSize = new Vector3(viewportWidth, viewportHeight, 0);
             _isInitialized = true;
 
-            ModernLoggingSystem.Log("INFO", $"UIManager: Initialized with viewport {viewportWidth}x{viewportHeight}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"UIManager: Initialized with viewport {viewportWidth}x{viewportHeight}");
         }
 
         public void Update(float deltaTime)
@@ -100,7 +100,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"UIManager: Failed to update - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UIManager: Failed to update - {ex.Message}");
             }
         }
 
@@ -114,7 +114,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"UIManager: Failed to render - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UIManager: Failed to render - {ex.Message}");
             }
         }
 
@@ -156,7 +156,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
         public void SetViewport(int width, int height)
         {
             _viewportSize = new Vector3(width, height, 0);
-            ModernLoggingSystem.Log("DEBUG", $"UIManager: Set viewport to {width}x{height}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"UIManager: Set viewport to {width}x{height}");
         }
 
         // TODO: Implement UIManager with proper UIElement interface
@@ -173,7 +173,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             _focusedElement = null;
             _hoveredElement = null;
 
-            ModernLoggingSystem.Log("DEBUG", "UIManager: Cleared all elements");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "UIManager: Cleared all elements");
         }
 
         public void PlayUISound(string soundType)
@@ -183,11 +183,11 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             if (_soundMappings.TryGetValue(soundType.ToLower(), out var soundName))
             {
                 OnPlayUISound?.Invoke(soundName);
-                ModernLoggingSystem.Log("DEBUG", $"UIManager: Playing UI sound '{soundName}' for type '{soundType}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"UIManager: Playing UI sound '{soundName}' for type '{soundType}'");
             }
             else
             {
-                ModernLoggingSystem.Log("WARNING", $"UIManager: Unknown UI sound type '{soundType}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"UIManager: Unknown UI sound type '{soundType}'");
             }
         }
 
@@ -196,7 +196,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             if (!string.IsNullOrEmpty(eventType) && !string.IsNullOrEmpty(soundName))
             {
                 _soundMappings[eventType.ToLower()] = soundName;
-                ModernLoggingSystem.Log("DEBUG", $"UIManager: Set sound mapping '{eventType}' -> '{soundName}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"UIManager: Set sound mapping '{eventType}' -> '{soundName}'");
             }
         }
 
@@ -207,7 +207,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
         {
             if (_soundMappings.Remove(eventType?.ToLower()))
             {
-                ModernLoggingSystem.Log("DEBUG", $"UIManager: Removed sound mapping for '{eventType}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"UIManager: Removed sound mapping for '{eventType}'");
             }
         }
     }

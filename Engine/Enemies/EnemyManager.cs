@@ -20,15 +20,15 @@ namespace SASZombieAssaultTD.Engine.Enemies
     /// </summary>
     public class EnemyManager
     {
-        #region Private Fields
+        ///  Private Fields
 
         private readonly List<Enemy> _enemies = new();
         private readonly ECSWorld _ecsWorld;
         private uint _nextEnemyId = 1;
 
-        #endregion
+        /// 
 
-        #region Constructor
+        ///  Constructor
 
         /// <summary>
         /// Creates a new enemy manager.
@@ -39,9 +39,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             _ecsWorld = ecsWorld ?? throw new ArgumentNullException(nameof(ecsWorld));
         }
 
-        #endregion
+        /// 
 
-        #region Public API
+        ///  Public API
 
         /// <summary>
         /// Spawns a new enemy of the specified type at the given position.
@@ -66,7 +66,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to spawn enemy {enemyType}: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Failed to spawn enemy {enemyType}: {ex.Message}");
                 return null;
             }
         }
@@ -185,9 +185,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             _enemies.Clear();
         }
 
-        #endregion
+        /// 
 
-        #region Private Methods
+        ///  Private Methods
 
         /// <summary>
         /// Updates enemy statistics.
@@ -199,6 +199,6 @@ namespace SASZombieAssaultTD.Engine.Enemies
             // This would integrate with the difficulty system
         }
 
-        #endregion
+        /// 
     }
 }

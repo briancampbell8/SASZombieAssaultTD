@@ -25,7 +25,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
         public UIStyleResolver(UIStyleSheet styleSheet)
         {
             _styleSheet = styleSheet ?? throw new ArgumentNullException(nameof(styleSheet));
-            Console.WriteLine("UIStyleResolver: Initialized");
+            System.Diagnostics.Debug.WriteLine("UIStyleResolver: Initialized");
         }
 
         /// <summary>
@@ -39,30 +39,30 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIStyleResolver: Cannot apply style to null element");
+                    System.Diagnostics.Debug.WriteLine("UIStyleResolver: Cannot apply style to null element");
                     return;
                 }
 
                 if (string.IsNullOrEmpty(styleName))
                 {
-                    Console.WriteLine("UIStyleResolver: Cannot apply style with null or empty name");
+                    System.Diagnostics.Debug.WriteLine("UIStyleResolver: Cannot apply style with null or empty name");
                     return;
                 }
 
                 var style = _styleSheet.GetStyle(styleName);
                 if (style == null)
                 {
-                    Console.WriteLine($"UIStyleResolver: Style '{styleName}' not found");
+                    System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Style '{styleName}' not found");
                     return;
                 }
 
                 ApplyStyleToElement(element, style);
 
-                Console.WriteLine($"UIStyleResolver: Applied style '{styleName}' to element");
+                System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Applied style '{styleName}' to element");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleResolver: Error applying style '{styleName}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Error applying style '{styleName}' - {ex.Message}");
             }
         }
 
@@ -79,14 +79,14 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 if (style.BackgroundColor != System.Drawing.Color.Transparent)
                 {
                     // This would use the element's background rendering method
-                    Console.WriteLine($"UIStyleResolver: Applied background color {style.BackgroundColor}");
+                    System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Applied background color {style.BackgroundColor}");
                 }
 
                 // Apply text color
                 if (element is Label textElement)
                 {
                     textElement.TextColor = new SASZombieAssaultTD.Engine.Core.Color(style.TextColor.R, style.TextColor.G, style.TextColor.B, style.TextColor.A);
-                    Console.WriteLine($"UIStyleResolver: Applied text color {style.TextColor}");
+                    System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Applied text color {style.TextColor}");
                 }
 
                 // Apply border
@@ -94,7 +94,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 {
                     panelElement.BorderColor = style.BorderColor;
                     panelElement.BorderThickness = style.BorderThickness;
-                    Console.WriteLine($"UIStyleResolver: Applied border color {style.BorderColor}, thickness {style.BorderThickness}");
+                    System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Applied border color {style.BorderColor}, thickness {style.BorderThickness}");
                 }
 
                 // Apply font
@@ -102,7 +102,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 {
                     textElement2.Font = new Font(style.Font, 12f);
                     textElement2.FontSize = style.FontSize;
-                    Console.WriteLine($"UIStyleResolver: Applied font {style.Font}, size {style.FontSize}");
+                    System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Applied font {style.Font}, size {style.FontSize}");
                 }
 
                 // Apply padding and margins
@@ -111,11 +111,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                 element.Size.Height + style.Padding.Vertical + style.Margin.Vertical
                 );
 
-                Console.WriteLine($"UIStyleResolver: Applied padding and margins");
+                System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Applied padding and margins");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleResolver: Error applying style to element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Error applying style to element - {ex.Message}");
             }
         }
 
@@ -130,20 +130,20 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             {
                 if (elements == null)
                 {
-                    Console.WriteLine("UIStyleResolver: Cannot apply style to null elements");
+                    System.Diagnostics.Debug.WriteLine("UIStyleResolver: Cannot apply style to null elements");
                     return;
                 }
 
                 if (string.IsNullOrEmpty(styleName))
                 {
-                    Console.WriteLine("UIStyleResolver: Cannot apply style with null or empty name");
+                    System.Diagnostics.Debug.WriteLine("UIStyleResolver: Cannot apply style with null or empty name");
                     return;
                 }
 
                 var style = _styleSheet.GetStyle(styleName);
                 if (style == null)
                 {
-                    Console.WriteLine($"UIStyleResolver: Style '{styleName}' not found");
+                    System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Style '{styleName}' not found");
                     return;
                 }
 
@@ -152,11 +152,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                     ApplyStyleToElement(element, style);
                 }
 
-                Console.WriteLine($"UIStyleResolver: Applied style '{styleName}' to {elements.Count()} elements");
+                System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Applied style '{styleName}' to {elements.Count()} elements");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleResolver: Error applying style to elements - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Error applying style to elements - {ex.Message}");
             }
         }
 
@@ -171,30 +171,30 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIStyleResolver: Cannot remove style from null element");
+                    System.Diagnostics.Debug.WriteLine("UIStyleResolver: Cannot remove style from null element");
                     return;
                 }
 
                 if (string.IsNullOrEmpty(styleName))
                 {
-                    Console.WriteLine("UIStyleResolver: Cannot remove style with null or empty name");
+                    System.Diagnostics.Debug.WriteLine("UIStyleResolver: Cannot remove style with null or empty name");
                     return;
                 }
 
                 var style = _styleSheet.GetStyle(styleName);
                 if (style == null)
                 {
-                    Console.WriteLine($"UIStyleResolver: Style '{styleName}' not found");
+                    System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Style '{styleName}' not found");
                     return;
                 }
 
                 RemoveStyleFromElement(element, style);
 
-                Console.WriteLine($"UIStyleResolver: Removed style '{styleName}' from element");
+                System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Removed style '{styleName}' from element");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleResolver: Error removing style from element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Error removing style from element - {ex.Message}");
             }
         }
 
@@ -208,11 +208,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             try
             {
                 // This would reset the element's appearance to default values
-                Console.WriteLine($"UIStyleResolver: Removed style from element");
+                System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Removed style from element");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleResolver: Error removing style from element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Error removing style from element - {ex.Message}");
             }
         }
 
@@ -228,29 +228,29 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIStyleResolver: Cannot get style from null element");
+                    System.Diagnostics.Debug.WriteLine("UIStyleResolver: Cannot get style from null element");
                     return null;
                 }
 
                 if (string.IsNullOrEmpty(styleName))
                 {
-                    Console.WriteLine("UIStyleResolver: Cannot get style with null or empty name");
+                    System.Diagnostics.Debug.WriteLine("UIStyleResolver: Cannot get style with null or empty name");
                     return null;
                 }
 
                 var style = _styleSheet.GetStyle(styleName);
                 if (style == null)
                 {
-                    Console.WriteLine($"UIStyleResolver: Style '{styleName}' not found");
+                    System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Style '{styleName}' not found");
                     return null;
                 }
 
-                Console.WriteLine($"UIStyleResolver: Got style '{styleName}' for element");
+                System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Got style '{styleName}' for element");
                 return style;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIStyleResolver: Error getting style from element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Error getting style from element - {ex.Message}");
                 return null;
             }
         }

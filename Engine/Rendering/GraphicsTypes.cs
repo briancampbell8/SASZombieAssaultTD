@@ -1,5 +1,8 @@
-using System;
 using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using System;
+using System.Numerics;
+using System.Security.AccessControl;
 
 namespace SASZombieAssaultTD.Engine.Rendering
 {
@@ -24,7 +27,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
     {
         public static readonly SamplerState DefaultSamplerState = SamplerState.LinearClamp;
         public static readonly BlendState DefaultBlendState = BlendState.AlphaBlend;
-        
+        private object TheType;
+        private object TheMember;
+
         public void Begin(SpriteSortMode sortMode) { }
         public void Begin(SpriteSortMode sortMode, BlendState blendState) { }
         public void Begin(SpriteSortMode sortMode, BlendState blendState, SamplerState samplerState) { }
@@ -33,6 +38,14 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public void Draw(object texture, System.Numerics.Vector2 position, Rectangle? sourceRectangle, Color color) { }
         public void DrawString(object spriteFont, string text, System.Numerics.Vector2 position, Color color) { }
         public void DrawString(object spriteFont, string text, System.Numerics.Vector2 position, Color color, float rotation, System.Numerics.Vector2 origin, float scale, SpriteEffects effects, float layerDepth) { }
+
+        internal void Draw(nint v, Vector3 vector31, 
+            Rectangle sourceRect, Color color, float rotation, Vector3 vector32, Vector3 vector33, SpriteEffects none, float layerDepth)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
     }
     
     public class SamplerState

@@ -50,7 +50,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
         /// </summary>
         public UIFont()
         {
-            Console.WriteLine("UIFont: Created new font");
+            System.Diagnostics.Debug.WriteLine("UIFont: Created new font");
         }
 
         /// <summary>
@@ -69,11 +69,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
                 _path = path ?? string.Empty;
                 _style = style;
 
-                Console.WriteLine($"UIFont: Created font '{name}' with size {_size} from path '{path}'");
+                System.Diagnostics.Debug.WriteLine($"UIFont: Created font '{name}' with size {_size} from path '{path}'");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFont: Error creating font - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFont: Error creating font - {ex.Message}");
             }
         }
 
@@ -85,11 +85,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             try
             {
                 _isLoaded = true;
-                Console.WriteLine($"UIFont: Marked font '{_name}' as loaded");
+                System.Diagnostics.Debug.WriteLine($"UIFont: Marked font '{_name}' as loaded");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFont: Error marking font as loaded - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFont: Error marking font as loaded - {ex.Message}");
             }
         }
 
@@ -101,11 +101,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             try
             {
                 _isPreloaded = true;
-                Console.WriteLine($"UIFont: Marked font '{_name}' as preloaded");
+                System.Diagnostics.Debug.WriteLine($"UIFont: Marked font '{_name}' as preloaded");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFont: Error marking font as preloaded - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFont: Error marking font as preloaded - {ex.Message}");
             }
         }
 
@@ -119,11 +119,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
                 _isLoaded = false;
                 _isPreloaded = false;
 
-                Console.WriteLine($"UIFont: Unloaded font '{_name}'");
+                System.Diagnostics.Debug.WriteLine($"UIFont: Unloaded font '{_name}'");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFont: Error unloading font - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFont: Error unloading font - {ex.Message}");
             }
         }
 
@@ -139,7 +139,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIFont: Error creating string representation - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIFont: Error creating string representation - {ex.Message}");
                 return "UIFont: Error";
             }
         }

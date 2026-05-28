@@ -2,11 +2,13 @@
 File:    BaseScene.cs
 Purpose: SceneManager and GameRoot references; protected accessors for systems.
 */
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.UI.Input;
+using System;
 using System.Collections.Generic;
 using UISystem = SASZombieAssaultTD.Engine.UI.UISystem;
-using SASZombieAssaultTD.Engine.Extensions;
 // P11-08-01: Updated to work with decomposed WaveSystem structure
 
 namespace SASZombieAssaultTD.Engine.Scenes
@@ -126,6 +128,8 @@ namespace SASZombieAssaultTD.Engine.Scenes
     {
         private GameRoot? _gameRoot;
         private SceneManager? _sceneManager;
+        private object TheContainingType;
+        private object TheContainingMember;
 
         protected GameRoot? GameRoot => _gameRoot;
         protected SceneManager? SceneManager => _sceneManager;
@@ -137,13 +141,12 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// P11-10-08: Replaces legacy InputSystem with new UIInputRouter.
         /// </summary>
         protected UIInputRouter? InputRouter => _gameRoot?.Input;
-
-        protected UISystem? UISystem => _gameRoot?.UISystem;
-        protected AnimationSystem? AnimationSystem => _gameRoot?.AnimationSystem;
-        protected SASZombieAssaultTD.Engine.Enemies.EnemySystem? EnemySystem => _gameRoot?.EnemySystem;
+        protected UISystem? UISystem => (UISystem)(_gameRoot?.UISystem());
+        protected AnimationSystem? AnimationSystem => (AnimationSystem)(_gameRoot?.AnimationSystem());
+        protected SASZombieAssaultTD.Engine.Enemies.EnemySystem? EnemySystem => (EnemySystem)(_gameRoot?.EnemySystem());
         // P11-08-01: Updated to work with decomposed WaveSystem structure
         // protected SASZombieAssaultTD.Engine.Gameplay.WaveController? WaveSystem => _gameRoot?.WaveSystem;
-        protected object? RenderSystem => _gameRoot?.RenderSystem;
+        protected object? RenderSystem => _gameRoot?.RenderSystem();
 
         /// <summary>
         /// Sets the GameRoot reference for this scene.
@@ -154,6 +157,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             _gameRoot = gameRoot;
         }
 
+   
         /// <summary>
         /// Sets the SceneManager reference for this scene.
         /// </summary>
@@ -221,5 +225,12 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// Default implementation is a no-op.
         /// </summary>
         public virtual void Cleanup() { }
+
+        internal void Render(IDrawingContext context)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
     }
 }

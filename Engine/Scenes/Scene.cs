@@ -124,7 +124,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             _entities = new List<Entity>();
             _sceneData = new Dictionary<string, object>();
 
-            ModernLoggingSystem.Log("DEBUG", $"Scene: Created '{_name}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Scene: Created '{_name}'");
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (_isLoaded)
             {
-                ModernLoggingSystem.Log("WARNING", $"Scene: '{_name}' is already loaded");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"Scene: '{_name}' is already loaded");
                 return false;
             }
 
@@ -146,7 +146,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
                 var success = LoadSceneData();
                 if (!success)
                 {
-                    ModernLoggingSystem.Log("ERROR", $"Scene: Failed to load data for '{_name}'");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Scene: Failed to load data for '{_name}'");
                     return false;
                 }
 
@@ -156,12 +156,12 @@ namespace SASZombieAssaultTD.Engine.Scenes
                 _isLoaded = true;
                 OnSceneLoaded?.Invoke();
 
-                ModernLoggingSystem.Log("INFO", $"Scene: Loaded '{_name}' with {_entities.Count} entities");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"Scene: Loaded '{_name}' with {_entities.Count} entities");
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Scene: Failed to load '{_name}' - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Scene: Failed to load '{_name}' - {ex.Message}");
                 return false;
             }
         }
@@ -175,7 +175,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (!_isLoaded)
             {
-                ModernLoggingSystem.Log("WARNING", $"Scene: '{_name}' is not loaded");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"Scene: '{_name}' is not loaded");
                 return false;
             }
 
@@ -196,12 +196,12 @@ namespace SASZombieAssaultTD.Engine.Scenes
                 _isLoaded = false;
                 OnSceneUnloaded?.Invoke();
 
-                ModernLoggingSystem.Log("INFO", $"Scene: Unloaded '{_name}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"Scene: Unloaded '{_name}'");
                 return true;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Scene: Failed to unload '{_name}' - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Scene: Failed to unload '{_name}' - {ex.Message}");
                 return false;
             }
         }
@@ -213,20 +213,20 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (!_isLoaded)
             {
-                ModernLoggingSystem.Log("WARNING", $"Scene: Cannot activate '{_name}' - not loaded");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"Scene: Cannot activate '{_name}' - not loaded");
                 return;
             }
 
             if (_isActive)
             {
-                ModernLoggingSystem.Log("WARNING", $"Scene: '{_name}' is already active");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"Scene: '{_name}' is already active");
                 return;
             }
 
             _isActive = true;
             OnSceneActivated?.Invoke();
 
-            ModernLoggingSystem.Log("DEBUG", $"Scene: Activated '{_name}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Scene: Activated '{_name}'");
         }
 
         /// <summary>
@@ -236,14 +236,14 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (!_isActive)
             {
-                ModernLoggingSystem.Log("WARNING", $"Scene: '{_name}' is not active");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"Scene: '{_name}' is not active");
                 return;
             }
 
             _isActive = false;
             OnSceneDeactivated?.Invoke();
 
-            ModernLoggingSystem.Log("DEBUG", $"Scene: Deactivated '{_name}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Scene: Deactivated '{_name}'");
         }
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Scene: Failed to update '{_name}' - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Scene: Failed to update '{_name}' - {ex.Message}");
             }
         }
 
@@ -303,7 +303,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Scene: Failed to render '{_name}' - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Scene: Failed to render '{_name}' - {ex.Message}");
             }
         }
 
@@ -316,13 +316,13 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (entity == null)
             {
-                ModernLoggingSystem.Log("WARNING", "Scene: Cannot add null entity");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "Scene: Cannot add null entity");
                 return false;
             }
 
             if (_entities.Contains(entity))
             {
-                ModernLoggingSystem.Log("WARNING", $"Scene: Entity '{entity.Id}' already exists in scene '{_name}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"Scene: Entity '{entity.Id}' already exists in scene '{_name}'");
                 return false;
             }
 
@@ -330,7 +330,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             entity.Scene = this;
             OnEntityAdded?.Invoke(entity);
 
-            ModernLoggingSystem.Log("DEBUG", $"Scene: Added entity '{entity.Id}' to '{_name}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Scene: Added entity '{entity.Id}' to '{_name}'");
             return true;
         }
 
@@ -349,7 +349,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             {
                 entity.Scene = null;
                 OnEntityRemoved?.Invoke(entity);
-                ModernLoggingSystem.Log("DEBUG", $"Scene: Removed entity '{entity.Id}' from '{_name}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Scene: Removed entity '{entity.Id}' from '{_name}'");
             }
 
             return removed;
@@ -427,7 +427,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
         private void InitializeEntities()
         {
             // Override in derived classes to create initial entities
-            ModernLoggingSystem.Log("DEBUG", $"Scene: Initializing entities for '{_name}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Scene: Initializing entities for '{_name}'");
         }
 
         /// <summary>

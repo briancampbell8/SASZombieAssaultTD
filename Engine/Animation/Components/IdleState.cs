@@ -36,12 +36,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         public void Enter()
         {
             IdleTime = 0f;
-            ModernLoggingSystem.Log("DEBUG", "IdleState: Entering idle state");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "IdleState: Entering idle state");
         }
 
         public void Exit()
         {
-            ModernLoggingSystem.Log("DEBUG", $"IdleState: Exiting idle state after {IdleTime:F2}s");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"IdleState: Exiting idle state after {IdleTime:F2}s");
         }
 
         public void Update(float deltaTime, float timeInState)
@@ -53,19 +53,19 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             if (IsJumping)
             {
-                ModernLoggingSystem.Log("DEBUG", "IdleState: Transition condition met for JumpState");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "IdleState: Transition condition met for JumpState");
                 return _jumpState;
             }
 
             if (IsAttacking)
             {
-                ModernLoggingSystem.Log("DEBUG", "IdleState: Transition condition met for AttackState");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "IdleState: Transition condition met for AttackState");
                 return _attackState;
             }
 
             if (IsMoving)
             {
-                ModernLoggingSystem.Log("DEBUG", "IdleState: Transition condition met for MoveState");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "IdleState: Transition condition met for MoveState");
                 return _moveState;
             }
 

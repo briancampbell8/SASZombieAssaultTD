@@ -60,13 +60,16 @@ namespace SASZombieAssaultTD.Engine.Resources
     /// </summary>
     public static class RSPipeline
     {
+        private static object TheContainingType;
+        private static object TheContainingMember;
+
         /// <summary>
         /// Loads all resources (textures + data) using the metadata provided
         /// in the load context. Returns a summary of successes/failures.
         /// </summary>
         public static RSBatchLoadResult LoadAll(RSLoadContext context)
         {
-            ModernLoggingSystem.Log("INFO", "[Resources] Phase5: LoadOrder: Begin");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "[Resources] Phase5: LoadOrder: Begin");
 
             int success = 0;
             int failure = 0;
@@ -97,7 +100,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                             break;
 
                         default:
-                            ModernLoggingSystem.Log("Warn", $"[Assets] Unknown asset type for {meta.Name}.");
+                            Engine.Diagnostics.DebugLogger.LogDebug("Warn", $"[Assets] Unknown asset type for {meta.Name}.");
                             failure++;
                             continue;
                     }
@@ -106,12 +109,12 @@ namespace SASZombieAssaultTD.Engine.Resources
                 }
                 catch (Exception ex)
                 {
-                    ModernLoggingSystem.Log("Error", $"[Assets] Failed to load {meta.Name}: {ex.Message}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("Error", $"[Assets] Failed to load {meta.Name}: {ex.Message}");
                     failure++;
                 }
             }
 
-            ModernLoggingSystem.Log("INFO", "[Assets] Phase5: LoadOrder: Completed");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "[Assets] Phase5: LoadOrder: Completed");
             return new RSBatchLoadResult { SuccessCount = success, FailureCount = failure };
         }
 
@@ -125,7 +128,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             {
                 if (RSRegistry.Count == 0)
                 {
-                    ModernLoggingSystem.Log("WARNING", "[Assets] RuntimeReadiness: No assets registered.");
+                    Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "[Assets] RuntimeReadiness: No assets registered.");
                     return false;
                 }
 
@@ -133,7 +136,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 {
                     if (string.IsNullOrWhiteSpace(kvp.Key) || string.IsNullOrWhiteSpace(kvp.Value))
                     {
-                        ModernLoggingSystem.Log("WARNING", $"[Assets] RuntimeReadiness: Invalid registry entry: key='{kvp.Key}', path='{kvp.Value}'.");
+                        Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"[Assets] RuntimeReadiness: Invalid registry entry: key='{kvp.Key}', path='{kvp.Value}'.");
                         return false;
                     }
                 }
@@ -142,7 +145,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"[Assets] RuntimeReadiness: Validation failed: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"[Assets] RuntimeReadiness: Validation failed: {ex.Message}");
                 return false;
             }
         }
@@ -159,11 +162,13 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             RSRegistry.Register(meta.Name, meta.Path);
 
-            ModernLoggingSystem.Log("Info", $"[Assets] Loaded texture: {meta.Name}");
+            Engine.Diagnostics.DebugLogger.LogDebug("Info", $"[Assets] Loaded texture: {meta.Name}");
         }
 
         private static byte[] LoadTextureBytes(string path)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
@@ -179,7 +184,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             // Actual decoding is deferred to the audio subsystem at playback time.
             RSRegistry.Register(meta.Name, meta.Path);
 
-            ModernLoggingSystem.Log("Info", $"[Assets] Loaded audio: {meta.Name} ({meta.Type})");
+            Engine.Diagnostics.DebugLogger.LogDebug("Info", $"[Assets] Loaded audio: {meta.Name} ({meta.Type})");
         }
 
         // ------------------------------------------------------------
@@ -194,7 +199,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             RSRegistry.Register(meta.Name, meta.Path);
 
-            ModernLoggingSystem.Log("Info", $"[Assets] Loaded data: {meta.Name}");
+            Engine.Diagnostics.DebugLogger.LogDebug("Info", $"[Assets] Loaded data: {meta.Name}");
         }
     }
 }

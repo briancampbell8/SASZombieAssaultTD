@@ -16,7 +16,7 @@ namespace SASZombieAssaultTD.Engine.Components
     /// </summary>
     public class UIComponent
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Text or sprite asset ID for RSManager lookup.
@@ -64,9 +64,9 @@ namespace SASZombieAssaultTD.Engine.Components
         /// </summary>
         public float FontSize { get; set; } = 12.0f;
 
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
 
         /// <summary>
         /// Creates a new UIComponent with default values.
@@ -152,9 +152,9 @@ namespace SASZombieAssaultTD.Engine.Components
             IsVisible = isVisible;
         }
 
-        #endregion
+        /// 
 
-        #region Methods
+        ///  Methods
 
         /// <summary>
         /// Toggles the visibility of the UI element.
@@ -190,7 +190,7 @@ namespace SASZombieAssaultTD.Engine.Components
                 : $"UIComponent(Asset: {AssetId}, Pos: {Position}, Layer: {LayerDepth}, Visible: {IsVisible})";
         }
 
-        #endregion
+        /// 
     }
 }
 

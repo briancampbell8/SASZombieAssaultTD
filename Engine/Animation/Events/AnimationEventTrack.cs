@@ -42,33 +42,33 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             ClipId = clipId;
             ClipDuration = clipDuration;
 
-            ModernLoggingSystem.Log("DEBUG", $"AnimationEventTrack: Created track '{TrackName}' ({TrackId}) for clip '{ClipId}' ({ClipDuration:F3}s)");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventTrack: Created track '{TrackName}' ({TrackId}) for clip '{ClipId}' ({ClipDuration:F3}s)");
         }
 
         public bool AddEvent(AnimationEvent animationEvent)
         {
             if (animationEvent == null)
             {
-                ModernLoggingSystem.Log("ERROR", "AnimationEventTrack: Cannot add null animation event");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "AnimationEventTrack: Cannot add null animation event");
                 return false;
             }
 
             if (animationEvent.Timestamp > ClipDuration)
             {
-                ModernLoggingSystem.Log("WARNING", $"AnimationEventTrack: Event '{animationEvent.EventName}' timestamp ({animationEvent.Timestamp:F3}s) exceeds clip duration ({ClipDuration:F3}s)");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AnimationEventTrack: Event '{animationEvent.EventName}' timestamp ({animationEvent.Timestamp:F3}s) exceeds clip duration ({ClipDuration:F3}s)");
                 return false;
             }
 
             if (_events.Any(e => e.EventId == animationEvent.EventId))
             {
-                ModernLoggingSystem.Log("ERROR", $"AnimationEventTrack: Event ID '{animationEvent.EventId}' already exists in track '{TrackId}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventTrack: Event ID '{animationEvent.EventId}' already exists in track '{TrackId}'");
                 return false;
             }
 
             _events.Add(animationEvent);
             _events.Sort((a, b) => a.Timestamp.CompareTo(b.Timestamp));
 
-            ModernLoggingSystem.Log("DEBUG", $"AnimationEventTrack: Added event '{animationEvent.EventName}' ({animationEvent.EventId}) at {animationEvent.Timestamp:F3}s to track '{TrackId}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventTrack: Added event '{animationEvent.EventName}' ({animationEvent.EventId}) at {animationEvent.Timestamp:F3}s to track '{TrackId}'");
             return true;
         }
 
@@ -76,19 +76,19 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
         {
             if (string.IsNullOrEmpty(eventId))
             {
-                ModernLoggingSystem.Log("ERROR", "AnimationEventTrack: Cannot remove event with null or empty ID");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "AnimationEventTrack: Cannot remove event with null or empty ID");
                 return false;
             }
 
             var eventToRemove = _events.FirstOrDefault(e => e.EventId == eventId);
             if (eventToRemove == null)
             {
-                ModernLoggingSystem.Log("WARNING", $"AnimationEventTrack: Event ID '{eventId}' not found in track '{TrackId}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AnimationEventTrack: Event ID '{eventId}' not found in track '{TrackId}'");
                 return false;
             }
 
             _events.Remove(eventToRemove);
-            ModernLoggingSystem.Log("DEBUG", $"AnimationEventTrack: Removed event '{eventToRemove.EventName}' ({eventId}) from track '{TrackId}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventTrack: Removed event '{eventToRemove.EventName}' ({eventId}) from track '{TrackId}'");
             return true;
         }
 
@@ -127,7 +127,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
                 {
                     ResetEvents();
                     LoopCount = newLoopCount;
-                    ModernLoggingSystem.Log("DEBUG", $"AnimationEventTrack: Loop #{LoopCount} for track '{TrackId}'");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventTrack: Loop #{LoopCount} for track '{TrackId}'");
                 }
             }
 
@@ -139,7 +139,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
 
             if (eventsToTrigger.Count > 0)
             {
-                ModernLoggingSystem.Log("DEBUG", $"AnimationEventTrack: Triggered {eventsToTrigger.Count} event(s) at {absoluteTime:F3}s in track '{TrackId}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventTrack: Triggered {eventsToTrigger.Count} event(s) at {absoluteTime:F3}s in track '{TrackId}'");
             }
 
             return eventsToTrigger;
@@ -152,7 +152,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
                 animationEvent.Reset();
             }
 
-            ModernLoggingSystem.Log("DEBUG", $"AnimationEventTrack: Reset all {Events.Count} events in track '{TrackId}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventTrack: Reset all {Events.Count} events in track '{TrackId}'");
         }
 
         public void Reset()
@@ -162,7 +162,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             _previousTime = 0f;
             LoopCount = 0;
 
-            ModernLoggingSystem.Log("DEBUG", $"AnimationEventTrack: Reset track '{TrackId}' to initial state");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventTrack: Reset track '{TrackId}' to initial state");
         }
 
         public AnimationEventTrackValidationResult Validate()
@@ -258,7 +258,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
                 clonedTrack.AddEvent(animationEvent.Clone());
             }
 
-            ModernLoggingSystem.Log("DEBUG", $"AnimationEventTrack: Cloned track '{TrackName}' ({TrackId})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventTrack: Cloned track '{TrackName}' ({TrackId})");
             return clonedTrack;
         }
     }

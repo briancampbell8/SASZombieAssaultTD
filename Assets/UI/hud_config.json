@@ -1,0 +1,139 @@
+{
+  "version": "1.0",
+  "panels": {
+    "cash_panel": {
+      "x": 100,
+      "y": 540,
+      "width": 75,
+      "height": 22,
+      "layer": 998,
+      "crosshair": {
+        "centerX": 122,
+        "centerY": 553,
+        "armLength": 3,
+        "thickness": 2,
+        "color": {
+          "r": 173,
+          "g": 216,
+          "b": 230,
+          "a": 255,
+          "name": null
+        },
+        "useFlashColor": true,
+        "flashColor": {
+          "r": 220,
+          "g": 20,
+          "b": 60,
+          "a": 255,
+          "name": null
+        }
+      }
+    },
+    "lives_panel": {
+      "x": 150,
+      "y": 10,
+      "width": 80,
+      "height": 20,
+      "layer": 300,
+      "crosshair": null
+    },
+    "wave_panel": {
+      "x": 280,
+      "y": 10,
+      "width": 100,
+      "height": 20,
+      "layer": 300,
+      "crosshair": null
+    }
+  },
+  "buttons": {
+    "vickers": {
+      "x": 10,
+      "y": 550,
+      "width": 48,
+      "height": 48
+    },
+    "ngl": {
+      "x": 70,
+      "y": 550,
+      "width": 48,
+      "height": 48
+    },
+    "special": {
+      "x": 130,
+      "y": 550,
+      "width": 48,
+      "height": 48
+    },
+    "mg_sas": {
+      "x": 190,
+      "y": 550,
+      "width": 48,
+      "height": 48
+    },
+    "sniper_sas": {
+      "x": 250,
+      "y": 550,
+      "width": 48,
+      "height": 48
+    },
+    "sandbag": {
+      "x": 310,
+      "y": 550,
+      "width": 48,
+      "height": 48
+    },
+    "barbed_wire": {
+      "x": 370,
+      "y": 550,
+      "width": 48,
+      "height": 48
+    },
+    "frag": {
+      "x": 430,
+      "y": 550,
+      "width": 48,
+      "height": 48
+    },
+    "save": {
+      "x": 700,
+      "y": 550,
+      "width": 48,
+      "height": 48
+    },
+    "store": {
+      "x": 750,
+      "y": 550,
+      "width": 48,
+      "height": 48
+    }
+  },
+  "text_elements": {
+    "lives_text": {
+      "x": 150,
+      "y": 10,
+      "width": 0,
+      "colorHex": "#FFFFFF"
+    },
+    "wave_text": {
+      "x": 280,
+      "y": 10,
+      "width": 0,
+      "colorHex": "#FFFFFF"
+    }
+  },
+  "backgrounds": {
+    "support_hud": {
+      "x": 0,
+      "y": 507,
+      "width": 248,
+      "height": 33
+    },
+    "hud_surface": {
+      "x": 0,
+      "y": 540,
+      "width": 800,
+      "height": 60
+    }
+  }
+}

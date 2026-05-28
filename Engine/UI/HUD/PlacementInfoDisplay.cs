@@ -42,6 +42,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         private float _pulseAmount = 0.1f;
         private float _pulseTimer = 0f;
         private bool _isPulsing = false;
+        private Vector3 basePosition;
 
         // Events
         public event Action<PlacementInfo> OnPlacementAttempted;
@@ -227,7 +228,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error rendering placement info: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error rendering placement info: {ex.Message}");
             }
         }
 
@@ -240,8 +241,8 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             var borderColor = Color.FromArgb((byte)(255 * GetTransitionProgress()), (byte)_borderColor.R, (byte)_borderColor.G, (byte)_borderColor.B);
 
             // Use Renderer API (explicit float args used intentionally to avoid operator overload assumptions)
-            Renderer.DrawRectangle(_position.X, _position.Y, _size.X, _size.Y, backgroundColor);
-            Renderer.DrawRectangle(_position.X, _position.Y, _size.X, _size.Y, borderColor, 2f);
+            Renderer.DrawRectangle((int)_position.X, (int)_position.Y, (int)_size.X, (int)_size.Y, backgroundColor);
+            Renderer.DrawRectangle((int)_position.X, (int)_position.Y, (int)_size.X, (int)_size.Y, borderColor, 2f);
         }
 
         /// <summary>
@@ -254,7 +255,8 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             var towerData = _placementInfo.TowerData;
             var towerSize = towerData.Size;
             var towerPosition = _placementInfo.GridPosition;
-            var worldPosition = NavigationGrid.GridToWorld(towerPosition);
+            var navigationGrid = new NavigationGrid();
+            var worldPosition = navigationGrid.GridToWorld(towerPosition);
             var towerColor = _placementInfo.CanPlace ? _validColor : _invalidColor;
 
             // Calculate tower size for preview (avoid Vector3 operator overloads)
@@ -276,8 +278,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
 
             // Render tower base
             var baseSize = new Vector3(towerSize.X * 0.8f, towerSize.Y * 0.8f, towerSize.Z * 0.8f);
-            var basePosition = new Vector3(worldPosition.X + (towerSize.X / 2f), worldPosition.Y + (towerSize.Y / 2f), worldPosition.Z + (towerSize.Z / 2f));
-            var baseColor = Color.FromArgb(100, (byte)towerColor.R, (byte)towerColor.G, (byte)towerColor.B);
+            var baseColor = Color.FromArgb((byte)100, (byte)towerColor.R, (byte)towerColor.G, (byte)towerColor.B);
             Renderer.DrawRectangle(basePosition, baseSize, baseSize, baseColor, 1f);
         }
 
@@ -288,7 +289,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         {
             var statusText = GetStatusText();
             var statusColor = GetStatusColor();
-            var statusTextColor = Color.FromArgb(255, (byte)statusColor.R, (byte)statusColor.G, (byte)statusColor.B);
+            var statusTextColor = Color.FromArgb((int)statusColor.R, (int)statusColor.G, (int)statusColor.B, 255);
             var statusPosition = new Vector3(_position.X + 10f, _position.Y + _size.Y - 25f, 0);
             var statusFont = FontCache.GetFont("small") ?? FontCache.GetFont("default");
 

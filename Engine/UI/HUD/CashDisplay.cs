@@ -1,7 +1,8 @@
-using System;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Resources;
+using SASZombieAssaultTD.Engine.VectorMath;
+using System;
 
 namespace SASZombieAssaultTD.Engine.UI.HUD
 {
@@ -22,6 +23,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
     /// </summary>
     public static class RenderSystem
     {
+        private static object TheContainingType;
+        private static object TheContainingMember;
+
         public static void DrawRectangle(float x, float y, float width, float height, Color color)
         {
             // Placeholder for rectangle drawing
@@ -40,6 +44,19 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         public static void DrawArrow(float x1, float y1, float x2, float y2, Color color, float width)
         {
             // Placeholder for arrow drawing
+        }
+
+        internal static void DrawSprite(object iconSprite, Vector3 vector3, float v, Color white)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
+            throw new NotImplementedException();
+        }
+
+        internal static void DrawRectangle(Vector3 scaledPosition, Vector3 scaledSize, Color pulseColor, float v)
+        {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+            throw new NotImplementedException();
         }
     }
     /// <summary>
@@ -115,7 +132,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
                 OnCashWarning?.Invoke(amount);
             }
 
-            Console.WriteLine($"Cash updated: ${amount}");
+            System.Diagnostics.Debug.WriteLine($"Cash updated: ${amount}");
         }
 
         /// <summary>
@@ -220,8 +237,11 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _size = new Vector3(200f, 40f, 0);
 
             // Load font
-            _font = new SASZombieAssaultTD.Engine.Rendering.Font(SASZombieAssaultTD.Engine.Rendering.FontCache.GetFont("large")) 
-        ?? new SASZombieAssaultTD.Engine.Rendering.Font(SASZombieAssaultTD.Engine.Rendering.FontCache.GetFont("default"));
+            var cachedFont = SASZombieAssaultTD.Engine.Rendering.FontCache.GetFont("large")
+                ?? SASZombieAssaultTD.Engine.Rendering.FontCache.GetFont("default");
+            // TODO: Cannot cast CachedFont to Font
+            // _font = (SASZombieAssaultTD.Engine.Rendering.Font)cachedFont;
+            _font = default(SASZombieAssaultTD.Engine.Rendering.Font);
 
             // Set initial values
             UpdateCashColor();

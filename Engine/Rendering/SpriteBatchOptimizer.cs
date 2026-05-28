@@ -77,7 +77,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _culledSprites = 0;
             _batchedSprites = 0;
 
-            ModernLoggingSystem.Log("INFO", "SpriteBatchOptimizer: Initialized");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SpriteBatchOptimizer: Initialized");
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             samplerState ??= SamplerState.LinearClamp;
             if (_isDrawing)
             {
-                ModernLoggingSystem.Log("WARNING", "SpriteBatchOptimizer: Begin called while already drawing");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "SpriteBatchOptimizer: Begin called while already drawing");
                 return;
             }
 
@@ -111,7 +111,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _batchedSprites = 0;
             _isDrawing = true;
 
-            ModernLoggingSystem.Log("DEBUG", $"SpriteBatchOptimizer: Began drawing (SortMode: {_sortMode})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"SpriteBatchOptimizer: Began drawing (SortMode: {_sortMode})");
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             if (!_isDrawing)
             {
-                ModernLoggingSystem.Log("WARNING", "SpriteBatchOptimizer: End called while not drawing");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "SpriteBatchOptimizer: End called while not drawing");
                 return;
             }
 
@@ -132,13 +132,13 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 FlushOptimizedCommands();
 
                 _isDrawing = false;
-                ModernLoggingSystem.Log("DEBUG", $"SpriteBatchOptimizer: Ended drawing (DrawCalls: {_drawCalls}, Batched: {_batchedSprites}, Culled: {_culledSprites})");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"SpriteBatchOptimizer: Ended drawing (DrawCalls: {_drawCalls}, Batched: {_batchedSprites}, Culled: {_culledSprites})");
 
                 OnPerformanceUpdated?.Invoke(this);
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"SpriteBatchOptimizer: Failed to end drawing - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SpriteBatchOptimizer: Failed to end drawing - {ex.Message}");
                 _isDrawing = false;
             }
         }
@@ -213,7 +213,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public void RegisterTextureAtlas(IntPtr texture, TextureAtlas atlas)
         {
             _textureAtlases[texture] = atlas;
-            ModernLoggingSystem.Log("DEBUG", $"SpriteBatchOptimizer: Registered texture atlas");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"SpriteBatchOptimizer: Registered texture atlas");
         }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             // This would render all sprites in the batch with a single draw call
             // For now, we'll just log the operation
-            ModernLoggingSystem.Log("TRACE", $"SpriteBatchOptimizer: Rendered batch with {commands.Count} sprites");
+            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"SpriteBatchOptimizer: Rendered batch with {commands.Count} sprites");
         }
 
         /// <summary>

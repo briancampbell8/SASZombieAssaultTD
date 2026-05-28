@@ -20,7 +20,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void Play(string soundName)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"PlaySound: Playing sound '{soundName}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlaySound: Playing sound '{soundName}'");
         }
         
         /// <summary>
@@ -31,7 +31,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void Play(string soundName, float volume)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"PlaySound: Playing sound '{soundName}' at volume {volume}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlaySound: Playing sound '{soundName}' at volume {volume}");
         }
         
         /// <summary>
@@ -42,7 +42,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayWithPitch(string soundName, float pitch)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"PlaySound: Playing sound '{soundName}' with pitch {pitch}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlaySound: Playing sound '{soundName}' with pitch {pitch}");
         }
         
         /// <summary>
@@ -54,7 +54,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void Play(string soundName, float volume, float pitch)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"PlaySound: Playing sound '{soundName}' at volume {volume} with pitch {pitch}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlaySound: Playing sound '{soundName}' at volume {volume} with pitch {pitch}");
         }
         
         /// <summary>
@@ -65,7 +65,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayAtPosition(string soundName, SASZombieAssaultTD.Engine.VectorMath.Vector3 position)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"PlaySound: Playing sound '{soundName}' at position {position}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlaySound: Playing sound '{soundName}' at position {position}");
         }
         
         /// <summary>
@@ -75,7 +75,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void Stop(string soundName)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"PlaySound: Stopping sound '{soundName}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlaySound: Stopping sound '{soundName}'");
         }
         
         /// <summary>

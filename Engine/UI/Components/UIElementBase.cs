@@ -38,7 +38,10 @@ namespace SASZombieAssaultTD.Engine.UI
         /// <summary>Anchor to left-center</summary>
         LeftCenter,
         /// <summary>Anchor to right-center</summary>
-        RightCenter
+        RightCenter,
+        MiddleLeft,
+        MiddleCenter,
+        MiddleRight
     }
 
     /// <summary>
@@ -57,6 +60,7 @@ namespace SASZombieAssaultTD.Engine.UI
         private float _fadeSpeed = 2.0f;
         private bool _isFading = false;
         private bool _isMouseOver = false;
+        internal System.Numerics.Matrix3x2 Transform;
 
         /// <summary>
         /// Gets or sets the unique identifier for this UI element.

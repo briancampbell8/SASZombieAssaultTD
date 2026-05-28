@@ -142,8 +142,19 @@ namespace SASZombieAssaultTD.Engine.VectorMath
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44);
+            var hash = new HashCode();
+
+            // Add the first 8 elements
+            hash.Add(M11); hash.Add(M12); hash.Add(M13); hash.Add(M14);
+            hash.Add(M21); hash.Add(M22); hash.Add(M23); hash.Add(M24);
+
+            // Add the remaining 8 elements
+            hash.Add(M31); hash.Add(M32); hash.Add(M33); hash.Add(M34);
+            hash.Add(M41); hash.Add(M42); hash.Add(M43); hash.Add(M44);
+
+            return hash.ToHashCode();
         }
+
 
         public override string ToString()
         {

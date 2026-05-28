@@ -1,0 +1,201 @@
+{
+  "images": [
+    {
+      "id": "support_hud",
+      "path": "Assets/UI/SupportHUD.png",
+      "x": 0,
+      "y": 507,
+      "width": 248,
+      "height": 33,
+      "layer": 50,
+      "visible": true
+    },
+    {
+      "id": "hud_surface",
+      "path": "Assets/UI/HUD.png",
+      "x": 0,
+      "y": 540,
+      "width": 800,
+      "height": 60,
+      "layer": 100,
+      "visible": true
+    },
+    {
+      "id": "vickers_button",
+      "path": "Assets/UI/Towers/Vickers.png",
+      "x": 10,
+      "y": 550,
+      "width": 48,
+      "height": 48,
+      "layer": 200,
+      "visible": true
+    },
+    {
+      "id": "ngl_button",
+      "path": "Assets/UI/Towers/NGL.png",
+      "x": 70,
+      "y": 550,
+      "width": 48,
+      "height": 48,
+      "layer": 200,
+      "visible": true
+    },
+    {
+      "id": "special_button",
+      "path": "Assets/UI/Towers/Special.png",
+      "x": 130,
+      "y": 550,
+      "width": 48,
+      "height": 48,
+      "layer": 200,
+      "visible": true
+    },
+    {
+      "id": "mg_sas_button",
+      "path": "Assets/UI/Towers/MG_SAS.png",
+      "x": 190,
+      "y": 550,
+      "width": 48,
+      "height": 48,
+      "layer": 200,
+      "visible": true
+    },
+    {
+      "id": "sniper_sas_button",
+      "path": "Assets/UI/Towers/Sniper_SAS.png",
+      "x": 250,
+      "y": 550,
+      "width": 48,
+      "height": 48,
+      "layer": 200,
+      "visible": true
+    },
+    {
+      "id": "sandbag_button",
+      "path": "Assets/UI/Towers/Sandbag.png",
+      "x": 310,
+      "y": 550,
+      "width": 48,
+      "height": 48,
+      "layer": 200,
+      "visible": true
+    },
+    {
+      "id": "barbed_wire_button",
+      "path": "Assets/UI/Towers/BarbedWire.png",
+      "x": 370,
+      "y": 550,
+      "width": 48,
+      "height": 48,
+      "layer": 200,
+      "visible": true
+    },
+    {
+      "id": "frag_button",
+      "path": "Assets/UI/Towers/Frag.png",
+      "x": 430,
+      "y": 550,
+      "width": 48,
+      "height": 48,
+      "layer": 200,
+      "visible": true
+    },
+    {
+      "id": "save_button",
+      "path": "Assets/UI/Buttons/Save.png",
+      "x": 700,
+      "y": 550,
+      "width": 48,
+      "height": 48,
+      "layer": 200,
+      "visible": true
+    },
+    {
+      "id": "store_button",
+      "path": "Assets/UI/Buttons/Store.png",
+      "x": 750,
+      "y": 550,
+      "width": 48,
+      "height": 48,
+      "layer": 200,
+      "visible": true
+    }
+  ],
+
+  "text": [
+    {
+      "id": "cash_text",
+      "value": "Cash: 0",
+      "x": 56,
+      "y": 550,
+      "width": 75,
+      "colorHex": "#000000",
+      "layer": 300
+    },
+    {
+      "id": "lives_text",
+      "value": "Lives: 0",
+      "x": 150,
+      "y": 10,
+      "colorHex": "#FFFFFF",
+      "layer": 300
+    },
+    {
+      "id": "wave_text",
+      "value": "Wave: 0/0",
+      "x": 280,
+      "y": 10,
+      "colorHex": "#FFFFFF",
+      "layer": 300
+    }
+  ],
+
+  "renderOrder": [
+    "support_hud",
+    "hud_surface",
+    "vickers_button",
+    "ngl_button",
+    "special_button",
+    "mg_sas_button",
+    "sniper_sas_button",
+    "sandbag_button",
+    "barbed_wire_button",
+    "frag_button",
+    "save_button",
+    "store_button",
+    "cash_text",
+    "lives_text",
+    "wave_text"
+  ],
+
+  "groups": [
+    {
+      "id": "tower_buttons",
+      "elements": [
+        "vickers_button",
+        "ngl_button",
+        "special_button",
+        "mg_sas_button",
+        "sniper_sas_button",
+        "sandbag_button",
+        "barbed_wire_button",
+        "frag_button"
+      ]
+    },
+    {
+      "id": "top_text",
+      "elements": [
+        "cash_text",
+        "lives_text",
+        "wave_text"
+      ]
+    },
+    {
+      "id": "right_buttons",
+      "elements": [
+        "save_button",
+        "store_button"
+      ]
+    }
+  ]
+}

@@ -23,7 +23,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public static void RenderRectangle(Vector3 position, Vector3 size, Color color)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"RenderBackground: Rendered rectangle at {position} with size {size}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RenderBackground: Rendered rectangle at {position} with size {size}");
         }
         
         /// <summary>
@@ -36,7 +36,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public static void RenderRoundedRectangle(Vector3 position, Vector3 size, Color color, float cornerRadius)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"RenderBackground: Rendered rounded rectangle at {position} with size {size} and corner radius {cornerRadius}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RenderBackground: Rendered rounded rectangle at {position} with size {size} and corner radius {cornerRadius}");
         }
         
         /// <summary>
@@ -50,7 +50,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public static void RenderWithBorder(Vector3 position, Vector3 size, Color backgroundColor, Color borderColor, float borderWidth)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"RenderBackground: Rendered background with border at {position} with size {size}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RenderBackground: Rendered background with border at {position} with size {size}");
         }
         
         /// <summary>
@@ -64,7 +64,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public static void RenderGradient(Vector3 position, Vector3 size, Color startColor, Color endColor, string direction = "vertical")
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"RenderBackground: Rendered gradient background at {position} with size {size} and {direction} direction");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RenderBackground: Rendered gradient background at {position} with size {size} and {direction} direction");
         }
         
         /// <summary>
@@ -78,7 +78,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public static void RenderWithShadow(Vector3 position, Vector3 size, Color color, Vector3 shadowOffset, Color shadowColor)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"RenderBackground: Rendered background with shadow at {position} with size {size}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RenderBackground: Rendered background with shadow at {position} with size {size}");
         }
         
         /// <summary>
@@ -90,7 +90,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public static void RenderCircle(Vector3 center, float radius, Color color)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"RenderBackground: Rendered circle at {center} with radius {radius}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RenderBackground: Rendered circle at {center} with radius {radius}");
         }
         
         /// <summary>
@@ -103,7 +103,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public static void RenderNineSlice(Vector3 position, Vector3 size, string texture, Vector3 borderSize)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"RenderBackground: Rendered nine-slice background at {position} with size {size}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RenderBackground: Rendered nine-slice background at {position} with size {size}");
         }
         
         /// <summary>
@@ -116,7 +116,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public static void RenderTiled(Vector3 position, Vector3 size, string texture, Vector3 tileSize)
         {
             // Placeholder implementation
-            ModernLoggingSystem.Log("INFO", $"RenderBackground: Rendered tiled background at {position} with size {size}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"RenderBackground: Rendered tiled background at {position} with size {size}");
         }
     }
 }

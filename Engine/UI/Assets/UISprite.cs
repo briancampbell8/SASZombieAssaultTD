@@ -50,7 +50,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
         /// </summary>
         public UISprite()
         {
-            Console.WriteLine("UISprite: Created new sprite");
+            System.Diagnostics.Debug.WriteLine("UISprite: Created new sprite");
         }
 
         /// <summary>
@@ -69,11 +69,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
                 _size = size;
                 _sourceRect = sourceRect;
 
-                Console.WriteLine($"UISprite: Created sprite '{name}' with size {size} from path '{path}'");
+                System.Diagnostics.Debug.WriteLine($"UISprite: Created sprite '{name}' with size {size} from path '{path}'");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UISprite: Error creating sprite - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UISprite: Error creating sprite - {ex.Message}");
             }
         }
 
@@ -85,11 +85,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             try
             {
                 _isLoaded = true;
-                Console.WriteLine($"UISprite: Marked sprite '{_name}' as loaded");
+                System.Diagnostics.Debug.WriteLine($"UISprite: Marked sprite '{_name}' as loaded");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UISprite: Error marking sprite as loaded - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UISprite: Error marking sprite as loaded - {ex.Message}");
             }
         }
 
@@ -101,11 +101,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             try
             {
                 _isPreloaded = true;
-                Console.WriteLine($"UISprite: Marked sprite '{_name}' as preloaded");
+                System.Diagnostics.Debug.WriteLine($"UISprite: Marked sprite '{_name}' as preloaded");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UISprite: Error marking sprite as preloaded - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UISprite: Error marking sprite as preloaded - {ex.Message}");
             }
         }
 
@@ -119,11 +119,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
                 _isLoaded = false;
                 _isPreloaded = false;
 
-                Console.WriteLine($"UISprite: Unloaded sprite '{_name}'");
+                System.Diagnostics.Debug.WriteLine($"UISprite: Unloaded sprite '{_name}'");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UISprite: Error unloading sprite - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UISprite: Error unloading sprite - {ex.Message}");
             }
         }
 
@@ -139,7 +139,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UISprite: Error creating string representation - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UISprite: Error creating string representation - {ex.Message}");
                 return "UISprite: Error";
             }
         }

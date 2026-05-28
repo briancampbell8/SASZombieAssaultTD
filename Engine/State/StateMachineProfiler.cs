@@ -201,7 +201,7 @@ namespace SASZombieAssaultTD.Engine.State
             {
                 _stateMetrics.Clear();
                 _operationMetrics.Clear();
-                ModernLoggingSystem.Log("INFO", "StateMachineProfiler: All performance metrics cleared");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineProfiler: All performance metrics cleared");
             }
         }
         

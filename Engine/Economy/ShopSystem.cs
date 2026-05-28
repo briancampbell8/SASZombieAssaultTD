@@ -49,7 +49,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _shopItems = new Dictionary<string, ShopItem>();
             _specialOffers = new List<string>();
             InitializeShopItems();
-            ModernLoggingSystem.Log("INFO", "ShopSystem: Initialized with shop catalog");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "ShopSystem: Initialized with shop catalog");
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace SASZombieAssaultTD.Engine.Economy
                 Category = "Upgrades"
             });
 
-            ModernLoggingSystem.Log("INFO", $"ShopSystem: Initialized {_shopItems.Count} shop items");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Initialized {_shopItems.Count} shop items");
         }
 
         /// <summary>
@@ -149,13 +149,13 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             if (string.IsNullOrEmpty(item.Id))
             {
-                ModernLoggingSystem.Log("WARNING", "ShopSystem: Cannot add shop item without ID");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "ShopSystem: Cannot add shop item without ID");
                 return;
             }
 
             _shopItems[item.Id] = item;
             OnShopUpdated?.Invoke();
-            ModernLoggingSystem.Log("INFO", $"ShopSystem: Added shop item {item.Name} ({item.Id})");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Added shop item {item.Name} ({item.Id})");
         }
 
         /// <summary>
@@ -166,11 +166,11 @@ namespace SASZombieAssaultTD.Engine.Economy
             if (_shopItems.Remove(itemId))
             {
                 OnShopUpdated?.Invoke();
-                ModernLoggingSystem.Log("INFO", $"ShopSystem: Removed shop item {itemId}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Removed shop item {itemId}");
                 return true;
             }
 
-            ModernLoggingSystem.Log("WARNING", $"ShopSystem: Shop item {itemId} not found");
+            Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"ShopSystem: Shop item {itemId} not found");
             return false;
         }
 
@@ -190,13 +190,13 @@ namespace SASZombieAssaultTD.Engine.Economy
             var item = GetShopItem(itemId);
             if (item == null)
             {
-                ModernLoggingSystem.Log("WARNING", $"ShopSystem: Shop item {itemId} not found");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"ShopSystem: Shop item {itemId} not found");
                 return false;
             }
 
             if (!item.IsAvailable)
             {
-                ModernLoggingSystem.Log("WARNING", $"ShopSystem: Shop item {itemId} is not available");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"ShopSystem: Shop item {itemId} is not available");
                 return false;
             }
 
@@ -214,7 +214,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             EconomyManager.Spend(finalCost);
 
             EconomyEvents.TriggerPurchaseCompleted(itemId, item.Name, finalCost, true);
-            ModernLoggingSystem.Log("INFO", $"ShopSystem: Purchased {item.Name} for {finalCost} cash");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Purchased {item.Name} for {finalCost} cash");
             return true;
         }
 
@@ -245,7 +245,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _globalDiscount = System.Math.Max(0.1f, System.Math.Min(1.0f, discountMultiplier));
             OnShopUpdated?.Invoke();
-            ModernLoggingSystem.Log("INFO", $"ShopSystem: Set global discount to {_globalDiscount:F2}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Set global discount to {_globalDiscount:F2}");
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             {
                 _specialOffers.Add(itemId);
                 OnSpecialOffersChanged?.Invoke(new List<string>(_specialOffers));
-                ModernLoggingSystem.Log("INFO", $"ShopSystem: Added special offer {itemId}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Added special offer {itemId}");
             }
         }
 
@@ -269,7 +269,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             if (_specialOffers.Remove(itemId))
             {
                 OnSpecialOffersChanged?.Invoke(new List<string>(_specialOffers));
-                ModernLoggingSystem.Log("INFO", $"ShopSystem: Removed special offer {itemId}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Removed special offer {itemId}");
             }
         }
 

@@ -2,6 +2,7 @@
 File:    AnimationComponent.cs
 Purpose: Core animation component for entities.
 */
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.ECS;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,8 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         private bool _isLooping = true;
         private float _animationTime = 0f;
         private float _animationSpeed = 1f;
+        private object TheContainingType;
+        private object TheContainingMember;
         private readonly Dictionary<string, float> _animationLengths = new()
         {
             { "idle", 1f },
@@ -96,6 +99,8 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
 
         private float Max(float v, float value)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 

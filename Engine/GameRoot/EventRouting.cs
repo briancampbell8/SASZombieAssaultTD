@@ -123,7 +123,7 @@ namespace SASZombieAssaultTD.Engine
                 throw new ArgumentNullException(nameof(handler));
 
             _eventRouter.Subscribe(handler);
-            ModernLoggingSystem.LogInfo($"Subscribed to event of type {typeof(T).Name}");
+            Engine.Diagnostics.DebugLogger.LogInfo($"Subscribed to event of type {typeof(T).Name}");
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace SASZombieAssaultTD.Engine
                 throw new ArgumentNullException(nameof(handler));
 
             _eventRouter.Unsubscribe(handler);
-            ModernLoggingSystem.LogInfo($"Unsubscribed from event of type {typeof(T).Name}");
+            Engine.Diagnostics.DebugLogger.LogInfo($"Unsubscribed from event of type {typeof(T).Name}");
         }
 
         /// <summary>
@@ -153,12 +153,12 @@ namespace SASZombieAssaultTD.Engine
             try
             {
                 _eventRouter.Publish(eventData);
-                ModernLoggingSystem.LogDebug($"Published event of type {typeof(T).Name}");
+                Engine.Diagnostics.DebugLogger.LogDebug($"Published event of type {typeof(T).Name}");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Failed to publish event of type {typeof(T).Name}: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Event publish");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to publish event of type {typeof(T).Name}: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Event publish");
             }
         }
 
@@ -170,12 +170,12 @@ namespace SASZombieAssaultTD.Engine
             try
             {
                 _eventRouter.ProcessQueue();
-                ModernLoggingSystem.LogDebug("Event queue processed successfully");
+                Engine.Diagnostics.DebugLogger.LogDebug("Event queue processed successfully");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"Failed to process event queue: {ex.Message}");
-                ModernLoggingSystem.Exception(ex, "Event queue processing");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to process event queue: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.Exception(ex, "Event queue processing");
             }
         }
 
@@ -185,7 +185,7 @@ namespace SASZombieAssaultTD.Engine
         public void ClearEventSubscriptions()
         {
             _eventRouter.ClearSubscriptions();
-            ModernLoggingSystem.LogInfo("All event subscriptions cleared");
+            Engine.Diagnostics.DebugLogger.LogInfo("All event subscriptions cleared");
         }
 
         /// <summary>

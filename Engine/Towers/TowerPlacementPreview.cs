@@ -97,7 +97,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             _renderer = new PlacementRenderer();
             _validator = new PlacementValidator();
 
-            Console.WriteLine("Tower Placement Preview initialized");
+            System.Diagnostics.Debug.WriteLine("Tower Placement Preview initialized");
         }
 
         /// <summary>
@@ -112,11 +112,11 @@ namespace SASZombieAssaultTD.Engine.Towers
             try
             {
                 _selectedTowerType = towerType;
-                _towerData = TowerDatabase.GetTowerData(towerType.ToString());
+                _towerData = (TowerData)TowerDatabase.GetTowerData(towerType.ToString());
 
                 if (_towerData == null)
                 {
-                    Console.WriteLine($"No tower data found for type: {towerType}");
+                    System.Diagnostics.Debug.WriteLine($"No tower data found for type: {towerType}");
                     return;
                 }
 
@@ -134,11 +134,11 @@ namespace SASZombieAssaultTD.Engine.Towers
                 // Notify of tower selection
                 OnTowerSelected?.Invoke(towerType);
 
-                Console.WriteLine($"Started placement preview for {towerType}");
+                System.Diagnostics.Debug.WriteLine($"Started placement preview for {towerType}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error starting placement preview: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error starting placement preview: {ex.Message}");
                 _isActive = false;
             }
         }
@@ -162,7 +162,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             // Notify of cancellation
             OnPlacementCancelled?.Invoke();
 
-            Console.WriteLine("Stopped placement preview");
+            System.Diagnostics.Debug.WriteLine("Stopped placement preview");
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating placement position: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error updating placement position: {ex.Message}");
             }
         }
 
@@ -239,7 +239,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error attempting tower placement: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error attempting tower placement: {ex.Message}");
                 return false;
             }
         }
@@ -278,7 +278,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error handling placement input: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error handling placement input: {ex.Message}");
             }
         }
 
@@ -295,7 +295,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error rendering placement preview: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error rendering placement preview: {ex.Message}");
             }
         }
 
@@ -313,7 +313,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating placement preview: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error updating placement preview: {ex.Message}");
             }
         }
 
@@ -362,41 +362,31 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// </summary>
         private bool PlaceTower(Vector3Int gridPosition)
         {
-            try
+            // Deduct cost
+            EconomyManager.Spend(_towerData.Cost);
+
+            // Create tower
+            var worldPosition = GridToWorld(gridPosition);
+            var tower = TowerFactory.CreateTower(_selectedTowerType.ToString(), worldPosition);
+
+            if (tower == null)
             {
-                // Deduct cost
-                EconomyManager.Spend(_towerData.Cost);
-
-                // Create tower
-                var worldPosition = GridToWorld(gridPosition);
-                var tower = TowerFactory.CreateTower(_selectedTowerType.ToString(), worldPosition);
-
-                if (tower == null)
-                {
-                    // Refund cost on failure
-                    EconomyManager.Earn(_towerData.Cost);
-                    return false;
-                }
-
-                // Mark grid as occupied
-                NavigationGrid.Instance.SetOccupied(gridPosition.X, gridPosition.Y, _towerData.GridSize, true);
-
-                // Add tower to game world
-                GameWorld.Instance.AddEntity(tower);
-
-                // Add to tower registry
-                TowerRegistry.AddTower((Tower)tower);
-
-                Console.WriteLine($"Successfully placed {_selectedTowerType} at {gridPosition}");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error placing tower: {ex.Message}");
                 // Refund cost on failure
                 EconomyManager.Earn(_towerData.Cost);
                 return false;
             }
+
+            // Mark grid as occupied
+            NavigationGrid.Instance.SetOccupied(gridPosition.X, gridPosition.Y, _towerData.GridSize, true);
+
+            // Add tower to game world
+            GameWorld.Instance.AddEntity(tower);
+
+            // Add to tower registry
+            TowerRegistry.Instance.AddTower((Tower)tower);
+
+            System.Diagnostics.Debug.WriteLine($"Successfully placed {_selectedTowerType} at {gridPosition}");
+            return true;
         }
 
         /// <summary>

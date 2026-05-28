@@ -22,7 +22,7 @@ namespace SASZombieAssaultTD.Engine.Core
     /// </summary>
     public readonly struct Size : IEquatable<Size>
     {
-        #region Properties
+        ///  Properties
         
         /// <summary>Width component of the size.</summary>
         public readonly float Width;
@@ -63,9 +63,9 @@ namespace SASZombieAssaultTD.Engine.Core
         /// <summary>Minimum dimension (width or height).</summary>
         public float MinDimension => System.Math.Min(Width, Height);
         
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
         
         /// <summary>
         /// Creates a new size with specified width and height.
@@ -94,9 +94,9 @@ namespace SASZombieAssaultTD.Engine.Core
             Height = other.Height;
         }
         
-        #endregion
+        /// 
 
-        #region Static Factory Methods
+        ///  Static Factory Methods
         
         /// <summary>
         /// Creates a square size.
@@ -164,9 +164,9 @@ namespace SASZombieAssaultTD.Engine.Core
             );
         }
         
-        #endregion
+        /// 
 
-        #region Size Operations
+        ///  Size Operations
         
         /// <summary>
         /// Scales this size by the specified factor.
@@ -345,9 +345,9 @@ namespace SASZombieAssaultTD.Engine.Core
             }
         }
         
-        #endregion
+        /// 
 
-        #region Utility Methods
+        ///  Utility Methods
         
         /// <summary>
         /// Gets the scale factor needed to fit this size within the specified bounds.
@@ -417,9 +417,9 @@ namespace SASZombieAssaultTD.Engine.Core
                 return "Height";
         }
         
-        #endregion
+        /// 
 
-        #region Equality and Hashing
+        ///  Equality and Hashing
         
         public bool Equals(Size other)
         {
@@ -431,9 +431,9 @@ namespace SASZombieAssaultTD.Engine.Core
         
         public override int GetHashCode() => HashCode.Combine(Width, Height);
         
-        #endregion
+        /// 
 
-        #region Operators
+        ///  Operators
         
         public static bool operator ==(Size left, Size right) => left.Equals(right);
         public static bool operator !=(Size left, Size right) => !left.Equals(right);
@@ -444,9 +444,9 @@ namespace SASZombieAssaultTD.Engine.Core
         public static Size operator *(float scale, Size size) => size.Scale(scale);
         public static Size operator /(Size size, float scale) => new Size(size.Width / scale, size.Height / scale);
         
-        #endregion
+        /// 
 
-        #region String Representation
+        ///  String Representation
         
         public override string ToString()
         {
@@ -462,6 +462,6 @@ namespace SASZombieAssaultTD.Engine.Core
             return $"{Width:F0}x{Height:F0}";
         }
         
-        #endregion
+        /// 
     }
 }

@@ -41,14 +41,14 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             AttackTime = 0f;
             IsAttacking = true;
-            ModernLoggingSystem.Log("DEBUG", $"AttackState: Entering attack state with duration {AttackDuration:F2}s");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AttackState: Entering attack state with duration {AttackDuration:F2}s");
         }
 
         public void Exit()
         {
             IsAttacking = false;
             AttackDamage = 0f;
-            ModernLoggingSystem.Log("DEBUG", $"AttackState: Exiting attack state after {AttackTime:F2}s");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AttackState: Exiting attack state after {AttackTime:F2}s");
         }
 
         public void Update(float deltaTime, float timeInState)
@@ -69,19 +69,19 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             if (_jumpState.IsJumping)
             {
-                ModernLoggingSystem.Log("DEBUG", "AttackState: Transition condition met for JumpState");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "AttackState: Transition condition met for JumpState");
                 return _jumpState;
             }
 
             if (_moveState.IsMoving)
             {
-                ModernLoggingSystem.Log("DEBUG", "AttackState: Transition condition met for MoveState");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "AttackState: Transition condition met for MoveState");
                 return _moveState;
             }
 
             if (AttackTime >= AttackDuration)
             {
-                ModernLoggingSystem.Log("DEBUG", "AttackState: Transition condition met for IdleState (attack completed)");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "AttackState: Transition condition met for IdleState (attack completed)");
                 return _idleState;
             }
 

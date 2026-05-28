@@ -46,21 +46,21 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 if (_isInitialized)
                 {
-                    Console.WriteLine("UIRoot: Already initialized");
+                    System.Diagnostics.Debug.WriteLine("UIRoot: Already initialized");
                     return;
                 }
 
-                Console.WriteLine("UIRoot: Initializing UI system");
+                System.Diagnostics.Debug.WriteLine("UIRoot: Initializing UI system");
 
                 _elements.Clear();
                 SetNeedsLayoutUpdate(true);
                 _isInitialized = true;
 
-                Console.WriteLine("UIRoot: UI system initialized successfully");
+                System.Diagnostics.Debug.WriteLine("UIRoot: UI system initialized successfully");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRoot: Error during initialization - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRoot: Error during initialization - {ex.Message}");
                 throw;
             }
         }
@@ -75,7 +75,7 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 if (!_isInitialized)
                 {
-                    Console.WriteLine("UIRoot: Cannot update - not initialized");
+                    System.Diagnostics.Debug.WriteLine("UIRoot: Cannot update - not initialized");
                     return;
                 }
 
@@ -95,11 +95,11 @@ namespace SASZombieAssaultTD.Engine.UI
                     }
                 }
 
-                Console.WriteLine($"UIRoot: Updated {_elements.Count} UI elements");
+                System.Diagnostics.Debug.WriteLine($"UIRoot: Updated {_elements.Count} UI elements");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRoot: Error during update - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRoot: Error during update - {ex.Message}");
             }
         }
 
@@ -112,7 +112,7 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 if (!_isInitialized)
                 {
-                    Console.WriteLine("UIRoot: Cannot render - not initialized");
+                    System.Diagnostics.Debug.WriteLine("UIRoot: Cannot render - not initialized");
                     return;
                 }
 
@@ -128,11 +128,11 @@ namespace SASZombieAssaultTD.Engine.UI
                     _elements[i].Render();
                 }
 
-                Console.WriteLine($"UIRoot: Rendered {_elements.Count} UI elements");
+                System.Diagnostics.Debug.WriteLine($"UIRoot: Rendered {_elements.Count} UI elements");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRoot: Error during render - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRoot: Error during render - {ex.Message}");
             }
         }
 
@@ -146,13 +146,13 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIRoot: Cannot add null element");
+                    System.Diagnostics.Debug.WriteLine("UIRoot: Cannot add null element");
                     return;
                 }
 
                 if (_elements.Contains(element))
                 {
-                    Console.WriteLine("UIRoot: Element already exists in UI root");
+                    System.Diagnostics.Debug.WriteLine("UIRoot: Element already exists in UI root");
                     return;
                 }
 
@@ -160,11 +160,11 @@ namespace SASZombieAssaultTD.Engine.UI
                 element.Parent = this;
                 SetNeedsLayoutUpdate(true);
 
-                Console.WriteLine($"UIRoot: Added UI element, total: {_elements.Count}");
+                System.Diagnostics.Debug.WriteLine($"UIRoot: Added UI element, total: {_elements.Count}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRoot: Error adding element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRoot: Error adding element - {ex.Message}");
             }
         }
 
@@ -178,7 +178,7 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 if (element == null)
                 {
-                    Console.WriteLine("UIRoot: Cannot remove null element");
+                    System.Diagnostics.Debug.WriteLine("UIRoot: Cannot remove null element");
                     return;
                 }
 
@@ -186,16 +186,16 @@ namespace SASZombieAssaultTD.Engine.UI
                 {
                     element.Parent = null;
                     SetNeedsLayoutUpdate(true);
-                    Console.WriteLine($"UIRoot: Removed UI element, remaining: {_elements.Count}");
+                    System.Diagnostics.Debug.WriteLine($"UIRoot: Removed UI element, remaining: {_elements.Count}");
                 }
                 else
                 {
-                    Console.WriteLine("UIRoot: Element not found in UI root");
+                    System.Diagnostics.Debug.WriteLine("UIRoot: Element not found in UI root");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRoot: Error removing element - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRoot: Error removing element - {ex.Message}");
             }
         }
 
@@ -206,7 +206,7 @@ namespace SASZombieAssaultTD.Engine.UI
         {
             try
             {
-                Console.WriteLine("UIRoot: Updating UI layouts");
+                System.Diagnostics.Debug.WriteLine("UIRoot: Updating UI layouts");
 
                 foreach (var element in _elements)
                 {
@@ -214,11 +214,11 @@ namespace SASZombieAssaultTD.Engine.UI
                 }
 
                 SetNeedsLayoutUpdate(false);
-                Console.WriteLine("UIRoot: Layout update completed");
+                System.Diagnostics.Debug.WriteLine("UIRoot: Layout update completed");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRoot: Error updating layouts - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRoot: Error updating layouts - {ex.Message}");
             }
         }
 
@@ -231,21 +231,21 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 if (!_isInitialized)
                 {
-                    Console.WriteLine("UIRoot: Already shut down");
+                    System.Diagnostics.Debug.WriteLine("UIRoot: Already shut down");
                     return;
                 }
 
-                Console.WriteLine("UIRoot: Shutting down UI system");
+                System.Diagnostics.Debug.WriteLine("UIRoot: Shutting down UI system");
 
                 _elements.Clear();
                 SetNeedsLayoutUpdate(false);
                 _isInitialized = false;
 
-                Console.WriteLine("UIRoot: UI system shut down successfully");
+                System.Diagnostics.Debug.WriteLine("UIRoot: UI system shut down successfully");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIRoot: Error during shutdown - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIRoot: Error during shutdown - {ex.Message}");
             }
         }
     }

@@ -138,7 +138,7 @@ namespace SASZombieAssaultTD.Engine.ECS
         public static void LogWorldState(ECSWorld ecsWorld, string logLevel = "INFO")
         {
             var debugInfo = GetWorldDebugInfo(ecsWorld);
-            ModernLoggingSystem.Log(logLevel, debugInfo);
+            Engine.Diagnostics.DebugLogger.LogDebug(logLevel, debugInfo);
         }
 
         /// <summary>

@@ -104,7 +104,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             _droppedFrames = 0;
 
             _frameTimer.Start();
-            ModernLoggingSystem.Log("INFO", $"FramePacer: Initialized with target FPS {_targetFPS} (target frame time: {_targetFrameTime:F2}ms)");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"FramePacer: Initialized with target FPS {_targetFPS} (target frame time: {_targetFrameTime:F2}ms)");
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             _minFrameTime = float.MaxValue;
             _droppedFrames = 0;
 
-            ModernLoggingSystem.Log("INFO", "FramePacer: Reset statistics");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "FramePacer: Reset statistics");
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             {
                 _droppedFrames++;
                 OnFrameDropped?.Invoke(_droppedFrames);
-                ModernLoggingSystem.Log("DEBUG", $"FramePacer: Frame dropped (time: {_lastFrameTime:F2}ms, target: {_targetFrameTime:F2}ms)");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"FramePacer: Frame dropped (time: {_lastFrameTime:F2}ms, target: {_targetFrameTime:F2}ms)");
             }
 
             // Update average FPS every 60 frames

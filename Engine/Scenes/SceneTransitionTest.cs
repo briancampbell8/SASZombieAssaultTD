@@ -41,18 +41,18 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (sceneManager == null)
             {
-                ModernLoggingSystem.Log("ERROR", "SceneTransitionTest: SceneManager is null");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "SceneTransitionTest: SceneManager is null");
                 return;
             }
 
-            ModernLoggingSystem.Log("INFO", "SceneTransitionTest: Starting basic transition test");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneTransitionTest: Starting basic transition test");
 
             // Test 1: MainMenu → Game
             var mainMenuScene = new MainMenuScene();
             var gameScene = new GameScene();
             var pauseScene = new PauseScene();
 
-            ModernLoggingSystem.Log("INFO", "SceneTransitionTest: Testing MainMenu → Game");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneTransitionTest: Testing MainMenu → Game");
             sceneManager.SetScene(mainMenuScene.GetType().Name);
             VerifySceneState(sceneManager, typeof(MainMenuScene), GameStateType.MainMenu);
 
@@ -62,18 +62,18 @@ namespace SASZombieAssaultTD.Engine.Scenes
             VerifySceneState(sceneManager, typeof(GameScene), GameStateType.Gameplay);
 
             // Test 2: Game → Pause
-            ModernLoggingSystem.Log("INFO", "SceneTransitionTest: Testing Game → Pause");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneTransitionTest: Testing Game → Pause");
             sceneManager.QueueScene(pauseScene.GetType().Name);
             sceneManager.Update(0.016f);
             VerifySceneState(sceneManager, typeof(PauseScene), GameStateType.Paused);
 
             // Test 3: Pause → Game
-            ModernLoggingSystem.Log("INFO", "SceneTransitionTest: Testing Pause → Game");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneTransitionTest: Testing Pause → Game");
             sceneManager.QueueScene(gameScene.GetType().Name);
             sceneManager.Update(0.016f);
             VerifySceneState(sceneManager, typeof(GameScene), GameStateType.Gameplay);
 
-            ModernLoggingSystem.Log("INFO", "SceneTransitionTest: Basic transition test completed successfully");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneTransitionTest: Basic transition test completed successfully");
         }
 
         /// <summary>
@@ -84,15 +84,15 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (sceneManager == null)
             {
-                ModernLoggingSystem.Log("ERROR", "SceneTransitionTest: SceneManager is null");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "SceneTransitionTest: SceneManager is null");
                 return;
             }
 
-            ModernLoggingSystem.Log("INFO", "SceneTransitionTest: Starting loading transition test");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneTransitionTest: Starting loading transition test");
 
             var loadingScene = new LoadingScene(new GameScene(), 1.0f);
 
-            ModernLoggingSystem.Log("INFO", "SceneTransitionTest: Testing LoadingScene → GameScene");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneTransitionTest: Testing LoadingScene → GameScene");
             sceneManager.QueueScene(loadingScene.GetType().Name);
             VerifySceneState(sceneManager, typeof(LoadingScene), GameStateType.Boot);
 
@@ -109,7 +109,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             sceneManager.Update(0.016f); // Trigger transition
             VerifySceneState(sceneManager, typeof(GameScene), GameStateType.Gameplay);
 
-            ModernLoggingSystem.Log("INFO", "SceneTransitionTest: Loading transition test completed successfully");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneTransitionTest: Loading transition test completed successfully");
         }
 
         /// <summary>
@@ -120,11 +120,11 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (sceneManager == null)
             {
-                ModernLoggingSystem.Log("ERROR", "SceneTransitionTest: SceneManager is null");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "SceneTransitionTest: SceneManager is null");
                 return;
             }
 
-            ModernLoggingSystem.Log("INFO", "SceneTransitionTest: Testing active scene only updates");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneTransitionTest: Testing active scene only updates");
 
             var gameScene = new GameScene();
             var menuScene = new MainMenuScene();
@@ -135,7 +135,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             // Verify only game scene is active
             if (sceneManager.ActiveScene != gameScene)
             {
-                ModernLoggingSystem.Log("ERROR", "SceneTransitionTest: Active scene is not the expected game scene");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "SceneTransitionTest: Active scene is not the expected game scene");
                 return;
             }
 
@@ -148,11 +148,11 @@ namespace SASZombieAssaultTD.Engine.Scenes
             // Game scene should still be active and receiving updates
             if (sceneManager.ActiveScene != gameScene)
             {
-                ModernLoggingSystem.Log("ERROR", "SceneTransitionTest: Active scene changed before transition processing");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "SceneTransitionTest: Active scene changed before transition processing");
                 return;
             }
 
-            ModernLoggingSystem.Log("INFO", "SceneTransitionTest: Active scene only test completed successfully");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneTransitionTest: Active scene only test completed successfully");
         }
 
         /// <summary>
@@ -165,17 +165,17 @@ namespace SASZombieAssaultTD.Engine.Scenes
         {
             if (sceneManager.ActiveScene?.GetType() != expectedSceneType)
             {
-                ModernLoggingSystem.Log("ERROR", $"SceneTransitionTest: Expected scene {expectedSceneType.Name}, but got {sceneManager.ActiveScene?.GetType().Name}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneTransitionTest: Expected scene {expectedSceneType.Name}, but got {sceneManager.ActiveScene?.GetType().Name}");
                 return;
             }
 
             if (sceneManager.GameStateType != expectedGameStateType.ToString())
             {
-                ModernLoggingSystem.Log("ERROR", $"SceneTransitionTest: Expected game state {expectedGameStateType}, but got {sceneManager.GameStateType}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneTransitionTest: Expected game state {expectedGameStateType}, but got {sceneManager.GameStateType}");
                 return;
             }
 
-            ModernLoggingSystem.Log("INFO", $"SceneTransitionTest: Verified scene {expectedSceneType.Name} with state {expectedGameStateType}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneTransitionTest: Verified scene {expectedSceneType.Name} with state {expectedGameStateType}");
         }
 
         /// <summary>
@@ -184,13 +184,13 @@ namespace SASZombieAssaultTD.Engine.Scenes
         /// <param name="sceneManager">The scene manager to test.</param>
         public static void RunAllTests(SceneManager sceneManager)
         {
-            ModernLoggingSystem.Log("INFO", "SceneTransitionTest: Starting comprehensive test suite");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneTransitionTest: Starting comprehensive test suite");
 
             TestBasicTransitions(sceneManager);
             TestLoadingTransitions(sceneManager);
             TestActiveSceneOnly(sceneManager);
 
-            ModernLoggingSystem.Log("INFO", "SceneTransitionTest: All tests completed successfully");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneTransitionTest: All tests completed successfully");
         }
     }
 }

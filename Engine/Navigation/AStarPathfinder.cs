@@ -57,7 +57,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
             _closedSet = new HashSet<NavigationCell>();
             _pathBuffer = new List<Vector3>();
 
-            ModernLoggingSystem.Log("INFO", $"AStarPathfinder: Initialized with diagonal movement {allowDiagonal}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"AStarPathfinder: Initialized with diagonal movement {allowDiagonal}");
         }
 
         /// <summary>
@@ -134,12 +134,12 @@ namespace SASZombieAssaultTD.Engine.Navigation
                 // Performance safeguard - prevent infinite loops
                 if (_nodesExplored > _grid.TotalCells)
                 {
-                    ModernLoggingSystem.Log("WARNING", $"AStarPathfinder: Pathfinding exceeded node limit ({_grid.TotalCells})");
+                    Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AStarPathfinder: Pathfinding exceeded node limit ({_grid.TotalCells})");
                     break;
                 }
             }
 
-            ModernLoggingSystem.Log("INFO", $"AStarPathfinder: No path found after exploring {_nodesExplored} nodes");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"AStarPathfinder: No path found after exploring {_nodesExplored} nodes");
             return new List<Vector3>();
         }
 
@@ -149,7 +149,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
 
             if (!_grid.IsInBounds(startGrid) || !_grid.IsInBounds(endGrid))
             {
-                ModernLoggingSystem.Log("WARNING", $"AStarPathfinder: Start or end position out of bounds - Start: {startGrid}, End: {endGrid}");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AStarPathfinder: Start or end position out of bounds - Start: {startGrid}, End: {endGrid}");
                 return false;
             }
 
@@ -158,7 +158,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
 
             if (startCellValid == null || endCellValid == null)
             {
-                ModernLoggingSystem.Log("WARNING", $"AStarPathfinder: Start or end position is not walkable - Start: {startGrid}, End: {endGrid}");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AStarPathfinder: Start or end position is not walkable - Start: {startGrid}, End: {endGrid}");
                 return false;
             }
 
@@ -304,7 +304,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
             // Optimize path by removing unnecessary waypoints
             OptimizePath();
 
-            ModernLoggingSystem.Log("DEBUG", $"AStarPathfinder: Found path with {_pathLength} waypoints after exploring {_nodesExplored} nodes");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AStarPathfinder: Found path with {_pathLength} waypoints after exploring {_nodesExplored} nodes");
             return new List<Vector3>(_pathBuffer);
         }
 
@@ -490,11 +490,33 @@ namespace SASZombieAssaultTD.Engine.Navigation
         {
             return item.HeapIndex < _currentItemCount;
         }
-
         public void Clear()
         {
             _currentItemCount = 0;
         }
+
+        // Local helper to safely prioritize nodes based on pathfinding cost values
+        private int CompareCells(NavigationCell a, NavigationCell b)
+        {
+            // Safely convert the object fields into floats for comparison
+            float aF = Convert.ToSingle(a.FCost);
+            float bF = Convert.ToSingle(b.FCost);
+
+            if (aF < bF) return -1;
+            if (aF > bF) return 1;
+
+            // Tie-breaker conversion for HCost
+            float aH = Convert.ToSingle(a.HCost);
+            float bH = Convert.ToSingle(b.HCost);
+
+            if (aH < bH) return -1;
+            if (aH > bH) return 1;
+
+            return 0;
+        }
+
+
+
 
         private void SortUp(NavigationCell item)
         {
@@ -502,7 +524,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
             while (true)
             {
                 var parentItem = _items[parentIndex];
-                if (item.CompareTo(parentItem, StringComparison.Ordinal) < 0) // Added StringComparison.Ordinal
+                if (CompareCells(item, parentItem) < 0) // Fixed: Uses the clean cell comparison helper
                 {
                     Swap(item, parentItem);
                 }
@@ -527,7 +549,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
                     swapIndex = childIndexLeft;
                     if (childIndexRight < _currentItemCount)
                     {
-                        if (_items[childIndexLeft].CompareTo(_items[childIndexRight], StringComparison.Ordinal) > 0) // Added StringComparison.Ordinal
+                        if (CompareCells(_items[childIndexLeft], _items[childIndexRight]) > 0) // Fixed: Uses the helper
                         {
                             swapIndex = childIndexRight;
                         }
@@ -537,9 +559,67 @@ namespace SASZombieAssaultTD.Engine.Navigation
                 if (swapIndex == 0)
                     return;
 
-                Swap(item, _items[swapIndex]);
+                // If item has higher cost (lower priority) than the chosen child, swap them down
+                if (CompareCells(item, _items[swapIndex]) > 0)
+                {
+                    Swap(item, _items[swapIndex]);
+                }
+                else
+                {
+                    return;
+                }
             }
         }
+
+        //public void Clear()
+        //{
+        //    _currentItemCount = 0;
+        //}
+
+        //private void SortUp(NavigationCell item)
+        //{
+        //    var parentIndex = (item.HeapIndex - 1) / 2;
+        //    while (true)
+        //    {
+        //        var parentItem = _items[parentIndex];
+        //        if (item.CompareTo(parentItem, StringComparison.Ordinal) < 0) // Added StringComparison.Ordinal
+        //        {
+        //            Swap(item, parentItem);
+        //        }
+        //        else
+        //        {
+        //            break;
+        //        }
+        //        parentIndex = (item.HeapIndex - 1) / 2;
+        //    }
+        //}
+
+        //private void SortDown(NavigationCell item)
+        //{
+        //    while (true)
+        //    {
+        //        var childIndexLeft = item.HeapIndex * 2 + 1;
+        //        var childIndexRight = item.HeapIndex * 2 + 2;
+        //        var swapIndex = 0;
+
+        //        if (childIndexLeft < _currentItemCount)
+        //        {
+        //            swapIndex = childIndexLeft;
+        //            if (childIndexRight < _currentItemCount)
+        //            {
+        //                if (_items[childIndexLeft].CompareTo(_items[childIndexRight], StringComparison.Ordinal) > 0) // Added StringComparison.Ordinal
+        //                {
+        //                    swapIndex = childIndexRight;
+        //                }
+        //            }
+        //        }
+
+        //        if (swapIndex == 0)
+        //            return;
+
+        //        Swap(item, _items[swapIndex]);
+        //    }
+        //}
 
         private void Swap(NavigationCell itemA, NavigationCell itemB)
         {

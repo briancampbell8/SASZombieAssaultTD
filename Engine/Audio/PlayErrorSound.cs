@@ -19,7 +19,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void Play()
         {
             PlaySound.Play("error_generic");
-            ModernLoggingSystem.Log("INFO", "PlayErrorSound: Played generic error sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlayErrorSound: Played generic error sound");
         }
         
         /// <summary>
@@ -28,7 +28,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayInsufficientFunds()
         {
             PlaySound.Play("error_insufficient_funds");
-            ModernLoggingSystem.Log("INFO", "PlayErrorSound: Played insufficient funds error sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlayErrorSound: Played insufficient funds error sound");
         }
         
         /// <summary>
@@ -37,7 +37,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayInvalidPlacement()
         {
             PlaySound.Play("error_invalid_placement");
-            ModernLoggingSystem.Log("INFO", "PlayErrorSound: Played invalid placement error sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlayErrorSound: Played invalid placement error sound");
         }
         
         /// <summary>
@@ -46,7 +46,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayInsufficientResources()
         {
             PlaySound.Play("error_insufficient_resources");
-            ModernLoggingSystem.Log("INFO", "PlayErrorSound: Played insufficient resources error sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlayErrorSound: Played insufficient resources error sound");
         }
         
         /// <summary>
@@ -55,7 +55,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayInvalidAction()
         {
             PlaySound.Play("error_invalid_action");
-            ModernLoggingSystem.Log("INFO", "PlayErrorSound: Played invalid action error sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlayErrorSound: Played invalid action error sound");
         }
         
         /// <summary>
@@ -64,7 +64,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayUpgradeUnavailable()
         {
             PlaySound.Play("error_upgrade_unavailable");
-            ModernLoggingSystem.Log("INFO", "PlayErrorSound: Played upgrade unavailable error sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlayErrorSound: Played upgrade unavailable error sound");
         }
         
         /// <summary>
@@ -73,7 +73,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayTowerLimitReached()
         {
             PlaySound.Play("error_tower_limit");
-            ModernLoggingSystem.Log("INFO", "PlayErrorSound: Played tower limit error sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlayErrorSound: Played tower limit error sound");
         }
         
         /// <summary>
@@ -82,7 +82,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayCooldownNotReady()
         {
             PlaySound.Play("error_cooldown");
-            ModernLoggingSystem.Log("INFO", "PlayErrorSound: Played cooldown error sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlayErrorSound: Played cooldown error sound");
         }
         
         /// <summary>
@@ -92,7 +92,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void Play(string errorType)
         {
             PlaySound.Play($"error_{errorType}");
-            ModernLoggingSystem.Log("INFO", $"PlayErrorSound: Played error sound for '{errorType}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlayErrorSound: Played error sound for '{errorType}'");
         }
     }
 }

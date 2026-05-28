@@ -94,7 +94,7 @@ namespace SASZombieAssaultTD.Engine.Save
             InitializeSaveDirectory();
             LoadAllSaveSlots();
 
-            ModernLoggingSystem.Log("INFO", $"SaveSystem initialized with directory '{_saveDirectory}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SaveSystem initialized with directory '{_saveDirectory}'");
         }
 
         /// <summary>
@@ -402,12 +402,14 @@ namespace SASZombieAssaultTD.Engine.Save
 
             save.Towers = new TowerSaveData
             {
-                TowerCount = towerUpgradeManager.GetUpgrades("default")?.Count<object>() ?? 0,
-                TotalValue = towerUpgradeManager.GetUpgrades("default")?.Sum<object>(upgrade => (decimal)upgrade.Value) ?? 0,
-                TowerTypes = towerUpgradeManager.GetUpgrades("default")?.Select<object, string>(upgrade => upgrade.Type).ToList() ?? new List<string>(),
+                // GetUpgrades returns an int?, so we just grab the value directly
+                TowerCount = towerUpgradeManager.GetUpgrades("default") ?? 0,
+                TotalValue = 0, // Fallback placeholder since there is no collection to sum
+                TowerTypes = new List<string>(), // Fallback placeholder since there is no collection to select from
                 TowerPositions = new Dictionary<string, Vector3>(),
                 TowerLevels = new Dictionary<string, int>()
             };
+
         }
 
         private bool IsValidSlot(int slot) => slot >= 0 && slot <= 9;
@@ -435,13 +437,13 @@ namespace SASZombieAssaultTD.Engine.Save
             }
         }
 
-        private void LogInfo(string message) => ModernLoggingSystem.Log("INFO", $"SaveSystem: {message}");
+        private void LogInfo(string message) => Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SaveSystem: {message}");
 
-        private void LogWarning(string message) => ModernLoggingSystem.Log("WARNING", $"SaveSystem: {message}");
+        private void LogWarning(string message) => Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"SaveSystem: {message}");
 
         private void HandleError(string context, Exception ex)
         {
-            ModernLoggingSystem.Log("ERROR", $"SaveSystem: {context} - {ex.Message}");
+            Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SaveSystem: {context} - {ex.Message}");
             OnError?.Invoke(context, ex);
         }
     }

@@ -80,7 +80,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             _rangeSprite = (Sprite)SpriteCache.GetSprite("range_circle");
 
             _isInitialized = true;
-            Console.WriteLine("Placement Renderer initialized");
+            System.Diagnostics.Debug.WriteLine("Placement Renderer initialized");
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace SASZombieAssaultTD.Engine.Towers
         {
             if (towerData == null)
             {
-                Console.WriteLine("Tower data is null");
+                System.Diagnostics.Debug.WriteLine("Tower data is null");
                 return;
             }
 
@@ -103,7 +103,7 @@ namespace SASZombieAssaultTD.Engine.Towers
                 _towerSprite = (Sprite)SpriteCache.GetSprite(towerData.PreviewSprite);
             }
 
-            Console.WriteLine($"Placement renderer initialized for {towerData.Type}");
+            System.Diagnostics.Debug.WriteLine($"Placement renderer initialized for {towerData.Type}");
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error rendering placement preview: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error rendering placement preview: {ex.Message}");
             }
         }
 
@@ -303,6 +303,7 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// <summary>
         /// Render tower preview.
         /// </summary>
+        /// 
         private void RenderTowerPreview()
         {
             if (_towerSprite == null) return;
@@ -316,11 +317,10 @@ namespace SASZombieAssaultTD.Engine.Towers
             var cellSize = grid?.CellSize ?? 1f;
             var towerX = _currentWorldPosition.X + (_towerData.GridSize.X * cellSize / 2f);
             var towerY = _currentWorldPosition.Y + (_towerData.GridSize.Y * cellSize / 2f);
-            var towerPos = new Vector3(towerX, towerY, 0);
 
-            // Add subtle hover effect
+            // Add subtle hover effect directly into the vector creation
             var hover = MathF.Sin(_pulseTime * 2f) * 0.05f;
-            towerPos.Y += hover;
+            var towerPos = new Vector3(towerX, towerY + hover, 0);
 
             // Render tower sprite - ensure size is a Vector3
             RenderSystem.DrawSprite(_towerSprite, towerPos, _towerData.Size.ToVector3(), finalColor);
@@ -328,6 +328,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             // Render tower base
             RenderTowerBase(towerPos, finalColor);
         }
+
+       
+
 
         /// <summary>
         /// Render tower base/foundation.

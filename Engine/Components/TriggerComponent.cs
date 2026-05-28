@@ -17,7 +17,7 @@ namespace SASZombieAssaultTD.Engine.Components
     /// </summary>
     public class TriggerComponent
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Whether this entity generates trigger events.
@@ -61,9 +61,9 @@ namespace SASZombieAssaultTD.Engine.Components
         /// </summary>
         public int TriggerLayerMask { get; set; } = -1; // Trigger with all layers by default
 
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
 
         /// <summary>
         /// Creates a new TriggerComponent with default values.
@@ -104,9 +104,9 @@ namespace SASZombieAssaultTD.Engine.Components
             Enabled = enabled;
         }
 
-        #endregion
+        /// 
 
-        #region Methods
+        ///  Methods
 
         /// <summary>
         /// Checks if a specific entity has already triggered this component.
@@ -194,7 +194,7 @@ namespace SASZombieAssaultTD.Engine.Components
             return $"TriggerComponent(Radius: {TriggerRadius}, Once: {TriggerOnce}, Triggered: {TriggeredEntities.Count}, Enabled: {Enabled})";
         }
 
-        #endregion
+        /// 
     }
 }
 

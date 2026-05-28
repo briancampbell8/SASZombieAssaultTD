@@ -10,6 +10,7 @@ Discover method returns empty list on error and logs details.
 
 using SASZombieAssaultTD.Engine.Assets;
 using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,6 +22,9 @@ namespace SASZombieAssaultTD.Engine.Resources
     /// </summary>
     public sealed class RSDiscovery
     {
+        private object TheType;
+        private object TheMember;
+
         /// <summary>
         /// Scans the root directory and returns discovered resources.
         /// Returns empty list on error; logs error details.
@@ -44,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("Error", $"[Assets] Failed to enumerate files under '{root}': {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("Error", $"[Assets] Failed to enumerate files under '{root}': {ex.Message}");
                 return results;
             }
 
@@ -70,7 +74,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                     bool isValid = ValidateMetadata(metadata);
                     if (!isValid)
                     {
-                        ModernLoggingSystem.Log("Warn", $"[Assets] Invalid metadata for {metadata.Key}: Type={metadata.Type}, Format={metadata.Format ?? "unknown"}");
+                        Engine.Diagnostics.DebugLogger.LogDebug("Warn", $"[Assets] Invalid metadata for {metadata.Key}: Type={metadata.Type}, Format={metadata.Format ?? "unknown"}");
                         continue;
                     }
 
@@ -83,7 +87,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 }
                 catch (Exception ex)
                 {
-                    ModernLoggingSystem.Log("Error", $"[Assets] Failed to process file '{file}': {ex.Message}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("Error", $"[Assets] Failed to process file '{file}': {ex.Message}");
                     continue;
                 }
             }
@@ -130,6 +134,8 @@ namespace SASZombieAssaultTD.Engine.Resources
 
         internal IReadOnlyList<DiscoveredResource> Discover(AssetLoadContext discoveryContext)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
     }

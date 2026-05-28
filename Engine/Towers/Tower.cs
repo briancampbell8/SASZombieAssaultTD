@@ -19,7 +19,7 @@ namespace SASZombieAssaultTD.Engine.Towers
     /// </summary>
     public class Tower
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Unique identifier for this tower instance.
@@ -74,7 +74,12 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// <summary>
         /// Current range based on upgrade level.
         /// </summary>
-        public double Range => Data?.Range ?? 0.0;
+        public float Range { get; private set; }
+        internal void SetRange(float value)
+        {
+            Range = value;
+        }
+
 
         /// <summary>
         /// Total kills by this tower.
@@ -149,16 +154,29 @@ namespace SASZombieAssaultTD.Engine.Towers
         /// <summary>
         /// Fire rate of the tower.
         /// </summary>
-        public float FireRate => Data?.FireRate ?? 1.0f;
+        /// 
+        
+
+        public float FireRate { get; private set; }
+        /// <summary>
+        /// Sets the tower's fire rate during save restoration.
+        /// </summary>
+        /// <param name="value">Fire rate value from save data.</param>
+        internal void SetFireRate(float value)
+        {
+            FireRate = value;
+        }
+
+
 
         /// <summary>
         /// Total damage dealt by this tower.
         /// </summary>
         public float DamageDealt { get; set; } = 0.0f;
 
-        #endregion
+        /// 
 
-        #region Notifications
+        ///  Notifications
 
         /// <summary>
         /// Notification hook called when a projectile is fired from this tower.
@@ -178,9 +196,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             // Default: do nothing
         }
 
-        #endregion
+        /// 
 
-        #region Constructor
+        ///  Constructor
 
         /// <summary>
         /// Creates a new tower instance with a world position.
@@ -234,9 +252,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             Position = new Vector3(gridPosition.X, gridPosition.Y, 0);
         }
 
-        #endregion
+        /// 
 
-        #region Methods
+        ///  Methods
 
         /// <summary>
         /// Upgrades the tower to the next level.
@@ -373,6 +391,6 @@ namespace SASZombieAssaultTD.Engine.Towers
             };
         }
 
-        #endregion
+        /// 
     }
 }

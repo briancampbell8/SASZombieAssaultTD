@@ -1,0 +1,18 @@
+{
+  "images": [
+    {
+      "id": "support_hud",
+      "path": "Assets/UI/SupportHUD.png",
+      "x": 0,
+      "y": 0,
+      "width": 800,
+      "height": 60,
+      "layer": 150,
+      "visible": true
+    }
+  ],
+  "text": [],
+  "renderOrder": [
+    "support_hud"
+  ]
+}

@@ -25,7 +25,7 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
     /// </summary>
     public class Hazard
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>Unique identifier for the hazard.</summary>
         public int Id { get; set; }
@@ -90,9 +90,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         /// <summary>Time when the hazard was created.</summary>
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        #endregion
+        /// 
 
-        #region Methods
+        ///  Methods
 
         /// <summary>
         /// Updates the hazard's state based on elapsed time.
@@ -138,7 +138,7 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             CurrentIntensity = 0f;
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

@@ -32,7 +32,7 @@ namespace SASZombieAssaultTD.Engine.State
         /// </summary>
         public void Enter()
         {
-            ModernLoggingSystem.Log("INFO", "MainMenuState: Entered - Initializing main menu");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuState: Entered - Initializing main menu");
             
             // Initialize menu systems
             // In a real implementation, this would:
@@ -48,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.State
         /// </summary>
         public void Exit()
         {
-            ModernLoggingSystem.Log("INFO", "MainMenuState: Exited - Cleaning up main menu");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuState: Exited - Cleaning up main menu");
             
             // Clean up menu systems
             // In a real implementation, this would:
@@ -85,7 +85,7 @@ namespace SASZombieAssaultTD.Engine.State
             }
             else
             {
-                ModernLoggingSystem.Log("DEBUG", $"MainMenuState: Ignoring event {gameEvent.GetType().Name}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"MainMenuState: Ignoring event {gameEvent.GetType().Name}");
             }
         }
         
@@ -98,23 +98,23 @@ namespace SASZombieAssaultTD.Engine.State
             switch (menuInputEvent.Action)
             {
                 case MenuAction.StartGame:
-                ModernLoggingSystem.Log("INFO", "MainMenuState: Start Game requested - transitioning to Gameplay");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuState: Start Game requested - transitioning to Gameplay");
                 _stateMachine.ChangeState(GameStateType.Gameplay);
                 break;
                 
                 case MenuAction.Quit:
-                ModernLoggingSystem.Log("INFO", "MainMenuState: Quit requested - initiating shutdown");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuState: Quit requested - initiating shutdown");
                 // In a real implementation, this would trigger application shutdown
                 // For now, we'll just log the request
                 break;
                 
                 case MenuAction.Options:
-                ModernLoggingSystem.Log("INFO", "MainMenuState: Options requested - not implemented yet");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuState: Options requested - not implemented yet");
                 // Placeholder for options menu
                 break;
                 
                 default:
-                ModernLoggingSystem.Log("DEBUG", $"MainMenuState: Unknown menu action {menuInputEvent.Action}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"MainMenuState: Unknown menu action {menuInputEvent.Action}");
                 break;
             }
         }

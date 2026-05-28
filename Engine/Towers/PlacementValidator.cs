@@ -1,11 +1,12 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Dictionary;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.Navigation;
+using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Navigation;
-using SASZombieAssaultTD.Engine.Towers;
-using SASZombieAssaultTD.Engine.Dictionary;
 using static SASZombieAssaultTD.Engine.Towers.TowerData; // Import TowerData members
 
 namespace SASZombieAssaultTD.Engine.Towers
@@ -20,6 +21,8 @@ namespace SASZombieAssaultTD.Engine.Towers
         private NavigationGrid _navigationGrid;
         private object TowerRegistry;
         private bool _isInitialized = false;
+        private object TheType;
+        private object TheMember;
 
         /// <summary>
         /// Initialize the placement validator.
@@ -45,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.Towers
 
             if (towerData == null)
             {
-                Console.WriteLine("Tower data is null");
+                System.Diagnostics.Debug.WriteLine("Tower data is null");
                 return false;
             }
 
@@ -56,7 +59,7 @@ namespace SASZombieAssaultTD.Engine.Towers
                 {
                     if (!rule.IsValid(gridPosition, towerData))
                     {
-                        Console.WriteLine($"Placement failed: {rule.GetFailureMessage(gridPosition, towerData)}");
+                        System.Diagnostics.Debug.WriteLine($"Placement failed: {rule.GetFailureMessage(gridPosition, towerData)}");
                         return false;
                     }
                 }
@@ -65,7 +68,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error validating tower placement: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error validating tower placement: {ex.Message}");
                 return false;
             }
         }
@@ -162,23 +165,29 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error checking path blocking: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error checking path blocking: {ex.Message}");
                 return true; // Assume it blocks paths on error
             }
         }
 
         private bool[,] GetAreaOccupancy(int x, int y, Vector3Int gridSize)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         private void SetAreaOccupancy(int x, int y, Vector3Int gridSize, bool v)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         private void RestoreAreaOccupancy(int x, int y, Vector3Int gridSize, bool[,] originalOccupancy)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
@@ -262,7 +271,7 @@ namespace SASZombieAssaultTD.Engine.Towers
         public void AddRule(PlacementRule rule)
         {
             _rules.Add(rule);
-            Console.WriteLine($"Added placement rule: {rule.GetType().Name}");
+            System.Diagnostics.Debug.WriteLine($"Added placement rule: {rule.GetType().Name}");
         }
 
         /// <summary>
@@ -273,7 +282,7 @@ namespace SASZombieAssaultTD.Engine.Towers
         {
             if (_rules.Remove(rule))
             {
-                Console.WriteLine($"Removed placement rule: {rule.GetType().Name}");
+                System.Diagnostics.Debug.WriteLine($"Removed placement rule: {rule.GetType().Name}");
             }
         }
 
@@ -310,7 +319,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             // Economy rule
             _rules.Add(new EconomyRule());
 
-            Console.WriteLine($"Initialized {_rules.Count} placement rules");
+            System.Diagnostics.Debug.WriteLine($"Initialized {_rules.Count} placement rules");
         }
 
         /// <summary>

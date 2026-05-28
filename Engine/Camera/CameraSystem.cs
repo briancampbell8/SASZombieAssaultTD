@@ -58,7 +58,7 @@ namespace SASZombieAssaultTD.Engine.Camera
         /// </summary>
         public void Shake(float intensity, float duration)
         {
-            Console.WriteLine($"Shaking camera with intensity {intensity} for {duration} seconds.");
+            System.Diagnostics.Debug.WriteLine($"Shaking camera with intensity {intensity} for {duration} seconds.");
         }
     }
 }

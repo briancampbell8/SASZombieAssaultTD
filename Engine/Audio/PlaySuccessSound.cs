@@ -19,7 +19,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void Play()
         {
             PlaySound.Play("success_generic");
-            ModernLoggingSystem.Log("INFO", "PlaySuccessSound: Played generic success sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlaySuccessSound: Played generic success sound");
         }
         
         /// <summary>
@@ -28,7 +28,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayTowerPurchase()
         {
             PlaySound.Play("success_tower_purchase");
-            ModernLoggingSystem.Log("INFO", "PlaySuccessSound: Played tower purchase success sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlaySuccessSound: Played tower purchase success sound");
         }
         
         /// <summary>
@@ -37,7 +37,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayUpgradePurchase()
         {
             PlaySound.Play("success_upgrade_purchase");
-            ModernLoggingSystem.Log("INFO", "PlaySuccessSound: Played upgrade purchase success sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlaySuccessSound: Played upgrade purchase success sound");
         }
         
         /// <summary>
@@ -46,7 +46,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayLevelUp()
         {
             PlaySound.Play("success_level_up");
-            ModernLoggingSystem.Log("INFO", "PlaySuccessSound: Played level up success sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlaySuccessSound: Played level up success sound");
         }
         
         /// <summary>
@@ -55,7 +55,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayAchievementUnlocked()
         {
             PlaySound.Play("success_achievement");
-            ModernLoggingSystem.Log("INFO", "PlaySuccessSound: Played achievement success sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlaySuccessSound: Played achievement success sound");
         }
         
         /// <summary>
@@ -64,7 +64,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayWaveCompleted()
         {
             PlaySound.Play("success_wave_complete");
-            ModernLoggingSystem.Log("INFO", "PlaySuccessSound: Played wave complete success sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlaySuccessSound: Played wave complete success sound");
         }
         
         /// <summary>
@@ -73,7 +73,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayGameCompleted()
         {
             PlaySound.Play("success_game_complete");
-            ModernLoggingSystem.Log("INFO", "PlaySuccessSound: Played game complete success sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlaySuccessSound: Played game complete success sound");
         }
         
         /// <summary>
@@ -82,7 +82,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void PlayAbilityUnlocked()
         {
             PlaySound.Play("success_ability_unlock");
-            ModernLoggingSystem.Log("INFO", "PlaySuccessSound: Played ability unlock success sound");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "PlaySuccessSound: Played ability unlock success sound");
         }
         
         /// <summary>
@@ -92,7 +92,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         public static void Play(string successType)
         {
             PlaySound.Play($"success_{successType}");
-            ModernLoggingSystem.Log("INFO", $"PlaySuccessSound: Played success sound for '{successType}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"PlaySuccessSound: Played success sound for '{successType}'");
         }
     }
 }

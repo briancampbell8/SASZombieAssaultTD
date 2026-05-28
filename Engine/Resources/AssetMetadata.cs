@@ -14,7 +14,7 @@ namespace SASZombieAssaultTD.Engine.Resources
     /// </summary>
     public class AssetMetadata
     {
-        #region Core Properties
+        ///  Core Properties
 
         /// <summary>
         /// The asset format (e.g., "png", "wav", "json").
@@ -66,9 +66,9 @@ namespace SASZombieAssaultTD.Engine.Resources
         /// </summary>
         public bool IsCritical { get; set; } = false;
 
-        #endregion
+        /// 
 
-        #region Validation
+        ///  Validation
 
         /// <summary>
         /// Validates the metadata.
@@ -81,28 +81,29 @@ namespace SASZombieAssaultTD.Engine.Resources
                    Type != AssetType.Unknown;
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>
     /// Types of assets in the engine.
     /// </summary>
-    public enum AssetType
-    {
-        Unknown,
-        Texture,
-        Audio,
-        Font,
-        Model,
-        Animation,
-        Shader,
-        Configuration,
-        Data,
-        Script,
-        SpriteSheet,
-        Sound,
-        Music,
-        Json,
-        Binary
-    }
+    // NOTE: AssetType already defined in Engine/Resources/Manager/AssetType.cs
+    //public enum AssetType
+    //{
+    //    Unknown,
+    //    Texture,
+    //    Audio,
+    //    Font,
+    //    Model,
+    //    Animation,
+    //    Shader,
+    //    Configuration,
+    //    Data,
+    //    Script,
+    //    SpriteSheet,
+    //    Sound,
+    //    Music,
+    //    Json,
+    //    Binary
+    //}
 }

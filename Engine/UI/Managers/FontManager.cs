@@ -47,7 +47,7 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
 
             try
             {
-                ModernLoggingSystem.Log("INFO", "FontManager: Initializing font system");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "FontManager: Initializing font system");
                 
                 // Pre-load common fonts
                 await LoadFontAsync("title", "UI/Fonts/title.ttf");
@@ -56,11 +56,11 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
                 await LoadFontAsync("small", "UI/Fonts/small.ttf");
                 
                 _initialized = true;
-                ModernLoggingSystem.Log("INFO", "FontManager: Font system initialized successfully");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "FontManager: Font system initialized successfully");
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"FontManager: Initialization failed - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"FontManager: Initialization failed - {ex.Message}");
                 throw;
             }
         }
@@ -110,7 +110,7 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
         {
             if (string.IsNullOrEmpty(fontName))
             {
-                ModernLoggingSystem.Log("WARNING", "FontManager: Requested null or empty font name, returning fallback");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "FontManager: Requested null or empty font name, returning fallback");
                 return _fallbackFont;
             }
 
@@ -119,7 +119,7 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
                 return cachedFont;
             }
 
-            ModernLoggingSystem.Log("WARNING", $"FontManager: Font '{fontName}' not cached, loading synchronously");
+            Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"FontManager: Font '{fontName}' not cached, loading synchronously");
             return LoadFontSync(fontName);
         }
 
@@ -133,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
         {
             try
             {
-                ModernLoggingSystem.Log("DEBUG", $"FontManager: Loading font '{fontName}' from '{resourcePath}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"FontManager: Loading font '{fontName}' from '{resourcePath}'");
                 
                 var resourcePipeline = new ModernResourcePipeline();
                 var fontData = await resourcePipeline.LoadResourceAsync<byte[]>(resourcePath);
@@ -142,16 +142,16 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
                 {
                     var font = new Font(fontName, 12f); // Default size
                     _fontCache.TryAdd(fontName, font);
-                    ModernLoggingSystem.Log("DEBUG", $"FontManager: Successfully loaded and cached font '{fontName}'");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"FontManager: Successfully loaded and cached font '{fontName}'");
                 }
                 else
                 {
-                    ModernLoggingSystem.Log("WARNING", $"FontManager: Failed to load font '{fontName}', resource data was null");
+                    Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"FontManager: Failed to load font '{fontName}', resource data was null");
                 }
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"FontManager: Failed to load font '{fontName}' - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"FontManager: Failed to load font '{fontName}' - {ex.Message}");
             }
         }
 
@@ -166,12 +166,12 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
             {
                 // For now, return fallback font
                 // In a full implementation, this would use blocking resource loading
-                ModernLoggingSystem.Log("DEBUG", $"FontManager: Using fallback font for '{fontName}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"FontManager: Using fallback font for '{fontName}'");
                 return _fallbackFont;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"FontManager: Critical error loading fallback font - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"FontManager: Critical error loading fallback font - {ex.Message}");
                 return new Font("Arial", 12f); // Last resort
             }
         }
@@ -181,7 +181,7 @@ namespace SASZombieAssaultTD.Engine.UI.Managers
         /// </summary>
         public static async Task ReloadFontsAsync()
         {
-            ModernLoggingSystem.Log("INFO", "FontManager: Reloading all fonts");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "FontManager: Reloading all fonts");
             
             _fontCache.Clear();
             _initialized = false;

@@ -22,7 +22,7 @@ namespace SASZombieAssaultTD.Engine.ECS
     
     public static class EntityFactory
     {
-        #region Public Creation Methods
+        ///  Public Creation Methods
 
         /// <summary>
         /// Creates a fully configured enemy entity with all required components.
@@ -39,13 +39,13 @@ namespace SASZombieAssaultTD.Engine.ECS
 
             var stats = EnemyStats.Get(type);
             
-            entity.AddComponent(new EnemyTypeComponent { Type = (SASZombieAssaultTD.Engine.Enemies.ZombieType)type });
+            entity.AddComponent(new EnemyTypeComponent { Type = (SASZombieAssaultTD.Engine.ECS.EnemyType)(SASZombieAssaultTD.Engine.Enemies.ZombieType)type });
             entity.AddComponent(component: new HealthComponent { CurrentHealth = stats.Health, MaxHealth = stats.Health });
             entity.AddComponent(new MovementComponent { Speed = (float)stats.Speed });
             entity.AddComponent(new ScoreComponent { ScoreValue = stats.Score });
             entity.AddComponent(new ActiveComponent { IsActive = true });
 
-            ModernLoggingSystem.Log("FACTORY", $"Created enemy '{type}' at {position}");
+            Engine.Diagnostics.DebugLogger.LogDebug("FACTORY", $"Created enemy '{type}' at {position}");
             return entity;
         }
 
@@ -63,7 +63,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             entity.AddComponent(new SASZombieAssaultTD.Engine.Components.MovementComponent { Speed = (float)velocity.Length() });
             entity.AddComponent(new SASZombieAssaultTD.Engine.Components.LifetimeComponent { RemainingSeconds = (float)lifetimeSeconds });
             entity.AddComponent(new SASZombieAssaultTD.Engine.Components.ActiveComponent { IsActive = true });
-            ModernLoggingSystem.Log("FACTORY", $"Created projectile at {position} with velocity {velocity}");
+            Engine.Diagnostics.DebugLogger.LogDebug("FACTORY", $"Created projectile at {position} with velocity {velocity}");
             return entity;
         }
 
@@ -82,7 +82,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             entity.AddComponent(new MovementComponent { Speed = 2.0f });
             entity.AddComponent(new ActiveComponent { IsActive = true });
 
-            ModernLoggingSystem.Log("FACTORY", $"Created player at {position}");
+            Engine.Diagnostics.DebugLogger.LogDebug("FACTORY", $"Created player at {position}");
             return entity;
         }
 
@@ -100,13 +100,13 @@ namespace SASZombieAssaultTD.Engine.ECS
             entity.AddComponent(new HealthComponent { CurrentHealth = 200, MaxHealth = 200 });
             entity.AddComponent(new ActiveComponent { IsActive = true });
 
-            ModernLoggingSystem.Log("FACTORY", $"Created tower '{towerType}' at {position}");
+            Engine.Diagnostics.DebugLogger.LogDebug("FACTORY", $"Created tower '{towerType}' at {position}");
             return entity;
         }
 
-        #endregion
+        /// 
 
-        #region Legacy Migration Methods
+        ///  Legacy Migration Methods
 
         /// <summary>
         /// Migrates a legacy Enemy object into a modern ECS entity.
@@ -132,7 +132,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             if (entity.TryGetComponent<ActiveComponent>(out var activeComp))
                 activeComp.IsActive = legacy.IsActive;
 
-            ModernLoggingSystem.Log("MIGRATION", $"Migrated legacy enemy '{legacy.Type}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", $"Migrated legacy enemy '{legacy.Type}'");
             return entity;
         }
 
@@ -150,13 +150,13 @@ namespace SASZombieAssaultTD.Engine.ECS
             if (entity.TryGetComponent<ActiveComponent>(out var activeComp))
                 activeComp.IsActive = legacy.IsActive;
 
-            ModernLoggingSystem.Log("MIGRATION", "Migrated legacy projectile");
+            Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", "Migrated legacy projectile");
             return entity;
         }
 
-        #endregion
+        /// 
 
-        #region Private Helper Methods
+        ///  Private Helper Methods
 
         static void AddCoreComponents(Entity entity, Vector3 position, string spriteId)
         {
@@ -176,10 +176,10 @@ namespace SASZombieAssaultTD.Engine.ECS
                 throw new ArgumentNullException(nameof(legacy));
         }
 
-        #endregion
+        /// 
     }
 
-    #region Supporting Types
+    ///  Supporting Types
 
     /// <summary>
     /// Defines enemy types used by the ECS.
@@ -264,5 +264,5 @@ namespace SASZombieAssaultTD.Engine.ECS
             };
     }
 
-    #endregion
+    /// 
 }

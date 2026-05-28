@@ -22,7 +22,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
     /// </summary>
     public abstract class BaseTower
     {
-        #region Properties
+        ///  Properties
         
         /// <summary>Unique identifier for this tower instance.</summary>
         public string Id { get; protected set; }
@@ -75,9 +75,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         /// <summary>Whether this tower can target ground units.</summary>
         public virtual bool CanTargetGround => true;
         
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
         
         /// <summary>
         /// Creates a new base tower instance.
@@ -102,9 +102,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             TotalInvestment = 0;
         }
         
-        #endregion
+        /// 
 
-        #region Tower Operations (Placeholder)
+        ///  Tower Operations (Placeholder)
         
         /// <summary>
         /// Activates this tower.
@@ -214,9 +214,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
         /// <returns>Upgrade characteristics dictionary.</returns>
         public abstract System.Collections.Generic.Dictionary<string, object> GetUpgradeCharacteristics();
         
-        #endregion
+        /// 
 
-        #region Level-based Calculations
+        ///  Level-based Calculations
         
         /// <summary>
         /// Gets the damage at a specific level.
@@ -266,9 +266,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             return benefits;
         }
         
-        #endregion
+        /// 
 
-        #region Utility Methods
+        ///  Utility Methods
         
         /// <summary>
         /// Generates a unique ID for this tower instance.
@@ -288,6 +288,6 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             return $"{DisplayName} (ID: {Id}, Level: {Level}/{MaxLevel}, Cost: {BaseCost})";
         }
         
-        #endregion
+        /// 
     }
 }

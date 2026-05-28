@@ -247,7 +247,7 @@ namespace SASZombieAssaultTD.Engine.Physics
         public void SetShape(CollisionShape shape)
         {
             _shape = shape;
-            ModernLoggingSystem.Log("INFO", $"ColliderComponent: Set shape to {shape?.ShapeType} for entity {Owner?.Id}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ColliderComponent: Set shape to {shape?.ShapeType} for entity {Owner?.Id}");
         }
 
         /// <summary>
@@ -259,7 +259,7 @@ namespace SASZombieAssaultTD.Engine.Physics
         {
             _layer = layer;
             _mask = mask;
-            ModernLoggingSystem.Log("INFO", $"ColliderComponent: Set layer={layer}, mask={mask} for entity {Owner?.Id}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ColliderComponent: Set layer={layer}, mask={mask} for entity {Owner?.Id}");
         }
 
         /// <summary>

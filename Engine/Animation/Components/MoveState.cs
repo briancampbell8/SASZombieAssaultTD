@@ -108,7 +108,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         public void Enter()
         {
             MoveTime = 0f;
-            ModernLoggingSystem.Log("DEBUG", $"MoveState: Entering move state with speed {MovementSpeed:F2}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"MoveState: Entering move state with speed {MovementSpeed:F2}");
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         /// </summary>
         public void Exit()
         {
-            ModernLoggingSystem.Log("DEBUG", $"MoveState: Exiting move state after {MoveTime:F2}s");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"MoveState: Exiting move state after {MoveTime:F2}s");
         }
 
         /// <summary>
@@ -150,20 +150,20 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
 
             if (IsJumping)
             {
-                ModernLoggingSystem.Log("DEBUG", "MoveState: Transition condition met for JumpState");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "MoveState: Transition condition met for JumpState");
                 return _jumpState;
             }
 
             if (IsAttacking)
             {
-                ModernLoggingSystem.Log("DEBUG", "MoveState: Transition condition met for AttackState");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "MoveState: Transition condition met for AttackState");
                 return _attackState;
             }
 
             // Transition to idle if movement speed falls below threshold
             if (!IsMoving)
             {
-                ModernLoggingSystem.Log("DEBUG", "MoveState: Transition condition met for IdleState (movement stopped)");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "MoveState: Transition condition met for IdleState (movement stopped)");
                 return _idleState;
             }
 

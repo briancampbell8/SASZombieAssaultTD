@@ -35,19 +35,19 @@ namespace SASZombieAssaultTD.Engine.State
         {
             if (!_stateCreators.TryGetValue(stateType, out var creator))
             {
-                ModernLoggingSystem.Log("ERROR", $"StateFactory: No creator registered for state type {stateType}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"StateFactory: No creator registered for state type {stateType}");
                 throw new ArgumentException($"No creator registered for state type {stateType}", nameof(stateType));
             }
             
             try
             {
                 var state = creator(stateMachine);
-                ModernLoggingSystem.Log("INFO", $"StateFactory: Created state {stateType}");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateFactory: Created state {stateType}");
                 return state;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"StateFactory: Failed to create state {stateType} - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"StateFactory: Failed to create state {stateType} - {ex.Message}");
                 throw;
             }
         }
@@ -63,7 +63,7 @@ namespace SASZombieAssaultTD.Engine.State
             throw new ArgumentNullException(nameof(creator));
             
             _stateCreators[stateType] = creator;
-            ModernLoggingSystem.Log("INFO", $"StateFactory: Registered custom creator for {stateType}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateFactory: Registered custom creator for {stateType}");
         }
         
         /// <summary>
@@ -78,7 +78,7 @@ namespace SASZombieAssaultTD.Engine.State
             throw new ArgumentNullException(nameof(configuration));
             
             _stateConfigurations[stateType] = configuration;
-            ModernLoggingSystem.Log("INFO", $"StateFactory: Registered configuration for {stateType}");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateFactory: Registered configuration for {stateType}");
         }
         
         /// <summary>
@@ -106,7 +106,7 @@ namespace SASZombieAssaultTD.Engine.State
             if (stateMachine == null)
             throw new ArgumentNullException(nameof(stateMachine));
             
-            ModernLoggingSystem.Log("INFO", "StateFactory: Configuring StateMachine with all registered states");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateFactory: Configuring StateMachine with all registered states");
             
             foreach (var stateType in _stateCreators.Keys)
             {
@@ -117,12 +117,12 @@ namespace SASZombieAssaultTD.Engine.State
                 }
                 catch (Exception ex)
                 {
-                    ModernLoggingSystem.Log("ERROR", $"StateFactory: Failed to configure state {stateType} - {ex.Message}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"StateFactory: Failed to configure state {stateType} - {ex.Message}");
                     // Continue with other states even if one fails
                 }
             }
             
-            ModernLoggingSystem.Log("INFO", $"StateFactory: Configured {stateMachine.GetRegisteredStates().Length} states");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateFactory: Configured {stateMachine.GetRegisteredStates().Length} states");
         }
         
         /// <summary>
@@ -151,14 +151,14 @@ namespace SASZombieAssaultTD.Engine.State
         /// </summary>
         private void RegisterDefaultStates()
         {
-            ModernLoggingSystem.Log("INFO", "StateFactory: Registering default state creators");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateFactory: Registering default state creators");
             
             _stateCreators[GameStateType.Boot] = (sm) => new BootState(sm);
             _stateCreators[GameStateType.MainMenu] = (sm) => new MainMenuState(sm);
             _stateCreators[GameStateType.Gameplay] = (sm) => new GameplayState(sm);
             _stateCreators[GameStateType.Paused] = (sm) => new PausedState(sm);
             
-            ModernLoggingSystem.Log("INFO", $"StateFactory: Registered {_stateCreators.Count} default state creators");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateFactory: Registered {_stateCreators.Count} default state creators");
         }
     }
     

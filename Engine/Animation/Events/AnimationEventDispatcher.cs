@@ -45,27 +45,27 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
 
         public AnimationEventDispatcher()
         {
-            ModernLoggingSystem.Log("DEBUG", "AnimationEventDispatcher: Initialized dispatcher");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "AnimationEventDispatcher: Initialized dispatcher");
         }
 
         public bool RegisterReceiver(IAnimationEventReceiver receiver)
         {
             if (receiver == null)
             {
-                ModernLoggingSystem.Log("ERROR", "AnimationEventDispatcher: Cannot register null receiver");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "AnimationEventDispatcher: Cannot register null receiver");
                 return false;
             }
 
             var validation = receiver.Validate();
             if (!validation.IsValid)
             {
-                ModernLoggingSystem.Log("ERROR", $"AnimationEventDispatcher: Receiver '{receiver.ReceiverName}' validation failed: {string.Join(", ", validation.Errors)}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventDispatcher: Receiver '{receiver.ReceiverName}' validation failed: {string.Join(", ", validation.Errors)}");
                 return false;
             }
 
             if (_receiversByPriority.Values.SelectMany(list => list).Any(r => r.ReceiverId == receiver.ReceiverId))
             {
-                ModernLoggingSystem.Log("ERROR", $"AnimationEventDispatcher: Receiver ID '{receiver.ReceiverId}' already registered");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventDispatcher: Receiver ID '{receiver.ReceiverId}' already registered");
                 return false;
             }
 
@@ -75,7 +75,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             }
             _receiversByPriority[receiver.Priority].Add(receiver);
 
-            ModernLoggingSystem.Log("DEBUG", $"AnimationEventDispatcher: Registered receiver '{receiver.ReceiverName}' ({receiver.ReceiverId}) with priority {receiver.Priority}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventDispatcher: Registered receiver '{receiver.ReceiverName}' ({receiver.ReceiverId}) with priority {receiver.Priority}");
             return true;
         }
 
@@ -83,7 +83,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
         {
             if (string.IsNullOrEmpty(receiverId))
             {
-                ModernLoggingSystem.Log("ERROR", "AnimationEventDispatcher: Cannot deregister receiver with null or empty ID");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "AnimationEventDispatcher: Cannot deregister receiver with null or empty ID");
                 return false;
             }
 
@@ -93,12 +93,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
                 if (receiverToRemove != null)
                 {
                     priorityList.Remove(receiverToRemove);
-                    ModernLoggingSystem.Log("DEBUG", $"AnimationEventDispatcher: Deregistered receiver '{receiverToRemove.ReceiverName}' ({receiverId})");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventDispatcher: Deregistered receiver '{receiverToRemove.ReceiverName}' ({receiverId})");
                     return true;
                 }
             }
 
-            ModernLoggingSystem.Log("WARNING", $"AnimationEventDispatcher: Receiver ID '{receiverId}' not found for deregistration");
+            Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AnimationEventDispatcher: Receiver ID '{receiverId}' not found for deregistration");
             return false;
         }
 
@@ -106,27 +106,27 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
         {
             if (eventTrack == null)
             {
-                ModernLoggingSystem.Log("ERROR", "AnimationEventDispatcher: Cannot register null event track");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "AnimationEventDispatcher: Cannot register null event track");
                 return false;
             }
 
             var validation = eventTrack.Validate();
             if (!validation.IsValid)
             {
-                ModernLoggingSystem.Log("ERROR", $"AnimationEventDispatcher: Event track '{eventTrack.TrackName}' validation failed: {string.Join(", ", validation.Errors)}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventDispatcher: Event track '{eventTrack.TrackName}' validation failed: {string.Join(", ", validation.Errors)}");
                 return false;
             }
 
             if (_eventTracksByClip.ContainsKey(eventTrack.ClipId))
             {
-                ModernLoggingSystem.Log("ERROR", $"AnimationEventDispatcher: Event track for clip '{eventTrack.ClipId}' already registered");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventDispatcher: Event track for clip '{eventTrack.ClipId}' already registered");
                 return false;
             }
 
             _eventTracksByClip[eventTrack.ClipId] = eventTrack;
             _allEventTracks.Add(eventTrack);
 
-            ModernLoggingSystem.Log("DEBUG", $"AnimationEventDispatcher: Registered event track '{eventTrack.TrackName}' ({eventTrack.TrackId}) for clip '{eventTrack.ClipId}'");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventDispatcher: Registered event track '{eventTrack.TrackName}' ({eventTrack.TrackId}) for clip '{eventTrack.ClipId}'");
             return true;
         }
 
@@ -134,18 +134,18 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
         {
             if (string.IsNullOrEmpty(clipId))
             {
-                ModernLoggingSystem.Log("ERROR", "AnimationEventDispatcher: Cannot deregister event track with null or empty clip ID");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "AnimationEventDispatcher: Cannot deregister event track with null or empty clip ID");
                 return false;
             }
 
             if (_eventTracksByClip.Remove(clipId, out var eventTrack))
             {
                 _allEventTracks.Remove(eventTrack);
-                ModernLoggingSystem.Log("DEBUG", $"AnimationEventDispatcher: Deregistered event track '{eventTrack.TrackName}' ({eventTrack.TrackId}) for clip '{clipId}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventDispatcher: Deregistered event track '{eventTrack.TrackName}' ({eventTrack.TrackId}) for clip '{clipId}'");
                 return true;
             }
 
-            ModernLoggingSystem.Log("WARNING", $"AnimationEventDispatcher: Event track for clip '{clipId}' not found for deregistration");
+            Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AnimationEventDispatcher: Event track for clip '{clipId}' not found for deregistration");
             return false;
         }
 
@@ -180,13 +180,13 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
 
                 if (dispatchedEvents.Count > 0)
                 {
-                    ModernLoggingSystem.Log("DEBUG", $"AnimationEventDispatcher: Dispatched {dispatchedEvents.Count} events for clip '{currentClipId}' at {playbackTime:F3}s");
+                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventDispatcher: Dispatched {dispatchedEvents.Count} events for clip '{currentClipId}' at {playbackTime:F3}s");
                 }
             }
             catch (Exception ex)
             {
                 Statistics.ErrorCount++;
-                ModernLoggingSystem.Log("ERROR", $"AnimationEventDispatcher: Error during update: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventDispatcher: Error during update: {ex.Message}");
             }
 
             return dispatchedEvents;
@@ -229,7 +229,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
                     }
                     catch (Exception ex)
                     {
-                        ModernLoggingSystem.Log("ERROR", $"AnimationEventDispatcher: Receiver '{receiver.ReceiverId}' failed to handle event '{animationEvent.EventName}': {ex.Message}");
+                        Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventDispatcher: Receiver '{receiver.ReceiverId}' failed to handle event '{animationEvent.EventName}': {ex.Message}");
                     }
                 }
             }
@@ -250,7 +250,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             }
 
             Statistics = new AnimationEventDispatcherStatistics();
-            ModernLoggingSystem.Log("DEBUG", "AnimationEventDispatcher: Reset all event tracks and statistics");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "AnimationEventDispatcher: Reset all event tracks and statistics");
         }
 
         public IReadOnlyList<IAnimationEventReceiver> GetRegisteredReceivers() =>

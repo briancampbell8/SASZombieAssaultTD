@@ -46,7 +46,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Type = type;
-            ModernLoggingSystem.Log("DEBUG", $"AnimationTrack: Created '{name}' (Type: {type})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationTrack: Created '{name}' (Type: {type})");
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
         {
             if (frame == null) throw new ArgumentNullException(nameof(frame));
             Frames.Add(frame);
-            ModernLoggingSystem.Log("DEBUG", $"AnimationTrack '{Name}': Added frame at time {frame.Time}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationTrack '{Name}': Added frame at time {frame.Time}");
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             var frame = new AnimationFrame(time, 0.016f);
             frame.SetMetadata("KeyframeValue", value);
             AddFrame(frame);
-            ModernLoggingSystem.Log("DEBUG", $"AnimationTrack '{Name}': Added keyframe at time {time:F3} with value {value}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationTrack '{Name}': Added keyframe at time {time:F3} with value {value}");
         }
 
         /// <summary>
@@ -157,9 +157,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             // Int interpolation
             if (typeof(T) == typeof(int))
             {
-                int i1 = Convert.ToInt32(value1);
-                int i2 = Convert.ToInt32(value2);
-                return (T)(object)(int)(i1 * (1f - t) + i2 * t);
+                int i1 = (int)Convert.ToInt32(value1);
+                int i2 = (int)Convert.ToInt32(value2);
+                return (T)(object)(int)((i1 * (1f - t) + i2 * t));
             }
 
             // Vector3 interpolation

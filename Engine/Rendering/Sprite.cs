@@ -151,7 +151,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _isVisible = true;
 
             UpdateSizeFromTexture();
-            ModernLoggingSystem.Log("DEBUG", $"Sprite: Created with texture '{_texture?.FilePath ?? "None"}' at {_position}");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Sprite: Created with texture '{_texture?.FilePath ?? "None"}' at {_position}");
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _sourceRect = Rectangle.FromPositionAndSize(x, y, width, height);
             _size = new Vector3(width, height, 0f);
             OnSpriteChanged?.Invoke(this);
-            ModernLoggingSystem.Log("DEBUG", $"Sprite: Set texture region ({x}, {y}, {width}, {height})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"Sprite: Set texture region ({x}, {y}, {width}, {height})");
         }
 
         /// <summary>

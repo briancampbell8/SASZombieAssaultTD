@@ -46,7 +46,7 @@ namespace SASZombieAssaultTD.Engine.Components
     /// </summary>
     public class CollisionComponent
     {
-        #region Properties
+        ///  Properties
 
         /// <summary>
         /// Type of collider shape (Box or Circle).
@@ -90,9 +90,9 @@ namespace SASZombieAssaultTD.Engine.Components
         /// </summary>
         public bool Enabled { get; set; } = true;
 
-        #endregion
+        /// 
 
-        #region Constructors
+        ///  Constructors
 
         /// <summary>
         /// Creates a new CollisionComponent with default box shape.
@@ -182,9 +182,9 @@ namespace SASZombieAssaultTD.Engine.Components
             Enabled = enabled;
         }
 
-        #endregion
+        /// 
 
-        #region Methods
+        ///  Methods
 
         /// <summary>
         /// Gets a string representation for debugging.
@@ -194,7 +194,7 @@ namespace SASZombieAssaultTD.Engine.Components
             return $"CollisionComponent(Shape: {ShapeType}, Size: {Width}x{Height}, Radius: {Radius}, Trigger: {IsTrigger}, Enabled: {Enabled})";
         }
 
-        #endregion
+        /// 
     }
 }
 

@@ -12,8 +12,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Math;
-using DrawingColor = System.Drawing.Color;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Extensions;
 
 namespace SASZombieAssaultTD.Engine.Rendering
@@ -28,20 +27,6 @@ namespace SASZombieAssaultTD.Engine.Rendering
         void SetPixel(int x, int y, uint color);
         uint GetPixel(int x, int y);
         void Clear();
-    }
-
-    /// <summary>
-    /// Text alignment options for rendering.
-    /// P11-04-09-F: Supports left, center, and right text alignment.
-    /// </summary>
-    public enum TextAlignment
-    {
-        /// <summary>Align text to the left</summary>
-        Left,
-        /// <summary>Align text to the center</summary>
-        Center,
-        /// <summary>Align text to the right</summary>
-        Right
     }
 
     /// <summary>
@@ -65,7 +50,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 if (_accessibilityScale != value)
                 {
                     _accessibilityScale = System.MathF.Max(0.5f, System.MathF.Min(3.0f, value));
-                    DebugLog($"TextRenderer: Accessibility scale set to {_accessibilityScale:F2}");
+                    Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Accessibility scale set to {_accessibilityScale:F2}");
                 }
             }
         }
@@ -81,7 +66,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 if (_accessibilityEnabled != value)
                 {
                     _accessibilityEnabled = value;
-                    DebugLog($"TextRenderer: Accessibility scaling {(value ? "enabled" : "disabled")}");
+                    Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Accessibility scaling {(value ? "enabled" : "disabled")}");
                 }
             }
         }
@@ -91,7 +76,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         /// </summary>
         public TextRenderer()
         {
-            DebugLog("TextRenderer: Initialized");
+            Engine.Diagnostics.DebugLogger.DebugLog("TextRenderer: Initialized");
         }
 
         /// <summary>
@@ -106,14 +91,14 @@ namespace SASZombieAssaultTD.Engine.Rendering
         /// <param name="alignment">Text alignment (default: Left)</param>
         /// <param name="maxWidth">Maximum width for word wrapping (optional)</param>
         /// <param name="context">Render context for drawing operations</param>
-        public void DrawText(string text, Vector3 position, DrawingColor color, float scale = 1.0f,
+        public void DrawText(string text, Vector3 position, Color color, float scale = 1.0f,
         TextAlignment alignment = TextAlignment.Left, float? maxWidth = null, IRenderContext? context = null)
         {
             try
             {
                 if (string.IsNullOrEmpty(text))
                 {
-                    DebugLog("TextRenderer: DrawText skipped - Empty or null text");
+                    Engine.Diagnostics.DebugLogger.     DebugLog("TextRenderer: DrawText skipped - Empty or null text");
                     return;
                 }
 
@@ -126,7 +111,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
                 if (finalScale <= 0f)
                 {
-                    DebugLog($"TextRenderer: DrawText failed - Invalid scale: {finalScale}");
+                    Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: DrawText failed - Invalid scale: {finalScale}");
                     return;
                 }
 
@@ -147,18 +132,18 @@ namespace SASZombieAssaultTD.Engine.Rendering
                     {
                         DrawTextWithContext(context, line, linePosition, color, finalScale);
                     }
-                    else
-                    {
-                        // Fallback to legacy rendering
-                        DrawTextFallback(line, linePosition, color, finalScale);
-                    }
+                    //else
+                    //{
+                    //    // Fallback to legacy rendering NOTE: Not needed
+                    //    DrawTextFallback(line, linePosition, color, finalScale);
+                    //}
                 }
 
-                DebugLog($"TextRenderer: Drew text '{text}' at ({position.X}, {position.Y}) with scale {finalScale:F2}, alignment {alignment}");
+                Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Drew text '{text}' at ({position.X}, {position.Y}) with scale {finalScale:F2}, alignment {alignment}");
             }
             catch (Exception ex)
             {
-                DebugLog($"TextRenderer: DrawText failed - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: DrawText failed - {ex.Message}");
                 // Fallback behavior: try to render with minimal parameters
                 try
                 {
@@ -167,7 +152,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 }
                 catch (Exception fallbackEx)
                 {
-                    DebugLog($"TextRenderer: Fallback rendering also failed - {fallbackEx.Message}");
+                    Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Fallback rendering also failed - {fallbackEx.Message}");
                 }
             }
         }
@@ -243,7 +228,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         /// <summary>
         /// Draws text using the provided render context.
         /// </summary>
-        private void DrawTextWithContext(IRenderContext context, string text, Vector3 position, DrawingColor color, float scale)
+        private void DrawTextWithContext(IRenderContext context, string text, Vector3 position, Color color, float scale)
         {
             // Convert System.Drawing.Color to Engine.Rendering.Color
             var engineColor = new Color(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
@@ -254,20 +239,21 @@ namespace SASZombieAssaultTD.Engine.Rendering
         /// Fallback text drawing method using legacy framebuffer approach.
         /// P11-04-09-F: Audit-friendly fallback behavior.
         /// </summary>
-        private void DrawTextFallback(string text, Vector3 position, DrawingColor color, float scale)
+        private void DrawTextFallback(string text, Vector3 position, Color color, float scale)
         {
-            DebugLog($"TextRenderer: Using fallback rendering for '{text}'");
+            Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Using fallback rendering for '{text}'");
 
             // Convert position to integers for legacy method
             int x = (int)position.X;
             int y = (int)position.Y;
 
             // Convert color to legacy format (0xRRGGBBAA)
-            var popupColor = DrawingColor.FromArgb((int)(color.A * 255), color.R, color.G, color.B);
+            var popupColor = System.Drawing.Color.FromArgb((int)(color.A * 255),
+                (int)(color.R * 255), (int)(color.G * 255), (int)(color.B * 255));
             uint colorValue = (uint)((popupColor.A << 24) | (popupColor.R << 16) | (popupColor.G << 8) | popupColor.B);
 
             // This would need a framebuffer instance - for now, just log the attempt
-            DebugLog($"TextRenderer: Fallback rendering would draw at ({x}, {y}) with color 0x{colorValue:X8}");
+            Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Fallback rendering would draw at ({x}, {y}) with color 0x{colorValue:X8}");
 
             // Note: In a full implementation, we would need access to the current framebuffer
             // For now, this serves as audit-friendly logging of the fallback attempt
@@ -331,11 +317,11 @@ namespace SASZombieAssaultTD.Engine.Rendering
                     }
                 }
 
-                DebugLog($"TextRenderer: Legacy DrawString rendered '{text}' at ({x}, {y})");
+                Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Legacy DrawString rendered '{text}' at ({x}, {y})");
             }
             catch (Exception ex)
             {
-                DebugLog($"TextRenderer: Legacy DrawString failed - {ex.Message}");
+                Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Legacy DrawString failed - {ex.Message}");
             }
         }
 
@@ -345,7 +331,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
         }
 
-        #region Advanced Rendering Enhancements
+        ///  Advanced Rendering Enhancements
 
         /// <summary>
         /// Advanced text rendering system with sophisticated caching and optimization.
@@ -508,11 +494,18 @@ namespace SASZombieAssaultTD.Engine.Rendering
             private void ApplyGlyphEffects(TextCache cache, GlyphData glyph, TextOptions options)
             {
                 // Apply advanced text effects
+                // Correct version
                 if (options.HasShadow)
                 {
-                        ApplyShadowEffect(cache, glyph, options.ShadowOffsetX, 
-                        options.ShadowOffsetY, v: (int)options.ShadowColor.ToArgb());
+                    ApplyShadowEffect(
+                        cache,
+                        glyph,
+                        options.ShadowOffsetX,
+                        options.ShadowOffsetY,
+                        options.ShadowColor   // uint, no ToArgb, no cast, no named arg
+                    );
                 }
+
 
                 if (options.HasOutline)
                 {
@@ -613,7 +606,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 public float Height { get; set; }
             }
         }
-        #endregion
+        /// 
     }
 }
 

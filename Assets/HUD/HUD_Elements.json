@@ -1,0 +1,84 @@
+{
+  "Elements": [
+    {
+      "id": "cash_panel",
+      "visible": true,
+      "x": 10,
+      "y": 510,
+      "width": 125,
+      "height": 25,
+      "anchor": "BottomLeft",
+      "path": "Assets/HUD/cash_panel.png"
+    },
+    {
+      "id": "cash_icon",
+      "visible": true,
+      "x": 10,
+      "y": 510,
+      "width": 25,
+      "height": 25,
+      "anchor": "BottomLeft",
+      "path": "Assets/HUD/cash_icon.png"
+    },
+    {
+      "id": "cash_text",
+      "visible": true,
+      "x": 40,
+      "y": 510,
+      "width": 95,
+      "height": 25,
+      "anchor": "BottomLeft",
+      "type": "dynamic_text"
+    },
+    {
+      "id": "lives_panel",
+      "visible": true,
+      "x": 10,
+      "y": 542,
+      "width": 125,
+      "height": 25,
+      "anchor": "BottomLeft",
+      "path": "Assets/HUD/lives_panel.png"
+    },
+    {
+      "id": "lives_icon",
+      "visible": true,
+      "x": 10,
+      "y": 542,
+      "width": 25,
+      "height": 25,
+      "anchor": "BottomLeft",
+      "path": "Assets/HUD/lives_icon.png"
+    },
+    {
+      "id": "lives_text",
+      "visible": true,
+      "x": 40,
+      "y": 542,
+      "width": 95,
+      "height": 25,
+      "anchor": "BottomLeft",
+      "type": "dynamic_text"
+    },
+    {
+      "id": "cash_plus",
+      "visible": true,
+      "x": 135,
+      "y": 510,
+      "width": 25,
+      "height": 25,
+      "anchor": "BottomLeft",
+      "path": "Assets/HUD/plus_button.png"
+    },
+    {
+      "id": "lives_plus",
+      "visible": true,
+      "x": 135,
+      "y": 542,
+      "width": 25,
+      "height": 25,
+      "anchor": "BottomLeft",
+      "path": "Assets/HUD/plus_button.png"
+    }
+  ]
+}

@@ -23,15 +23,15 @@ namespace SASZombieAssaultTD.Engine.ECS
     /// </summary>
     public interface ISystem
     {
-        #region Properties
+        ///  Properties
         bool IsEnabled { get; }
         bool IsInitialized { get; }
         SystemPriority Priority { get; }
         float LastUpdateTime { get; }
         uint UpdateCount { get; }
-        #endregion
+        /// 
 
-        #region Methods
+        ///  Methods
         void Initialize();
         void Update(float deltaTime);
         void FixedUpdate(float fixedDeltaTime);
@@ -42,6 +42,6 @@ namespace SASZombieAssaultTD.Engine.ECS
         void Toggle();
         void Destroy();
         void Reset();
-        #endregion
+        /// 
     }
 }

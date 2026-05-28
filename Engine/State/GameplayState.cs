@@ -31,7 +31,7 @@ namespace SASZombieAssaultTD.Engine.State
         /// </summary>
         public void Enter()
         {
-            ModernLoggingSystem.Log("INFO", "GameplayState: Entered - Initializing gameplay systems");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "GameplayState: Entered - Initializing gameplay systems");
             
             // Initialize gameplay systems
             // In a real implementation, this would:
@@ -48,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.State
         /// </summary>
         public void Exit()
         {
-            ModernLoggingSystem.Log("INFO", "GameplayState: Exited - Cleaning up gameplay systems");
+            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "GameplayState: Exited - Cleaning up gameplay systems");
             
             // Clean up gameplay systems
             // In a real implementation, this would:
@@ -91,7 +91,7 @@ namespace SASZombieAssaultTD.Engine.State
             }
             else
             {
-                ModernLoggingSystem.Log("DEBUG", $"GameplayState: Ignoring event {gameEvent.GetType().Name}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"GameplayState: Ignoring event {gameEvent.GetType().Name}");
             }
         }
         
@@ -104,27 +104,27 @@ namespace SASZombieAssaultTD.Engine.State
             switch (gameplayInputEvent.Action)
             {
                 case GameplayAction.Pause:
-                ModernLoggingSystem.Log("INFO", "GameplayState: Pause requested - transitioning to Paused state");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "GameplayState: Pause requested - transitioning to Paused state");
                 _stateMachine.ChangeState(GameStateType.Paused);
                 break;
                 
                 case GameplayAction.QuitToMenu:
-                ModernLoggingSystem.Log("INFO", "GameplayState: Quit to menu requested - transitioning to MainMenu");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "GameplayState: Quit to menu requested - transitioning to MainMenu");
                 _stateMachine.ChangeState(GameStateType.MainMenu);
                 break;
                 
                 case GameplayAction.PlayerMove:
                 // Handle player movement
-                ModernLoggingSystem.Log("DEBUG", $"GameplayState: Player movement {gameplayInputEvent.Direction}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"GameplayState: Player movement {gameplayInputEvent.Direction}");
                 break;
                 
                 case GameplayAction.PlayerShoot:
                 // Handle player shooting
-                ModernLoggingSystem.Log("DEBUG", "GameplayState: Player shooting");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "GameplayState: Player shooting");
                 break;
                 
                 default:
-                ModernLoggingSystem.Log("DEBUG", $"GameplayState: Unknown gameplay action {gameplayInputEvent.Action}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"GameplayState: Unknown gameplay action {gameplayInputEvent.Action}");
                 break;
             }
         }

@@ -1,3 +1,4 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.VectorMath;
 using System;
@@ -9,6 +10,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
     /// </summary>
     public class UIRenderContext : IRenderContext
     {
+        private object TheContainingType;
+        private object TheContainingMember;
+
         public int Width { get; set; }
         public int Height { get; set; }
 
@@ -238,26 +242,36 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
 
         public void DrawLine(int x, Vector3 start, Vector3 end, Color color, float thickness = 1)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         public void DrawRectangle(Func<float> x, Func<float> y, int width, int height, Color white)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         public void DrawLine(int x1, int y1, int x2, int y2, uint pathColor)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         public void DrawCircle(int x, int y, int v, uint pathColor)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
 
         public void DrawText(string stateText, int v1, int v2)
         {
+            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+
             throw new NotImplementedException();
         }
     }

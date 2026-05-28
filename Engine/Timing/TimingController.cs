@@ -23,11 +23,11 @@ namespace SASZombieAssaultTD.Engine.Timing
         private float _totalElapsedTime;
         public void Start()
         {
-            ModernLoggingSystem.Log("BREAKPOINT", "Execution reached here");
-            ModernLoggingSystem.Log("BREAKPOINT", "Reached execution checkpoint");
-            ModernLoggingSystem.Log("BREAKPOINT", $"Method={nameof(MethodBase.GetCurrentMethod)}, Line={new StackTrace(true).GetFrame(0)?.GetFileLineNumber()}");
+            Engine.Diagnostics.DebugLogger.LogDebug("BREAKPOINT", "Execution reached here");
+            Engine.Diagnostics.DebugLogger.LogDebug("BREAKPOINT", "Reached execution checkpoint");
+            Engine.Diagnostics.DebugLogger.LogDebug("BREAKPOINT", $"Method={nameof(MethodBase.GetCurrentMethod)}, Line={new StackTrace(true).GetFrame(0)?.GetFileLineNumber()}");
 
-            Console.WriteLine("[TimingController] Start() called.");
+            System.Diagnostics.Debug.WriteLine("[TimingController] Start() called.");
             // your timing setup logic
             _stopwatch.Reset();
             _stopwatch.Start();

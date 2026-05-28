@@ -25,13 +25,13 @@ namespace SASZombieAssaultTD
 
             try
             {
-                Console.WriteLine("Initializing SAS Zombie Assault TD Engine...");
+                System.Diagnostics.Debug.WriteLine("Initializing SAS Zombie Assault TD Engine...");
 
                 // Initialize core systems in dependency order
                 var success = await InitializeCoreSystemsAsync();
                 if (!success)
                 {
-                    Console.WriteLine("Failed to initialize core systems");
+                    System.Diagnostics.Debug.WriteLine("Failed to initialize core systems");
                     return false;
                 }
 
@@ -39,13 +39,13 @@ namespace SASZombieAssaultTD
                 {
                     _isInitialized = true;
                 }
-                Console.WriteLine("Engine initialization completed successfully");
+                System.Diagnostics.Debug.WriteLine("Engine initialization completed successfully");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Engine initialization failed: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
+                System.Diagnostics.Debug.WriteLine($"Engine initialization failed: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine(ex.StackTrace);
                 return false;
             }
         }
@@ -62,14 +62,14 @@ namespace SASZombieAssaultTD
 
             try
             {
-                Console.WriteLine("Starting engine main loop...");
-                Console.WriteLine("Engine running (placeholder for actual game loop)");
+                System.Diagnostics.Debug.WriteLine("Starting engine main loop...");
+                System.Diagnostics.Debug.WriteLine("Engine running (placeholder for actual game loop)");
                 await Task.Delay(1000); // Placeholder for actual game loop
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Engine run failed: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
+                System.Diagnostics.Debug.WriteLine($"Engine run failed: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine(ex.StackTrace);
                 throw;
             }
         }
@@ -86,25 +86,25 @@ namespace SASZombieAssaultTD
 
                 try
                 {
-                    Console.WriteLine("Shutting down engine...");
+                    System.Diagnostics.Debug.WriteLine("Shutting down engine...");
                     _isInitialized = false;
-                    Console.WriteLine("Engine shutdown completed");
+                    System.Diagnostics.Debug.WriteLine("Engine shutdown completed");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Engine shutdown error: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Engine shutdown error: {ex.Message}");
                 }
             }
         }
 
         private static async Task<bool> InitializeCoreSystemsAsync()
         {
-            Console.WriteLine("Core systems initialization started");
+            System.Diagnostics.Debug.WriteLine("Core systems initialization started");
 
             // Initialize asset system (we have this)
-            Console.WriteLine("Asset system initialized");
+            System.Diagnostics.Debug.WriteLine("Asset system initialized");
 
-            Console.WriteLine("Core systems initialization completed");
+            System.Diagnostics.Debug.WriteLine("Core systems initialization completed");
             return true;
         }
     }
@@ -119,16 +119,16 @@ namespace SASZombieAssaultTD
         {
             try
             {
-                Console.WriteLine("SAS Zombie Assault TD Engine starting...");
-                Console.WriteLine($"Version: {typeof(Program).Assembly.GetName().Version}");
-                Console.WriteLine($"Runtime: {Environment.Version}");
-                Console.WriteLine($"Platform: {Environment.OSVersion}");
+                System.Diagnostics.Debug.WriteLine("SAS Zombie Assault TD Engine starting...");
+                System.Diagnostics.Debug.WriteLine($"Version: {typeof(Program).Assembly.GetName().Version}");
+                System.Diagnostics.Debug.WriteLine($"Runtime: {Environment.Version}");
+                System.Diagnostics.Debug.WriteLine($"Platform: {Environment.OSVersion}");
 
                 // Initialize engine
                 var initialized = await EngineCore.InitializeAsync();
                 if (!initialized)
                 {
-                    Console.WriteLine("Engine initialization failed");
+                    System.Diagnostics.Debug.WriteLine("Engine initialization failed");
                     return 1;
                 }
 
@@ -138,13 +138,13 @@ namespace SASZombieAssaultTD
                 // Graceful shutdown
                 await EngineCore.ShutdownAsync();
 
-                Console.WriteLine("Engine shutdown completed successfully");
+                System.Diagnostics.Debug.WriteLine("Engine shutdown completed successfully");
                 return 0;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fatal error: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
+                System.Diagnostics.Debug.WriteLine($"Fatal error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine(ex.StackTrace);
                 return 1;
             }
             finally

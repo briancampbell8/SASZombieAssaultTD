@@ -95,20 +95,20 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
         {
             if (!IsEnabled)
             {
-                ModernLoggingSystem.Log("DEBUG", $"AnimationEvent: Event '{EventName}' ({EventId}) is disabled, not triggering");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEvent: Event '{EventName}' ({EventId}) is disabled, not triggering");
                 return false;
             }
             
             if (IsTriggered)
             {
-                ModernLoggingSystem.Log("DEBUG", $"AnimationEvent: Event '{EventName}' ({EventId}) already triggered at {Timestamp:F3}s");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEvent: Event '{EventName}' ({EventId}) already triggered at {Timestamp:F3}s");
                 return false;
             }
             
             IsTriggered = true;
             TriggerCount++;
             
-            ModernLoggingSystem.Log("DEBUG", $"AnimationEvent: Triggered event '{EventName}' ({EventId}) at {Timestamp:F3}s (trigger #{TriggerCount})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEvent: Triggered event '{EventName}' ({EventId}) at {Timestamp:F3}s (trigger #{TriggerCount})");
             return true;
         }
         
@@ -119,7 +119,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
         public void Reset()
         {
             IsTriggered = false;
-            ModernLoggingSystem.Log("DEBUG", $"AnimationEvent: Reset event '{EventName}' ({EventId})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEvent: Reset event '{EventName}' ({EventId})");
         }
         
         /// <summary>
@@ -230,12 +230,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             
             if (errors.Count > 0)
             {
-                ModernLoggingSystem.Log("ERROR", $"AnimationEvent: Parameter validation failed for event '{EventName}': {string.Join(", ", errors)}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEvent: Parameter validation failed for event '{EventName}': {string.Join(", ", errors)}");
             }
             
             if (warnings.Count > 0)
             {
-                ModernLoggingSystem.Log("WARNING", $"AnimationEvent: Parameter validation warnings for event '{EventName}': {string.Join(", ", warnings)}");
+                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AnimationEvent: Parameter validation warnings for event '{EventName}': {string.Join(", ", warnings)}");
             }
         }
         
@@ -295,7 +295,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             var clonedEvent = new AnimationEvent(EventId, EventName, Timestamp, clonedParameters);
             clonedEvent.IsEnabled = IsEnabled;
             
-            ModernLoggingSystem.Log("DEBUG", $"AnimationEvent: Cloned event '{EventName}' ({EventId})");
+            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEvent: Cloned event '{EventName}' ({EventId})");
             return clonedEvent;
         }
         

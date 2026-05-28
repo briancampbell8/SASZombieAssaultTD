@@ -6,8 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SASZombieAssaultTD.Engine.Core;
-using ModernLoggingSystem = SASZombieAssaultTD.Engine.Core.ModernLoggingSystem;
-
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Animation.BlendTree
 {
     /// <summary>
@@ -176,7 +175,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                     return report;
                 }
 
-                ModernLoggingSystem.Log("DEBUG", $"BlendTreeValidator: Starting validation for blend tree '{blendTree.TreeId}'");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BlendTreeValidator: Starting validation for blend tree '{blendTree.TreeId}'");
 
                 // Perform validation checks
                 ValidateBasicStructure(blendTree, report);
@@ -194,14 +193,14 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 report.IsValid = criticalIssues == 0 && errorIssues == 0;
                 report.ValidationDuration = DateTime.Now - startTime;
 
-                ModernLoggingSystem.Log("DEBUG", $"BlendTreeValidator: Validation completed for '{blendTree.TreeId}' - " +
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BlendTreeValidator: Validation completed for '{blendTree.TreeId}' - " +
                 $"Valid: {report.IsValid}, Issues: {report.Issues.Count}, Duration: {report.ValidationDuration.TotalMilliseconds:F2}ms");
 
                 return report;
             }
             catch (Exception ex)
             {
-                ModernLoggingSystem.Log("ERROR", $"BlendTreeValidator: Exception during validation: {ex.Message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"BlendTreeValidator: Exception during validation: {ex.Message}");
 
                 report.Issues.Add(new ValidationIssue
                 {

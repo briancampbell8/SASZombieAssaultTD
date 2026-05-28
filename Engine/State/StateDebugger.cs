@@ -67,7 +67,7 @@ namespace SASZombieAssaultTD.Engine.State
                     _debugEvents.RemoveAt(0);
                 }
                 
-                ModernLoggingSystem.Log("DEBUG", $"StateDebugger: [{eventType}] {stateType} - {message}");
+                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"StateDebugger: [{eventType}] {stateType} - {message}");
             }
         }
         
@@ -131,7 +131,7 @@ namespace SASZombieAssaultTD.Engine.State
             lock (_debugLock)
             {
                 _debugEvents.Clear();
-                ModernLoggingSystem.Log("INFO", "StateDebugger: Debug events cleared");
+                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateDebugger: Debug events cleared");
             }
         }
         
@@ -163,11 +163,11 @@ namespace SASZombieAssaultTD.Engine.State
                     }
                     
                     File.WriteAllLines(filePath, lines);
-                    ModernLoggingSystem.Log("INFO", $"StateDebugger: Exported {_debugEvents.Count} debug events to {filePath}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateDebugger: Exported {_debugEvents.Count} debug events to {filePath}");
                 }
                 catch (Exception ex)
                 {
-                    ModernLoggingSystem.Log("ERROR", $"StateDebugger: Failed to export debug events - {ex.Message}");
+                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"StateDebugger: Failed to export debug events - {ex.Message}");
                     throw;
                 }
             }

@@ -43,7 +43,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             _loadedSprites = new Dictionary<string, UISprite>();
             _loadedTextures = new Dictionary<string, byte[]>();
 
-            Console.WriteLine("UIAssetLoader: Initialized");
+            System.Diagnostics.Debug.WriteLine("UIAssetLoader: Initialized");
         }
 
         /// <summary>
@@ -60,13 +60,13 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             {
                 if (string.IsNullOrEmpty(path))
                 {
-                    Console.WriteLine($"UIAssetLoader: Cannot load font from null or empty path");
+                    System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Cannot load font from null or empty path");
                     return null;
                 }
 
                 if (_loadedFonts.ContainsKey(name))
                 {
-                    Console.WriteLine($"UIAssetLoader: Font '{name}' already loaded");
+                    System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Font '{name}' already loaded");
                     return _loadedFonts[name];
                 }
 
@@ -77,12 +77,12 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
 
                 _loadedFonts[name] = font;
 
-                Console.WriteLine($"UIAssetLoader: Loaded font '{name}' from '{path}'");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Loaded font '{name}' from '{path}'");
                 return font;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error loading font '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error loading font '{name}' - {ex.Message}");
                 return null;
             }
         }
@@ -101,13 +101,13 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             {
                 if (string.IsNullOrEmpty(path))
                 {
-                    Console.WriteLine("UIAssetLoader: Cannot load sprite from null or empty path");
+                    System.Diagnostics.Debug.WriteLine("UIAssetLoader: Cannot load sprite from null or empty path");
                     return null;
                 }
 
                 if (_loadedSprites.ContainsKey(name))
                 {
-                    Console.WriteLine($"UIAssetLoader: Sprite '{name}' already loaded");
+                    System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Sprite '{name}' already loaded");
                     return _loadedSprites[name];
                 }
 
@@ -118,12 +118,12 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
 
                 _loadedSprites[name] = sprite;
 
-                Console.WriteLine($"UIAssetLoader: Loaded sprite '{name}' from '{path}'");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Loaded sprite '{name}' from '{path}'");
                 return sprite;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error loading sprite '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error loading sprite '{name}' - {ex.Message}");
                 return null;
             }
         }
@@ -140,13 +140,13 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             {
                 if (string.IsNullOrEmpty(path))
                 {
-                    Console.WriteLine($"UIAssetLoader: Cannot load texture from null or empty path");
+                    System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Cannot load texture from null or empty path");
                     return null;
                 }
 
                 if (_loadedTextures.ContainsKey(name))
                 {
-                    Console.WriteLine($"UIAssetLoader: Texture '{name}' already loaded");
+                    System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Texture '{name}' already loaded");
                     return _loadedTextures[name];
                 }
 
@@ -154,12 +154,12 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
                 var textureData = new byte[0]; // Placeholder
                 _loadedTextures[name] = textureData;
 
-                Console.WriteLine($"UIAssetLoader: Loaded texture '{name}' from '{path}'");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Loaded texture '{name}' from '{path}'");
                 return textureData;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error loading texture '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error loading texture '{name}' - {ex.Message}");
                 return null;
             }
         }
@@ -178,7 +178,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error getting font '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error getting font '{name}' - {ex.Message}");
                 return null;
             }
         }
@@ -197,7 +197,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error getting sprite '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error getting sprite '{name}' - {ex.Message}");
                 return null;
             }
         }
@@ -216,7 +216,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error getting texture '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error getting texture '{name}' - {ex.Message}");
                 return null;
             }
         }
@@ -233,7 +233,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error getting loaded font names - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error getting loaded font names - {ex.Message}");
                 return new List<string>();
             }
         }
@@ -250,7 +250,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error getting loaded sprite names - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error getting loaded sprite names - {ex.Message}");
                 return new List<string>();
             }
         }
@@ -267,7 +267,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error getting loaded texture names - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error getting loaded texture names - {ex.Message}");
                 return new List<string>();
             }
         }
@@ -283,18 +283,18 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             {
                 if (_loadedFonts.Remove(name))
                 {
-                    Console.WriteLine($"UIAssetLoader: Unloaded font '{name}'");
+                    System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Unloaded font '{name}'");
                     return true;
                 }
                 else
                 {
-                    Console.WriteLine($"UIAssetLoader: Font '{name}' not found in loaded fonts");
+                    System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Font '{name}' not found in loaded fonts");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error unloading font '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error unloading font '{name}' - {ex.Message}");
                 return false;
             }
         }
@@ -310,18 +310,18 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             {
                 if (_loadedSprites.Remove(name))
                 {
-                    Console.WriteLine($"UIAssetLoader: Unloaded sprite '{name}'");
+                    System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Unloaded sprite '{name}'");
                     return true;
                 }
                 else
                 {
-                    Console.WriteLine($"UIAssetLoader: Sprite '{name}' not found in loaded sprites");
+                    System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Sprite '{name}' not found in loaded sprites");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error unloading sprite '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error unloading sprite '{name}' - {ex.Message}");
                 return false;
             }
         }
@@ -337,18 +337,18 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             {
                 if (_loadedTextures.Remove(name))
                 {
-                    Console.WriteLine($"UIAssetLoader: Unloaded texture '{name}'");
+                    System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Unloaded texture '{name}'");
                     return true;
                 }
                 else
                 {
-                    Console.WriteLine($"UIAssetLoader: Texture '{name}' not found in loaded textures");
+                    System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Texture '{name}' not found in loaded textures");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error unloading texture '{name}' - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error unloading texture '{name}' - {ex.Message}");
                 return false;
             }
         }
@@ -364,11 +364,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
                 _loadedSprites.Clear();
                 _loadedTextures.Clear();
 
-                Console.WriteLine("UIAssetLoader: Cleared all loaded assets");
+                System.Diagnostics.Debug.WriteLine("UIAssetLoader: Cleared all loaded assets");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error clearing assets - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error clearing assets - {ex.Message}");
             }
         }
 
@@ -384,7 +384,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIAssetLoader: Error creating string representation - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Error creating string representation - {ex.Message}");
                 return "UIAssetLoader: Error";
             }
         }

@@ -15,7 +15,7 @@ namespace SASZombieAssaultTD.Engine.Input
     /// </summary>
     public sealed class UIInputRouter
     {
-        #region Private Fields
+        ///  Private Fields
 
         private readonly Dictionary<int, bool> _mouseButtonStates = new();
         private readonly Dictionary<string, bool> _keyStates = new();
@@ -23,18 +23,18 @@ namespace SASZombieAssaultTD.Engine.Input
         private int _mouseEventsProcessed = 0;
         private bool _isEnabled = true;
 
-        #endregion
+        /// 
 
-        #region Public Properties
+        ///  Public Properties
 
         /// <summary>
         /// Gets whether input router is enabled.
         /// </summary>
         public bool IsEnabled => _isEnabled;
 
-        #endregion
+        /// 
 
-        #region Mouse Input
+        ///  Mouse Input
 
         /// <summary>
         /// Gets current scroll wheel delta.
@@ -81,9 +81,9 @@ namespace SASZombieAssaultTD.Engine.Input
             return !IsMouseButtonDown(button);
         }
 
-        #endregion
+        /// 
 
-        #region Keyboard Input
+        ///  Keyboard Input
 
         /// <summary>
         /// Checks if key is currently down.
@@ -95,9 +95,9 @@ namespace SASZombieAssaultTD.Engine.Input
             return _keyStates.TryGetValue(key, out var isDown) && isDown;
         }
 
-        #endregion
+        /// 
 
-        #region Input Processing
+        ///  Input Processing
 
         /// <summary>
         /// Processes mouse button down event.
@@ -146,9 +146,9 @@ namespace SASZombieAssaultTD.Engine.Input
             _keyStates[key] = false;
         }
 
-        #endregion
+        /// 
 
-        #region Control Methods
+        ///  Control Methods
 
         /// <summary>
         /// Enables or disables input routing.
@@ -170,9 +170,9 @@ namespace SASZombieAssaultTD.Engine.Input
             _mouseEventsProcessed = 0;
         }
 
-        #endregion
+        /// 
 
-        #region Statistics
+        ///  Statistics
 
         /// <summary>
         /// Gets input router statistics.
@@ -188,7 +188,7 @@ namespace SASZombieAssaultTD.Engine.Input
             };
         }
 
-        #endregion
+        /// 
     }
 
     /// <summary>

@@ -136,7 +136,7 @@ namespace SASZombieAssaultTD.Engine.UI
         public UIElement()
         {
             _children = new List<UIElement>();
-            Console.WriteLine("UIElement: Created new UI element");
+            System.Diagnostics.Debug.WriteLine("UIElement: Created new UI element");
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error during update - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error during update - {ex.Message}");
             }
         }
 
@@ -177,7 +177,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error during render - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error during render - {ex.Message}");
             }
         }
 
@@ -201,7 +201,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error updating layout - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error updating layout - {ex.Message}");
             }
         }
 
@@ -215,13 +215,13 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 if (child == null)
                 {
-                    Console.WriteLine("UIElement: Cannot add null child");
+                    System.Diagnostics.Debug.WriteLine("UIElement: Cannot add null child");
                     return;
                 }
 
                 if (_children.Contains(child))
                 {
-                    Console.WriteLine("UIElement: Child already exists");
+                    System.Diagnostics.Debug.WriteLine("UIElement: Child already exists");
                     return;
                 }
 
@@ -234,11 +234,11 @@ namespace SASZombieAssaultTD.Engine.UI
                 child._parent = this;
                 InvalidateLayout();
 
-                Console.WriteLine($"UIElement: Added child, total: {_children.Count}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Added child, total: {_children.Count}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error adding child - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error adding child - {ex.Message}");
             }
         }
 
@@ -252,7 +252,7 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 if (child == null)
                 {
-                    Console.WriteLine("UIElement: Cannot remove null child");
+                    System.Diagnostics.Debug.WriteLine("UIElement: Cannot remove null child");
                     return;
                 }
 
@@ -260,16 +260,16 @@ namespace SASZombieAssaultTD.Engine.UI
                 {
                     child._parent = null;
                     InvalidateLayout();
-                    Console.WriteLine($"UIElement: Removed child, remaining: {_children.Count}");
+                    System.Diagnostics.Debug.WriteLine($"UIElement: Removed child, remaining: {_children.Count}");
                 }
                 else
                 {
-                    Console.WriteLine("UIElement: Child not found");
+                    System.Diagnostics.Debug.WriteLine("UIElement: Child not found");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error removing child - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error removing child - {ex.Message}");
             }
         }
 
@@ -285,7 +285,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error getting children - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error getting children - {ex.Message}");
                 return new List<UIElement>();
             }
         }
@@ -307,7 +307,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error invalidating layout - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error invalidating layout - {ex.Message}");
             }
         }
 
@@ -318,11 +318,11 @@ namespace SASZombieAssaultTD.Engine.UI
         {
             try
             {
-                Console.WriteLine($"UIElement: Element received focus");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Element received focus");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error in OnFocused - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error in OnFocused - {ex.Message}");
             }
         }
 
@@ -333,11 +333,11 @@ namespace SASZombieAssaultTD.Engine.UI
         {
             try
             {
-                Console.WriteLine($"UIElement: Element lost focus");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Element lost focus");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error in OnFocusLost - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error in OnFocusLost - {ex.Message}");
             }
         }
 
@@ -348,11 +348,11 @@ namespace SASZombieAssaultTD.Engine.UI
         {
             try
             {
-                Console.WriteLine($"UIElement: Mouse entered element");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Mouse entered element");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error in OnMouseEnter - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error in OnMouseEnter - {ex.Message}");
             }
         }
 
@@ -363,11 +363,11 @@ namespace SASZombieAssaultTD.Engine.UI
         {
             try
             {
-                Console.WriteLine($"UIElement: Mouse exited element");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Mouse exited element");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error in OnMouseExit - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error in OnMouseExit - {ex.Message}");
             }
         }
 
@@ -378,11 +378,11 @@ namespace SASZombieAssaultTD.Engine.UI
         {
             try
             {
-                Console.WriteLine($"UIElement: Mouse pressed on element");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Mouse pressed on element");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error in OnMousePress - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error in OnMousePress - {ex.Message}");
             }
         }
 
@@ -393,11 +393,11 @@ namespace SASZombieAssaultTD.Engine.UI
         {
             try
             {
-                Console.WriteLine($"UIElement: Mouse released on element");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Mouse released on element");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error in OnMouseRelease - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error in OnMouseRelease - {ex.Message}");
             }
         }
 
@@ -418,7 +418,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error checking point containment - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error checking point containment - {ex.Message}");
                 return false;
             }
         }
@@ -447,7 +447,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"UIElement: Error getting element at point - {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"UIElement: Error getting element at point - {ex.Message}");
                 return null;
             }
         }
