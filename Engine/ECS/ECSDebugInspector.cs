@@ -6,21 +6,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.Animation.Components;
+using SASZombieAssaultTD.Engine.Diagnostics;
+//
 
 namespace SASZombieAssaultTD.Engine.ECS
 {
-    /// <summary>
-    /// P11-12-09: Debug and inspection utilities for the ECS system.
-    /// </summary>
+    ///<summary>
+    ///P11-12-09: Debug and inspection utilities for the ECS system.
+    ///</summary>
     public static class ECSDebugInspector
     {
-        /// <summary>
-        /// Gets comprehensive debug information about an ECS world.
-        /// </summary>
-        /// <param name="ecsWorld">The ECS world to inspect.</param>
-        /// <returns>Formatted debug information.</returns>
+        ///<summary>
+        ///Gets comprehensive debug information about an ECS world.
+        ///</summary>
+        ///<param name="ecsWorld">The ECS world to inspect.</param>
+        ///<returns>Formatted debug information.</returns>
         public static string GetWorldDebugInfo(ECSWorld ecsWorld)
         {
             if (ecsWorld == null)
@@ -31,7 +32,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             info.AppendLine($"Total Entities: {ecsWorld.EntityCount}");
             info.AppendLine();
 
-            // Component statistics
+            //Component statistics
             var componentStats = GetComponentStatistics(ecsWorld);
             info.AppendLine("Component Statistics:");
             foreach (var stat in componentStats.OrderByDescending(x => x.Value))
@@ -40,7 +41,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             }
             info.AppendLine();
 
-            // Entity details (limited to first 10 for readability)
+            //Entity details (limited to first 10 for readability)
             info.AppendLine("Entity Details (first 10):");
             var entities = ecsWorld.Entities.Take(10).ToList();
             for (int i = 0; i < entities.Count; i++)
@@ -57,11 +58,11 @@ namespace SASZombieAssaultTD.Engine.ECS
             return info.ToString();
         }
 
-        /// <summary>
-        /// Gets debug information about a specific entity.
-        /// </summary>
-        /// <param name="entity">The entity to inspect.</param>
-        /// <returns>Formatted debug information.</returns>
+        ///<summary>
+        ///Gets debug information about a specific entity.
+        ///</summary>
+        ///<param name="entity">The entity to inspect.</param>
+        ///<returns>Formatted debug information.</returns>
         public static string GetEntityDebugInfo(Entity entity)
         {
             if (entity == null)
@@ -87,11 +88,11 @@ namespace SASZombieAssaultTD.Engine.ECS
             return info.ToString();
         }
 
-        /// <summary>
-        /// Gets statistics about component usage across all entities.
-        /// </summary>
-        /// <param name="ecsWorld">The ECS world to analyze.</param>
-        /// <returns>Dictionary mapping component types to entity counts.</returns>
+        ///<summary>
+        ///Gets statistics about component usage across all entities.
+        ///</summary>
+        ///<param name="ecsWorld">The ECS world to analyze.</param>
+        ///<returns>Dictionary mapping component types to entity counts.</returns>
         public static Dictionary<string, int> GetComponentStatistics(ECSWorld ecsWorld)
         {
             var stats = new Dictionary<string, int>();
@@ -112,12 +113,12 @@ namespace SASZombieAssaultTD.Engine.ECS
             return stats;
         }
 
-        /// <summary>
-        /// Finds entities with specific component combinations.
-        /// </summary>
-        /// <param name="ecsWorld">The ECS world to search.</param>
-        /// <param name="componentTypes">Component types to search for.</param>
-        /// <returns>List of entities matching the criteria.</returns>
+        ///<summary>
+        ///Finds entities with specific component combinations.
+        ///</summary>
+        ///<param name="ecsWorld">The ECS world to search.</param>
+        ///<param name="componentTypes">Component types to search for.</param>
+        ///<returns>List of entities matching the criteria.</returns>
         public static List<Entity> FindEntitiesWithComponents(ECSWorld ecsWorld, params Type[] componentTypes)
         {
             if (ecsWorld == null || componentTypes == null || componentTypes.Length == 0)
@@ -130,22 +131,22 @@ namespace SASZombieAssaultTD.Engine.ECS
             }).ToList();
         }
 
-        /// <summary>
-        /// Logs the current state of the ECS world to the debug log.
-        /// </summary>
-        /// <param name="ecsWorld">The ECS world to log.</param>
-        /// <param name="logLevel">The log level to use.</param>
+        ///<summary>
+        ///Logs the current state of the ECS world to the debug log.
+        ///</summary>
+        ///<param name="ecsWorld">The ECS world to log.</param>
+        ///<param name="logLevel">The log level to use.</param>
         public static void LogWorldState(ECSWorld ecsWorld, string logLevel = "INFO")
         {
             var debugInfo = GetWorldDebugInfo(ecsWorld);
-            Engine.Diagnostics.DebugLogger.LogDebug(logLevel, debugInfo);
+            DLogger.Log(logLevel, debugInfo);
         }
 
-        /// <summary>
-        /// Validates the integrity of the ECS world.
-        /// </summary>
-        /// <param name="ecsWorld">The ECS world to validate.</param>
-        /// <returns>Validation result with any issues found.</returns>
+        ///<summary>
+        ///Validates the integrity of the ECS world.
+        ///</summary>
+        ///<param name="ecsWorld">The ECS world to validate.</param>
+        ///<returns>Validation result with any issues found.</returns>
         public static ECSValidationResult ValidateWorld(ECSWorld ecsWorld)
         {
             var result = new ECSValidationResult();
@@ -156,7 +157,7 @@ namespace SASZombieAssaultTD.Engine.ECS
                 return result;
             }
 
-            // Check for duplicate entity IDs
+            //Check for duplicate entity IDs
             var entityIds = ecsWorld.Entities.Select(e => e.Id).ToList();
             var duplicateIds = entityIds.GroupBy(id => id).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
 
@@ -165,7 +166,7 @@ namespace SASZombieAssaultTD.Engine.ECS
                 result.AddError($"Duplicate entity ID found: {duplicateId}");
             }
 
-            // Check for entities with invalid component ownership
+            //Check for entities with invalid component ownership
             foreach (var entity in ecsWorld.Entities)
             {
                 foreach (var component in entity.Components)
@@ -177,14 +178,14 @@ namespace SASZombieAssaultTD.Engine.ECS
                 }
             }
 
-            // Check for destroyed entities still in the world
+            //Check for destroyed entities still in the world
             var destroyedEntities = ecsWorld.Entities.Where(e => e.IsDestroyed).ToList();
             foreach (var entity in destroyedEntities)
             {
                 result.AddWarning($"Destroyed entity {entity.Id} still exists in world");
             }
 
-            // Performance warnings
+            //Performance warnings
             if (ecsWorld.EntityCount > 10000)
             {
                 result.AddWarning($"High entity count: {ecsWorld.EntityCount} (may impact performance)");
@@ -204,11 +205,11 @@ namespace SASZombieAssaultTD.Engine.ECS
             return result;
         }
 
-        /// <summary>
-        /// Creates a performance report for the ECS world.
-        /// </summary>
-        /// <param name="ecsWorld">The ECS world to analyze.</param>
-        /// <returns>Performance report with metrics.</returns>
+        ///<summary>
+        ///Creates a performance report for the ECS world.
+        ///</summary>
+        ///<param name="ecsWorld">The ECS world to analyze.</param>
+        ///<returns>Performance report with metrics.</returns>
         public static string GetPerformanceReport(ECSWorld ecsWorld)
         {
             if (ecsWorld == null)
@@ -224,15 +225,15 @@ namespace SASZombieAssaultTD.Engine.ECS
             report.AppendLine($"Component Types: {componentStats.Count}");
             report.AppendLine($"Total Components: {componentStats.Values.Sum()}");
 
-            // Calculate average components per entity
+            //Calculate average components per entity
             var avgComponents = entityCount > 0 ? (float)componentStats.Values.Sum() / entityCount : 0;
             report.AppendLine($"Avg Components/Entity: {avgComponents:F2}");
 
-            // Memory estimation (rough)
+            //Memory estimation (rough)
             var estimatedMemory = EstimateMemoryUsage(ecsWorld);
             report.AppendLine($"Estimated Memory Usage: {estimatedMemory / 1024.0:F1} KB");
 
-            // Component distribution
+            //Component distribution
             report.AppendLine();
             report.AppendLine("Component Distribution:");
             foreach (var stat in componentStats.OrderByDescending(x => x.Value))
@@ -244,25 +245,25 @@ namespace SASZombieAssaultTD.Engine.ECS
             return report.ToString();
         }
 
-        /// <summary>
-        /// Estimates memory usage of the ECS world (rough calculation).
-        /// </summary>
-        /// <param name="ecsWorld">The ECS world to analyze.</param>
-        /// <returns>Estimated memory usage in bytes.</returns>
+        ///<summary>
+        ///Estimates memory usage of the ECS world (rough calculation).
+        ///</summary>
+        ///<param name="ecsWorld">The ECS world to analyze.</param>
+        ///<returns>Estimated memory usage in bytes.</returns>
         private static long EstimateMemoryUsage(ECSWorld ecsWorld)
         {
-            const int entityOverhead = 64; // Rough estimate per entity
-            const int componentOverhead = 32; // Rough estimate per component
+            const int entityOverhead = 64; //Rough estimate per entity
+            const int componentOverhead = 32; //Rough estimate per component
 
             long total = 0;
 
-            // Entity overhead
+            //Entity overhead
             total += ecsWorld.EntityCount * entityOverhead;
 
-            // Component overhead
+            //Component overhead
             foreach (var entity in ecsWorld.Entities)
             {
-                // Count components for this entity by checking common component types
+                //Count components for this entity by checking common component types
                 int componentCount = 0;
                 if (entity.TryGetComponent<SASZombieAssaultTD.Engine.Components.TransformComponent>(out var transformComp)) componentCount++;
                 if (entity.TryGetComponent<SASZombieAssaultTD.Engine.Components.HealthComponent>(out var healthComp)) componentCount++;
@@ -279,9 +280,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         }
     }
 
-    /// <summary>
-    /// Result of ECS world validation.
-    /// </summary>
+    ///<summary>
+    ///Result of ECS world validation.
+    ///</summary>
     public class ECSValidationResult
     {
         private readonly List<string> _errors = new List<string>();

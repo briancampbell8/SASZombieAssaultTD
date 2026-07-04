@@ -46,21 +46,23 @@ using System;
 using System.Linq;
 using SASZombieAssaultTD.Engine.Gameplay;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
-    /// <summary>
-    /// Deterministic rule engine for milestone and achievement progression.
-    /// </summary>
+    ///<summary>
+    ///Deterministic rule engine for milestone and achievement progression.
+    ///</summary>
     public static class ProgressionLogic
     {
-        // ===============================================================================================
-        //  LEVEL-UP HANDLING
-        // ===============================================================================================
+        //===============================================================================================
+        // LEVEL-UP HANDLING
+        //===============================================================================================
 
-        // METHOD: HandleLevelUp()
-        // PURPOSE: Evaluate milestone completion when the player levels up.
-        // CALLED BY: LevelProgression.OnPlayerLevelUp()
-        // CALLS INTO: LevelProgression.InvokeMilestoneReached(), reward dispatch
+        //METHOD: HandleLevelUp()
+        //PURPOSE: Evaluate milestone completion when the player levels up.
+        //CALLED BY: LevelProgression.OnPlayerLevelUp()
+        //CALLS INTO: LevelProgression.InvokeMilestoneReached(), reward dispatch
         public static void HandleLevelUp(LevelProgression progression, int newLevel)
         {
             var milestone = progression._milestones
@@ -72,14 +74,14 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             milestone.IsCompleted = true;
             milestone.CompletionDate = DateTime.Now;
 
-            // Dispatch rewards
+            //Dispatch rewards
             foreach (var reward in milestone.Rewards)
                 ApplyReward(reward);
 
-            // Notify listeners (legal via invoker)
+            //Notify listeners (legal via invoker)
             progression.InvokeMilestoneReached(milestone);
 
-            // Log event (legal via invoker)
+            //Log event (legal via invoker)
             progression.InvokeProgressionEvent(new ProgressionEvent
             {
                 Id = $"milestone_{milestone.Id}",
@@ -90,14 +92,14 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             });
         }
 
-        // ===============================================================================================
-        //  EXPERIENCE HANDLING
-        // ===============================================================================================
+        //===============================================================================================
+        // EXPERIENCE HANDLING
+        //===============================================================================================
 
-        // METHOD: HandleExperienceGained()
-        // PURPOSE: Update achievement progress based on XP gain.
-        // CALLED BY: LevelProgression.OnExperienceGained()
-        // CALLS INTO: LevelProgression.InvokeAchievementUnlocked(), InvokeProgressionEvent()
+        //METHOD: HandleExperienceGained()
+        //PURPOSE: Update achievement progress based on XP gain.
+        //CALLED BY: LevelProgression.OnExperienceGained()
+        //CALLS INTO: LevelProgression.InvokeAchievementUnlocked(), InvokeProgressionEvent()
         public static void HandleExperienceGained(LevelProgression progression, int level, int experience)
         {
             foreach (var achievement in progression._achievements.Values)
@@ -115,10 +117,10 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                     achievement.IsUnlocked = true;
                     achievement.UnlockedDate = DateTime.Now;
 
-                    // Notify listeners (legal via invoker)
+                    //Notify listeners (legal via invoker)
                     progression.InvokeAchievementUnlocked(achievement);
 
-                    // Log event (legal via invoker)
+                    //Log event (legal via invoker)
                     progression.InvokeProgressionEvent(new ProgressionEvent
                     {
                         Id = $"achievement_{achievement.Id}",
@@ -130,7 +132,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 }
             }
 
-            // Log XP event (legal via invoker)
+            //Log XP event (legal via invoker)
             progression.InvokeProgressionEvent(new ProgressionEvent
             {
                 Id = $"xp_gain_{level}",
@@ -141,13 +143,13 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             });
         }
 
-        // ===============================================================================================
-        //  MAX LEVEL HANDLING
-        // ===============================================================================================
+        //===============================================================================================
+        // MAX LEVEL HANDLING
+        //===============================================================================================
 
-        // METHOD: HandleMaxLevelReached()
-        // PURPOSE: Log a special event when the player reaches max level.
-        // CALLED BY: LevelProgression.OnMaxLevelReached()
+        //METHOD: HandleMaxLevelReached()
+        //PURPOSE: Log a special event when the player reaches max level.
+        //CALLED BY: LevelProgression.OnMaxLevelReached()
         public static void HandleMaxLevelReached(LevelProgression progression)
         {
             progression.InvokeProgressionEvent(new ProgressionEvent
@@ -160,14 +162,14 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             });
         }
 
-        // ===============================================================================================
-        //  REWARD APPLICATION
-        // ===============================================================================================
+        //===============================================================================================
+        // REWARD APPLICATION
+        //===============================================================================================
 
-        // METHOD: ApplyReward()
-        // PURPOSE: Apply a reward to the player.
-        // CALLED BY: HandleLevelUp(), achievement unlock logic
-        // CALLS INTO: ModernPlayerStateSystem, PlayerLevel
+        //METHOD: ApplyReward()
+        //PURPOSE: Apply a reward to the player.
+        //CALLED BY: HandleLevelUp(), achievement unlock logic
+        //CALLS INTO: ModernPlayerStateSystem, PlayerLevel
         private static void ApplyReward(ProgressionReward reward)
         {
             switch (reward.Type)
@@ -181,15 +183,15 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                     break;
 
                 case RewardType.TowerSlot:
-                    // Future expansion: tower slot unlock system
+                    //Future expansion: tower slot unlock system
                     break;
 
                 case RewardType.Ability:
-                    // Future expansion: ability unlock system
+                    //Future expansion: ability unlock system
                     break;
 
                 case RewardType.UpgradeDiscount:
-                    // Future expansion: upgrade discount system
+                    //Future expansion: upgrade discount system
                     break;
             }
         }

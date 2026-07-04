@@ -1,63 +1,64 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.State
 {
-    /// <summary>
-    /// Enhanced state machine with profiling, debugging, and advanced features.
-    /// P20-02-Enhancement: Production-ready state machine with comprehensive monitoring.
-    /// </summary>
+    ///<summary>
+    ///Enhanced state machine with profiling, debugging, and advanced features.
+    ///P20-02-Enhancement: Production-ready state machine with comprehensive monitoring.
+    ///</summary>
     public class EnhancedStateMachine : AdvancedStateMachine
     {
         private readonly StateMachineProfiler _profiler;
         private readonly StateFactory _stateFactory;
         private readonly Dictionary<GameStateType, DateTime> _lastStateEnterTimes;
         
-        /// <summary>
-        /// Gets the profiler for performance monitoring.
-        /// </summary>
+        ///<summary>
+        ///Gets the profiler for performance monitoring.
+        ///</summary>
         public StateMachineProfiler Profiler => _profiler;
         
-        /// <summary>
-        /// Gets the state factory for state creation.
-        /// </summary>
+        ///<summary>
+        ///Gets the state factory for state creation.
+        ///</summary>
         public StateFactory StateFactory => _stateFactory;
         
-        /// <summary>
-        /// Event fired when a state is entered.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a state is entered.
+        ///</summary>
         public event Action<GameStateType> OnStateEntered;
         
-        /// <summary>
-        /// Event fired when a state is exited.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a state is exited.
+        ///</summary>
         public event Action<GameStateType> OnStateExited;
         
-        /// <summary>
-        /// Initializes a new enhanced state machine.
-        /// </summary>
-        /// <param name="maxHistorySize">Maximum number of transitions to keep in history.</param>
+        ///<summary>
+        ///Initializes a new enhanced state machine.
+        ///</summary>
+        ///<param name="maxHistorySize">Maximum number of transitions to keep in history.</param>
         public EnhancedStateMachine(int maxHistorySize = 100) : base(maxHistorySize)
         {
             _profiler = new StateMachineProfiler();
             _stateFactory = new StateFactory();
             _lastStateEnterTimes = new Dictionary<GameStateType, DateTime>();
             
-            // Set up event handlers
+            //Set up event handlers
             OnTransitionStarted += HandleTransitionStarted;
             OnTransitionCompleted += HandleTransitionCompleted;
             OnTransitionFailed += HandleTransitionFailed;
             
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "EnhancedStateMachine: Initialized with profiler and factory");
+            DLogger.Log(LogSubsystems.State,LogLevel.Info, "EnhancedStateMachine: Initialized with profiler and factory");
         }
         
-        /// <summary>
-        /// Registers a state with profiling and debugging.
-        /// </summary>
-        /// <param name="type">The state type.</param>
-        /// <param name="state">The state instance.</param>
+        ///<summary>
+        ///Registers a state with profiling and debugging.
+        ///</summary>
+        ///<param name="type">The state type.</param>
+        ///<param name="state">The state instance.</param>
         public override void RegisterState(GameStateType type, IGameState state)
         {
             using var session = _profiler.StartProfiling(type, "RegisterState");
@@ -67,11 +68,11 @@ namespace SASZombieAssaultTD.Engine.State
             StateDebugger.LogStateEvent(StateDebugEventType.StateRegistered, type, $"State registered with instance type {state.GetType().Name}");
         }
         
-        /// <summary>
-        /// Changes state with enhanced monitoring and validation.
-        /// </summary>
-        /// <param name="type">The target state type.</param>
-        /// <param name="triggerEvent">The event that triggered the transition.</param>
+        ///<summary>
+        ///Changes state with enhanced monitoring and validation.
+        ///</summary>
+        ///<param name="type">The target state type.</param>
+        ///<param name="triggerEvent">The event that triggered the transition.</param>
         public override void ChangeState(GameStateType type, GameEvent? triggerEvent = null)
         {
             using var session = _profiler.StartProfiling(type, "ChangeState");
@@ -82,10 +83,10 @@ namespace SASZombieAssaultTD.Engine.State
             {
                 base.ChangeState(type, triggerEvent);
                 
-                // Record state enter time
+                //Record state enter time
                 _lastStateEnterTimes[type] = DateTime.UtcNow;
                 
-                // Fire state-specific events
+                //Fire state-specific events
                 OnStateEntered?.Invoke(type);
                 
                 StateDebugger.LogStateEvent(StateDebugEventType.StateEntered, type,
@@ -99,10 +100,10 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Updates the current state with profiling.
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since last update.</param>
+        ///<summary>
+        ///Updates the current state with profiling.
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since last update.</param>
         public override void Update(float deltaTime)
         {
             if (CurrentState == null)
@@ -125,10 +126,10 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Handles an event with profiling and debugging.
-        /// </summary>
-        /// <param name="gameEvent">The game event to handle.</param>
+        ///<summary>
+        ///Handles an event with profiling and debugging.
+        ///</summary>
+        ///<param name="gameEvent">The game event to handle.</param>
         public override void HandleEvent(GameEvent gameEvent)
         {
             if (CurrentState == null || gameEvent == null)
@@ -151,9 +152,9 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Resets the state machine with enhanced cleanup.
-        /// </summary>
+        ///<summary>
+        ///Resets the state machine with enhanced cleanup.
+        ///</summary>
         public override void Reset()
         {
             using var session = _profiler.StartProfiling(CurrentStateType, "Reset");
@@ -169,9 +170,9 @@ namespace SASZombieAssaultTD.Engine.State
             "State machine reset");
         }
         
-        /// <summary>
-        /// Configures the state machine using the internal state factory.
-        /// </summary>
+        ///<summary>
+        ///Configures the state machine using the internal state factory.
+        ///</summary>
         public new void ConfigureWithFactory()
         {
             using var session = _profiler.StartProfiling(GameStateType.Boot, "ConfigureWithFactory");
@@ -179,10 +180,10 @@ namespace SASZombieAssaultTD.Engine.State
             base.ConfigureWithFactory();
         }
         
-        /// <summary>
-        /// Gets comprehensive statistics including performance data.
-        /// </summary>
-        /// <returns>Enhanced state machine statistics.</returns>
+        ///<summary>
+        ///Gets comprehensive statistics including performance data.
+        ///</summary>
+        ///<returns>Enhanced state machine statistics.</returns>
         public new EnhancedStateMachineStatistics GetStatistics()
         {
             var baseStats = base.GetAdvancedStatistics();
@@ -209,10 +210,10 @@ namespace SASZombieAssaultTD.Engine.State
             };
         }
         
-        /// <summary>
-        /// Generates a comprehensive report including performance and debugging data.
-        /// </summary>
-        /// <returns>Comprehensive state machine report.</returns>
+        ///<summary>
+        ///Generates a comprehensive report including performance and debugging data.
+        ///</summary>
+        ///<returns>Comprehensive state machine report.</returns>
         public string GenerateComprehensiveReport()
         {
             var report = new List<string>
@@ -222,7 +223,7 @@ namespace SASZombieAssaultTD.Engine.State
                 ""
             };
             
-            // Basic statistics
+            //Basic statistics
             var stats = GetStatistics();
             report.Add("=== Basic Statistics ===");
             report.Add($"Current State: {stats.CurrentState}");
@@ -231,17 +232,17 @@ namespace SASZombieAssaultTD.Engine.State
             report.Add($"Registered States: {stats.RegisteredStates}");
             report.Add("");
             
-            // Performance summary
+            //Performance summary
             report.Add("=== Performance Summary ===");
             report.Add(_profiler.GeneratePerformanceReport());
             report.Add("");
             
-            // Debug summary
+            //Debug summary
             report.Add("=== Debug Summary ===");
             report.Add(StateDebugger.GeneratePerformanceReport(this));
             report.Add("");
             
-            // Performance issues
+            //Performance issues
             if (stats.PerformanceIssues.Count > 0)
             {
                 report.Add("=== Performance Issues ===");
@@ -252,7 +253,7 @@ namespace SASZombieAssaultTD.Engine.State
                 report.Add("");
             }
             
-            // Validation results
+            //Validation results
             var validationIssues = StateDebugger.ValidateStateMachine(this);
             if (validationIssues.Count > 0)
             {
@@ -271,47 +272,47 @@ namespace SASZombieAssaultTD.Engine.State
             return string.Join(Environment.NewLine, report);
         }
         
-        /// <summary>
-        /// Enables or disables profiling for a specific state.
-        /// </summary>
-        /// <param name="stateType">The state type.</param>
-        /// <param name="enabled">Whether to enable profiling.</param>
+        ///<summary>
+        ///Enables or disables profiling for a specific state.
+        ///</summary>
+        ///<param name="stateType">The state type.</param>
+        ///<param name="enabled">Whether to enable profiling.</param>
         public void SetStateProfiling(GameStateType stateType, bool enabled)
         {
-            // This would require extending the profiler to support per-state profiling
-            // For now, we'll just log the request
+            //This would require extending the profiler to support per-state profiling
+            //For now, we'll just log the request
             StateDebugger.LogStateEvent(StateDebugEventType.Custom, stateType,
             $"Profiling {(enabled ? "enabled" : "disabled")}");
         }
         
-        /// <summary>
-        /// Handles transition started events.
-        /// </summary>
-        /// <param name="transition">The transition that started.</param>
+        ///<summary>
+        ///Handles transition started events.
+        ///</summary>
+        ///<param name="transition">The transition that started.</param>
         private void HandleTransitionStarted(StateTransition transition)
         {
             StateDebugger.LogStateEvent(StateDebugEventType.TransitionStarted, transition.ToState,
             $"Transition started from {transition.FromState}", transition);
         }
         
-        /// <summary>
-        /// Handles transition completed events.
-        /// </summary>
-        /// <param name="transition">The transition that completed.</param>
+        ///<summary>
+        ///Handles transition completed events.
+        ///</summary>
+        ///<param name="transition">The transition that completed.</param>
         private void HandleTransitionCompleted(StateTransition transition)
         {
-            // Fire state exit event for previous state
+            //Fire state exit event for previous state
             OnStateExited?.Invoke(transition.FromState);
             
             StateDebugger.LogStateEvent(StateDebugEventType.TransitionCompleted, transition.ToState,
             $"Transition completed from {transition.FromState} in {transition.DurationMs}ms", transition);
         }
         
-        /// <summary>
-        /// Handles transition failed events.
-        /// </summary>
-        /// <param name="transition">The transition that failed.</param>
-        /// <param name="exception">The exception that caused the failure.</param>
+        ///<summary>
+        ///Handles transition failed events.
+        ///</summary>
+        ///<param name="transition">The transition that failed.</param>
+        ///<param name="exception">The exception that caused the failure.</param>
         private void HandleTransitionFailed(StateTransition transition, Exception exception)
         {
             StateDebugger.LogStateEvent(StateDebugEventType.TransitionFailed, transition.ToState,
@@ -319,39 +320,39 @@ namespace SASZombieAssaultTD.Engine.State
         }
     }
     
-    /// <summary>
-    /// Enhanced statistics for the EnhancedStateMachine.
-    /// </summary>
+    ///<summary>
+    ///Enhanced statistics for the EnhancedStateMachine.
+    ///</summary>
     public class EnhancedStateMachineStatistics : AdvancedStateMachineStatistics
     {
-        /// <summary>
-        /// State-specific performance metrics.
-        /// </summary>
+        ///<summary>
+        ///State-specific performance metrics.
+        ///</summary>
         public Dictionary<GameStateType, StatePerformanceMetrics> StateMetrics { get; set; }
         
-        /// <summary>
-        /// Operation-specific performance metrics.
-        /// </summary>
+        ///<summary>
+        ///Operation-specific performance metrics.
+        ///</summary>
         public Dictionary<string, OperationMetrics> OperationMetrics { get; set; }
         
-        /// <summary>
-        /// List of identified performance issues.
-        /// </summary>
+        ///<summary>
+        ///List of identified performance issues.
+        ///</summary>
         public List<string> PerformanceIssues { get; set; }
         
-        /// <summary>
-        /// Whether profiling is enabled.
-        /// </summary>
+        ///<summary>
+        ///Whether profiling is enabled.
+        ///</summary>
         public bool ProfilingEnabled { get; set; }
         
-        /// <summary>
-        /// Whether debugging is enabled.
-        /// </summary>
+        ///<summary>
+        ///Whether debugging is enabled.
+        ///</summary>
         public bool DebugEnabled { get; set; }
         
-        /// <summary>
-        /// Returns a string representation of the enhanced statistics.
-        /// </summary>
+        ///<summary>
+        ///Returns a string representation of the enhanced statistics.
+        ///</summary>
         public override string ToString()
         {
             return $"Enhanced StateMachine Stats: Current={CurrentState}, Transitions={TotalTransitions}, " +

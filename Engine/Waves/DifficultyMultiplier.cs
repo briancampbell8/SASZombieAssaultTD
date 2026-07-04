@@ -1,4 +1,4 @@
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.Towers;
@@ -6,12 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Security.AccessControl;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves
 {
-    /// <summary>
-    /// Difficulty multiplier system for SAS Zombie Assault TD.
-    /// Provides scaling factors for different difficulty levels.
-    /// </summary>
+    ///<summary>
+    ///Difficulty multiplier system for SAS Zombie Assault TD.
+    ///Provides scaling factors for different difficulty levels.
+    ///</summary>
     public class DifficultyMultiplier
     {
         private readonly Dictionary<DifficultyMode, DifficultySettings> _settings;
@@ -21,77 +23,77 @@ namespace SASZombieAssaultTD.Engine.Waves
         internal float SpeedMultiplier;
         internal int CountMultiplier;
 
-        /// <summary>
-        /// Singleton instance.
-        /// </summary>
+        ///<summary>
+        ///Singleton instance.
+        ///</summary>
         public static DifficultyMultiplier Instance => _instance ??= new DifficultyMultiplier();
 
-        /// <summary>
-        /// Current difficulty mode.
-        /// </summary>
+        ///<summary>
+        ///Current difficulty mode.
+        ///</summary>
         public DifficultyMode CurrentDifficulty 
         { 
             get => _currentDifficulty; 
             set => _currentDifficulty = value; 
         }
 
-        /// <summary>
-        /// Health modifier for current difficulty.
-        /// </summary>
+        ///<summary>
+        ///Health modifier for current difficulty.
+        ///</summary>
         public float HealthModifier => GetSettingsForCurrent().HealthMultiplier;
 
-        /// <summary>
-        /// Speed modifier for current difficulty.
-        /// </summary>
+        ///<summary>
+        ///Speed modifier for current difficulty.
+        ///</summary>
         public float SpeedModifier => GetSettingsForCurrent().SpeedMultiplier;
 
-        /// <summary>
-        /// Damage multiplier for current difficulty.
-        /// </summary>
+        ///<summary>
+        ///Damage multiplier for current difficulty.
+        ///</summary>
         public float DamageMultiplier => GetSettingsForCurrent().DamageMultiplier;
 
-        /// <summary>
-        /// Clone the current difficulty settings.
-        /// </summary>
-        /// <returns>Cloned difficulty settings.</returns>
+        ///<summary>
+        ///Clone the current difficulty settings.
+        ///</summary>
+        ///<returns>Cloned difficulty settings.</returns>
         public DifficultySettings Clone() => GetSettingsForCurrent().Clone();
 
-        /// <summary>
-        /// Get settings for current difficulty.
-        /// </summary>
-        /// <returns>Current difficulty settings.</returns>
+        ///<summary>
+        ///Get settings for current difficulty.
+        ///</summary>
+        ///<returns>Current difficulty settings.</returns>
         private DifficultySettings GetSettingsForCurrent()
         {
             return GetMultiplier(_currentDifficulty);
         }
 
-        /// <summary>
-        /// Default constructor.
-        /// </summary>
-        public DifficultyMultiplier() // Changed from private to public
+        ///<summary>
+        ///Default constructor.
+        ///</summary>
+        public DifficultyMultiplier() //Changed from private to public
         {
             _settings = new Dictionary<DifficultyMode, DifficultySettings>();
             InitializeDifficultySettings();
         }
 
-        /// <summary>
-        /// Constructor that accepts DifficultySettings for conversion.
-        /// </summary>
-        /// <param name="settings">The settings to convert from.</param>
+        ///<summary>
+        ///Constructor that accepts DifficultySettings for conversion.
+        ///</summary>
+        ///<param name="settings">The settings to convert from.</param>
         public DifficultyMultiplier(DifficultySettings settings)
         {
             _settings = new Dictionary<DifficultyMode, DifficultySettings>();
             InitializeDifficultySettings();
 
-            // Map the provided settings to Normal difficulty mode
+            //Map the provided settings to Normal difficulty mode
             _settings[DifficultyMode.Normal] = settings;
         }
 
-        /// <summary>
-        /// Get multiplier for specific difficulty mode.
-        /// </summary>
-        /// <param name="difficulty">Difficulty mode.</param>
-        /// <returns>Difficulty settings.</returns>
+        ///<summary>
+        ///Get multiplier for specific difficulty mode.
+        ///</summary>
+        ///<param name="difficulty">Difficulty mode.</param>
+        ///<returns>Difficulty settings.</returns>
         public DifficultySettings GetMultiplier(DifficultyMode difficulty)
         {
             if (_settings.TryGetValue(difficulty, out var settings))
@@ -103,34 +105,34 @@ namespace SASZombieAssaultTD.Engine.Waves
             return _settings[DifficultyMode.Normal];
         }
 
-        /// <summary>
-        /// Get multiplier for specific stat and difficulty.
-        /// </summary>
-        /// <param name="difficulty">Difficulty mode.</param>
-        /// <param name="stat">Stat to multiply.</param>
-        /// <returns>Multiplier value.</returns>
+        ///<summary>
+        ///Get multiplier for specific stat and difficulty.
+        ///</summary>
+        ///<param name="difficulty">Difficulty mode.</param>
+        ///<param name="stat">Stat to multiply.</param>
+        ///<returns>Multiplier value.</returns>
         public float GetMultiplier(DifficultyMode difficulty, string stat)
         {
             var settings = GetMultiplier(difficulty);
             return settings.GetMultiplier(stat);
         }
 
-        /// <summary>
-        /// Get overall multiplier for difficulty mode.
-        /// </summary>
-        /// <param name="difficulty">Difficulty mode.</param>
-        /// <returns>Overall multiplier.</returns>
+        ///<summary>
+        ///Get overall multiplier for difficulty mode.
+        ///</summary>
+        ///<param name="difficulty">Difficulty mode.</param>
+        ///<returns>Overall multiplier.</returns>
         public float GetOverallMultiplier(DifficultyMode difficulty)
         {
             var settings = GetMultiplier(difficulty);
             return settings.GetOverallMultiplier();
         }
 
-        /// <summary>
-        /// Apply difficulty multiplier to enemy stats.
-        /// </summary>
-        /// <param name="enemy">Enemy to modify.</param>
-        /// <param name="difficulty">Difficulty mode.</param>
+        ///<summary>
+        ///Apply difficulty multiplier to enemy stats.
+        ///</summary>
+        ///<param name="enemy">Enemy to modify.</param>
+        ///<param name="difficulty">Difficulty mode.</param>
         public void ApplyToEnemy(Enemy enemy, DifficultyMode difficulty)
         {
             if (enemy == null) return;
@@ -139,11 +141,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             settings.ApplyToEnemy(enemy);
         }
 
-        /// <summary>
-        /// Apply difficulty multiplier to wave script.
-        /// </summary>
-        /// <param name="waveScript">Wave script to modify.</param>
-        /// <param name="difficulty">Difficulty mode.</param>
+        ///<summary>
+        ///Apply difficulty multiplier to wave script.
+        ///</summary>
+        ///<param name="waveScript">Wave script to modify.</param>
+        ///<param name="difficulty">Difficulty mode.</param>
         public void ApplyToWaveScript(WaveScript waveScript, DifficultyMode difficulty)
         {
             if (waveScript == null) return;
@@ -152,11 +154,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             settings.ApplyToWaveScript(waveScript);
         }
 
-        /// <summary>
-        /// Apply difficulty multiplier to tower stats.
-        /// </summary>
-        /// <param name="tower">Tower to modify.</param>
-        /// <param name="difficulty">Difficulty mode.</param>
+        ///<summary>
+        ///Apply difficulty multiplier to tower stats.
+        ///</summary>
+        ///<param name="tower">Tower to modify.</param>
+        ///<param name="difficulty">Difficulty mode.</param>
         public void ApplyToTower(Tower tower, DifficultyMode difficulty)
         {
             if (tower == null) return;
@@ -165,32 +167,32 @@ namespace SASZombieAssaultTD.Engine.Waves
             settings.ApplyToTower(tower);
         }
 
-        /// <summary>
-        /// Gets the overall difficulty multiplier for current difficulty.
-        /// Adapts parameterless multiplier calls to the canonical GetMultiplier implementation.
-        /// </summary>
-        /// <returns>Overall difficulty multiplier.</returns>
+        ///<summary>
+        ///Gets the overall difficulty multiplier for current difficulty.
+        ///Adapts parameterless multiplier calls to the canonical GetMultiplier implementation.
+        ///</summary>
+        ///<returns>Overall difficulty multiplier.</returns>
         public float GetMultiplier()
         {
             return GetOverallMultiplier(_currentDifficulty);
         }
 
-        /// <summary>
-        /// Get difficulty description.
-        /// </summary>
-        /// <param name="difficulty">Difficulty mode.</param>
-        /// <returns>Difficulty description.</returns>
+        ///<summary>
+        ///Get difficulty description.
+        ///</summary>
+        ///<param name="difficulty">Difficulty mode.</param>
+        ///<returns>Difficulty description.</returns>
         public string GetDifficultyDescription(DifficultyMode difficulty)
         {
             var settings = GetMultiplier(difficulty);
             return settings.Description;
         }
 
-        /// <summary>
-        /// Get difficulty color for UI.
-        /// </summary>
-        /// <param name="difficulty">Difficulty mode.</param>
-        /// <returns>Difficulty color.</returns>
+        ///<summary>
+        ///Get difficulty color for UI.
+        ///</summary>
+        ///<param name="difficulty">Difficulty mode.</param>
+        ///<returns>Difficulty color.</returns>
         public Color GetDifficultyColor(DifficultyMode difficulty)
         {
             return difficulty switch
@@ -204,12 +206,12 @@ namespace SASZombieAssaultTD.Engine.Waves
             };
         }
 
-        /// <summary>
-        /// Check if difficulty is unlocked.
-        /// </summary>
-        /// <param name="difficulty">Difficulty mode.</param>
-        /// <param name="playerLevel">Player level.</param>
-        /// <returns>True if difficulty is unlocked.</returns>
+        ///<summary>
+        ///Check if difficulty is unlocked.
+        ///</summary>
+        ///<param name="difficulty">Difficulty mode.</param>
+        ///<param name="playerLevel">Player level.</param>
+        ///<returns>True if difficulty is unlocked.</returns>
         public bool IsDifficultyUnlocked(DifficultyMode difficulty, int playerLevel)
         {
             return difficulty switch
@@ -223,11 +225,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             };
         }
 
-        /// <summary>
-        /// Get recommended difficulty for player level.
-        /// </summary>
-        /// <param name="playerLevel">Player level.</param>
-        /// <returns>Recommended difficulty.</returns>
+        ///<summary>
+        ///Get recommended difficulty for player level.
+        ///</summary>
+        ///<param name="playerLevel">Player level.</param>
+        ///<returns>Recommended difficulty.</returns>
         public DifficultyMode GetRecommendedDifficulty(int playerLevel)
         {
             return playerLevel switch
@@ -240,31 +242,31 @@ namespace SASZombieAssaultTD.Engine.Waves
             };
         }
 
-        /// <summary>
-        /// Register custom difficulty settings.
-        /// </summary>
-        /// <param name="difficulty">Difficulty mode.</param>
-        /// <param name="settings">Settings to register.</param>
+        ///<summary>
+        ///Register custom difficulty settings.
+        ///</summary>
+        ///<param name="difficulty">Difficulty mode.</param>
+        ///<param name="settings">Settings to register.</param>
         public void RegisterDifficulty(DifficultyMode difficulty, DifficultySettings settings)
         {
             _settings[difficulty] = settings;
             System.Diagnostics.Debug.WriteLine($"Registered custom difficulty settings for {difficulty}");
         }
 
-        /// <summary>
-        /// Get all available difficulties.
-        /// </summary>
-        /// <returns>List of available difficulties.</returns>
+        ///<summary>
+        ///Get all available difficulties.
+        ///</summary>
+        ///<returns>List of available difficulties.</returns>
         public List<DifficultyMode> GetAvailableDifficulties()
         {
             return new List<DifficultyMode>(_settings.Keys);
         }
 
-        /// <summary>
-        /// Validate difficulty settings.
-        /// </summary>
-        /// <param name="settings">Settings to validate.</param>
-        /// <returns>Validation result.</returns>
+        ///<summary>
+        ///Validate difficulty settings.
+        ///</summary>
+        ///<param name="settings">Settings to validate.</param>
+        ///<returns>Validation result.</returns>
         public ValidationResult ValidateSettings(DifficultySettings settings)
         {
             var result = new ValidationResult { IsValid = true };
@@ -302,12 +304,12 @@ namespace SASZombieAssaultTD.Engine.Waves
             return result;
         }
 
-        /// <summary>
-        /// Initialize default difficulty settings.
-        /// </summary>
+        ///<summary>
+        ///Initialize default difficulty settings.
+        ///</summary>
         private void InitializeDifficultySettings()
         {
-            // Easy difficulty
+            //Easy difficulty
             _settings[DifficultyMode.Easy] = new DifficultySettings
             {
                 Name = "Easy",
@@ -324,7 +326,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 SpecialAbilities = new List<string>()
             };
 
-            // Normal difficulty
+            //Normal difficulty
             _settings[DifficultyMode.Normal] = new DifficultySettings
             {
                 Name = "Normal",
@@ -341,7 +343,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 SpecialAbilities = new List<string>()
             };
 
-            // Hard difficulty
+            //Hard difficulty
             _settings[DifficultyMode.Hard] = new DifficultySettings
             {
                 Name = "Hard",
@@ -358,7 +360,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 SpecialAbilities = new List<string> { "armored", "regenerating" }
             };
 
-            // Elite difficulty
+            //Elite difficulty
             _settings[DifficultyMode.Elite] = new DifficultySettings
             {
                 Name = "Elite",
@@ -375,7 +377,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 SpecialAbilities = new List<string> { "armored", "regenerating", "stealth", "explosive" }
             };
 
-            // Nightmare difficulty
+            //Nightmare difficulty
             _settings[DifficultyMode.Nightmare] = new DifficultySettings
             {
                 Name = "Nightmare",
@@ -396,9 +398,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Difficulty settings container.
-    /// </summary>
+    ///<summary>
+    ///Difficulty settings container.
+    ///</summary>
     public class DifficultySettings
     {
         private object TheType;
@@ -424,11 +426,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             CustomMultipliers = new Dictionary<string, float>();
         }
 
-        /// <summary>
-        /// Get multiplier for specific stat.
-        /// </summary>
-        /// <param name="stat">Stat to get multiplier for.</param>
-        /// <returns>Multiplier value.</returns>
+        ///<summary>
+        ///Get multiplier for specific stat.
+        ///</summary>
+        ///<param name="stat">Stat to get multiplier for.</param>
+        ///<returns>Multiplier value.</returns>
         public float GetMultiplier(string stat)
         {
             stat = stat.ToLower();
@@ -446,19 +448,19 @@ namespace SASZombieAssaultTD.Engine.Waves
             };
         }
 
-        /// <summary>
-        /// Get overall multiplier (average of core stats).
-        /// </summary>
-        /// <returns>Overall multiplier.</returns>
+        ///<summary>
+        ///Get overall multiplier (average of core stats).
+        ///</summary>
+        ///<returns>Overall multiplier.</returns>
         public float GetOverallMultiplier()
         {
             return (HealthMultiplier + SpeedMultiplier + DamageMultiplier + CashMultiplier + ExperienceMultiplier) / 5f;
         }
 
-        /// <summary>
-        /// Apply difficulty settings to enemy.
-        /// </summary>
-        /// <param name="enemy">Enemy to modify.</param>
+        ///<summary>
+        ///Apply difficulty settings to enemy.
+        ///</summary>
+        ///<param name="enemy">Enemy to modify.</param>
         public void ApplyToEnemy(Enemy enemy)
         {
             if (enemy == null) return;
@@ -468,48 +470,48 @@ namespace SASZombieAssaultTD.Engine.Waves
             enemy.Speed *= SpeedMultiplier;
             enemy.Damage = (int)(enemy.Damage * DamageMultiplier);
 
-            // Apply special abilities
+            //Apply special abilities
             foreach (var ability in SpecialAbilities)
             {
                 enemy.AddSpecialAbility(ability);
             }
 
-            // Apply custom multipliers
+            //Apply custom multipliers
             foreach (var custom in CustomMultipliers)
             {
                 enemy.SetCustomProperty(custom.Key, custom.Value);
             }
         }
 
-        /// <summary>
-        /// Apply difficulty settings to wave script.
-        /// </summary>
-        /// <param name="waveScript">Wave script to modify.</param>
+        ///<summary>
+        ///Apply difficulty settings to wave script.
+        ///</summary>
+        ///<param name="waveScript">Wave script to modify.</param>
         public void ApplyToWaveScript(WaveScript waveScript)
         {
             if (waveScript == null) return;
 
-            // Apply difficulty multipliers to wave script using current instance properties
+            //Apply difficulty multipliers to wave script using current instance properties
             waveScript.Modifiers.GlobalHealthModifier = this.HealthMultiplier;
             waveScript.Modifiers.GlobalSpeedModifier = this.SpeedMultiplier;
             
-            // Apply cash and experience multipliers to rewards
+            //Apply cash and experience multipliers to rewards
             waveScript.Rewards.CashBonus = (int)(waveScript.Rewards.CashBonus * this.CashMultiplier);
             waveScript.Rewards.ExperienceBonus = (int)(waveScript.Rewards.ExperienceBonus * this.ExperienceMultiplier);
 
-            // Apply wave delay multiplier
+            //Apply wave delay multiplier
             foreach (var spawnGroup in waveScript.SpawnGroups)
             {
                 spawnGroup.SpawnDelay *= WaveDelayMultiplier;
                 spawnGroup.DelayAfterGroup *= WaveDelayMultiplier;
             }
 
-            // Add special abilities to enemies
+            //Add special abilities to enemies
             foreach (var spawnGroup in waveScript.SpawnGroups)
             {
                 foreach (var ability in SpecialAbilities)
                 {
-                    // Cast the modifiers list to IEnumerable dynamic or a concrete modifier type to allow LINQ queries
+                    //Cast the modifiers list to IEnumerable dynamic or a concrete modifier type to allow LINQ queries
                     var modifiers = spawnGroup.EnemyModifiers() as System.Collections.IEnumerable;
                     bool alreadyHasModifier = false;
 
@@ -527,13 +529,13 @@ namespace SASZombieAssaultTD.Engine.Waves
 
                     if (!alreadyHasModifier)
                     {
-                        // Call Add on the dynamic collection to bypass compilation checks
+                        //Call Add on the dynamic collection to bypass compilation checks
                         dynamic modifierList = spawnGroup.EnemyModifiers();
                         modifierList.Add(new EnemyBehaviorModifier
                         {
                             ModifierType = ability,
                             Value = 1.0f,
-                            Duration = -1f // Permanent
+                            Duration = -1f //Permanent
                         });
                     }
                 }
@@ -548,19 +550,19 @@ namespace SASZombieAssaultTD.Engine.Waves
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Apply difficulty settings to tower.
-        /// </summary>
-        /// <param name="tower">Tower to modify.</param>
+        ///<summary>
+        ///Apply difficulty settings to tower.
+        ///</summary>
+        ///<param name="tower">Tower to modify.</param>
         public void ApplyToTower(Tower tower)
         {
             if (tower == null) return;
 
-            // Use the custom property setter to bypass the read-only restriction
+            //Use the custom property setter to bypass the read-only restriction
             int modifiedCost = (int)(tower.Cost * TowerCostMultiplier);
             tower.SetCustomProperty("Cost", modifiedCost);
 
-            // Apply custom multipliers
+            //Apply custom multipliers
             foreach (var custom in CustomMultipliers)
             {
                 tower.SetCustomProperty(custom.Key, custom.Value);
@@ -568,10 +570,10 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
 
 
-        /// <summary>
-        /// Clone this difficulty settings.
-        /// </summary>
-        /// <returns>Cloned settings.</returns>
+        ///<summary>
+        ///Clone this difficulty settings.
+        ///</summary>
+        ///<returns>Cloned settings.</returns>
         public DifficultySettings Clone()
         {
             var clone = new DifficultySettings
@@ -594,20 +596,20 @@ namespace SASZombieAssaultTD.Engine.Waves
             return clone;
         }
 
-        /// <summary>
-        /// Get difficulty rating (1-10).
-        /// </summary>
-        /// <returns>Difficulty rating.</returns>
+        ///<summary>
+        ///Get difficulty rating (1-10).
+        ///</summary>
+        ///<returns>Difficulty rating.</returns>
         public int GetDifficultyRating()
         {
             var rating = (int)(GetOverallMultiplier() * 2);
             return System.Math.Min(10, System.Math.Max(1, rating));
         }
 
-        /// <summary>
-        /// Get difficulty summary.
-        /// </summary>
-        /// <returns>Summary string.</returns>
+        ///<summary>
+        ///Get difficulty summary.
+        ///</summary>
+        ///<returns>Summary string.</returns>
         public string GetSummary()
         {
             var summary = $"{Name} (Difficulty {GetDifficultyRating()}/10)\n";
@@ -626,9 +628,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Difficulty modes for SAS TD.
-    /// </summary>
+    ///<summary>
+    ///Difficulty modes for SAS TD.
+    ///</summary>
     public enum DifficultyMode
     {
         Easy,
@@ -638,9 +640,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         Nightmare
     }
 
-    /// <summary>
-    /// Validation result for difficulty settings.
-    /// </summary>
+    ///<summary>
+    ///Validation result for difficulty settings.
+    ///</summary>
     public class ValidationResult
     {
         public bool IsValid { get; set; }
@@ -658,19 +660,19 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Extension methods for DifficultyManager.
-    /// </summary>
+    ///<summary>
+    ///Extension methods for DifficultyManager.
+    ///</summary>
     public static class DifficultyManagerExtensions
     {
-        /// <summary>
-        /// Get current difficulty from game state.
-        /// </summary>
-        /// <returns>Current difficulty.</returns>
+        ///<summary>
+        ///Get current difficulty from game state.
+        ///</summary>
+        ///<returns>Current difficulty.</returns>
         public static DifficultyMode GetCurrentDifficulty()
         {
-            // This would typically come from a game state manager or settings system
-            // For now, return Normal as default
+            //This would typically come from a game state manager or settings system
+            //For now, return Normal as default
             return DifficultyMode.Normal;
         }
     }

@@ -15,17 +15,19 @@ Notes:    This file is used by Waves, AI, and difficulty scaling.
           Single responsibility: analytics management.
 */
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.AccessControl;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.HazardsControl
 {
-    /// <summary>
-    /// Breakdown of hazards by type.
-    /// </summary>
+    ///<summary>
+    ///Breakdown of hazards by type.
+    ///</summary>
     public class HazardTypeBreakdown
     {
         private static object TheType;
@@ -52,10 +54,10 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             throw new NotImplementedException();
         }
     }
-    /// <summary>
-    /// Analytics manager for hazard systems.
-    /// Provides metrics and summaries for hazard performance.
-    /// </summary>
+    ///<summary>
+    ///Analytics manager for hazard systems.
+    ///Provides metrics and summaries for hazard performance.
+    ///</summary>
     public class HazardAnalytics
     {
         private readonly Dictionary<string, int> _typeCounts = new();
@@ -63,9 +65,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         private readonly Dictionary<int, HazardEffectivenessRecord> _effectivenessRecords = new();
         private bool _isInitialized;
 
-        /// <summary>
-        /// Initializes the hazard analytics system.
-        /// </summary>
+        ///<summary>
+        ///Initializes the hazard analytics system.
+        ///</summary>
         public void Init()
         {
             _typeCounts.Clear();
@@ -74,40 +76,40 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             _isInitialized = true;
         }
 
-        /// <summary>
-        /// Gets the total hazard count.
-        /// </summary>
+        ///<summary>
+        ///Gets the total hazard count.
+        ///</summary>
         public int TotalHazardCount => _isInitialized ? _typeCounts.Values.Sum() : 0;
 
-        /// <summary>
-        /// Gets the active hazard count.
-        /// </summary>
+        ///<summary>
+        ///Gets the active hazard count.
+        ///</summary>
         public int ActiveHazardCount => _isInitialized ? _effectivenessRecords.Values.Count(r => r.IsActive) : 0;
 
-        /// <summary>
-        /// Gets the hazard type breakdown.
-        /// </summary>
+        ///<summary>
+        ///Gets the hazard type breakdown.
+        ///</summary>
         public Dictionary<string, int> TypeBreakdown => _isInitialized
             ? new Dictionary<string, int>(_typeCounts)
             : new Dictionary<string, int>();
 
-        /// <summary>
-        /// Gets the average hazard lifetime.
-        /// </summary>
+        ///<summary>
+        ///Gets the average hazard lifetime.
+        ///</summary>
         public float AverageHazardLifetime => _isInitialized && _lifetimeRecords.Any()
             ? _lifetimeRecords.Average(r => r.LifetimeSeconds)
             : 0f;
 
-        /// <summary>
-        /// Gets the average effectiveness score across all hazards.
-        /// </summary>
+        ///<summary>
+        ///Gets the average effectiveness score across all hazards.
+        ///</summary>
         public float AverageEffectivenessScore => _isInitialized && _effectivenessRecords.Any()
             ? _effectivenessRecords.Values.Average(r => r.EffectivenessScore)
             : 0f;
 
-        /// <summary>
-        /// Records hazard creation for analytics.
-        /// </summary>
+        ///<summary>
+        ///Records hazard creation for analytics.
+        ///</summary>
         public void RecordHazardCreation(Hazard hazard)
         {
             if (!_isInitialized || hazard == null) return;
@@ -125,9 +127,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             OnHazardRecorded?.Invoke(hazard);
         }
 
-        /// <summary>
-        /// Records hazard destruction for analytics.
-        /// </summary>
+        ///<summary>
+        ///Records hazard destruction for analytics.
+        ///</summary>
         public void RecordHazardDestruction(Hazard hazard)
         {
             if (!_isInitialized || hazard == null) return;
@@ -153,9 +155,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             OnHazardDestructionRecorded?.Invoke(hazard);
         }
 
-        /// <summary>
-        /// Records hazard damage for analytics.
-        /// </summary>
+        ///<summary>
+        ///Records hazard damage for analytics.
+        ///</summary>
         public void RecordHazardDamage(int hazardId, float damageAmount, int enemiesAffected)
         {
             if (!_isInitialized || !_effectivenessRecords.TryGetValue(hazardId, out var record)) return;
@@ -165,9 +167,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             record.EffectivenessScore = CalculateEffectivenessScore(record);
         }
 
-        /// <summary>
-        /// Gets detailed analytics for a hazard type.
-        /// </summary>
+        ///<summary>
+        ///Gets detailed analytics for a hazard type.
+        ///</summary>
         public HazardTypeAnalytics GetHazardTypeAnalytics(string hazardType)
         {
             if (!_isInitialized) return new HazardTypeAnalytics();
@@ -187,9 +189,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             };
         }
 
-        /// <summary>
-        /// Gets comprehensive analytics summary.
-        /// </summary>
+        ///<summary>
+        ///Gets comprehensive analytics summary.
+        ///</summary>
         public HazardAnalyticsSummary GetComprehensiveSummary(Dictionary<string, int> hazardTypeBreakdown)
         {
             if (!_isInitialized) return new HazardAnalyticsSummary();
@@ -208,9 +210,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             };
         }
 
-        /// <summary>
-        /// Cleans up the hazard analytics system.
-        /// </summary>
+        ///<summary>
+        ///Cleans up the hazard analytics system.
+        ///</summary>
         public void Cleanup()
         {
             _typeCounts.Clear();
@@ -219,17 +221,17 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             _isInitialized = false;
         }
 
-        /// <summary>
-        /// Event triggered when a hazard is recorded.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when a hazard is recorded.
+        ///</summary>
         public event Action<Hazard> OnHazardRecorded;
 
-        /// <summary>
-        /// Event triggered when hazard destruction is recorded.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when hazard destruction is recorded.
+        ///</summary>
         public event Action<Hazard> OnHazardDestructionRecorded;
 
-        ///  Private Methods
+        /// Private Methods
 
         private float CalculateEffectivenessScore(HazardEffectivenessRecord record)
         {
@@ -263,12 +265,12 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
                 .Average(r => r.EffectivenessScore);
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// Record of hazard lifetime data.
-    /// </summary>
+    ///<summary>
+    ///Record of hazard lifetime data.
+    ///</summary>
     internal class HazardLifetimeRecord
     {
         public int HazardId { get; set; }
@@ -277,9 +279,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         public string DestructionReason { get; set; }
     }
 
-    /// <summary>
-    /// Record of hazard effectiveness data.
-    /// </summary>
+    ///<summary>
+    ///Record of hazard effectiveness data.
+    ///</summary>
     internal class HazardEffectivenessRecord
     {
         public int HazardId { get; set; }
@@ -293,9 +295,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         public float FinalLifetime { get; set; }
     }
 
-    /// <summary>
-    /// Analytics data for a specific hazard type.
-    /// </summary>
+    ///<summary>
+    ///Analytics data for a specific hazard type.
+    ///</summary>
     public class HazardTypeAnalytics
     {
         public string HazardType { get; set; }
@@ -307,9 +309,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         public int TotalEnemiesAffected { get; set; }
     }
 
-    /// <summary>
-    /// Comprehensive analytics summary.
-    /// </summary>
+    ///<summary>
+    ///Comprehensive analytics summary.
+    ///</summary>
     public class HazardAnalyticsSummary
     {
         public int TotalHazardsCreated { get; set; }
@@ -322,24 +324,24 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         public float TotalDamageDealt { get; set; }
         public int TotalEnemiesAffected { get; set; }
         
-        // Missing properties
+        //Missing properties
         public int TotalCount { get; set; }
         public int ActiveCount { get; set; }
         public float EffectivenessScore { get; set; }
     }
 
-    /// <summary>
-    /// Hazard occupancy data for analytics.
-    /// </summary>
+    ///<summary>
+    ///Hazard occupancy data for analytics.
+    ///</summary>
     public class HazardOccupancyData
     {
         public bool IsOverloaded { get; set; }
         public List<string> ActiveHazards { get; set; } = new List<string>();
     }
 
-    /// <summary>
-    /// Hazard density data for analytics.
-    /// </summary>
+    ///<summary>
+    ///Hazard density data for analytics.
+    ///</summary>
     public class HazardDensityData
     {
         private object TheType;

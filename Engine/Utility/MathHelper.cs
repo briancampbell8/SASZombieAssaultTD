@@ -2,6 +2,8 @@
 File:    MathHelper.cs
 Purpose: Clamp; Lerp.
 */
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Utility
 {
     public static class MathHelper

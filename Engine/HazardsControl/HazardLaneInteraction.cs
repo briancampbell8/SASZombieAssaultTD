@@ -19,12 +19,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.HazardsControl
 {
-    /// <summary>
-    /// Lane interaction manager for hazard systems.
-    /// Manages hazard effects on lanes and pathing.
-    /// </summary>
+    ///<summary>
+    ///Lane interaction manager for hazard systems.
+    ///Manages hazard effects on lanes and pathing.
+    ///</summary>
     public class HazardLaneInteraction
     {
         private readonly Dictionary<int, LaneInteractionData> _laneData = new();
@@ -33,9 +35,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         private float _laneWidth = DefaultLaneWidth;
         private bool _isInitialized;
 
-        /// <summary>
-        /// Initializes the hazard lane interaction system.
-        /// </summary>
+        ///<summary>
+        ///Initializes the hazard lane interaction system.
+        ///</summary>
         public void Init()
         {
             _laneData.Clear();
@@ -44,11 +46,11 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             _isInitialized = true;
         }
 
-        /// <summary>
-        /// Applies slowdown to a lane.
-        /// </summary>
-        /// <param name="laneId">The lane identifier.</param>
-        /// <param name="amount">Slowdown amount (0-1, where 1 is full stop).</param>
+        ///<summary>
+        ///Applies slowdown to a lane.
+        ///</summary>
+        ///<param name="laneId">The lane identifier.</param>
+        ///<param name="amount">Slowdown amount (0-1, where 1 is full stop).</param>
         public void ApplyLaneSlowdown(int laneId, float amount)
         {
             if (!_isInitialized) return;
@@ -59,30 +61,30 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             OnLaneSlowdownApplied?.Invoke(laneId, amount);
         }
 
-        /// <summary>
-        /// Determines if a lane is blocked.
-        /// </summary>
-        /// <param name="laneId">The lane identifier.</param>
-        /// <returns>True if lane is blocked.</returns>
+        ///<summary>
+        ///Determines if a lane is blocked.
+        ///</summary>
+        ///<param name="laneId">The lane identifier.</param>
+        ///<returns>True if lane is blocked.</returns>
         public bool IsLaneBlocked(int laneId)
         {
             return _isInitialized && _laneData.TryGetValue(laneId, out var lane) && lane.IsBlocked;
         }
 
-        /// <summary>
-        /// Gets hazard intensity for a lane.
-        /// </summary>
-        /// <param name="laneId">The lane identifier.</param>
-        /// <returns>Intensity value (0-1).</returns>
+        ///<summary>
+        ///Gets hazard intensity for a lane.
+        ///</summary>
+        ///<param name="laneId">The lane identifier.</param>
+        ///<returns>Intensity value (0-1).</returns>
         public float GetLaneHazardIntensity(int laneId)
         {
             return _isInitialized && _laneData.TryGetValue(laneId, out var lane) ? lane.HazardIntensity : 0f;
         }
 
-        /// <summary>
-        /// Processes lane hazard effects.
-        /// </summary>
-        /// <param name="hazard">The hazard to process.</param>
+        ///<summary>
+        ///Processes lane hazard effects.
+        ///</summary>
+        ///<param name="hazard">The hazard to process.</param>
         public void ProcessLaneHazardEffects(Hazard hazard)
         {
             if (!_isInitialized || hazard == null) return;
@@ -93,11 +95,11 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             }
         }
 
-        /// <summary>
-        /// Updates lane data with hazard information.
-        /// </summary>
-        /// <param name="laneId">The lane identifier.</param>
-        /// <param name="hazard">The hazard affecting the lane.</param>
+        ///<summary>
+        ///Updates lane data with hazard information.
+        ///</summary>
+        ///<param name="laneId">The lane identifier.</param>
+        ///<param name="hazard">The hazard affecting the lane.</param>
         private void UpdateLaneWithHazard(int laneId, Hazard hazard)
         {
             var lane = GetOrCreateLaneData(laneId);
@@ -112,10 +114,10 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             RecalculateLaneEffects(laneId);
         }
 
-        /// <summary>
-        /// Recalculates lane effects based on hazards.
-        /// </summary>
-        /// <param name="laneId">The lane identifier.</param>
+        ///<summary>
+        ///Recalculates lane effects based on hazards.
+        ///</summary>
+        ///<param name="laneId">The lane identifier.</param>
         private void RecalculateLaneEffects(int laneId)
         {
             if (!_laneData.TryGetValue(laneId, out var lane) || !_laneHazards.TryGetValue(laneId, out var hazardsInLane))
@@ -155,11 +157,11 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             lane.HazardIntensity = 0f;
         }
 
-        /// <summary>
-        /// Calculates hazard effect on lanes.
-        /// </summary>
-        /// <param name="hazard">The hazard to calculate effects for.</param>
-        /// <returns>Lane effect data.</returns>
+        ///<summary>
+        ///Calculates hazard effect on lanes.
+        ///</summary>
+        ///<param name="hazard">The hazard to calculate effects for.</param>
+        ///<returns>Lane effect data.</returns>
         private HazardLaneEffect CalculateHazardLaneEffect(Hazard hazard)
         {
             var effect = hazard.Type.ToLowerInvariant() switch
@@ -175,11 +177,11 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             return effect;
         }
 
-        /// <summary>
-        /// Gets lanes affected by a hazard.
-        /// </summary>
-        /// <param name="hazard">The hazard to check.</param>
-        /// <returns>List of affected lane IDs.</returns>
+        ///<summary>
+        ///Gets lanes affected by a hazard.
+        ///</summary>
+        ///<param name="hazard">The hazard to check.</param>
+        ///<returns>List of affected lane IDs.</returns>
         private List<int> GetAffectedLanes(Hazard hazard)
         {
             var affectedLanes = new List<int>();
@@ -194,29 +196,29 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             return affectedLanes;
         }
 
-        /// <summary>
-        /// Gets lane interaction data.
-        /// </summary>
-        /// <param name="laneId">The lane identifier.</param>
-        /// <returns>Lane interaction data.</returns>
+        ///<summary>
+        ///Gets lane interaction data.
+        ///</summary>
+        ///<param name="laneId">The lane identifier.</param>
+        ///<returns>Lane interaction data.</returns>
         public LaneInteractionData GetLaneData(int laneId)
         {
             return _isInitialized && _laneData.TryGetValue(laneId, out var data) ? data : new LaneInteractionData { LaneId = laneId };
         }
 
-        /// <summary>
-        /// Gets all lane interaction data.
-        /// </summary>
-        /// <returns>Dictionary of all lane data.</returns>
+        ///<summary>
+        ///Gets all lane interaction data.
+        ///</summary>
+        ///<returns>Dictionary of all lane data.</returns>
         public Dictionary<int, LaneInteractionData> GetAllLaneData()
         {
             return _isInitialized ? new Dictionary<int, LaneInteractionData>(_laneData) : new();
         }
 
-        /// <summary>
-        /// Updates all lane effects.
-        /// </summary>
-        /// <param name="hazards">List of active hazards.</param>
+        ///<summary>
+        ///Updates all lane effects.
+        ///</summary>
+        ///<param name="hazards">List of active hazards.</param>
         public void UpdateAllLaneEffects(List<Hazard> hazards)
         {
             if (!_isInitialized || hazards == null) return;
@@ -234,11 +236,11 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             OnLaneEffectsUpdated?.Invoke();
         }
 
-        /// <summary>
-        /// Gets lanes with high hazard intensity.
-        /// </summary>
-        /// <param name="threshold">Intensity threshold (0-1).</param>
-        /// <returns>List of lane IDs with high intensity.</returns>
+        ///<summary>
+        ///Gets lanes with high hazard intensity.
+        ///</summary>
+        ///<param name="threshold">Intensity threshold (0-1).</param>
+        ///<returns>List of lane IDs with high intensity.</returns>
         public List<int> GetHighIntensityLanes(float threshold = 0.7f)
         {
             return _isInitialized
@@ -246,10 +248,10 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
                 : new List<int>();
         }
 
-        /// <summary>
-        /// Gets blocked lanes.
-        /// </summary>
-        /// <returns>List of blocked lane IDs.</returns>
+        ///<summary>
+        ///Gets blocked lanes.
+        ///</summary>
+        ///<returns>List of blocked lane IDs.</returns>
         public List<int> GetBlockedLanes()
         {
             return _isInitialized
@@ -257,10 +259,10 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
                 : new List<int>();
         }
 
-        /// <summary>
-        /// Gets lane interaction summary.
-        /// </summary>
-        /// <returns>Complete lane interaction summary.</returns>
+        ///<summary>
+        ///Gets lane interaction summary.
+        ///</summary>
+        ///<returns>Complete lane interaction summary.</returns>
         public LaneInteractionSummary GetLaneInteractionSummary()
         {
             if (!_isInitialized) return new LaneInteractionSummary();
@@ -276,9 +278,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             };
         }
 
-        /// <summary>
-        /// Cleans up the hazard lane interaction system.
-        /// </summary>
+        ///<summary>
+        ///Cleans up the hazard lane interaction system.
+        ///</summary>
         public void Cleanup()
         {
             _laneData.Clear();
@@ -300,20 +302,20 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
                 : _laneHazards[laneId] = new List<Hazard>();
         }
 
-        /// <summary>
-        /// Event triggered when lane slowdown is applied.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when lane slowdown is applied.
+        ///</summary>
         public event Action<int, float> OnLaneSlowdownApplied;
 
-        /// <summary>
-        /// Event triggered when lane effects are updated.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when lane effects are updated.
+        ///</summary>
         public event Action OnLaneEffectsUpdated;
     }
 
-    /// <summary>
-    /// Interaction data for a lane.
-    /// </summary>
+    ///<summary>
+    ///Interaction data for a lane.
+    ///</summary>
     public class LaneInteractionData
     {
         public int LaneId { get; set; }
@@ -323,9 +325,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         public List<Hazard> AffectedHazards { get; set; } = new();
     }
 
-    /// <summary>
-    /// Effect of a hazard on lanes.
-    /// </summary>
+    ///<summary>
+    ///Effect of a hazard on lanes.
+    ///</summary>
     internal class HazardLaneEffect
     {
         public float SlowdownAmount { get; set; }
@@ -348,9 +350,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         }
     }
 
-    /// <summary>
-    /// Summary of lane interaction data.
-    /// </summary>
+    ///<summary>
+    ///Summary of lane interaction data.
+    ///</summary>
     public class LaneInteractionSummary
     {
         public int TotalLanes { get; set; }

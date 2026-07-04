@@ -1,20 +1,35 @@
-/*
-Program Name: SASZombieAssaultTD
-File Path: Engine\Audio\AudioSupportingClasses.cs
-Purpose: P90 Modern Audio Subsystem - Supporting classes for audio playback.
-Features: AudioSample, AudioSource, AudioMixer implementations for complete audio system.
-*/
+// ====================================================================================================
+//  FILE: AudioSupportingClasses.cs
+//  PATH: Engine/Audio/
+//  MODULE: Audio Subsystem (Supporting Types)
+//
+//  ROLE:
+//      Provides supporting data types and lightweight helpers for the audio subsystem.
+//
+//  RESPONSIBILITIES:
+//      - Define AudioSample, AudioSource, and mixer helper classes used by audio playback.
+//      - Keep types POCO-style for deterministic serialization and testing.
+//
+//  NON-RESPONSIBILITIES:
+//      - Actual audio device management or driver interaction (handled by platform-specific layers).
+//      - High-level audio policy or game-specific mixing rules.
+//
+//  ARCHITECTURAL NOTES:
+//      - These classes must be efficient and allocation-minimal in hot paths.
+// ====================================================================================================
 
 using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.VectorMath;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Audio
 {
-    /// <summary>
-    /// Audio sample data loaded from audio files.
-    /// P90-01: AudioSample implementation for audio asset management
-    /// </summary>
+    ///<summary>
+    ///Audio sample data loaded from audio files.
+    ///P90-01: AudioSample implementation for audio asset management
+    ///</summary>
     public class AudioSample
     {
         public string Name { get; set; }
@@ -35,9 +50,9 @@ namespace SASZombieAssaultTD.Engine.Audio
             BitsPerSample = 16;
         }
 
-        /// <summary>
-        /// Creates a stub audio sample for testing.
-        /// </summary>
+        ///<summary>
+        ///Creates a stub audio sample for testing.
+        ///</summary>
         public static AudioSample CreateStub(string name, float duration = 2f)
         {
             return new AudioSample(name)
@@ -49,10 +64,10 @@ namespace SASZombieAssaultTD.Engine.Audio
         }
     }
 
-    /// <summary>
-    /// Audio source representing a playing sound instance.
-    /// P90-02: AudioSource implementation for sound playback management
-    /// </summary>
+    ///<summary>
+    ///Audio source representing a playing sound instance.
+    ///P90-02: AudioSource implementation for sound playback management
+    ///</summary>
     public class AudioSource
     {
         public AudioSample Sample { get; set; }
@@ -94,16 +109,16 @@ namespace SASZombieAssaultTD.Engine.Audio
             IsPlaying = true;
         }
 
-        /// <summary>
-        /// Gets whether the source has finished playing.
-        /// </summary>
+        ///<summary>
+        ///Gets whether the source has finished playing.
+        ///</summary>
         public bool IsFinished => !IsLooping && Sample != null && CurrentTime >= Sample.Duration;
     }
 
-    /// <summary>
-    /// Audio mixer for managing audio output and routing.
-    /// P90-03: AudioMixer implementation for audio mixing and routing
-    /// </summary>
+    ///<summary>
+    ///Audio mixer for managing audio output and routing.
+    ///P90-03: AudioMixer implementation for audio mixing and routing
+    ///</summary>
     public class AudioMixer : IDisposable
     {
         private readonly List<AudioSource> _sources = new();
@@ -129,7 +144,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         {
             if (!_initialized || _disposed) return;
 
-            // Update all sources
+            //Update all sources
             foreach (var source in _sources)
             {
                 if (source.IsPlaying && !source.IsLooping)
@@ -142,15 +157,15 @@ namespace SASZombieAssaultTD.Engine.Audio
                 }
             }
 
-            // Remove finished sources
+            //Remove finished sources
             _sources.RemoveAll(s => !s.IsPlaying);
         }
 
         public void Update3DSource(AudioSource source)
         {
             if (source == null || !source.Is3D) return;
-            // Calculate 3D audio parameters
-            // This would integrate with the listener position system
+            //Calculate 3D audio parameters
+            //This would integrate with the listener position system
             System.Diagnostics.Debug.WriteLine($"AudioMixer: Updated 3D source at {source.Position}");
         }
 
@@ -162,9 +177,9 @@ namespace SASZombieAssaultTD.Engine.Audio
             System.Diagnostics.Debug.WriteLine("AudioMixer: Disposed");
         }
 
-        /// <summary>
-        /// Gets the number of active sources.
-        /// </summary>
+        ///<summary>
+        ///Gets the number of active sources.
+        ///</summary>
         public int ActiveSourceCount => _sources.Count;
     }
 }

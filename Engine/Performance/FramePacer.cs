@@ -1,14 +1,16 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Performance
+//
 {
-    /// <summary>
-    /// Frame pacing system for maintaining stable frame rates.
-    /// P30-01-03: Implement frame pacing (target FPS).
-    /// P30-01-10: Verification checklist (stable frame pacing).
-    /// </summary>
+    ///<summary>
+    ///Frame pacing system for maintaining stable frame rates.
+    ///P30-01-03: Implement frame pacing (target FPS).
+    ///P30-01-10: Verification checklist (stable frame pacing).
+    ///</summary>
     public class FramePacer
     {
         private readonly float _targetFPS;
@@ -25,68 +27,68 @@ namespace SASZombieAssaultTD.Engine.Performance
         private float _minFrameTime;
         private int _droppedFrames;
 
-        /// <summary>
-        /// Gets the target FPS.
-        /// </summary>
+        ///<summary>
+        ///Gets the target FPS.
+        ///</summary>
         public float TargetFPS => _targetFPS;
 
-        /// <summary>
-        /// Gets the current average FPS.
-        /// </summary>
+        ///<summary>
+        ///Gets the current average FPS.
+        ///</summary>
         public float AverageFPS => _averageFPS;
 
-        /// <summary>
-        /// Gets the last frame time in milliseconds.
-        /// </summary>
+        ///<summary>
+        ///Gets the last frame time in milliseconds.
+        ///</summary>
         public float LastFrameTime => _lastFrameTime;
 
-        /// <summary>
-        /// Gets the number of dropped frames.
-        /// </summary>
+        ///<summary>
+        ///Gets the number of dropped frames.
+        ///</summary>
         public int DroppedFrames => _droppedFrames;
 
-        /// <summary>
-        /// Gets the maximum frame time recorded.
-        /// </summary>
+        ///<summary>
+        ///Gets the maximum frame time recorded.
+        ///</summary>
         public float MaxFrameTime => _maxFrameTime;
 
-        /// <summary>
-        /// Gets the minimum frame time recorded.
-        /// </summary>
+        ///<summary>
+        ///Gets the minimum frame time recorded.
+        ///</summary>
         public float MinFrameTime => _minFrameTime;
 
-        /// <summary>
-        /// Gets or sets whether frame pacing is enabled.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether frame pacing is enabled.
+        ///</summary>
         public bool Enabled
         {
             get => _enabled;
             set => _enabled = value;
         }
 
-        /// <summary>
-        /// Gets or sets the frame pacing mode.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the frame pacing mode.
+        ///</summary>
         public FramePacingMode PacingMode
         {
             get => _pacingMode;
             set => _pacingMode = value;
         }
 
-        /// <summary>
-        /// Event fired when a frame is dropped.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a frame is dropped.
+        ///</summary>
         public event Action<int> OnFrameDropped;
 
-        /// <summary>
-        /// Event fired when frame pacing statistics are updated.
-        /// </summary>
+        ///<summary>
+        ///Event fired when frame pacing statistics are updated.
+        ///</summary>
         public event Action<FramePacer> OnStatisticsUpdated;
 
-        /// <summary>
-        /// Initializes a new frame pacer.
-        /// </summary>
-        /// <param name="targetFPS">Target frames per second.</param>
+        ///<summary>
+        ///Initializes a new frame pacer.
+        ///</summary>
+        ///<param name="targetFPS">Target frames per second.</param>
         public FramePacer(float targetFPS = 60f)
         {
             _targetFPS = System.Math.Max(1f, targetFPS);
@@ -104,12 +106,12 @@ namespace SASZombieAssaultTD.Engine.Performance
             _droppedFrames = 0;
 
             _frameTimer.Start();
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"FramePacer: Initialized with target FPS {_targetFPS} (target frame time: {_targetFrameTime:F2}ms)");
+            DLogger.Log(LogSubsystems.Performance,LogLevel.Info, $"FramePacer: Initialized with target FPS {_targetFPS} (target frame time: {_targetFrameTime:F2}ms)");
         }
 
-        /// <summary>
-        /// Begins a new frame.
-        /// </summary>
+        ///<summary>
+        ///Begins a new frame.
+        ///</summary>
         public void BeginFrame()
         {
             if (!_enabled)
@@ -118,9 +120,9 @@ namespace SASZombieAssaultTD.Engine.Performance
             _frameTimer.Restart();
         }
 
-        /// <summary>
-        /// Ends the current frame and applies pacing.
-        /// </summary>
+        ///<summary>
+        ///Ends the current frame and applies pacing.
+        ///</summary>
         public void EndFrame()
         {
             if (!_enabled)
@@ -131,28 +133,28 @@ namespace SASZombieAssaultTD.Engine.Performance
             _accumulatedTime += _lastFrameTime;
             _frameCount++;
 
-            // Update statistics
+            //Update statistics
             UpdateStatistics();
 
-            // Apply frame pacing
+            //Apply frame pacing
             ApplyPacing();
 
-            // Reset for next frame
+            //Reset for next frame
             _frameTimer.Reset();
         }
 
-        /// <summary>
-        /// Gets the current FPS.
-        /// </summary>
-        /// <returns>Current FPS.</returns>
+        ///<summary>
+        ///Gets the current FPS.
+        ///</summary>
+        ///<returns>Current FPS.</returns>
         public float GetCurrentFPS()
         {
             return _frameCount > 0 ? _frameCount * 1000f / _accumulatedTime : _targetFPS;
         }
 
-        /// <summary>
-        /// Resets frame pacing statistics.
-        /// </summary>
+        ///<summary>
+        ///Resets frame pacing statistics.
+        ///</summary>
         public void Reset()
         {
             _lastFrameTime = _targetFrameTime;
@@ -163,13 +165,13 @@ namespace SASZombieAssaultTD.Engine.Performance
             _minFrameTime = float.MaxValue;
             _droppedFrames = 0;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "FramePacer: Reset statistics");
+            DLogger.Log(LogSubsystems.Performance,LogLevel.Info, "FramePacer: Reset statistics");
         }
 
-        /// <summary>
-        /// Gets frame pacing statistics.
-        /// </summary>
-        /// <returns>Frame pacing statistics.</returns>
+        ///<summary>
+        ///Gets frame pacing statistics.
+        ///</summary>
+        ///<returns>Frame pacing statistics.</returns>
         public FramePacingStatistics GetStatistics()
         {
             return new FramePacingStatistics
@@ -186,27 +188,27 @@ namespace SASZombieAssaultTD.Engine.Performance
             };
         }
 
-        /// <summary>
-        /// Updates frame pacing statistics.
-        /// </summary>
+        ///<summary>
+        ///Updates frame pacing statistics.
+        ///</summary>
         private void UpdateStatistics()
         {
-            // Update min/max frame times
+            //Update min/max frame times
             if (_lastFrameTime > _maxFrameTime)
                 _maxFrameTime = _lastFrameTime;
 
             if (_lastFrameTime < _minFrameTime)
                 _minFrameTime = _lastFrameTime;
 
-            // Check for dropped frames
+            //Check for dropped frames
             if (_lastFrameTime > _targetFrameTime * 1.5f)
             {
                 _droppedFrames++;
                 OnFrameDropped?.Invoke(_droppedFrames);
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"FramePacer: Frame dropped (time: {_lastFrameTime:F2}ms, target: {_targetFrameTime:F2}ms)");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"FramePacer: Frame dropped (time: {_lastFrameTime:F2}ms, target: {_targetFrameTime:F2}ms)");
             }
 
-            // Update average FPS every 60 frames
+            //Update average FPS every 60 frames
             if (_frameCount % 60 == 0)
             {
                 _averageFPS = GetCurrentFPS();
@@ -214,9 +216,9 @@ namespace SASZombieAssaultTD.Engine.Performance
             }
         }
 
-        /// <summary>
-        /// Applies frame pacing based on the current mode.
-        /// </summary>
+        ///<summary>
+        ///Applies frame pacing based on the current mode.
+        ///</summary>
         private void ApplyPacing()
         {
             if (_pacingMode == FramePacingMode.None)
@@ -241,76 +243,76 @@ namespace SASZombieAssaultTD.Engine.Performance
             }
         }
 
-        /// <summary>
-        /// Applies sleep-based frame pacing.
-        /// </summary>
-        /// <param name="timeToWait">Time to wait in milliseconds.</param>
+        ///<summary>
+        ///Applies sleep-based frame pacing.
+        ///</summary>
+        ///<param name="timeToWait">Time to wait in milliseconds.</param>
         private void ApplySleepPacing(float timeToWait)
         {
-            var sleepTime = (int)(timeToWait * 0.9f); // Sleep for 90% of the time
+            var sleepTime = (int)(timeToWait * 0.9f); //Sleep for 90% of the time
             if (sleepTime > 0)
             {
                 System.Threading.Thread.Sleep(sleepTime);
             }
 
-            // Busy wait for the remaining time
+            //Busy wait for the remaining time
             var remainingTime = timeToWait - sleepTime;
             if (remainingTime > 0f)
             {
                 var endTime = Stopwatch.GetTimestamp() + (long)(remainingTime * Stopwatch.Frequency / 1000);
                 while (Stopwatch.GetTimestamp() < endTime)
                 {
-                    // Busy wait
+                    //Busy wait
                 }
             }
         }
 
-        /// <summary>
-        /// Applies busy-wait frame pacing.
-        /// </summary>
-        /// <param name="timeToWait">Time to wait in milliseconds.</param>
+        ///<summary>
+        ///Applies busy-wait frame pacing.
+        ///</summary>
+        ///<param name="timeToWait">Time to wait in milliseconds.</param>
         private void ApplyBusyWaitPacing(float timeToWait)
         {
             var endTime = Stopwatch.GetTimestamp() + (long)(timeToWait * Stopwatch.Frequency / 1000);
             while (Stopwatch.GetTimestamp() < endTime)
             {
-                // Busy wait
+                //Busy wait
             }
         }
 
-        /// <summary>
-        /// Applies hybrid frame pacing.
-        /// </summary>
-        /// <param name="timeToWait">Time to wait in milliseconds.</param>
+        ///<summary>
+        ///Applies hybrid frame pacing.
+        ///</summary>
+        ///<param name="timeToWait">Time to wait in milliseconds.</param>
         private void ApplyHybridPacing(float timeToWait)
         {
             if (timeToWait > 2f)
             {
-                // Sleep for larger waits
+                //Sleep for larger waits
                 var sleepTime = (int)(timeToWait * 0.8f);
                 System.Threading.Thread.Sleep(sleepTime);
 
-                // Busy wait for the remaining time
+                //Busy wait for the remaining time
                 var remainingTime = timeToWait - sleepTime;
                 if (remainingTime > 0f)
                 {
                     var endTime = Stopwatch.GetTimestamp() + (long)(remainingTime * Stopwatch.Frequency / 1000);
                     while (Stopwatch.GetTimestamp() < endTime)
                     {
-                        // Busy wait
+                        //Busy wait
                     }
                 }
             }
             else
             {
-                // Busy wait for small waits
+                //Busy wait for small waits
                 ApplyBusyWaitPacing(timeToWait);
             }
         }
 
-        /// <summary>
-        /// Gets frame pacer information as a string.
-        /// </summary>
+        ///<summary>
+        ///Gets frame pacer information as a string.
+        ///</summary>
         public override string ToString()
         {
             return $"FramePacer: Target={_targetFPS}fps, Current={GetCurrentFPS():F1}fps, " +
@@ -319,27 +321,27 @@ namespace SASZombieAssaultTD.Engine.Performance
         }
     }
 
-    /// <summary>
-    /// Frame pacing modes.
-    /// </summary>
+    ///<summary>
+    ///Frame pacing modes.
+    ///</summary>
     public enum FramePacingMode
     {
-        /// <summary>No frame pacing.</summary>
+        ///<summary>No frame pacing.</summary>
         None,
 
-        /// <summary>Sleep-based pacing.</summary>
+        ///<summary>Sleep-based pacing.</summary>
         Sleep,
 
-        /// <summary>Busy-wait pacing.</summary>
+        ///<summary>Busy-wait pacing.</summary>
         BusyWait,
 
-        /// <summary>Hybrid pacing.</summary>
+        ///<summary>Hybrid pacing.</summary>
         Hybrid
     }
 
-    /// <summary>
-    /// Frame pacing statistics.
-    /// </summary>
+    ///<summary>
+    ///Frame pacing statistics.
+    ///</summary>
     public class FramePacingStatistics
     {
         public float TargetFPS { get; set; }

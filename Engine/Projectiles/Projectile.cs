@@ -4,14 +4,16 @@ using SASZombieAssaultTD.Engine.Towers;
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.Enemies;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Projectiles
 {
-    /// <summary>
-    /// Lightweight projectile implementation used by the projectile system and pools.
-    /// This class is intentionally small and contains only the members required by
-    /// ProjectileSystem and ProjectilePool. Replace or extend with the game's full
-    /// implementation as needed.
-    /// </summary>
+    ///<summary>
+    ///Lightweight projectile implementation used by the projectile system and pools.
+    ///This class is intentionally small and contains only the members required by
+    ///ProjectileSystem and ProjectilePool. Replace or extend with the game's full
+    ///implementation as needed.
+    ///</summary>
     public class Projectile
     {
         public ProjectileType Type { get; set; }
@@ -33,7 +35,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         public float Lifetime { get; private set; }
         public float MaxLifetime { get; set; } = 5f;
 
-        // Gameplay modifiers (kept simple)
+        //Gameplay modifiers (kept simple)
         public bool IsHoming { get; set; }
         public float HomingStrength { get; set; }
         public float HomingMaxTurnRate { get; set; }
@@ -88,7 +90,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
 
         public void Render()
         {
-            // Rendering is handled elsewhere. Keep stub for compatibility.
+            //Rendering is handled elsewhere. Keep stub for compatibility.
         }
 
         public void Deactivate()

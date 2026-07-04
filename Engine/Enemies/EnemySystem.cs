@@ -12,11 +12,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Enemies
 {
-    /// <summary>
-    /// Service locator pattern for dependency injection.
-    /// </summary>
+    ///<summary>
+    ///Service locator pattern for dependency injection.
+    ///</summary>
     public static class ServiceLocator
     {
         private static readonly Dictionary<Type, object> _services = new();
@@ -31,9 +33,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             return _services.TryGetValue(typeof(T), out var service) ? (T)service : default(T);
         }
     }
-    /// <summary>
-    /// Manages enemies, including their lifecycle, updates, and event publishing.
-    /// </summary>
+    ///<summary>
+    ///Manages enemies, including their lifecycle, updates, and event publishing.
+    ///</summary>
     public class EnemySystem
     {
         private readonly List<Enemy> _enemies = new();
@@ -46,33 +48,33 @@ namespace SASZombieAssaultTD.Engine.Enemies
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
         }
 
-        /// <summary>
-        /// Gets the list of all enemies.
-        /// </summary>
+        ///<summary>
+        ///Gets the list of all enemies.
+        ///</summary>
         public IReadOnlyList<Enemy> Enemies => _enemies;
 
-        /// <summary>
-        /// Gets or sets the maximum number of enemies allowed.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the maximum number of enemies allowed.
+        ///</summary>
         public int MaxEnemies { get; set; } = 100;
 
-        /// <summary>
-        /// Updates all enemies in the system.
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since last frame.</param>
+        ///<summary>
+        ///Updates all enemies in the system.
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since last frame.</param>
         public void UpdateEnemies(float deltaTime)
         {
             foreach (var enemy in _enemies)
             {
-                // Update logic for each enemy
+                //Update logic for each enemy
                 enemy.Update(deltaTime);
             }
         }
 
-        /// <summary>
-        /// Removes an enemy by ID.
-        /// </summary>
-        /// <param name="enemyId">ID of enemy to remove.</param>
+        ///<summary>
+        ///Removes an enemy by ID.
+        ///</summary>
+        ///<param name="enemyId">ID of enemy to remove.</param>
         public void RemoveEnemy(int enemyId)
         {
             var enemy = _enemies.FirstOrDefault(e => e.Entity.Id == enemyId);
@@ -82,9 +84,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
         }
 
-        /// <summary>
-        /// Clears all enemies from the system.
-        /// </summary>
+        ///<summary>
+        ///Clears all enemies from the system.
+        ///</summary>
         public void ClearAllEnemies()
         {
             var enemiesToRemove = _enemies.ToList();
@@ -94,68 +96,70 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
         }
 
-        /// <summary>
-        /// Adds an enemy to the system and publishes an event.
-        /// </summary>
+        ///<summary>
+        ///Adds an enemy to the system and publishes an event.
+        ///</summary>
         public void AddEnemy(Enemy enemy)
         {
             if (enemy == null) throw new ArgumentNullException(nameof(enemy));
             if (_enemies.Contains(enemy)) return;
 
             _enemies.Add(enemy);
-            // TODO: Fix EntityManager integration when methods are available
-            // _entityManager.AddEntity(enemy.Entity);
+            //TODO: Fix EntityManager integration when methods are available
+            //_entityManager.AddEntity(enemy.Entity);
 
             _eventBus.Publish(new EnemySpawnedEvent(enemy));
         }
 
-        /// <summary>
-        /// Removes an enemy from the system and publishes an event.
-        /// </summary>
-        ///         public EnemyDeathEvent(int entityId, ZombieType Type, Vector2 Position)
+        ///<summary>
+        ///Removes an enemy from the system and publishes an event.
+        ///</summary>
+        ///        public EnemyDeathEvent(int entityId, ZombieType Type, Vector2 Position)
         public EnemySystem( int ntityId, ZombieType type, Vector3 position)
         {
             int entityId = 0;
             int EntityId = entityId;
             ZombieType Type = type;
             Vector3 Position = position;
-        }  
+        }
 
-
+        public EnemySystem()
+        {
+        }
 
         public void RemoveEnemy(Enemy enemy)
         {
             if (enemy == null) throw new ArgumentNullException(nameof(enemy));
             if (!_enemies.Remove(enemy)) return;
 
-            // TODO: Fix EntityManager integration when methods are available
-            // _entityManager.RemoveEntity(enemy.Entity);
+            //TODO: Fix EntityManager integration when methods are available
+            //_entityManager.RemoveEntity(enemy.Entity);
 
-        //    _eventBus.Publish(
-          //      new EnemyDeathEvent(
-            //        enemy.Entity.Id,
-              //      enemy.Type,
-                //    enemy.Position
+        //   _eventBus.Publish(
+          //     new EnemyDeathEvent(
+            //       enemy.Entity.Id,
+              //     enemy.Type,
+                //   enemy.Position
             _eventBus.Publish(new EnemyDeathEvent(enemy.Entity.Id, enemy.Type, enemy.Position
             ));
         }
 
-        /// <summary>
-        /// Updates all enemies and processes deaths.
-        /// </summary>
+        ///<summary>
+        ///Updates all enemies and processes deaths.
+        ///</summary>
         public void Update(float deltaTime)
         {
             foreach (var enemy in _enemies)
             {
-                // Update logic for each enemy (if needed)
+                //Update logic for each enemy (if needed)
             }
 
             ProcessEnemyDeaths();
         }
 
-        /// <summary>
-        /// Processes all dead enemies and removes them from the system.
-        /// </summary>
+        ///<summary>
+        ///Processes all dead enemies and removes them from the system.
+        ///</summary>
         private void ProcessEnemyDeaths()
         {
             var deadEnemies = _enemies.FindAll(e => e.IsDead);
@@ -165,18 +169,18 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
         }
 
-        /// <summary>
-        /// Handles the death of an enemy.
-        /// </summary>
+        ///<summary>
+        ///Handles the death of an enemy.
+        ///</summary>
         private void KillEnemy(Enemy enemy)
         {
             if (enemy == null) throw new ArgumentNullException(nameof(enemy));
             RemoveEnemy(enemy);
         }
 
-        /// <summary>
-        /// Gets the current wave number from the WaveController.
-        /// </summary>
+        ///<summary>
+        ///Gets the current wave number from the WaveController.
+        ///</summary>
         private int GetCurrentWaveNumber()
         {
             try

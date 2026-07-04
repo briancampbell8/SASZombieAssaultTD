@@ -1,12 +1,14 @@
-﻿namespace SASZombieAssaultTD.Engine.Dictionary
+using SASZombieAssaultTD.Engine.Diagnostics;
+
+namespace SASZombieAssaultTD.Engine.Dictionary
 {
     public static class Renderer
     {
-        // Placeholder for DrawRectangle, DrawSprite, DrawString
+        //Placeholder for DrawRectangle, DrawSprite, DrawString
     }
 
     public class UIElement
     {
-        // Placeholder for HandleInput
+        //Placeholder for HandleInput
     }
 }

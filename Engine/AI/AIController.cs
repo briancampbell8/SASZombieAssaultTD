@@ -17,77 +17,79 @@ Notes:   Duplicate AIContext and IAIBehavior definitions removed.
 
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.AI
 {
-    /// <summary>
-    /// Executes AI behaviors using shared or external AIContext instances.
-    /// Maintains behavior list and dispatches Tick calls.
-    /// </summary>
+    ///<summary>
+    ///Executes AI behaviors using shared or external AIContext instances.
+    ///Maintains behavior list and dispatches Tick calls.
+    ///</summary>
     public class AIController
     {
-        // Stores registered behaviors
+        //Stores registered behaviors
         private readonly List<IAIBehavior> _behaviors = new();
 
-        // Shared context instance for internal updates
+        //Shared context instance for internal updates
         private readonly AIContext _context = new AIContext();
 
-        // Reference to enemy system
+        //Reference to enemy system
         private EnemySystem? _enemySystem;
 
-        /// <summary>
-        /// Sets enemy system reference.
-        /// </summary>
+        ///<summary>
+        ///Sets enemy system reference.
+        ///</summary>
         public void SetEnemySystem(EnemySystem enemySystem)
         {
             _enemySystem = enemySystem;
         }
 
-        /// <summary>
-        /// Adds behavior if not already present.
-        /// </summary>
+        ///<summary>
+        ///Adds behavior if not already present.
+        ///</summary>
         public void AddBehavior(IAIBehavior behavior)
         {
             if (behavior != null && !_behaviors.Contains(behavior))
                 _behaviors.Add(behavior);
         }
 
-        /// <summary>
-        /// Sets target in shared context.
-        /// </summary>
+        ///<summary>
+        ///Sets target in shared context.
+        ///</summary>
         public void SetTarget(object? target)
         {
             _context.Target = target;
         }
 
-        /// <summary>
-        /// Clears target in shared context.
-        /// </summary>
+        ///<summary>
+        ///Clears target in shared context.
+        ///</summary>
         public void AcquireTargets()
         {
             _context.Target = null;
         }
 
-        /// <summary>
-        /// Updates shared context and evaluates behaviors.
-        /// </summary>
+        ///<summary>
+        ///Updates shared context and evaluates behaviors.
+        ///</summary>
         public void Update(float deltaTime)
         {
             _context.DeltaTime = deltaTime;
             EvaluateBehaviors();
         }
 
-        /// <summary>
-        /// Executes Tick on all behaviors using shared context.
-        /// </summary>
+        ///<summary>
+        ///Executes Tick on all behaviors using shared context.
+        ///</summary>
         public void EvaluateBehaviors()
         {
             for (int i = 0; i < _behaviors.Count; i++)
                 _behaviors[i].Tick(_context);
         }
 
-        /// <summary>
-        /// Executes Tick on all behaviors using external context.
-        /// </summary>
+        ///<summary>
+        ///Executes Tick on all behaviors using external context.
+        ///</summary>
         public void Update(AIContext context)
         {
             foreach (var behavior in _behaviors)
@@ -95,5 +97,5 @@ namespace SASZombieAssaultTD.Engine.AI
         }
     }
 
-    // Duplicate AIContext and IAIBehavior definitions removed.
+    //Duplicate AIContext and IAIBehavior definitions removed.
 }

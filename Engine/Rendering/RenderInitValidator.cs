@@ -16,56 +16,58 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Rendering
 {
-    /// <summary>
-    /// Validates rendering component initialization and provides deterministic startup checks.
-    /// </summary>
+    ///<summary>
+    ///Validates rendering component initialization and provides deterministic startup checks.
+    ///</summary>
     public sealed class RenderInitValidator
     {
         private readonly List<ValidationResult> _validationResults = new();
 
-        /// <summary>
-        /// Gets all validation results from the last validation run.
-        /// </summary>
+        ///<summary>
+        ///Gets all validation results from the last validation run.
+        ///</summary>
         public IReadOnlyList<ValidationResult> ValidationResults => _validationResults;
 
-        /// <summary>
-        /// Gets whether all validations passed.
-        /// </summary>
+        ///<summary>
+        ///Gets whether all validations passed.
+        ///</summary>
         public bool AllValid => _validationResults.All(r => r.IsValid);
 
-        /// <summary>
-        /// Gets the number of critical errors found.
-        /// </summary>
+        ///<summary>
+        ///Gets the number of critical errors found.
+        ///</summary>
         public int CriticalErrorCount => _validationResults.Count(r => r.Severity == ValidationSeverity.Critical);
 
-        /// <summary>
-        /// Validates the complete rendering system initialization.
-        /// </summary>
+        ///<summary>
+        ///Validates the complete rendering system initialization.
+        ///</summary>
         public bool ValidateInitialization(IRenderContext renderContext, RenderPipelineConfig config)
         {
             _validationResults.Clear();
 
-            // Core components validation
+            //Core components validation
             ValidateRenderContext(renderContext);
             ValidateConfiguration(config);
 
-            // System integration validation
+            //System integration validation
             ValidateSystemDependencies();
 
-            // Resource validation
+            //Resource validation
             ValidateResourceAvailability();
 
-            // Performance validation
+            //Performance validation
             ValidatePerformanceSettings(config);
 
             return AllValid;
         }
 
-        /// <summary>
-        /// Validates a specific render component.
-        /// </summary>
+        ///<summary>
+        ///Validates a specific render component.
+        ///</summary>
         public bool ValidateComponent(object component, string componentName)
         {
             var result = new ValidationResult
@@ -77,7 +79,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
             try
             {
-                // Check for null references
+                //Check for null references
                 if (component == null)
                 {
                     result.IsValid = false;
@@ -87,7 +89,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                     return false;
                 }
 
-                // Check for required properties using reflection
+                //Check for required properties using reflection
                 var componentType = component.GetType();
                 var requiredProperties = GetRequiredProperties(componentType);
 
@@ -118,9 +120,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
             return result.IsValid;
         }
 
-        /// <summary>
-        /// Gets a detailed validation report.
-        /// </summary>
+        ///<summary>
+        ///Gets a detailed validation report.
+        ///</summary>
         public string GetValidationReport()
         {
             if (_validationResults.Count == 0)
@@ -134,7 +136,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             report.AppendLine($"Critical Errors: {CriticalErrorCount}");
             report.AppendLine();
 
-            // Group by severity
+            //Group by severity
             var groupedResults = _validationResults.GroupBy(r => r.Severity);
 
             foreach (var group in groupedResults.OrderByDescending(g => g.Key))
@@ -210,7 +212,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
         private void ValidateSystemDependencies()
         {
-            // Check for required system dependencies
+            //Check for required system dependencies
             var requiredSystems = new[]
             {
                 "SASZombieAssaultTD.Engine.Diagnostics.FrameStats",
@@ -253,7 +255,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
         private void ValidateResourceAvailability()
         {
-            // Check for critical resource availability
+            //Check for critical resource availability
             var criticalResources = new[]
             {
                 "DefaultFont",
@@ -270,7 +272,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                     Severity = ValidationSeverity.Info
                 };
 
-                // Placeholder for actual resource checking
+                //Placeholder for actual resource checking
                 result.Message = "Resource check placeholder - implement actual resource validation";
 
                 _validationResults.Add(result);
@@ -288,7 +290,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 Severity = ValidationSeverity.Info
             };
 
-            // Validate performance-critical settings
+            //Validate performance-critical settings
             if (config.MaxDrawCallsPerFrame <= 0)
             {
                 result.IsValid = false;
@@ -311,7 +313,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
         private IEnumerable<PropertyInfo> GetRequiredProperties(Type componentType)
         {
-            // Return properties that should not be null for render components
+            //Return properties that should not be null for render components
             return componentType.GetProperties()
             .Where(p => p.Name.Contains("Texture") ||
             p.Name.Contains("Context") ||
@@ -319,9 +321,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
         }
     }
 
-    /// <summary>
-    /// Represents the result of a validation check.
-    /// </summary>
+    ///<summary>
+    ///Represents the result of a validation check.
+    ///</summary>
     public sealed class ValidationResult
     {
         public string ComponentName { get; set; } = string.Empty;
@@ -330,9 +332,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public ValidationSeverity Severity { get; set; }
     }
 
-    /// <summary>
-    /// Severity levels for validation results.
-    /// </summary>
+    ///<summary>
+    ///Severity levels for validation results.
+    ///</summary>
     public enum ValidationSeverity
     {
         Info,

@@ -26,24 +26,24 @@ Notes:      This system does not apply physics forces - only detection and event
            Supports both discrete and continuous collision detection modes.
 
 */
-using SASZombieAssaultTD.Engine.Components;
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.ECS;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Physics.Components;
-using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using SASZombieAssaultTD.Engine.Diagnostics;
+////using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.ECS;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.Physics.Components;
+using SASZombieAssaultTD.Engine.VectorMath;
 
 namespace SASZombieAssaultTD.Engine.Physics
 {
-    /// <summary>
-    /// Optimized subsystem for collision detection and response.
-    /// </summary>
+    ///<summary>
+    ///Optimized subsystem for collision detection and response.
+    ///</summary>
     public class CollisionSystem : IECSSystem
     {
         public bool IsEnabled { get; private set; } = true;
@@ -59,7 +59,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             get
             {
                 NotImplementedGuard.Hit($"{nameof(IECSSystem)}.{nameof(IECSSystem.Priority)}: priority not implemented yet.");
-                return default; // placeholder to satisfy the compiler
+                return default; //placeholder to satisfy the compiler
             }
         }
 
@@ -157,7 +157,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             {
                 var entityIdA = entityA is Entity entA ? entA.Id : (uint)entityA;
                 var entityIdB = entityB is Entity entB ? entB.Id : (uint)entityB;
-                
+
                 var collisionA = _entityManager.GetComponent<ColliderComponent>(entityIdA);
                 var collisionB = _entityManager.GetComponent<ColliderComponent>(entityIdB);
                 var transformA = _entityManager.GetComponent<SASZombieAssaultTD.Engine.Components.TransformComponent>(entityIdA);
@@ -226,44 +226,44 @@ namespace SASZombieAssaultTD.Engine.Physics
 
         private bool CheckBoxBoxCollision(CollisionShape boxA, PointF posA, CollisionShape boxB, PointF posB)
         {
-            // Simplified box-box collision check
+            //Simplified box-box collision check
             var boundsA = boxA.Bounds;
             var boundsB = boxB.Bounds;
-            
+
             return boundsA.Intersects(boundsB);
         }
 
         private bool CheckCircleCircleCollision(CollisionShape circleA, PointF posA, CollisionShape circleB, PointF posB)
         {
-            // Simplified circle-circle collision check
+            //Simplified circle-circle collision check
             var distance = System.MathF.Sqrt(System.MathF.Pow(posA.X - posB.X, 2) + System.MathF.Pow(posA.Y - posB.Y, 2));
             var radiusSum = GetCircleRadius(circleA) + GetCircleRadius(circleB);
-            
+
             return distance <= radiusSum;
         }
 
         private bool CheckBoxCircleCollision(CollisionShape box, PointF boxPos, CollisionShape circle, PointF circlePos)
         {
-            // Simplified box-circle collision check
+            //Simplified box-circle collision check
             return CheckCircleBoxCollision(circle, circlePos, box, boxPos);
         }
 
         private bool CheckCircleBoxCollision(CollisionShape circle, PointF circlePos, CollisionShape box, PointF boxPos)
         {
-            // Simplified circle-box collision check
+            //Simplified circle-box collision check
             var bounds = box.Bounds;
             var closestX = System.MathF.Max(bounds.Min.X, System.MathF.Min(circlePos.X, bounds.Max.X));
             var closestY = System.MathF.Max(bounds.Min.Y, System.MathF.Min(circlePos.Y, bounds.Max.Y));
-            
+
             var distance = System.MathF.Sqrt(System.MathF.Pow(circlePos.X - closestX, 2) + System.MathF.Pow(circlePos.Y - closestY, 2));
             var radius = GetCircleRadius(circle);
-            
+
             return distance <= radius;
         }
 
         private float GetCircleRadius(CollisionShape circle)
         {
-            // For circle shapes, use the bounds to estimate radius
+            //For circle shapes, use the bounds to estimate radius
             var bounds = circle.Bounds;
             return System.MathF.Max(bounds.Width, bounds.Height) * 0.5f;
         }
@@ -289,12 +289,12 @@ namespace SASZombieAssaultTD.Engine.Physics
             var collisionA = _entityManager.GetComponent<ColliderComponent>(entityIdA);
             var collisionB = _entityManager.GetComponent<ColliderComponent>(entityIdB);
             var isTrigger = collisionA?.IsTrigger == true || collisionB?.IsTrigger == true;
-            return new CollisionResult 
-            { 
-                ObjectA = entityA, 
-                ObjectB = entityB, 
+            return new CollisionResult
+            {
+                ObjectA = entityA,
+                ObjectB = entityB,
                 HasCollision = true,
-                IsTrigger = isTrigger 
+                IsTrigger = isTrigger
             };
         }
 
@@ -349,9 +349,9 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        /// <summary>
-        /// Extension methods for collision operations.
-        /// </summary>
+        ///<summary>
+        ///Extension methods for collision operations.
+        ///</summary>
         public static class CollisionExtensions
         {
             public static bool CanCollideWith(CollisionLayer layer, CollisionLayer mask)
@@ -360,12 +360,12 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        /// <summary>
-        /// Resolves overlap between colliding entities.
-        /// </summary>
+        ///<summary>
+        ///Resolves overlap between colliding entities.
+        ///</summary>
         private void ResolveOverlap(CollisionResult collision, PhysicsComponent physicsA, PhysicsComponent physicsB, SASZombieAssaultTD.Engine.Components.TransformComponent transformA, SASZombieAssaultTD.Engine.Components.TransformComponent transformB)
         {
-            // Simple overlap resolution - push entities apart
+            //Simple overlap resolution - push entities apart
             var separation = collision.Normal * collision.PenetrationDepth * 0.5f;
 
             if (!physicsA.IsKinematic)
@@ -381,9 +381,9 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        /// <summary>
-        /// Applies bounce forces to colliding entities.
-        /// </summary>
+        ///<summary>
+        ///Applies bounce forces to colliding entities.
+        ///</summary>
         private void ApplyBounceForces(CollisionResult collision, PhysicsComponent physicsA, PhysicsComponent physicsB)
         {
             if (physicsA.IsKinematic && physicsB.IsKinematic)
@@ -399,85 +399,85 @@ namespace SASZombieAssaultTD.Engine.Physics
         }
     }
 
-    /// <summary>
-    /// Complete collision result data structure.
-    /// Contains comprehensive information about collision events.
-    /// </summary>
+    ///<summary>
+    ///Complete collision result data structure.
+    ///Contains comprehensive information about collision events.
+    ///</summary>
     public class CollisionResult
     {
-        /// <summary>
-        /// Whether a collision occurred.
-        /// </summary>
+        ///<summary>
+        ///Whether a collision occurred.
+        ///</summary>
         public bool HasCollision { get; set; }
 
-        /// <summary>
-        /// First object involved in collision.
-        /// </summary>
+        ///<summary>
+        ///First object involved in collision.
+        ///</summary>
         public object ObjectA { get; set; }
 
-        /// <summary>
-        /// Second object involved in collision.
-        /// </summary>
+        ///<summary>
+        ///Second object involved in collision.
+        ///</summary>
         public object ObjectB { get; set; }
 
-        /// <summary>
-        /// Collision point in world space.
-        /// </summary>
+        ///<summary>
+        ///Collision point in world space.
+        ///</summary>
         public Vector3 CollisionPoint { get; set; }
 
-        /// <summary>
-        /// Collision normal vector.
-        /// </summary>
+        ///<summary>
+        ///Collision normal vector.
+        ///</summary>
         public Vector3 Normal { get; set; }
 
-        /// <summary>
-        /// Penetration depth.
-        /// </summary>
+        ///<summary>
+        ///Penetration depth.
+        ///</summary>
         public float PenetrationDepth { get; set; }
 
-        /// <summary>
-        /// Collision impulse magnitude.
-        /// </summary>
+        ///<summary>
+        ///Collision impulse magnitude.
+        ///</summary>
         public float Impulse { get; set; }
 
-        /// <summary>
-        /// Time of collision during frame.
-        /// </summary>
+        ///<summary>
+        ///Time of collision during frame.
+        ///</summary>
         public float CollisionTime { get; set; }
 
-        /// <summary>
-        /// Type of collision.
-        /// </summary>
+        ///<summary>
+        ///Type of collision.
+        ///</summary>
         public CollisionType Type { get; set; }
 
-        /// <summary>
-        /// Whether this collision is a trigger (non-physical).
-        /// </summary>
+        ///<summary>
+        ///Whether this collision is a trigger (non-physical).
+        ///</summary>
         public bool IsTrigger { get; set; }
 
-        /// <summary>
-        /// First entity involved in collision.
-        /// </summary>
+        ///<summary>
+        ///First entity involved in collision.
+        ///</summary>
         public Entity EntityA { get; set; }
 
-        /// <summary>
-        /// Second entity involved in collision.
-        /// </summary>
+        ///<summary>
+        ///Second entity involved in collision.
+        ///</summary>
         public Entity EntityB { get; set; }
 
-        /// <summary>
-        /// Whether the collision was resolved.
-        /// </summary>
+        ///<summary>
+        ///Whether the collision was resolved.
+        ///</summary>
         public bool WasResolved { get; set; }
 
-        /// <summary>
-        /// Additional collision data.
-        /// </summary>
+        ///<summary>
+        ///Additional collision data.
+        ///</summary>
         public Dictionary<string, object> AdditionalData { get; set; } = new();
 
-        /// <summary>
-        /// Create a default collision result (no collision).
-        /// </summary>
+        ///<summary>
+        ///Create a default collision result (no collision).
+        ///</summary>
         public static CollisionResult NoCollision()
         {
             return new CollisionResult
@@ -493,9 +493,9 @@ namespace SASZombieAssaultTD.Engine.Physics
             };
         }
 
-        /// <summary>
-        /// Create a collision result with basic data.
-        /// </summary>
+        ///<summary>
+        ///Create a collision result with basic data.
+        ///</summary>
         public static CollisionResult Create(object objA, object objB, Vector3 point, Vector3 normal, float depth)
         {
             return new CollisionResult
@@ -514,9 +514,9 @@ namespace SASZombieAssaultTD.Engine.Physics
         }
     }
 
-    /// <summary>
-    /// Types of collisions.
-    /// </summary>
+    ///<summary>
+    ///Types of collisions.
+    ///</summary>
     public enum CollisionType
     {
         None,

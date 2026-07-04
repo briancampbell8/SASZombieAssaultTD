@@ -1,5 +1,7 @@
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Rendering
 {
     public readonly struct Font : IEquatable<Font>
@@ -32,14 +34,14 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             if (!isFileBased)
             {
-                // This path is for system fonts with string name
+                //This path is for system fonts with string name
                 Name = filePath ?? throw new ArgumentNullException(nameof(filePath));
                 IsSystemFont = true;
                 FilePath = null;
             }
             else
             {
-                // This path is for file-based fonts
+                //This path is for file-based fonts
                 if (string.IsNullOrEmpty(filePath))
                     throw new ArgumentNullException(nameof(filePath));
                     

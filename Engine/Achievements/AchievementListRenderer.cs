@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.VectorMath;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Achievements
 {
-    /// <summary>
-    /// Achievement list renderer for SAS Zombie Assault TD.
-    /// Handles rendering of achievement lists and progress indicators.
-    /// </summary>
+    ///<summary>
+    ///Achievement list renderer for SAS Zombie Assault TD.
+    ///Handles rendering of achievement lists and progress indicators.
+    ///</summary>
     public class AchievementListRenderer
     {
         private bool _isVisible = true;
@@ -17,71 +19,71 @@ namespace SASZombieAssaultTD.Engine.Achievements
         private float _height = 300f;
         private List<AchievementItem> _achievements = new();
 
-        /// <summary>
-        /// Whether the achievement list is visible.
-        /// </summary>
+        ///<summary>
+        ///Whether the achievement list is visible.
+        ///</summary>
         public bool IsVisible
         {
             get => _isVisible;
             set => _isVisible = value;
         }
 
-        /// <summary>
-        /// Position of the achievement list.
-        /// </summary>
+        ///<summary>
+        ///Position of the achievement list.
+        ///</summary>
         public Vector3 Position
         {
             get => _position;
             set => _position = value;
         }
 
-        /// <summary>
-        /// Width of the achievement list.
-        /// </summary>
+        ///<summary>
+        ///Width of the achievement list.
+        ///</summary>
         public float Width
         {
             get => _width;
             set => _width = Math.Math.Max(100f, value);
         }
 
-        /// <summary>
-        /// Height of the achievement list.
-        /// </summary>
+        ///<summary>
+        ///Height of the achievement list.
+        ///</summary>
         public float Height
         {
             get => _height;
             set => _height = Math.Math.Max(100f, value);
         }
 
-        /// <summary>
-        /// Initialize the achievement list renderer.
-        /// </summary>
+        ///<summary>
+        ///Initialize the achievement list renderer.
+        ///</summary>
         public void Initialize()
         {
             _position = new Vector3(50f, 50f, 0f);
             LoadAchievements();
         }
 
-        /// <summary>
-        /// Render the achievement list.
-        /// </summary>
-        /// <param name="renderContext">Render context.</param>
+        ///<summary>
+        ///Render the achievement list.
+        ///</summary>
+        ///<param name="renderContext">Render context.</param>
         public void Render(IRenderContext renderContext)
         {
             if (!_isVisible) return;
 
-            // Render background
+            //Render background
             var backgroundRect = Rectangle.FromPositionAndSize(_position.X, _position.Y, _width, _height);
             renderContext.FillRectangle(backgroundRect, new Color(0, 0, 0, 180));
 
-            // Render border
+            //Render border
             renderContext.DrawRectangle(backgroundRect, new Color(255, 255, 255, 255), 2f);
 
-            // Render header
+            //Render header
             renderContext.DrawText("Achievements", new Vector3(_position.X + 10f, _position.Y + 10f, 0),
                 new Color(255, 255, 255, 255), 16f);
 
-            // Render achievement items
+            //Render achievement items
             float yOffset = 40f;
             foreach (var achievement in _achievements)
             {
@@ -91,10 +93,10 @@ namespace SASZombieAssaultTD.Engine.Achievements
             }
         }
 
-        /// <summary>
-        /// Add an achievement to the list.
-        /// </summary>
-        /// <param name="achievement">Achievement to add.</param>
+        ///<summary>
+        ///Add an achievement to the list.
+        ///</summary>
+        ///<param name="achievement">Achievement to add.</param>
         public void AddAchievement(AchievementItem achievement)
         {
             if (achievement != null && !_achievements.Contains(achievement))
@@ -103,29 +105,29 @@ namespace SASZombieAssaultTD.Engine.Achievements
             }
         }
 
-        /// <summary>
-        /// Remove an achievement from the list.
-        /// </summary>
-        /// <param name="achievement">Achievement to remove.</param>
+        ///<summary>
+        ///Remove an achievement from the list.
+        ///</summary>
+        ///<param name="achievement">Achievement to remove.</param>
         public void RemoveAchievement(AchievementItem achievement)
         {
             _achievements.Remove(achievement);
         }
 
-        /// <summary>
-        /// Clear all achievements.
-        /// </summary>
+        ///<summary>
+        ///Clear all achievements.
+        ///</summary>
         public void ClearAchievements()
         {
             _achievements.Clear();
         }
 
-        /// <summary>
-        /// Load achievements from data source.
-        /// </summary>
+        ///<summary>
+        ///Load achievements from data source.
+        ///</summary>
         private void LoadAchievements()
         {
-            // Placeholder - would load from achievement system
+            //Placeholder - would load from achievement system
             _achievements.Add(new AchievementItem
             {
                 Name = "First Blood",
@@ -136,9 +138,9 @@ namespace SASZombieAssaultTD.Engine.Achievements
             });
         }
 
-        /// <summary>
-        /// Render a single achievement item.
-        /// </summary>
+        ///<summary>
+        ///Render a single achievement item.
+        ///</summary>
         private void RenderAchievement(IRenderContext context, AchievementItem achievement,
             float x, float y)
         {
@@ -151,7 +153,7 @@ namespace SASZombieAssaultTD.Engine.Achievements
 
             if (!achievement.IsCompleted)
             {
-                // Render progress bar
+                //Render progress bar
                 var barWidth = 100f;
                 var barHeight = 4f;
                 var progress = achievement.Progress / achievement.MaxProgress;
@@ -164,27 +166,27 @@ namespace SASZombieAssaultTD.Engine.Achievements
             }
         }
 
-        /// <summary>
-        /// Update the achievement list.
-        /// </summary>
-        /// <param name="deltaTime">Time since last frame.</param>
+        ///<summary>
+        ///Update the achievement list.
+        ///</summary>
+        ///<param name="deltaTime">Time since last frame.</param>
         public void Update(float deltaTime)
         {
-            // Update animations, tooltips, etc.
+            //Update animations, tooltips, etc.
         }
 
-        /// <summary>
-        /// Cleanup resources.
-        /// </summary>
+        ///<summary>
+        ///Cleanup resources.
+        ///</summary>
         public void Cleanup()
         {
             _achievements.Clear();
         }
     }
 
-    /// <summary>
-    /// Achievement item data.
-    /// </summary>
+    ///<summary>
+    ///Achievement item data.
+    ///</summary>
     public class AchievementItem
     {
         public string Name { get; set; } = string.Empty;

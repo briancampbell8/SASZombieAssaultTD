@@ -1,17 +1,34 @@
+// ====================================================================================================
+//  FILE: ModernPlayerStateSystem.cs
+//  PATH: Engine/Gameplay/ModernPlayerStateSystem.cs
+//  SUBSYSTEM: Gameplay
+//
+//  PURPOSE:
+//      Modern player state management system with persistence, events, and economy integration.
+//      Replaces legacy PlayerLives with a complete modern implementation.
+//
+//  ROLE:
+//      - Player lives, cash, score, and wave tracking
+//      - Game over, restart, and pause state management
+//      - Save/load persistence for player state
+//      - Event-based notifications for UI and gameplay systems
+//
+//  NOTES:
+//      - Designed as a modern replacement for legacy PlayerLives
+//      - Integrates with GameRoot and other gameplay systems via events
+//      - Uses deterministic, structured diagnostics via DLogger
+// ====================================================================================================
+
 using System;
 using System.IO;
-using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Gameplay
 {
-    /// <summary>
-    /// Modern player state management system with persistence, events, and economy integration.
-    /// Replaces legacy PlayerLives with complete modern implementation.
-    /// </summary>
     public sealed class ModernPlayerStateSystem : IGameSystem
     {
         private static ModernPlayerStateSystem _instance;
-        private static readonly object _lock = new object();
+        private static readonly object _lock = new();
 
         public static ModernPlayerStateSystem Instance
         {
@@ -22,9 +39,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay
                     lock (_lock)
                     {
                         if (_instance == null)
-                        {
                             _instance = new ModernPlayerStateSystem();
-                        }
                     }
                 }
                 return _instance;
@@ -36,6 +51,7 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             _settings = new PlayerSettings();
             ResetToDefaults();
         }
+
         private int _currentLives;
         private int _maxLives;
         private int _currentCash;
@@ -45,7 +61,6 @@ namespace SASZombieAssaultTD.Engine.Gameplay
         private bool _isGameOver;
         private bool _isPaused;
 
-        // Events
         public event Action<int, int> OnLivesChanged;
         public event Action<int> OnCashChanged;
         public event Action<int> OnScoreChanged;
@@ -54,30 +69,25 @@ namespace SASZombieAssaultTD.Engine.Gameplay
         public event Action OnGameRestarted;
         public event Action<bool> OnPauseStateChanged;
 
-        // Game settings
         private readonly PlayerSettings _settings;
 
-        /// <summary>
-        /// Initialize the player state system.
-        /// </summary>
+        // ---------------------------------------------------------------------------------------------
+        // Lifecycle
+        // ---------------------------------------------------------------------------------------------
         public void Initialize()
         {
-            Engine.Diagnostics.DebugLogger.LogInfo("ModernPlayerStateSystem initialized");
-            Engine.Diagnostics.DebugLogger.LogInfo($"Player started with {_currentLives}/{_maxLives} lives and ${_currentCash}");
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "PlayerState",
+                "ModernPlayerStateSystem initialized");
+
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "PlayerState",
+                $"Player started with {_currentLives}/{_maxLives} lives and ${_currentCash}");
         }
 
-        /// <summary>
-        /// Update the player state system.
-        /// </summary>
         public void Update(float deltaTime)
         {
-            // Handle any time-based player state updates
-            // (e.g., regeneration, timed bonuses, etc.)
+            // Reserved for future time-based state updates
         }
 
-        /// <summary>
-        /// Reset player to default state.
-        /// </summary>
         public void ResetToDefaults()
         {
             _currentLives = _settings.StartingLives;
@@ -89,12 +99,13 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             _isGameOver = false;
             _isPaused = false;
 
-            Engine.Diagnostics.DebugLogger.LogInfo("Player state reset to defaults");
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "PlayerState",
+                "Player state reset to defaults");
         }
 
-        /// <summary>
-        /// Take damage from player.
-        /// </summary>
+        // ---------------------------------------------------------------------------------------------
+        // Lives / Damage / Healing
+        // ---------------------------------------------------------------------------------------------
         public void TakeDamage(int damage)
         {
             if (_isGameOver || _isPaused) return;
@@ -105,18 +116,15 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             if (oldLives != _currentLives)
             {
                 OnLivesChanged?.Invoke(_currentLives, _maxLives);
-                Engine.Diagnostics.DebugLogger.LogInfo($"Player took {damage} damage. Lives: {_currentLives}/{_maxLives}");
+
+                DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "Damage",
+                    $"Player took {damage} damage. Lives: {_currentLives}/{_maxLives}");
 
                 if (_currentLives <= 0)
-                {
                     TriggerGameOver();
-                }
             }
         }
 
-        /// <summary>
-        /// Heal player by specified amount.
-        /// </summary>
         public void Heal(int amount)
         {
             if (_isGameOver || _isPaused) return;
@@ -127,13 +135,15 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             if (oldLives != _currentLives)
             {
                 OnLivesChanged?.Invoke(_currentLives, _maxLives);
-                Engine.Diagnostics.DebugLogger.LogInfo($"Player healed for {amount}. Lives: {_currentLives}/{_maxLives}");
+
+                DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "Damage",
+                    $"Player healed for {amount}. Lives: {_currentLives}/{_maxLives}");
             }
         }
 
-        /// <summary>
-        /// Add cash to player.
-        /// </summary>
+        // ---------------------------------------------------------------------------------------------
+        // Cash / Economy
+        // ---------------------------------------------------------------------------------------------
         public void AddCash(int amount)
         {
             if (_isGameOver || _isPaused) return;
@@ -144,29 +154,52 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             if (oldCash != _currentCash)
             {
                 OnCashChanged?.Invoke(_currentCash);
-                Engine.Diagnostics.DebugLogger.LogInfo($"Player gained ${amount}. Current: ${_currentCash}");
+
+                DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "Economy",
+                    $"Player gained ${amount}. Current: ${_currentCash}");
             }
         }
 
-        /// <summary>
-        /// Spend cash if available.
-        /// </summary>
         public bool SpendCash(int amount)
         {
             if (_isGameOver || _isPaused || _currentCash < amount) return false;
 
-            var oldCash = _currentCash;
             _currentCash -= amount;
-
             OnCashChanged?.Invoke(_currentCash);
-            Engine.Diagnostics.DebugLogger.LogInfo($"Player spent ${amount}. Current: ${_currentCash}");
+
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "Economy",
+                $"Player spent ${amount}. Current: ${_currentCash}");
 
             return true;
         }
 
-        /// <summary>
-        /// Add score to player.
-        /// </summary>
+        public void Earn(int amount)
+        {
+            if (amount <= 0) return;
+
+            _currentCash += amount;
+            OnCashChanged?.Invoke(_currentCash);
+
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Debug, "Economy",
+                $"Player earned ${amount}. Current: ${_currentCash}");
+        }
+
+        public bool Spend(int amount)
+        {
+            if (amount <= 0 || _currentCash < amount) return false;
+
+            _currentCash -= amount;
+            OnCashChanged?.Invoke(_currentCash);
+
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Debug, "Economy",
+                $"Player spent ${amount}. Current: ${_currentCash}");
+
+            return true;
+        }
+
+        // ---------------------------------------------------------------------------------------------
+        // Score / Waves
+        // ---------------------------------------------------------------------------------------------
         public void AddScore(int points)
         {
             if (_isGameOver || _isPaused) return;
@@ -177,63 +210,63 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             if (oldScore != _score)
             {
                 OnScoreChanged?.Invoke(_score);
-                Engine.Diagnostics.DebugLogger.LogDebug($"Player gained {points} points. Total: {_score}");
+
+                DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "Score",
+                    $"Player gained {points} points. Total: {_score}");
             }
         }
 
-        /// <summary>
-        /// Advance to next wave.
-        /// </summary>
         public void AdvanceWave()
         {
             if (_isGameOver || _isPaused) return;
 
             _waveNumber++;
             OnWaveChanged?.Invoke(_waveNumber);
-            Engine.Diagnostics.DebugLogger.LogInfo($"Advanced to wave {_waveNumber}");
 
-            // Give wave completion bonus
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "Wave",
+                $"Advanced to wave {_waveNumber}");
+
             var waveBonus = _settings.WaveCompletionBonus * _waveNumber;
             AddCash(waveBonus);
         }
 
-        /// <summary>
-        /// Set game over state.
-        /// </summary>
+        // ---------------------------------------------------------------------------------------------
+        // Game Over / Restart / Pause
+        // ---------------------------------------------------------------------------------------------
         public void TriggerGameOver()
         {
             if (_isGameOver) return;
 
             _isGameOver = true;
             OnGameOver?.Invoke();
-            Engine.Diagnostics.DebugLogger.LogInfo($"Game Over! Final Score: {_score}, Waves Survived: {_waveNumber - 1}");
+
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "PlayerState",
+                $"Game Over! Final Score: {_score}, Waves Survived: {_waveNumber - 1}");
         }
 
-        /// <summary>
-        /// Restart the game.
-        /// </summary>
         public void RestartGame()
         {
             ResetToDefaults();
             OnGameRestarted?.Invoke();
-            Engine.Diagnostics.DebugLogger.LogInfo("Game restarted");
+
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "PlayerState",
+                "Game restarted");
         }
 
-        /// <summary>
-        /// Set pause state.
-        /// </summary>
         public void SetPaused(bool paused)
         {
             if (_isGameOver) return;
 
             _isPaused = paused;
             OnPauseStateChanged?.Invoke(paused);
-            Engine.Diagnostics.DebugLogger.LogInfo($"Game {(paused ? "paused" : "resumed")}");
+
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "Pause",
+                $"Game {(paused ? "paused" : "resumed")}");
         }
 
-        /// <summary>
-        /// Save player state.
-        /// </summary>
+        // ---------------------------------------------------------------------------------------------
+        // Persistence
+        // ---------------------------------------------------------------------------------------------
         public void SaveState(string saveSlot = "default")
         {
             try
@@ -253,17 +286,16 @@ namespace SASZombieAssaultTD.Engine.Gameplay
                 var savePath = GetSavePath(saveSlot);
                 File.WriteAllText(savePath, json);
 
-                Engine.Diagnostics.DebugLogger.LogInfo($"Player state saved to slot: {saveSlot}");
+                DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "Persistence",
+                    $"Player state saved to slot: {saveSlot}");
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogError($"Failed to save player state: {ex.Message}");
+                DLogger.Log(LogSubsystems.Gameplay, LogLevel.Error, "Persistence",
+                    $"Failed to save player state: {ex.Message}");
             }
         }
 
-        /// <summary>
-        /// Load player state.
-        /// </summary>
         public bool LoadState(string saveSlot = "default")
         {
             try
@@ -283,27 +315,40 @@ namespace SASZombieAssaultTD.Engine.Gameplay
                     _waveNumber = saveData.WaveNumber;
                     _isGameOver = saveData.IsGameOver;
 
-                    // Trigger events for loaded state
                     OnLivesChanged?.Invoke(_currentLives, _maxLives);
                     OnCashChanged?.Invoke(_currentCash);
                     OnScoreChanged?.Invoke(_score);
                     OnWaveChanged?.Invoke(_waveNumber);
 
-                    Engine.Diagnostics.DebugLogger.LogInfo($"Player state loaded from slot: {saveSlot}");
+                    DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "Persistence",
+                        $"Player state loaded from slot: {saveSlot}");
+
                     return true;
                 }
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogError($"Failed to load player state: {ex.Message}");
+                DLogger.Log(LogSubsystems.Gameplay, LogLevel.Error, "Persistence",
+                    $"Failed to load player state: {ex.Message}");
             }
 
             return false;
         }
 
-        /// <summary>
-        /// Get player statistics.
-        /// </summary>
+        private string GetSavePath(string saveSlot)
+        {
+            var saveDir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "SASZombieAssaultTD",
+                "Saves");
+
+            Directory.CreateDirectory(saveDir);
+            return Path.Combine(saveDir, $"player_{saveSlot}.json");
+        }
+
+        // ---------------------------------------------------------------------------------------------
+        // Stats / Properties
+        // ---------------------------------------------------------------------------------------------
         public PlayerStats GetStats()
         {
             return new PlayerStats
@@ -316,45 +361,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay
                 WaveNumber = _waveNumber,
                 IsGameOver = _isGameOver,
                 IsPaused = _isPaused,
-                SurvivalTime = DateTime.UtcNow - DateTime.UtcNow // Would track actual survival time
+                SurvivalTime = TimeSpan.Zero
             };
         }
 
-        /// <summary>
-        /// Earn cash for the player.
-        /// </summary>
-        /// <param name="amount">Amount of cash to earn.</param>
-        public void Earn(int amount)
-        {
-            if (amount <= 0) return;
-
-            _currentCash += amount;
-            OnCashChanged?.Invoke(_currentCash);
-        }
-
-        /// <summary>
-        /// Spend cash from the player.
-        /// </summary>
-        /// <param name="amount">Amount to spend.</param>
-        /// <returns>True if player had enough cash.</returns>
-        public bool Spend(int amount)
-        {
-            if (amount <= 0) return false;
-            if (_currentCash < amount) return false;
-
-            _currentCash -= amount;
-            OnCashChanged?.Invoke(_currentCash);
-            return true;
-        }
-
-        private string GetSavePath(string saveSlot)
-        {
-            var saveDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SASZombieAssaultTD", "Saves");
-            Directory.CreateDirectory(saveDir);
-            return Path.Combine(saveDir, $"player_{saveSlot}.json");
-        }
-
-        // Properties
         public int CurrentLives => _currentLives;
         public int MaxLives => _maxLives;
         public int CurrentCash => _currentCash;
@@ -365,9 +375,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay
         public float LivesPercentage => _maxLives > 0 ? (float)_currentLives / _maxLives : 0f;
     }
 
-    /// <summary>
-    /// Player settings configuration.
-    /// </summary>
+    // ====================================================================================================
+    // Supporting Data Classes
+    // ====================================================================================================
+
     public class PlayerSettings
     {
         public int StartingLives { get; set; } = 10;
@@ -375,12 +386,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay
         public int StartingCash { get; set; } = 1000;
         public int WaveCompletionBonus { get; set; } = 100;
         public bool AllowLivesRegeneration { get; set; } = false;
-        public float LivesRegenerationRate { get; set; } = 0.1f; // Lives per second
+        public float LivesRegenerationRate { get; set; } = 0.1f;
     }
 
-    /// <summary>
-    /// Player save data structure.
-    /// </summary>
     public class PlayerSaveData
     {
         public int CurrentLives { get; set; }
@@ -392,9 +400,6 @@ namespace SASZombieAssaultTD.Engine.Gameplay
         public DateTime Timestamp { get; set; }
     }
 
-    /// <summary>
-    /// Player statistics.
-    /// </summary>
     public class PlayerStats
     {
         public int CurrentLives { get; set; }

@@ -28,97 +28,99 @@ Notes:      This component is required by entities with particle effects.
 using System;
 using System.Drawing;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Components
 {
-    /// <summary>
-    /// Component for particle emitter properties.
-    /// P11-03-04-A: Stores emission rate, particle limits, velocity ranges, lifetime ranges,
-    /// scale ranges, rotation ranges, color tint ranges, looping state, and active state.
-    /// </summary>
+    ///<summary>
+    ///Component for particle emitter properties.
+    ///P11-03-04-A: Stores emission rate, particle limits, velocity ranges, lifetime ranges,
+    ///scale ranges, rotation ranges, color tint ranges, looping state, and active state.
+    ///</summary>
     public class ParticleEmitterComponent
     {
-        ///  Properties
+        /// Properties
 
-        /// <summary>
-        /// Emission rate (particles per second).
-        /// </summary>
+        ///<summary>
+        ///Emission rate (particles per second).
+        ///</summary>
         public float EmissionRate { get; set; } = 10.0f;
 
-        /// <summary>
-        /// Maximum number of particles that can be active at once.
-        /// </summary>
+        ///<summary>
+        ///Maximum number of particles that can be active at once.
+        ///</summary>
         public int MaxParticles { get; set; } = 100;
 
-        /// <summary>
-        /// Range for initial particle velocity (min and max).
-        /// </summary>
+        ///<summary>
+        ///Range for initial particle velocity (min and max).
+        ///</summary>
         public VelocityRange InitialVelocityRange { get; set; } = new(-50.0f, 50.0f, -50.0f, 50.0f);
 
-        /// <summary>
-        /// Range for particle lifetime (min and max in seconds).
-        /// </summary>
+        ///<summary>
+        ///Range for particle lifetime (min and max in seconds).
+        ///</summary>
         public FloatRange LifetimeRange { get; set; } = new(1.0f, 3.0f);
 
-        /// <summary>
-        /// Range for initial particle scale (min and max).
-        /// </summary>
+        ///<summary>
+        ///Range for initial particle scale (min and max).
+        ///</summary>
         public FloatRange InitialScaleRange { get; set; } = new(0.5f, 2.0f);
 
-        /// <summary>
-        /// Range for initial particle rotation (min and max in radians).
-        /// </summary>
+        ///<summary>
+        ///Range for initial particle rotation (min and max in radians).
+        ///</summary>
         public FloatRange InitialRotationRange { get; set; } = new(0.0f, (float)System.Math.PI * 2.0f);
 
-        /// <summary>
-        /// Range for particle color tint (min and max).
-        /// </summary>
+        ///<summary>
+        ///Range for particle color tint (min and max).
+        ///</summary>
         public ColorRange ColorTintRange { get; set; } = new(Color.White, Color.White);
 
-        /// <summary>
-        /// Whether the emitter continuously loops particle emission.
-        /// </summary>
+        ///<summary>
+        ///Whether the emitter continuously loops particle emission.
+        ///</summary>
         public bool IsLooping { get; set; } = true;
 
-        /// <summary>
-        /// Whether the emitter is currently active and emitting particles.
-        /// </summary>
+        ///<summary>
+        ///Whether the emitter is currently active and emitting particles.
+        ///</summary>
         public bool IsActive { get; set; } = true;
 
-        /// <summary>
-        /// Accumulated time for emission timing.
-        /// </summary>
+        ///<summary>
+        ///Accumulated time for emission timing.
+        ///</summary>
         public float EmissionAccumulator { get; set; } = 0.0f;
 
-        /// 
+        ///
 
-        ///  Constructors
+        /// Constructors
 
-        /// <summary>
-        /// Creates a new ParticleEmitterComponent with default values.
-        /// </summary>
+        ///<summary>
+        ///Creates a new ParticleEmitterComponent with default values.
+        ///</summary>
         public ParticleEmitterComponent() { }
 
-        /// <summary>
-        /// Creates a new ParticleEmitterComponent with specified emission rate.
-        /// </summary>
-        /// <param name="emissionRate">Particles per second</param>
+        ///<summary>
+        ///Creates a new ParticleEmitterComponent with specified emission rate.
+        ///</summary>
+        ///<param name="emissionRate">Particles per second</param>
         public ParticleEmitterComponent(float emissionRate)
         {
             EmissionRate = emissionRate;
         }
 
-        /// <summary>
-        /// Creates a new ParticleEmitterComponent with full configuration.
-        /// </summary>
-        /// <param name="emissionRate">Particles per second</param>
-        /// <param name="maxParticles">Maximum active particles</param>
-        /// <param name="initialVelocityRange">Initial velocity range</param>
-        /// <param name="lifetimeRange">Particle lifetime range</param>
-        /// <param name="initialScaleRange">Initial scale range</param>
-        /// <param name="initialRotationRange">Initial rotation range</param>
-        /// <param name="colorTintRange">Color tint range</param>
-        /// <param name="isLooping">Whether emitter loops</param>
-        /// <param name="isActive">Whether emitter is active</param>
+        ///<summary>
+        ///Creates a new ParticleEmitterComponent with full configuration.
+        ///</summary>
+        ///<param name="emissionRate">Particles per second</param>
+        ///<param name="maxParticles">Maximum active particles</param>
+        ///<param name="initialVelocityRange">Initial velocity range</param>
+        ///<param name="lifetimeRange">Particle lifetime range</param>
+        ///<param name="initialScaleRange">Initial scale range</param>
+        ///<param name="initialRotationRange">Initial rotation range</param>
+        ///<param name="colorTintRange">Color tint range</param>
+        ///<param name="isLooping">Whether emitter loops</param>
+        ///<param name="isActive">Whether emitter is active</param>
         public ParticleEmitterComponent(
             float emissionRate,
             int maxParticles,
@@ -141,33 +143,33 @@ namespace SASZombieAssaultTD.Engine.Components
             IsActive = isActive;
         }
 
-        /// 
+        ///
 
-        ///  Methods
+        /// Methods
 
-        /// <summary>
-        /// Resets the particle emitter to its default state.
-        /// </summary>
+        ///<summary>
+        ///Resets the particle emitter to its default state.
+        ///</summary>
         public void Reset()
         {
             EmissionAccumulator = 0.0f;
             IsActive = true;
         }
 
-        /// <summary>
-        /// Gets a string representation for debugging.
-        /// </summary>
+        ///<summary>
+        ///Gets a string representation for debugging.
+        ///</summary>
         public override string ToString()
         {
             return $"ParticleEmitter(Rate: {EmissionRate}, Max: {MaxParticles}, Active: {IsActive})";
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// Range for float values with minimum and maximum.
-    /// </summary>
+    ///<summary>
+    ///Range for float values with minimum and maximum.
+    ///</summary>
     public class FloatRange
     {
         public float Min { get; set; }
@@ -179,9 +181,9 @@ namespace SASZombieAssaultTD.Engine.Components
             Max = max;
         }
 
-        /// <summary>
-        /// Gets a random value within the range.
-        /// </summary>
+        ///<summary>
+        ///Gets a random value within the range.
+        ///</summary>
         public float GetRandom()
         {
             var random = new Random();
@@ -194,9 +196,9 @@ namespace SASZombieAssaultTD.Engine.Components
         }
     }
 
-    /// <summary>
-    /// Range for velocity values with X and Y components.
-    /// </summary>
+    ///<summary>
+    ///Range for velocity values with X and Y components.
+    ///</summary>
     public class VelocityRange
     {
         public float MinX { get; set; }
@@ -212,9 +214,9 @@ namespace SASZombieAssaultTD.Engine.Components
             MaxY = maxY;
         }
 
-        /// <summary>
-        /// Gets a random velocity within the range.
-        /// </summary>
+        ///<summary>
+        ///Gets a random velocity within the range.
+        ///</summary>
         public PointF GetRandom()
         {
             var random = new Random();
@@ -229,9 +231,9 @@ namespace SASZombieAssaultTD.Engine.Components
         }
     }
 
-    /// <summary>
-    /// Range for color values with minimum and maximum.
-    /// </summary>
+    ///<summary>
+    ///Range for color values with minimum and maximum.
+    ///</summary>
     public class ColorRange
     {
         public Color Min { get; set; }
@@ -243,9 +245,9 @@ namespace SASZombieAssaultTD.Engine.Components
             Max = max;
         }
 
-        /// <summary>
-        /// Gets a random color within the range.
-        /// </summary>
+        ///<summary>
+        ///Gets a random color within the range.
+        ///</summary>
         public Color GetRandom()
         {
             var random = new Random();

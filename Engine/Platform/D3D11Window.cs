@@ -1,34 +1,35 @@
-// ============================================================================
-// File:        D3D11Window.cs
-// Author:      BDC
-// Created:     2026-05-14
-// Purpose:     Provides a Win32 window for D3D11 rendering. Exposes HWND and
-//              handles message pumping. No rendering logic is performed here.
+//============================================================================
+//File:        D3D11Window.cs
+//Author:      BDC
+//Created:     2026-05-14
+//Purpose:     Provides a Win32 window for D3D11 rendering. Exposes HWND and
+//             handles message pumping. No rendering logic is performed here.
 //
-// Responsibilities:
-// - Register Win32 window class
-// - Create and manage the application window
-// - Expose HWND for D3D11 swap-chain creation
-// - Pump and dispatch Win32 messages
-// - Handle window destruction and cleanup
+//Responsibilities:
+//- Register Win32 window class
+//- Create and manage the application window
+//- Expose HWND for D3D11 swap-chain creation
+//- Pump and dispatch Win32 messages
+//- Handle window destruction and cleanup
 //
-// Dependencies:
-// - Win32 API (user32.dll)
+//Dependencies:
+//- Win32 API (user32.dll)
 //
-// Thread Safety:
-// - All operations must occur on the main UI thread.
+//Thread Safety:
+//- All operations must occur on the main UI thread.
 //
-// Architectural Notes:
-// - This class replaces the legacy Win32Window and removes all framebuffer
-//   and GDI responsibilities.
-// - Rendering is performed exclusively through the D3D11 swap-chain.
-// - This class provides only HWND and message pump functionality.
-// ============================================================================
+//Architectural Notes:
+//- This class replaces the legacy Win32Window and removes all framebuffer
+//  and GDI responsibilities.
+//- Rendering is performed exclusively through the D3D11 swap-chain.
+//- This class provides only HWND and message pump functionality.
+//============================================================================
 
 using System;
 using System.Runtime.InteropServices;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Platform
 {
     public sealed class D3D11Window : IDisposable
@@ -46,24 +47,36 @@ namespace SASZombieAssaultTD.Engine.Platform
 
         public D3D11Window(int width, int height, string title)
         {
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Ctor.Start", $"width={width}, height={height}, title={title}");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.Ctor.Start", $"width={width}, height={height}, title={title}");
 
             _width = width;
             _height = height;
             _title = title;
             _wndProcDelegate = WndProc;
 
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Ctor.End", "OK");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.Ctor.End", "OK");
         }
 
         public void Create()
         {
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Create.Start", "Begin");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.Create.Start", "Begin");
 
             IntPtr hInstance = GetModuleHandle(null);
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Create.hInstance", $"hInstance=0x{hInstance.ToString("X")}");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.Create.hInstance", $"hInstance=0x{hInstance.ToString("X")}");
 
-            IntPtr hCursor = LoadCursor(IntPtr.Zero, (IntPtr)32512); // IDC_ARROW
+            IntPtr hCursor = LoadCursor(IntPtr.Zero, (IntPtr)32512); //IDC_ARROW
 
             WNDCLASSEX wc = new WNDCLASSEX
             {
@@ -81,17 +94,29 @@ namespace SASZombieAssaultTD.Engine.Platform
                 hIconSm = IntPtr.Zero
             };
 
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Create.RegisterClass", "Calling RegisterClassEx");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.Create.RegisterClass", "Calling RegisterClassEx");
             ushort atom = RegisterClassEx(ref wc);
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Create.RegisterClass.Result", $"atom={atom}");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.Create.RegisterClass.Result", $"atom={atom}");
 
             if (atom == 0)
             {
-                Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Create.Error", "RegisterClassEx failed.");
+                DLogger.Log(
+                    LogSubsystems.Platform,
+                    LogLevel.Error,
+                    "D3D11Window.Create.Error", "RegisterClassEx failed.");
                 throw new Exception("Failed to register window class.");
             }
 
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Create.CreateWindowEx", "Calling CreateWindowEx");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.Create.CreateWindowEx", "Calling CreateWindowEx");
 
             _hwnd = CreateWindowEx(
                 0,
@@ -108,34 +133,54 @@ namespace SASZombieAssaultTD.Engine.Platform
                 IntPtr.Zero
             );
 
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Create.HWND", $"_hwnd={_hwnd}");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.Create.HWND", $"_hwnd={_hwnd}");
 
             if (_hwnd == IntPtr.Zero)
             {
-                Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Create.Error", "CreateWindowEx returned NULL HWND.");
+                DLogger.Log(
+                    LogSubsystems.Platform,
+                    LogLevel.Error,
+                    "D3D11Window.Create.Error", "CreateWindowEx returned NULL HWND.");
                 throw new Exception("Failed to create window.");
             }
 
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Create.ShowWindow", "Calling ShowWindow");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.Create.ShowWindow", "Calling ShowWindow");
             ShowWindow(_hwnd, 1);
 
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Create.End", "OK");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.Create.End", "OK");
         }
 
         public bool PumpMessages()
         {
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.PumpMessages.Start", "Begin");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.PumpMessages.Start", "Begin");
 
             MSG msg;
             while (PeekMessage(out msg, IntPtr.Zero, 0, 0, 1))
             {
-                Engine.Diagnostics.DebugLogger.Trace(
+                DLogger.Log(
+                    LogSubsystems.Platform,
+                    LogLevel.Debug,
                     "D3D11Window.PumpMessages.Message",
                     $"msg={msg.message}, hwnd={msg.hwnd}, wParam={msg.wParam}, lParam={msg.lParam}");
 
-                if (msg.message == 0x0012) // WM_QUIT
+                if (msg.message == 0x0012) //WM_QUIT
                 {
-                    Engine.Diagnostics.DebugLogger.Trace("D3D11Window.PumpMessages.Quit", "WM_QUIT received");
+                    DLogger.Log(
+                        LogSubsystems.Platform,
+                        LogLevel.Debug,
+                        "D3D11Window.PumpMessages.Quit", "WM_QUIT received");
                     return false;
                 }
 
@@ -143,19 +188,27 @@ namespace SASZombieAssaultTD.Engine.Platform
                 DispatchMessage(ref msg);
             }
 
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.PumpMessages.End", "Continue");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.PumpMessages.End", "Continue");
             return true;
         }
 
         private IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
         {
-            Engine.Diagnostics.DebugLogger.Trace(
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
                 "D3D11Window.WndProc",
                 $"hWnd={hWnd}, msg={msg}, wParam={wParam}, lParam={lParam}");
 
-            if (msg == 0x0002) // WM_DESTROY
+            if (msg == 0x0002) //WM_DESTROY
             {
-                Engine.Diagnostics.DebugLogger.Trace("D3D11Window.WndProc.WM_DESTROY", "Posting quit message");
+                DLogger.Log(
+                    LogSubsystems.Platform,
+                    LogLevel.Debug,
+                    "D3D11Window.WndProc.WM_DESTROY", "Posting quit message");
                 PostQuitMessage(0);
             }
 
@@ -164,24 +217,36 @@ namespace SASZombieAssaultTD.Engine.Platform
 
         public void Dispose()
         {
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Dispose.Start", $"disposed={_disposed}, hwnd={_hwnd}");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.Dispose.Start", $"disposed={_disposed}, hwnd={_hwnd}");
 
             if (_disposed)
             {
-                Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Dispose.Skip", "Already disposed");
+                DLogger.Log(
+                    LogSubsystems.Platform,
+                    LogLevel.Debug,
+                    "D3D11Window.Dispose.Skip", "Already disposed");
                 return;
             }
 
             if (_hwnd != IntPtr.Zero)
             {
-                Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Dispose.DestroyWindow", "Calling DestroyWindow");
+                DLogger.Log(
+                    LogSubsystems.Platform,
+                    LogLevel.Debug,
+                    "D3D11Window.Dispose.DestroyWindow", "Calling DestroyWindow");
                 DestroyWindow(_hwnd);
                 _hwnd = IntPtr.Zero;
             }
 
             _disposed = true;
 
-            Engine.Diagnostics.DebugLogger.Trace("D3D11Window.Dispose.End", "OK");
+            DLogger.Log(
+                LogSubsystems.Platform,
+                LogLevel.Debug,
+                "D3D11Window.Dispose.End", "OK");
         }
 
         private delegate IntPtr WndProcDelegate(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
@@ -258,5 +323,10 @@ namespace SASZombieAssaultTD.Engine.Platform
 
         [DllImport("user32.dll")]
         private static extern bool DestroyWindow(IntPtr hWnd);
+
+        internal void Run(GameRoot game)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

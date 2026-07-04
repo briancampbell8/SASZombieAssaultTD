@@ -1,14 +1,16 @@
-// File: Engine/Animation/AnimationConditionOperator.cs
-// Purpose: Defines comparison operators for animation parameter conditions
-// Integration: Used by AnimationParameters.ParameterCondition for state transitions
+//File: Engine/Animation/AnimationConditionOperator.cs
+//Purpose: Defines comparison operators for animation parameter conditions
+//Integration: Used by AnimationParameters.ParameterCondition for state transitions
+
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Animation.Core
 {
-    /// <summary>
-    /// Animation condition operators for parameter comparisons.
-    /// Used in animation state machines and blend trees to determine transitions.
-    /// Supports numeric, boolean, and string parameter types.
-    /// </summary>
+    ///<summary>
+    ///Animation condition operators for parameter comparisons.
+    ///Used in animation state machines and blend trees to determine transitions.
+    ///Supports numeric, boolean, and string parameter types.
+    ///</summary>
     public enum AnimationConditionOperator
     {
         Equals,

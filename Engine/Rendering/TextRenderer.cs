@@ -1,3 +1,29 @@
+// ====================================================================================================
+//  FILE: TextRenderer.cs
+//  PATH: Engine/Rendering/ 
+//  PROGRAM: TextRenderer.cs
+//  MODULE: Resource Management Framework
+//  ROLE:
+//      Defines the structures, loaders, and integration points responsible for discovering, validating, and providing engine resources in a deterministic manner.
+//
+//  RESPONSIBILITIES:
+//      - Provide a unified API for loading, caching, and resolving engine resources.
+//      - Enforce deterministic resource lookup and lifecycle rules.
+//      - Abstract file formats, storage locations, and integration layers behind a stable interface.
+//      - Ensure resource availability for all engine subsystems (Rendering, Audio, Gameplay, UI).
+//
+//  NON-RESPONSIBILITIES:
+//      - Performing rendering or GPU upload operations.
+//      - Managing gameplay logic or scene entities.
+//      - Handling diagnostics, logging, or performance metrics.
+//      - Encoding or authoring resource files.
+//
+//  ARCHITECTURAL NOTES:
+//      - The Resource Management Framework acts as the central authority for all asset retrieval.
+//      - Resource modules must remain pure: no side effects outside resource acquisition and validation.
+//      - All resource types (textures, data files, definitions, metadata) must follow deterministic load rules.
+//  ====================================================================================================
+
 /*
 File:    TextRenderer.cs
 Purpose: Enhanced text rendering with alignment, word wrapping, and audit-friendly logging.
@@ -11,15 +37,15 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Extensions;
-
+using SASZombieAssaultTD.Engine.VectorMath;
 namespace SASZombieAssaultTD.Engine.Rendering
 {
-    /// <summary>
-    /// Interface for frame buffer operations.
-    /// </summary>
+    ///<summary>
+    ///Interface for frame buffer operations.
+    ///</summary>
     public interface IFrameBuffer
     {
         int Width { get; }
@@ -29,19 +55,19 @@ namespace SASZombieAssaultTD.Engine.Rendering
         void Clear();
     }
 
-    /// <summary>
-    /// Text renderer for rendering text to frame buffers.
-    /// P11-04-09-F: Enhanced with alignment options, word wrapping, and audit-friendly logging.
-    /// </summary>
+    ///<summary>
+    ///Text renderer for rendering text to frame buffers.
+    ///P11-04-09-F: Enhanced with alignment options, word wrapping, and audit-friendly logging.
+    ///</summary>
     public sealed class TextRenderer
     {
         private readonly bool _debugOutput = true;
         private float _accessibilityScale = 1.0f;
         private bool _accessibilityEnabled = false;
 
-        /// <summary>
-        /// P40-02-08: Gets or sets the accessibility font scale factor
-        /// </summary>
+        ///<summary>
+        ///P40-02-08: Gets or sets the accessibility font scale factor
+        ///</summary>
         public float AccessibilityScale
         {
             get => _accessibilityScale;
@@ -50,14 +76,14 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 if (_accessibilityScale != value)
                 {
                     _accessibilityScale = System.MathF.Max(0.5f, System.MathF.Min(3.0f, value));
-                    Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Accessibility scale set to {_accessibilityScale:F2}");
+                    DLogger.Log($"TextRenderer: Accessibility scale set to {_accessibilityScale:F2}");
                 }
             }
         }
 
-        /// <summary>
-        /// P40-02-08: Gets or sets whether accessibility scaling is enabled
-        /// </summary>
+        ///<summary>
+        ///P40-02-08: Gets or sets whether accessibility scaling is enabled
+        ///</summary>
         public bool AccessibilityEnabled
         {
             get => _accessibilityEnabled;
@@ -66,31 +92,31 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 if (_accessibilityEnabled != value)
                 {
                     _accessibilityEnabled = value;
-                    Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Accessibility scaling {(value ? "enabled" : "disabled")}");
+                    DLogger.Log($"TextRenderer: Accessibility scaling {(value ? "enabled" : "disabled")}");
                 }
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the TextRenderer class.
-        /// </summary>
+        ///<summary>
+        ///Initializes a new instance of the TextRenderer class.
+        ///</summary>
         public TextRenderer()
         {
-            Engine.Diagnostics.DebugLogger.DebugLog("TextRenderer: Initialized");
+            DLogger.Log("TextRenderer: Initialized");
         }
 
-        /// <summary>
-        /// Draws text at the specified position with configurable options.
-        /// P11-04-09-F: Main text drawing method with alignment, scale, and optional word wrapping.
-        /// P40-02-08: Enhanced with accessibility font scaling support
-        /// </summary>
-        /// <param name="text">The text to draw</param>
-        /// <param name="position">The position to draw text</param>
-        /// <param name="color">The text color</param>
-        /// <param name="scale">Text scale factor (default: 1.0)</param>
-        /// <param name="alignment">Text alignment (default: Left)</param>
-        /// <param name="maxWidth">Maximum width for word wrapping (optional)</param>
-        /// <param name="context">Render context for drawing operations</param>
+        ///<summary>
+        ///Draws text at the specified position with configurable options.
+        ///P11-04-09-F: Main text drawing method with alignment, scale, and optional word wrapping.
+        ///P40-02-08: Enhanced with accessibility font scaling support
+        ///</summary>
+        ///<param name="text">The text to draw</param>
+        ///<param name="position">The position to draw text</param>
+        ///<param name="color">The text color</param>
+        ///<param name="scale">Text scale factor (default: 1.0)</param>
+        ///<param name="alignment">Text alignment (default: Left)</param>
+        ///<param name="maxWidth">Maximum width for word wrapping (optional)</param>
+        ///<param name="context">Render context for drawing operations</param>
         public void DrawText(string text, Vector3 position, Color color, float scale = 1.0f,
         TextAlignment alignment = TextAlignment.Left, float? maxWidth = null, IRenderContext? context = null)
         {
@@ -98,11 +124,12 @@ namespace SASZombieAssaultTD.Engine.Rendering
             {
                 if (string.IsNullOrEmpty(text))
                 {
-                    Engine.Diagnostics.DebugLogger.     DebugLog("TextRenderer: DrawText skipped - Empty or null text");
+                    DLogger.Log(
+                        "TextRenderer: DrawText skipped - Empty or null text");
                     return;
                 }
 
-                // P40-02-08: Apply accessibility scaling
+                //P40-02-08: Apply accessibility scaling
                 float finalScale = scale;
                 if (_accessibilityEnabled)
                 {
@@ -111,18 +138,18 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
                 if (finalScale <= 0f)
                 {
-                    Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: DrawText failed - Invalid scale: {finalScale}");
+                    DLogger.Log($"TextRenderer: DrawText failed - Invalid scale: {finalScale}");
                     return;
                 }
 
-                // Handle word wrapping if maxWidth is specified
+                //Handle word wrapping if maxWidth is specified
                 var lines = ProcessTextLines(text, maxWidth, finalScale);
 
-                // Calculate total text height for alignment
+                //Calculate total text height for alignment
                 float lineHeight = GetCharacterHeight() * finalScale;
                 float totalHeight = lines.Count * lineHeight;
 
-                // Draw each line
+                //Draw each line
                 for (int i = 0; i < lines.Count; i++)
                 {
                     var line = lines[i];
@@ -134,17 +161,17 @@ namespace SASZombieAssaultTD.Engine.Rendering
                     }
                     //else
                     //{
-                    //    // Fallback to legacy rendering NOTE: Not needed
-                    //    DrawTextFallback(line, linePosition, color, finalScale);
+                    //   //Fallback to legacy rendering NOTE: Not needed
+                    //   DrawTextFallback(line, linePosition, color, finalScale);
                     //}
                 }
 
-                Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Drew text '{text}' at ({position.X}, {position.Y}) with scale {finalScale:F2}, alignment {alignment}");
+                DLogger.Log($"TextRenderer: Drew text '{text}' at ({position.X}, {position.Y}) with scale {finalScale:F2}, alignment {alignment}");
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: DrawText failed - {ex.Message}");
-                // Fallback behavior: try to render with minimal parameters
+                DLogger.Log($"TextRenderer: DrawText failed - {ex.Message}");
+                //Fallback behavior: try to render with minimal parameters
                 try
                 {
                     float fallbackScale = _accessibilityEnabled ? _accessibilityScale : 1.0f;
@@ -152,22 +179,22 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 }
                 catch (Exception fallbackEx)
                 {
-                    Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Fallback rendering also failed - {fallbackEx.Message}");
+                    DLogger.Log($"TextRenderer: Fallback rendering also failed - {fallbackEx.Message}");
                 }
             }
         }
 
-        /// <summary>
-        /// Processes text into lines, handling word wrapping if needed.
-        /// P11-04-09-F: Optional word wrapping support.
-        /// </summary>
+        ///<summary>
+        ///Processes text into lines, handling word wrapping if needed.
+        ///P11-04-09-F: Optional word wrapping support.
+        ///</summary>
         private List<string> ProcessTextLines(string text, float? maxWidth, float scale)
         {
             var lines = new List<string>();
 
             if (!maxWidth.HasValue || maxWidth.Value <= 0f)
             {
-                // No word wrapping needed
+                //No word wrapping needed
                 lines.Add(text);
                 return lines;
             }
@@ -204,10 +231,10 @@ namespace SASZombieAssaultTD.Engine.Rendering
             return lines;
         }
 
-        /// <summary>
-        /// Calculates the position for a text line based on alignment.
-        /// P11-04-09-F: Handles left, center, and right alignment.
-        /// </summary>
+        ///<summary>
+        ///Calculates the position for a text line based on alignment.
+        ///P11-04-09-F: Handles left, center, and right alignment.
+        ///</summary>
         private Vector3 CalculateLinePosition(Vector3 basePosition, string line, float scale,
         TextAlignment alignment, int lineIndex, float lineHeight, float totalHeight)
         {
@@ -219,66 +246,66 @@ namespace SASZombieAssaultTD.Engine.Rendering
             {
                 TextAlignment.Center => basePosition.X - (lineWidth / 2f),
                 TextAlignment.Right => basePosition.X - lineWidth,
-                _ => basePosition.X // Left alignment
+                _ => basePosition.X //Left alignment
             };
 
             return new Vector3(x, y, 0f);
         }
 
-        /// <summary>
-        /// Draws text using the provided render context.
-        /// </summary>
+        ///<summary>
+        ///Draws text using the provided render context.
+        ///</summary>
         private void DrawTextWithContext(IRenderContext context, string text, Vector3 position, Color color, float scale)
         {
-            // Convert System.Drawing.Color to Engine.Rendering.Color
+            //Convert System.Drawing.Color to Engine.Rendering.Color
             var engineColor = new Color(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
-            context.DrawText(text, new Vector3(position.X, position.Y, 0), engineColor, 12 * scale); // Base font size 12
+            context.DrawText(text, new Vector3(position.X, position.Y, 0), engineColor, 12 * scale); //Base font size 12
         }
 
-        /// <summary>
-        /// Fallback text drawing method using legacy framebuffer approach.
-        /// P11-04-09-F: Audit-friendly fallback behavior.
-        /// </summary>
+        ///<summary>
+        ///Fallback text drawing method using legacy framebuffer approach.
+        ///P11-04-09-F: Audit-friendly fallback behavior.
+        ///</summary>
         private void DrawTextFallback(string text, Vector3 position, Color color, float scale)
         {
-            Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Using fallback rendering for '{text}'");
+            DLogger.Log($"TextRenderer: Using fallback rendering for '{text}'");
 
-            // Convert position to integers for legacy method
+            //Convert position to integers for legacy method
             int x = (int)position.X;
             int y = (int)position.Y;
 
-            // Convert color to legacy format (0xRRGGBBAA)
+            //Convert color to legacy format (0xRRGGBBAA)
             var popupColor = System.Drawing.Color.FromArgb((int)(color.A * 255),
                 (int)(color.R * 255), (int)(color.G * 255), (int)(color.B * 255));
             uint colorValue = (uint)((popupColor.A << 24) | (popupColor.R << 16) | (popupColor.G << 8) | popupColor.B);
 
-            // This would need a framebuffer instance - for now, just log the attempt
-            Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Fallback rendering would draw at ({x}, {y}) with color 0x{colorValue:X8}");
+            //This would need a framebuffer instance - for now, just log the attempt
+            DLogger.Log($"TextRenderer: Fallback rendering would draw at ({x}, {y}) with color 0x{colorValue:X8}");
 
-            // Note: In a full implementation, we would need access to the current framebuffer
-            // For now, this serves as audit-friendly logging of the fallback attempt
+            //Note: In a full implementation, we would need access to the current framebuffer
+            //For now, this serves as audit-friendly logging of the fallback attempt
         }
 
-        /// <summary>
-        /// Gets the width of a single character in pixels.
-        /// </summary>
+        ///<summary>
+        ///Gets the width of a single character in pixels.
+        ///</summary>
         private float GetCharacterWidth()
         {
-            return 6f; // Based on original glyph width
+            return 6f; //Based on original glyph width
         }
 
-        /// <summary>
-        /// Gets the height of a single character in pixels.
-        /// </summary>
+        ///<summary>
+        ///Gets the height of a single character in pixels.
+        ///</summary>
         private float GetCharacterHeight()
         {
-            return 8f; // Based on original glyph height
+            return 8f; //Based on original glyph height
         }
 
-        /// <summary>
-        /// Measures the width of text with specified scale.
-        /// P11-04-09-F: Helper method for text measurement.
-        /// </summary>
+        ///<summary>
+        ///Measures the width of text with specified scale.
+        ///P11-04-09-F: Helper method for text measurement.
+        ///</summary>
         public float MeasureText(string text, float scale = 1.0f)
         {
             if (string.IsNullOrEmpty(text))
@@ -287,16 +314,16 @@ namespace SASZombieAssaultTD.Engine.Rendering
             return text.Length * GetCharacterWidth() * scale;
         }
 
-        /// <summary>
-        /// Legacy method for backward compatibility.
-        /// Draws text using the original framebuffer approach.
-        /// </summary>
+        ///<summary>
+        ///Legacy method for backward compatibility.
+        ///Draws text using the original framebuffer approach.
+        ///</summary>
         public void DrawString(Framebuffer fb, int x, int y, string text, int color)
         {
             try
             {
-                // Render each character as a small filled rectangle (6×8 per glyph)
-                // using the supplied color packed as 0xRRGGBBAA.
+                //Render each character as a small filled rectangle (6×8 per glyph)
+                //using the supplied color packed as 0xRRGGBBAA.
                 if (fb is null || string.IsNullOrEmpty(text))
                     return;
 
@@ -317,11 +344,11 @@ namespace SASZombieAssaultTD.Engine.Rendering
                     }
                 }
 
-                Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Legacy DrawString rendered '{text}' at ({x}, {y})");
+                DLogger.Log($"TextRenderer: Legacy DrawString rendered '{text}' at ({x}, {y})");
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.DebugLog($"TextRenderer: Legacy DrawString failed - {ex.Message}");
+                DLogger.Log($"TextRenderer: Legacy DrawString failed - {ex.Message}");
             }
         }
 
@@ -331,11 +358,11 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
         }
 
-        ///  Advanced Rendering Enhancements
+        /// Advanced Rendering Enhancements
 
-        /// <summary>
-        /// Advanced text rendering system with sophisticated caching and optimization.
-        /// </summary>
+        ///<summary>
+        ///Advanced text rendering system with sophisticated caching and optimization.
+        ///</summary>
         public class AdvancedTextRenderer
         {
             private readonly Dictionary<string, TextCache> _renderCache = new();
@@ -343,9 +370,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
             private readonly Dictionary<char, GlyphData> _glyphCache = new();
             private volatile int _maxCacheSize = 500;
 
-            /// <summary>
-            /// Font styles for text rendering.
-            /// </summary>
+            ///<summary>
+            ///Font styles for text rendering.
+            ///</summary>
             public enum FontStyle
             {
                 Regular,
@@ -354,9 +381,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 BoldItalic
             }
 
-            /// <summary>
-            /// Advanced text rendering with automatic caching and optimization.
-            /// </summary>
+            ///<summary>
+            ///Advanced text rendering with automatic caching and optimization.
+            ///</summary>
             public void RenderAdvancedText(IFrameBuffer fb, string text, Vector3 position, TextOptions options)
             {
                 var cacheKey = GenerateCacheKey(text, options);
@@ -372,9 +399,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 RenderCachedText(fb, renderedText, position);
             }
 
-            /// <summary>
-            /// Text rendering options for advanced effects.
-            /// </summary>
+            ///<summary>
+            ///Text rendering options for advanced effects.
+            ///</summary>
             public class TextOptions
             {
                 public int FontSize { get; set; } = 12;
@@ -391,9 +418,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 public uint[] GradientColors { get; set; } = null!;
             }
 
-            /// <summary>
-            /// Sophisticated text rendering with advanced effects and optimizations.
-            /// </summary>
+            ///<summary>
+            ///Sophisticated text rendering with advanced effects and optimizations.
+            ///</summary>
             private TextCache RenderTextWithEffects(string text, TextOptions options)
             {
                 var cache = _cachePool.TryDequeue(out var pooled) ? pooled : new TextCache();
@@ -401,7 +428,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 cache.Options = options;
                 cache.Timestamp = DateTime.UtcNow;
 
-                // Advanced glyph rendering with anti-aliasing
+                //Advanced glyph rendering with anti-aliasing
                 foreach (var character in text)
                 {
                     if (!_glyphCache.TryGetValue(character, out var glyph))
@@ -416,9 +443,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 return cache;
             }
 
-            /// <summary>
-            /// Advanced glyph generation with sophisticated anti-aliasing and effects.
-            /// </summary>
+            ///<summary>
+            ///Advanced glyph generation with sophisticated anti-aliasing and effects.
+            ///</summary>
             private GlyphData GenerateAdvancedGlyph(char character, TextOptions options)
             {
                 var glyph = new GlyphData
@@ -429,7 +456,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                     Data = new float[options.FontSize * options.FontSize]
                 };
 
-                // Advanced glyph rendering with sub-pixel precision
+                //Advanced glyph rendering with sub-pixel precision
                 for (int y = 0; y < glyph.Height; y++)
                 {
                     for (int x = 0; x < glyph.Width; x++)
@@ -442,16 +469,16 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 return glyph;
             }
 
-            /// <summary>
-            /// Sophisticated coverage calculation for anti-aliased text rendering.
-            /// </summary>
+            ///<summary>
+            ///Sophisticated coverage calculation for anti-aliased text rendering.
+            ///</summary>
             private float CalculateGlyphCoverage(char character, int x, int y, TextOptions options)
             {
-                // Advanced sub-pixel coverage calculation
+                //Advanced sub-pixel coverage calculation
                 var subX = x + 0.5f;
                 var subY = y + 0.5f;
 
-                // Multi-sample coverage for smooth edges
+                //Multi-sample coverage for smooth edges
                 var samples = new[]
                 {
                     SampleGlyphPoint(character, subX - 0.25f, subY - 0.25f, options),
@@ -463,22 +490,22 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 return samples.Average();
             }
 
-            /// <summary>
-            /// Advanced glyph point sampling with sophisticated distance field.
-            /// </summary>
+            ///<summary>
+            ///Advanced glyph point sampling with sophisticated distance field.
+            ///</summary>
             private float SampleGlyphPoint(char character, float x, float y, TextOptions options)
             {
-                // Simplified distance field calculation (can be enhanced with proper font data)
+                //Simplified distance field calculation (can be enhanced with proper font data)
                 var distance = CalculateSignedDistance(character, x, y, options);
                 return System.Math.Clamp(1f - distance, 0f, 1f);
             }
 
-            /// <summary>
-            /// Advanced signed distance field calculation for glyph rendering.
-            /// </summary>
+            ///<summary>
+            ///Advanced signed distance field calculation for glyph rendering.
+            ///</summary>
             private float CalculateSignedDistance(char character, float x, float y, TextOptions options)
             {
-                // Simplified implementation - would use actual font metrics in production
+                //Simplified implementation - would use actual font metrics in production
                 var glyphBounds = GetGlyphBounds(character, options);
                 var centerX = glyphBounds.X + glyphBounds.Width / 2f;
                 var centerY = glyphBounds.Y + glyphBounds.Height / 2f;
@@ -488,13 +515,13 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 return Vector3Math.Distance(pointX, pointY, 0, centerX, centerY, 0) - (glyphBounds.Width / 2f);
             }
 
-            /// <summary>
-            /// Advanced text effects application with sophisticated blending.
-            /// </summary>
+            ///<summary>
+            ///Advanced text effects application with sophisticated blending.
+            ///</summary>
             private void ApplyGlyphEffects(TextCache cache, GlyphData glyph, TextOptions options)
             {
-                // Apply advanced text effects
-                // Correct version
+                //Apply advanced text effects
+                //Correct version
                 if (options.HasShadow)
                 {
                     ApplyShadowEffect(
@@ -502,7 +529,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
                         glyph,
                         options.ShadowOffsetX,
                         options.ShadowOffsetY,
-                        options.ShadowColor   // uint, no ToArgb, no cast, no named arg
+                        options.ShadowColor   //uint, no ToArgb, no cast, no named arg
                     );
                 }
 
@@ -525,17 +552,17 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
             private void ApplyShadowEffect(TextCache cache, GlyphData glyph, float offsetX, float offsetY, uint color)
             {
-                // Advanced shadow implementation with soft edges
+                //Advanced shadow implementation with soft edges
             }
 
             private void ApplyOutlineEffect(TextCache cache, GlyphData glyph, uint color, float thickness)
             {
-                // Advanced outline implementation with variable thickness
+                //Advanced outline implementation with variable thickness
             }
 
             private void ApplyGradientEffect(TextCache cache, GlyphData glyph, uint[] colors)
             {
-                // Advanced gradient implementation with multiple color stops
+                //Advanced gradient implementation with multiple color stops
             }
 
             private string GenerateCacheKey(string text, TextOptions options)
@@ -555,7 +582,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
             private void RenderCachedText(IFrameBuffer fb, TextCache cache, Vector3 position)
             {
-                // Advanced cached text rendering with optimization
+                //Advanced cached text rendering with optimization
             }
 
             private void EvictOldestCacheEntries()
@@ -577,7 +604,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
             private GlyphBounds GetGlyphBounds(char character, TextOptions options)
             {
-                // Advanced glyph bounds calculation
+                //Advanced glyph bounds calculation
                 return new GlyphBounds { X = 0, Y = 0, Width = options.FontSize, Height = options.FontSize };
             }
 
@@ -606,18 +633,18 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 public float Height { get; set; }
             }
         }
-        /// 
+        ///
     }
 }
 
-// Added placeholder for Vector3Math to resolve CS0103 error.
+//Added placeholder for Vector3Math to resolve CS0103 error.
 namespace SASZombieAssaultTD.Engine.VectorMath
 {
     public static class Vector3Math
     {
         public static float Distance(float x1, float y1, float z1, float x2, float y2, float z2)
         {
-            // Placeholder implementation
+            //Placeholder implementation
             return (float)System.Math.Sqrt(
                 System.Math.Pow(x2 - x1, 2) +
                 System.Math.Pow(y2 - y1, 2) +

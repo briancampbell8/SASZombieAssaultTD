@@ -1,14 +1,14 @@
-//// Program Name: CompositeCreator.cs
-//// File Path: Engine/Rendering/CompositeCreator.cs
-//// Program Purpose: The program creates composite surfaces and converts them into engine textures.
-//// Program Features:
-//// - Creates composite surfaces with specified dimensions
-//// - Converts composite surfaces to engine texture format
+////Program Name: CompositeCreator.cs
+////File Path: Engine/Rendering/CompositeCreator.cs
+////Program Purpose: The program creates composite surfaces and converts them into engine textures.
+////Program Features:
+////- Creates composite surfaces with specified dimensions
+////- Converts composite surfaces to engine texture format
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 
 using Engine.Rendering.Interfaces;
-using System;
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 public sealed class CompositeCreator : ICompositeCreator
 {

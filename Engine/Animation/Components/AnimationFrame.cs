@@ -2,11 +2,13 @@ using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Animation.Components
 {
-    /// <summary>
-    /// Represents a single animation frame with a texture reference and duration.
-    /// </summary>
+    ///<summary>
+    ///Represents a single animation frame with a texture reference and duration.
+    ///</summary>
     public sealed class AnimationFrame
     {
         public string TextureName { get; }
@@ -17,11 +19,11 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         public Vector3 TransformOffset { get; set; } = Vector3.Zero;
         public uint ColorTint { get; set; } = 0xFFFFFFFF;
 
-        /// <summary>
-        /// Initializes a new animation frame with a texture reference and duration.
-        /// </summary>
-        /// <param name="textureName">The name of the texture.</param>
-        /// <param name="durationSeconds">The duration of the frame in seconds.</param>
+        ///<summary>
+        ///Initializes a new animation frame with a texture reference and duration.
+        ///</summary>
+        ///<param name="textureName">The name of the texture.</param>
+        ///<param name="durationSeconds">The duration of the frame in seconds.</param>
         public AnimationFrame(string textureName, float durationSeconds)
         {
             TextureName = textureName ?? throw new ArgumentNullException(nameof(textureName));
@@ -31,11 +33,11 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             Time = 0f;
         }
 
-        /// <summary>
-        /// Initializes a new animation frame for keyframe-based animations.
-        /// </summary>
-        /// <param name="time">The time of the keyframe.</param>
-        /// <param name="durationSeconds">The duration of the frame in seconds.</param>
+        ///<summary>
+        ///Initializes a new animation frame for keyframe-based animations.
+        ///</summary>
+        ///<param name="time">The time of the keyframe.</param>
+        ///<param name="durationSeconds">The duration of the frame in seconds.</param>
         public AnimationFrame(float time, float durationSeconds)
         {
             TextureName = string.Empty;
@@ -45,20 +47,20 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 : throw new ArgumentOutOfRangeException(nameof(durationSeconds), "Duration must be positive.");
         }
 
-        /// <summary>
-        /// Sets metadata for this frame.
-        /// </summary>
-        /// <param name="key">The metadata key.</param>
-        /// <param name="value">The metadata value.</param>
+        ///<summary>
+        ///Sets metadata for this frame.
+        ///</summary>
+        ///<param name="key">The metadata key.</param>
+        ///<param name="value">The metadata value.</param>
         public void SetMetadata(string key, object value) => Metadata[key] = value;
 
-        /// <summary>
-        /// Gets metadata value of specified type.
-        /// </summary>
-        /// <typeparam name="T">The type of metadata value.</typeparam>
-        /// <param name="key">The metadata key.</param>
-        /// <param name="defaultValue">Default value if key not found.</param>
-        /// <returns>Metadata value or default.</returns>
+        ///<summary>
+        ///Gets metadata value of specified type.
+        ///</summary>
+        ///<typeparam name="T">The type of metadata value.</typeparam>
+        ///<param name="key">The metadata key.</param>
+        ///<param name="defaultValue">Default value if key not found.</param>
+        ///<returns>Metadata value or default.</returns>
         public T GetMetadata<T>(string key, T defaultValue = default!)
         {
             return Metadata.TryGetValue(key, out var value) && value is T typedValue ? typedValue : defaultValue;

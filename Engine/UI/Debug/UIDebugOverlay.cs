@@ -2,12 +2,14 @@ using SASZombieAssaultTD.Engine.UI.Input;
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Debug
 {
-    /// <summary>
-    /// A basic debug overlay showing UI hierarchy and layout bounds
-    /// P80-07-01: UIDebugOverlay providing a basic debug overlay showing UI hierarchy and layout bounds
-    /// </summary>
+    ///<summary>
+    ///A basic debug overlay showing UI hierarchy and layout bounds
+    ///P80-07-01: UIDebugOverlay providing a basic debug overlay showing UI hierarchy and layout bounds
+    ///</summary>
     public class UIDebugOverlay
     {
         private readonly List<UIElement> _elements;
@@ -21,9 +23,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
         private readonly System.Drawing.Color _selectedColor = System.Drawing.Color.Cyan;
         private UIInputState _inputState;
 
-        /// <summary>
-        /// Gets or sets whether the overlay is visible
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether the overlay is visible
+        ///</summary>
         public bool IsVisible
         {
             get => _isVisible;
@@ -37,9 +39,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Gets or sets whether to show element bounds
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether to show element bounds
+        ///</summary>
         public bool ShowBounds
         {
             get => _showBounds;
@@ -53,9 +55,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Gets or sets whether to show UI hierarchy
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether to show UI hierarchy
+        ///</summary>
         public bool ShowHierarchy
         {
             get => _showHierarchy;
@@ -69,14 +71,14 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Gets the currently selected element
-        /// </summary>
+        ///<summary>
+        ///Gets the currently selected element
+        ///</summary>
         public UIElement SelectedElement => _selectedElement;
 
-        /// <summary>
-        /// Initializes a new UIDebugOverlay
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UIDebugOverlay
+        ///</summary>
         public UIDebugOverlay()
         {
             _elements = new List<UIElement>();
@@ -84,10 +86,10 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             System.Diagnostics.Debug.WriteLine("UIDebugOverlay: Initialized");
         }
 
-        /// <summary>
-        /// Adds a UI element to the overlay
-        /// </summary>
-        /// <param name="element">Element to add</param>
+        ///<summary>
+        ///Adds a UI element to the overlay
+        ///</summary>
+        ///<param name="element">Element to add</param>
         public void AddElement(UIElement element)
         {
             try
@@ -113,10 +115,10 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Removes a UI element from the overlay
-        /// </summary>
-        /// <param name="element">Element to remove</param>
+        ///<summary>
+        ///Removes a UI element from the overlay
+        ///</summary>
+        ///<param name="element">Element to remove</param>
         public void RemoveElement(UIElement element)
         {
             try
@@ -131,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 {
                     System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Removed element, remaining: {_elements.Count}");
 
-                    // Clear selection if this element was selected
+                    //Clear selection if this element was selected
                     if (_selectedElement == element)
                     {
                         _selectedElement = null;
@@ -148,18 +150,18 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Updates the debug overlay
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds</param>
+        ///<summary>
+        ///Updates the debug overlay
+        ///</summary>
+        ///<param name="deltaTime">Time since last update in seconds</param>
         public void Update(float deltaTime)
         {
             try
             {
-                // Update element hover states
+                //Update element hover states
                 UpdateHoverStates();
 
-                // Update selection with keyboard
+                //Update selection with keyboard
                 UpdateSelection();
 
                 System.Diagnostics.Debug.WriteLine("UIDebugOverlay: Updated overlay");
@@ -170,9 +172,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Renders the debug overlay
-        /// </summary>
+        ///<summary>
+        ///Renders the debug overlay
+        ///</summary>
         public void Render()
         {
             try
@@ -180,11 +182,11 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 if (!_isVisible)
                     return;
 
-                // This would use the actual rendering system
-                // For now, just log the overlay state
+                //This would use the actual rendering system
+                //For now, just log the overlay state
                 System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Rendering overlay with {_elements.Count} elements");
 
-                // Render each element's debug info
+                //Render each element's debug info
                 foreach (var element in _elements)
                 {
                     RenderElementDebugInfo(element);
@@ -196,10 +198,10 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Renders debug information for a single element
-        /// </summary>
-        /// <param name="element">Element to render debug info for</param>
+        ///<summary>
+        ///Renders debug information for a single element
+        ///</summary>
+        ///<param name="element">Element to render debug info for</param>
         private void RenderElementDebugInfo(UIElement element)
         {
             try
@@ -209,8 +211,8 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 var isSelected = element == _selectedElement;
                 var isHovered = element is UI.Widgets.UIWidgetBase widgetBase && widgetBase.IsHovered;
 
-                // This would render actual debug information
-                // For now, just log the debug info
+                //This would render actual debug information
+                //For now, just log the debug info
                 System.Diagnostics.Debug.WriteLine($"UIDebugOverlay: Element '{element.GetType().Name}' at {position}, Size: {size}, Selected: {isSelected}, Hovered: {isHovered}");
             }
             catch (Exception ex)
@@ -219,14 +221,14 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Updates hover states for all elements
-        /// </summary>
+        ///<summary>
+        ///Updates hover states for all elements
+        ///</summary>
         private void UpdateHoverStates()
         {
             try
             {
-                // Check hover state for each element
+                //Check hover state for each element
                 foreach (var element in _elements)
                 {
                     var isHovered = element.ContainsPoint(_inputState.MousePosition);
@@ -249,27 +251,27 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Updates selection with keyboard input
-        /// </summary>
+        ///<summary>
+        ///Updates selection with keyboard input
+        ///</summary>
         private void UpdateSelection()
         {
             try
             {
-                // Check for keyboard selection
-                if (_inputState.IsKeyJustPressed(13)) // Enter key
+                //Check for keyboard selection
+                if (_inputState.IsKeyJustPressed(13)) //Enter key
                 {
                     SelectNextElement();
                 }
-                else if (_inputState.IsKeyJustPressed(38)) // Up arrow key
+                else if (_inputState.IsKeyJustPressed(38)) //Up arrow key
                 {
                     SelectPreviousElement();
                 }
-                else if (_inputState.IsKeyJustPressed(40)) // Down arrow key
+                else if (_inputState.IsKeyJustPressed(40)) //Down arrow key
                 {
                     SelectNextElement();
                 }
-                else if (_inputState.IsMouseButtonJustPressed(0)) // Left mouse button
+                else if (_inputState.IsMouseButtonJustPressed(0)) //Left mouse button
                 {
                     SelectElementAtPosition(_inputState.MousePosition);
                 }
@@ -282,9 +284,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Selects the next element in the overlay
-        /// </summary>
+        ///<summary>
+        ///Selects the next element in the overlay
+        ///</summary>
         private void SelectNextElement()
         {
             try
@@ -311,9 +313,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Selects the previous element in the overlay
-        /// </summary>
+        ///<summary>
+        ///Selects the previous element in the overlay
+        ///</summary>
         private void SelectPreviousElement()
         {
             try
@@ -340,9 +342,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Selects the element at the specified position
-        /// </summary>
+        ///<summary>
+        ///Selects the element at the specified position
+        ///</summary>
         private void SelectElementAtPosition(System.Drawing.PointF position)
         {
             try
@@ -375,12 +377,12 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Calculates distance between a point and an element
-        /// </summary>
-        /// <param name="point">Point to calculate distance from</param>
-        /// <param name="element">Element to calculate distance to</param>
-        /// <returns>Distance between point and element</returns>
+        ///<summary>
+        ///Calculates distance between a point and an element
+        ///</summary>
+        ///<param name="point">Point to calculate distance from</param>
+        ///<param name="element">Element to calculate distance to</param>
+        ///<returns>Distance between point and element</returns>
         private float CalculateDistance(System.Drawing.PointF point, UIElement element)
         {
             try
@@ -402,9 +404,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Clears all elements from the overlay
-        /// </summary>
+        ///<summary>
+        ///Clears all elements from the overlay
+        ///</summary>
         public void Clear()
         {
             try
@@ -420,10 +422,10 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Gets a string representation of the debug overlay state
-        /// </summary>
-        /// <returns>String representation</returns>
+        ///<summary>
+        ///Gets a string representation of the debug overlay state
+        ///</summary>
+        ///<returns>String representation</returns>
         public override string ToString()
         {
             try

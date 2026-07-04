@@ -1,16 +1,16 @@
-//// Program Name: CompositeMergeTool.cs
-//// File Path: Engine/Rendering/CompositeMergeTool.cs
-//// Program Purpose: The program performs pixel-level merge operations to draw textures onto composite surfaces.
-//// Program Features:
-//// - Draws textures onto composite surfaces at specified coordinates
-//// - Skips transparent pixels during merge
-//// - Writes opaque pixels to surface pixel array
-//// - Handles boundary checking for surface dimensions
+////Program Name: CompositeMergeTool.cs
+////File Path: Engine/Rendering/CompositeMergeTool.cs
+////Program Purpose: The program performs pixel-level merge operations to draw textures onto composite surfaces.
+////Program Features:
+////- Draws textures onto composite surfaces at specified coordinates
+////- Skips transparent pixels during merge
+////- Writes opaque pixels to surface pixel array
+////- Handles boundary checking for surface dimensions
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 
 using Engine.Rendering.Interfaces;
-using System;
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 public sealed class CompositeMergeTool : ICompositeMergeTool
 {
@@ -37,7 +37,7 @@ public sealed class CompositeMergeTool : ICompositeMergeTool
 
                 int src = tex.Pixels[ty * tw + tx];
 
-                // Skip transparent pixels
+                //Skip transparent pixels
                 if ((src >> 24) == 0) continue;
 
                 surf.Pixels[sy * sw + sx] = src;

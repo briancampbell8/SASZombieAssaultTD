@@ -20,17 +20,19 @@ Notes:      Thread-safe performance monitoring with minimal overhead.
            Provides data for both real-time monitoring and historical analysis.
 
 */
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.AccessControl;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Rendering
 {
-    /// <summary>
-    /// Provides comprehensive rendering performance diagnostics and monitoring.
-    /// </summary>
+    ///<summary>
+    ///Provides comprehensive rendering performance diagnostics and monitoring.
+    ///</summary>
     public sealed class RenderDiagnostics : IDisposable
     {
         private readonly Stopwatch _frameTimer = new();
@@ -45,50 +47,50 @@ namespace SASZombieAssaultTD.Engine.Rendering
         private static object TheType;
         private static object TheMember;
 
-        // Performance thresholds
-        private const int FRAME_HISTORY_SIZE = 60; // Track last 60 frames
-        private const float TARGET_FRAME_TIME = 16.67f; // 60 FPS target
+        //Performance thresholds
+        private const int FRAME_HISTORY_SIZE = 60; //Track last 60 frames
+        private const float TARGET_FRAME_TIME = 16.67f; //60 FPS target
 
         public bool IsEnabled { get; set; } = true;
 
-        /// <summary>
-        /// Gets the current frames per second.
-        /// </summary>
+        ///<summary>
+        ///Gets the current frames per second.
+        ///</summary>
         public float FPS { get; private set; }
 
-        /// <summary>
-        /// Gets the average frame time over the history window.
-        /// </summary>
+        ///<summary>
+        ///Gets the average frame time over the history window.
+        ///</summary>
         public float AverageFrameTime { get; private set; }
 
-        /// <summary>
-        /// Gets the total number of draw calls in the current frame.
-        /// </summary>
+        ///<summary>
+        ///Gets the total number of draw calls in the current frame.
+        ///</summary>
         public int DrawCalls => _drawCalls;
 
-        /// <summary>
-        /// Gets the minimum frame time in the history window.
-        /// </summary>
+        ///<summary>
+        ///Gets the minimum frame time in the history window.
+        ///</summary>
         public float MinFrameTime => _frameTimes.Count > 0 ? _minFrameTime : 0f;
 
-        /// <summary>
-        /// Gets the maximum frame time in the history window.
-        /// </summary>
+        ///<summary>
+        ///Gets the maximum frame time in the history window.
+        ///</summary>
         public float MaxFrameTime => _frameTimes.Count > 0 ? _maxFrameTime : 0f;
 
-        /// <summary>
-        /// Gets the current memory usage in megabytes.
-        /// </summary>
+        ///<summary>
+        ///Gets the current memory usage in megabytes.
+        ///</summary>
         public float MemoryUsageMB => GC.GetTotalMemory(false) / 1024f / 1024f;
 
-        /// <summary>
-        /// Gets the percentage of frames that meet the target frame time.
-        /// </summary>
+        ///<summary>
+        ///Gets the percentage of frames that meet the target frame time.
+        ///</summary>
         public float FrameStabilityPercentage { get; private set; }
 
-        /// <summary>
-        /// Begins timing a new frame.
-        /// </summary>
+        ///<summary>
+        ///Begins timing a new frame.
+        ///</summary>
         public void BeginFrame()
         {
             if (!IsEnabled) return;
@@ -97,9 +99,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _drawCalls = 0;
         }
 
-        /// <summary>
-        /// Ends timing the current frame and updates statistics.
-        /// </summary>
+        ///<summary>
+        ///Ends timing the current frame and updates statistics.
+        ///</summary>
         public void EndFrame()
         {
             if (!IsEnabled) return;
@@ -118,26 +120,26 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 _totalFrameTime += frameTime;
                 _frameCount++;
 
-                // Update min/max
+                //Update min/max
                 if (frameTime < _minFrameTime) _minFrameTime = frameTime;
                 if (frameTime > _maxFrameTime) _maxFrameTime = frameTime;
 
-                // Calculate rolling averages
+                //Calculate rolling averages
                 UpdateStatistics();
             }
         }
 
-        /// <summary>
-        /// Records a draw call for the current frame.
-        /// </summary>
+        ///<summary>
+        ///Records a draw call for the current frame.
+        ///</summary>
         public void RecordDrawCall()
         {
             if (IsEnabled) _drawCalls++;
         }
 
-        /// <summary>
-        /// Resets all diagnostic counters.
-        /// </summary>
+        ///<summary>
+        ///Resets all diagnostic counters.
+        ///</summary>
         public void Reset()
         {
             lock (_lock)
@@ -154,9 +156,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
             }
         }
 
-        /// <summary>
-        /// Gets a performance report string for debugging.
-        /// </summary>
+        ///<summary>
+        ///Gets a performance report string for debugging.
+        ///</summary>
         public string GetPerformanceReport()
         {
             return $"FPS: {FPS:F1} | Frame: {AverageFrameTime:F2}ms | " +
@@ -169,7 +171,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         {
             if (_frameTimes.Count == 0) return;
 
-            // Calculate average frame time
+            //Calculate average frame time
             var sum = 0f;
             var stableFrames = 0;
 
@@ -181,10 +183,10 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
             AverageFrameTime = sum / _frameTimes.Count;
 
-            // Calculate FPS
+            //Calculate FPS
             FPS = AverageFrameTime > 0 ? 1000f / AverageFrameTime : 0f;
 
-            // Calculate stability percentage
+            //Calculate stability percentage
             FrameStabilityPercentage = _frameTimes.Count > 0 ?
             (float)stableFrames / _frameTimes.Count * 100f : 0f;
         }

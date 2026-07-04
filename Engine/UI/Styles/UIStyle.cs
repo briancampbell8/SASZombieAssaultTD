@@ -1,12 +1,14 @@
 using System;
 using static System.Math;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Styles
 {
-    /// <summary>
-    /// Style properties such as colors, fonts, padding, and margins
-    /// P80-06-01: UIStyle defining style properties such as colors, fonts, padding, and margins
-    /// </summary>
+    ///<summary>
+    ///Style properties such as colors, fonts, padding, and margins
+    ///P80-06-01: UIStyle defining style properties such as colors, fonts, padding, and margins
+    ///</summary>
     public class UIStyle
     {
         private System.Drawing.Color _backgroundColor = System.Drawing.Color.Transparent;
@@ -21,9 +23,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
         private bool _wordWrap = false;
         private System.Drawing.ContentAlignment _textAlignment = System.Drawing.ContentAlignment.TopLeft;
 
-        /// <summary>
-        /// Gets or sets the background color
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the background color
+        ///</summary>
         public System.Drawing.Color BackgroundColor
         {
             get => _backgroundColor;
@@ -37,9 +39,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets or sets the text color
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the text color
+        ///</summary>
         public System.Drawing.Color TextColor
         {
             get => _textColor;
@@ -53,9 +55,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets or sets the border color
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the border color
+        ///</summary>
         public System.Drawing.Color BorderColor
         {
             get => _borderColor;
@@ -69,9 +71,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets or sets the font
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the font
+        ///</summary>
         public string Font
         {
             get => _font;
@@ -85,9 +87,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets or sets the font size
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the font size
+        ///</summary>
         public float FontSize
         {
             get => _fontSize;
@@ -101,9 +103,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets or sets the padding
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the padding
+        ///</summary>
         public UI.Layout.UIPadding Padding
         {
             get => _padding;
@@ -114,9 +116,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets or sets the margin
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the margin
+        ///</summary>
         public UI.Layout.UIMargin Margin
         {
             get => _margin;
@@ -127,9 +129,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets or sets the border thickness
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the border thickness
+        ///</summary>
         public float BorderThickness
         {
             get => _borderThickness;
@@ -143,9 +145,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets or sets the corner radius
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the corner radius
+        ///</summary>
         public float CornerRadius
         {
             get => _cornerRadius;
@@ -159,9 +161,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets or sets whether text should wrap
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether text should wrap
+        ///</summary>
         public bool WordWrap
         {
             get => _wordWrap;
@@ -175,9 +177,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets or sets the text alignment
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the text alignment
+        ///</summary>
         public System.Drawing.ContentAlignment TextAlignment
         {
             get => _textAlignment;
@@ -191,19 +193,19 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets whether the style has a border
-        /// </summary>
+        ///<summary>
+        ///Gets whether the style has a border
+        ///</summary>
         public bool HasBorder => _borderThickness > 0;
 
-        /// <summary>
-        /// Gets whether the style has rounded corners
-        /// </summary>
+        ///<summary>
+        ///Gets whether the style has rounded corners
+        ///</summary>
         public bool HasRoundedCorners => _cornerRadius > 0;
 
-        /// <summary>
-        /// Initializes a new UIStyle
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UIStyle
+        ///</summary>
         public UIStyle()
         {
             _padding = UI.Layout.UIPadding.Zero;
@@ -212,105 +214,105 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             System.Diagnostics.Debug.WriteLine("UIStyle: Created new style");
         }
 
-        /// <summary>
-        /// Initializes a new UIStyle with background color
-        /// </summary>
-        /// <param name="backgroundColor">Background color</param>
+        ///<summary>
+        ///Initializes a new UIStyle with background color
+        ///</summary>
+        ///<param name="backgroundColor">Background color</param>
         public UIStyle(System.Drawing.Color backgroundColor) : this()
         {
             BackgroundColor = backgroundColor;
             System.Diagnostics.Debug.WriteLine($"UIStyle: Created style with background color {backgroundColor}");
         }
 
-        /// <summary>
-        /// Sets the background color
-        /// </summary>
-        /// <param name="color">Background color</param>
+        ///<summary>
+        ///Sets the background color
+        ///</summary>
+        ///<param name="color">Background color</param>
         public void SetBackgroundColor(System.Drawing.Color color)
         {
             BackgroundColor = color;
         }
 
-        /// <summary>
-        /// Sets the text color
-        /// </summary>
-        /// <param name="color">Text color</param>
+        ///<summary>
+        ///Sets the text color
+        ///</summary>
+        ///<param name="color">Text color</param>
         public void SetTextColor(System.Drawing.Color color)
         {
             TextColor = color;
         }
 
-        /// <summary>
-        /// Sets the border properties
-        /// </summary>
-        /// <param name="color">Border color</param>
-        /// <param name="thickness">Border thickness</param>
+        ///<summary>
+        ///Sets the border properties
+        ///</summary>
+        ///<param name="color">Border color</param>
+        ///<param name="thickness">Border thickness</param>
         public void SetBorder(System.Drawing.Color color, float thickness)
         {
             BorderColor = color;
             BorderThickness = thickness;
         }
 
-        /// <summary>
-        /// Sets the font properties
-        /// </summary>
-        /// <param name="font">Font name</param>
-        /// <param name="size">Font size</param>
+        ///<summary>
+        ///Sets the font properties
+        ///</summary>
+        ///<param name="font">Font name</param>
+        ///<param name="size">Font size</param>
         public void SetFont(string font, float size)
         {
             Font = font;
             FontSize = size;
         }
 
-        /// <summary>
-        /// Sets the padding
-        /// </summary>
-        /// <param name="padding">Padding values</param>
+        ///<summary>
+        ///Sets the padding
+        ///</summary>
+        ///<param name="padding">Padding values</param>
         public void SetPadding(UI.Layout.UIPadding padding)
         {
             Padding = padding;
         }
 
-        /// <summary>
-        /// Sets uniform padding
-        /// </summary>
-        /// <param name="padding">Padding value for all sides</param>
+        ///<summary>
+        ///Sets uniform padding
+        ///</summary>
+        ///<param name="padding">Padding value for all sides</param>
         public void SetPadding(float padding)
         {
             Padding = UI.Layout.UIPadding.Uniform(padding);
         }
 
-        /// <summary>
-        /// Sets the margin
-        /// </summary>
-        /// <param name="margin">Margin values</param>
+        ///<summary>
+        ///Sets the margin
+        ///</summary>
+        ///<param name="margin">Margin values</param>
         public void SetMargin(UI.Layout.UIMargin margin)
         {
             Margin = margin;
         }
 
-        /// <summary>
-        /// Sets uniform margin
-        /// </summary>
-        /// <param name="margin">Margin value for all sides</param>
+        ///<summary>
+        ///Sets uniform margin
+        ///</summary>
+        ///<param name="margin">Margin value for all sides</param>
         public void SetMargin(float margin)
         {
             Margin = UI.Layout.UIMargin.Uniform(margin);
         }
 
-        /// <summary>
-        /// Sets the corner radius
-        /// </summary>
-        /// <param name="radius">Corner radius</param>
+        ///<summary>
+        ///Sets the corner radius
+        ///</summary>
+        ///<param name="radius">Corner radius</param>
         public void SetCornerRadius(float radius)
         {
             CornerRadius = radius;
         }
 
-        /// <summary>
-        /// Creates a copy of this style
-        /// </summary>
-        /// <returns>Copy of the style</returns>
+        ///<summary>
+        ///Creates a copy of this style
+        ///</summary>
+        ///<returns>Copy of the style</returns>
         public UIStyle Copy()
         {
             try
@@ -338,10 +340,10 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Merges another style into this style
-        /// </summary>
-        /// <param name="other">Style to merge from</param>
+        ///<summary>
+        ///Merges another style into this style
+        ///</summary>
+        ///<param name="other">Style to merge from</param>
         public void Merge(UIStyle other)
         {
             try
@@ -352,7 +354,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                     return;
                 }
 
-                // Only merge non-default values
+                //Only merge non-default values
                 if (other._backgroundColor != System.Drawing.Color.Transparent)
                     BackgroundColor = other._backgroundColor;
 
@@ -385,9 +387,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Resets the style to default values
-        /// </summary>
+        ///<summary>
+        ///Resets the style to default values
+        ///</summary>
         public void Reset()
         {
             try
@@ -412,10 +414,10 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets a string representation of the style
-        /// </summary>
-        /// <returns>String representation</returns>
+        ///<summary>
+        ///Gets a string representation of the style
+        ///</summary>
+        ///<returns>String representation</returns>
         public override string ToString()
         {
             try

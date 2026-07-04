@@ -2,18 +2,20 @@ using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Rendering;
-// audio system using removed; AudioSystem lives in Engine.Systems
+//audio system using removed; AudioSystem lives in Engine.Systems
 using SASZombieAssaultTD.Engine.Enemies;
 using SASZombieAssaultTD.Engine.Performance;
 using SASZombieAssaultTD.Engine.Towers;
 using SASZombieAssaultTD.Engine.Extensions;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Projectiles
 {
-    /// <summary>
-    /// Projectile system for SAS Zombie Assault TD.
-    /// Manages all active projectiles, spawning, and collision detection.
-    /// </summary>
+    ///<summary>
+    ///Projectile system for SAS Zombie Assault TD.
+    ///Manages all active projectiles, spawning, and collision detection.
+    ///</summary>
     public class ProjectileSystem
     {
         private readonly List<Projectile> _activeProjectiles = new();
@@ -21,16 +23,16 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         private bool _isInitialized = false;
         private static ProjectileSystem _instance;
 
-        /// <summary>
-        /// Singleton instance.
-        /// </summary>
+        ///<summary>
+        ///Singleton instance.
+        ///</summary>
         public static ProjectileSystem Instance => _instance ??= new ProjectileSystem();
 
         private ProjectileSystem() { }
 
-        /// <summary>
-        /// Initialize the projectile system.
-        /// </summary>
+        ///<summary>
+        ///Initialize the projectile system.
+        ///</summary>
         public void Initialize()
         {
             if (_isInitialized) return;
@@ -39,7 +41,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
 
             try
             {
-                // Initialize projectile pools
+                //Initialize projectile pools
                 InitializePools();
 
                 _isInitialized = true;
@@ -52,16 +54,16 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
         }
 
-        /// <summary>
-        /// Update all active projectiles.
-        /// </summary>
+        ///<summary>
+        ///Update all active projectiles.
+        ///</summary>
         public void Update(float deltaTime)
         {
             if (!_isInitialized) return;
 
             try
             {
-                // Update all projectiles
+                //Update all projectiles
                 for (int i = _activeProjectiles.Count - 1; i >= 0; i--)
                 {
                     var projectile = _activeProjectiles[i];
@@ -75,7 +77,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                     projectile.Update(deltaTime);
                 }
 
-                // Clean up inactive projectiles
+                //Clean up inactive projectiles
                 CleanupInactiveProjectiles();
             }
             catch (Exception ex)
@@ -84,9 +86,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
         }
 
-        /// <summary>
-        /// Render all active projectiles.
-        /// </summary>
+        ///<summary>
+        ///Render all active projectiles.
+        ///</summary>
         public void Render()
         {
             if (!_isInitialized) return;
@@ -107,13 +109,13 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
         }
 
-        /// <summary>
-        /// Fire a projectile from a tower.
-        /// </summary>
-        /// <param name="tower">The tower firing the projectile.</param>
-        /// <param name="target">The target enemy.</param>
-        /// <param name="projectileType">Type of projectile to fire.</param>
-        /// <returns>The fired projectile, or null if failed.</returns>
+        ///<summary>
+        ///Fire a projectile from a tower.
+        ///</summary>
+        ///<param name="tower">The tower firing the projectile.</param>
+        ///<param name="target">The target enemy.</param>
+        ///<param name="projectileType">Type of projectile to fire.</param>
+        ///<returns>The fired projectile, or null if failed.</returns>
         public Projectile FireProjectile(Tower tower, Enemy target, ProjectileType projectileType)
         {
             if (!_isInitialized || tower == null || target == null)
@@ -121,28 +123,28 @@ namespace SASZombieAssaultTD.Engine.Projectiles
 
             try
             {
-                // Get projectile from pool
+                //Get projectile from pool
                 var projectile = GetProjectileFromPool(projectileType);
                 if (projectile == null)
                     return null;
 
-                // Calculate firing position and direction
+                //Calculate firing position and direction
                 var firePosition = GetFirePosition(tower);
                 var direction = CalculateFireDirection(firePosition, target.Position, projectileType);
 
-                // Set projectile data (use Tower.Data property)
+                //Set projectile data (use Tower.Data property)
                 projectile.SetFromTowerData(tower.Data);
                 projectile.Source = tower;
                 projectile.Target = target;
                 projectile.Type = projectileType;
 
-                // Activate projectile
+                //Activate projectile
                 projectile.Activate(firePosition, direction, tower, target);
 
-                // Add to active list
+                //Add to active list
                 _activeProjectiles.Add(projectile);
 
-                // Notify tower of projectile fired
+                //Notify tower of projectile fired
                 tower.OnProjectileFired(projectile);
 
                 return projectile;
@@ -154,13 +156,13 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
         }
 
-        /// <summary>
-        /// Fire a projectile in a direction (for area targeting).
-        /// </summary>
-        /// <param name="tower">The tower firing the projectile.</param>
-        /// <param name="targetPosition">Target position.</param>
-        /// <param name="projectileType">Type of projectile to fire.</param>
-        /// <returns>The fired projectile, or null if failed.</returns>
+        ///<summary>
+        ///Fire a projectile in a direction (for area targeting).
+        ///</summary>
+        ///<param name="tower">The tower firing the projectile.</param>
+        ///<param name="targetPosition">Target position.</param>
+        ///<param name="projectileType">Type of projectile to fire.</param>
+        ///<returns>The fired projectile, or null if failed.</returns>
         public Projectile FireProjectileAt(Tower tower, Vector3 targetPosition, ProjectileType projectileType)
         {
             if (!_isInitialized || tower == null)
@@ -168,28 +170,28 @@ namespace SASZombieAssaultTD.Engine.Projectiles
 
             try
             {
-                // Get projectile from pool
+                //Get projectile from pool
                 var projectile = GetProjectileFromPool(projectileType);
                 if (projectile == null)
                     return null;
 
-                // Calculate firing position and direction
+                //Calculate firing position and direction
                 var firePosition = GetFirePosition(tower);
                 var direction = CalculateFireDirection(firePosition, targetPosition, projectileType);
 
-                // Set projectile data (use Tower.Data property)
+                //Set projectile data (use Tower.Data property)
                 projectile.SetFromTowerData(tower.Data);
                 projectile.Source = tower;
-                projectile.Target = null; // No specific target for area fire
+                projectile.Target = null; //No specific target for area fire
                 projectile.Type = projectileType;
 
-                // Activate projectile
+                //Activate projectile
                 projectile.Activate(firePosition, direction, tower);
 
-                // Add to active list
+                //Add to active list
                 _activeProjectiles.Add(projectile);
 
-                // Notify tower of projectile fired
+                //Notify tower of projectile fired
                 tower.OnProjectileFired(projectile);
 
                 return projectile;
@@ -201,15 +203,15 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
         }
 
-        /// <summary>
-        /// Fire multiple projectiles (for shotgun or spread attacks).
-        /// </summary>
-        /// <param name="tower">The tower firing projectiles.</param>
-        /// <param name="target">The target enemy.</param>
-        /// <param name="projectileType">Type of projectile to fire.</param>
-        /// <param name="count">Number of projectiles to fire.</param>
-        /// <param name="spreadAngle">Spread angle in degrees.</param>
-        /// <returns>List of fired projectiles.</returns>
+        ///<summary>
+        ///Fire multiple projectiles (for shotgun or spread attacks).
+        ///</summary>
+        ///<param name="tower">The tower firing projectiles.</param>
+        ///<param name="target">The target enemy.</param>
+        ///<param name="projectileType">Type of projectile to fire.</param>
+        ///<param name="count">Number of projectiles to fire.</param>
+        ///<param name="spreadAngle">Spread angle in degrees.</param>
+        ///<returns>List of fired projectiles.</returns>
         public List<Projectile> FireProjectileSpread(Tower tower, Enemy target, ProjectileType projectileType, int count, float spreadAngle)
         {
             var projectiles = new List<Projectile>();
@@ -225,30 +227,30 @@ namespace SASZombieAssaultTD.Engine.Projectiles
 
                 for (int i = 0; i < count; i++)
                 {
-                    // Calculate spread direction
+                    //Calculate spread direction
                     var angleOffset = (i - (count - 1) / 2f) * spreadRadians / (count - 1);
                     var spreadDirection = RotateDirection(baseDirection, angleOffset);
 
-                    // Get projectile from pool
+                    //Get projectile from pool
                     var projectile = GetProjectileFromPool(projectileType);
                     if (projectile == null)
                         continue;
 
-                    // Set projectile data
+                    //Set projectile data
                     projectile.SetFromTowerData((TowerData)tower.TowerData());
                     projectile.Source = tower;
                     projectile.Target = target;
                     projectile.Type = projectileType;
 
-                    // Activate projectile
+                    //Activate projectile
                     projectile.Activate(firePosition, spreadDirection, tower, target);
 
-                    // Add to active list
+                    //Add to active list
                     _activeProjectiles.Add(projectile);
                     projectiles.Add(projectile);
                 }
 
-                // Notify tower of projectiles fired
+                //Notify tower of projectiles fired
                 tower.OnProjectilesFired(projectiles);
 
                 return projectiles;
@@ -260,17 +262,17 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
         }
 
-        /// <summary>
-        /// Get the number of active projectiles.
-        /// </summary>
+        ///<summary>
+        ///Get the number of active projectiles.
+        ///</summary>
         public int GetActiveProjectileCount()
         {
             return _activeProjectiles.Count;
         }
 
-        /// <summary>
-        /// Get projectiles by type.
-        /// </summary>
+        ///<summary>
+        ///Get projectiles by type.
+        ///</summary>
         public List<Projectile> GetProjectilesByType(ProjectileType type)
         {
             var result = new List<Projectile>();
@@ -284,9 +286,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             return result;
         }
 
-        /// <summary>
-        /// Clear all active projectiles.
-        /// </summary>
+        ///<summary>
+        ///Clear all active projectiles.
+        ///</summary>
         public void ClearAllProjectiles()
         {
             foreach (var projectile in _activeProjectiles)
@@ -296,9 +298,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             _activeProjectiles.Clear();
         }
 
-        /// <summary>
-        /// Get system statistics.
-        /// </summary>
+        ///<summary>
+        ///Get system statistics.
+        ///</summary>
         public string GetStats()
         {
             var stats = $"Projectile System Stats:\n";
@@ -313,12 +315,12 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             return stats;
         }
 
-        /// <summary>
-        /// Initialize projectile pools.
-        /// </summary>
+        ///<summary>
+        ///Initialize projectile pools.
+        ///</summary>
         private void InitializePools()
         {
-            // Create pools for each projectile type
+            //Create pools for each projectile type
             _pools[ProjectileType.Bullet] = new ProjectilePool(ProjectileType.Bullet);
             _pools[ProjectileType.Rocket] = new ProjectilePool(ProjectileType.Rocket);
             _pools[ProjectileType.Grenade] = new ProjectilePool(ProjectileType.Grenade);
@@ -330,9 +332,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             System.Diagnostics.Debug.WriteLine($"Initialized {_pools.Count} projectile pools");
         }
 
-        /// <summary>
-        /// Get a projectile from the appropriate pool.
-        /// </summary>
+        ///<summary>
+        ///Get a projectile from the appropriate pool.
+        ///</summary>
         private Projectile GetProjectileFromPool(ProjectileType type)
         {
             if (_pools.TryGetValue(type, out var pool))
@@ -340,36 +342,36 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                 return pool.Get();
             }
 
-            // Fallback to generic projectile pool
+            //Fallback to generic projectile pool
             return PerformanceManager.Instance?.Get<Projectile>();
         }
 
-        /// <summary>
-        /// Get the firing position for a tower.
-        /// </summary>
+        ///<summary>
+        ///Get the firing position for a tower.
+        ///</summary>
         private Vector3 GetFirePosition(Tower tower)
         {
-            // Get tower's fire point (could be barrel position, etc.)
+            //Get tower's fire point (could be barrel position, etc.)
             return (Vector3)(tower.GetFirePosition() ?? Vector3.Zero);
         }
 
-        /// <summary>
-        /// Calculate firing direction with prediction for moving targets.
-        /// </summary>
+        ///<summary>
+        ///Calculate firing direction with prediction for moving targets.
+        ///</summary>
         private Vector3 CalculateFireDirection(Vector3 firePosition, Vector3 targetPosition, ProjectileType projectileType)
         {
             var direction = (targetPosition - firePosition).Normalized;
 
-            // Add prediction for moving targets if needed
-            // This would require target velocity information
-            // For now, use simple direct targeting
+            //Add prediction for moving targets if needed
+            //This would require target velocity information
+            //For now, use simple direct targeting
 
             return direction;
         }
 
-        /// <summary>
-        /// Rotate a 2D direction by an angle.
-        /// </summary>
+        ///<summary>
+        ///Rotate a 2D direction by an angle.
+        ///</summary>
         private Vector3 RotateDirection(Vector3 direction, float angle)
         {
             var cos = MathF.Cos(angle);
@@ -382,9 +384,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             );
         }
 
-        /// <summary>
-        /// Clean up inactive projectiles.
-        /// </summary>
+        ///<summary>
+        ///Clean up inactive projectiles.
+        ///</summary>
         private void CleanupInactiveProjectiles()
         {
             for (int i = _activeProjectiles.Count - 1; i >= 0; i--)
@@ -396,16 +398,16 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
         }
 
-        /// <summary>
-        /// Shutdown the projectile system.
-        /// </summary>
+        ///<summary>
+        ///Shutdown the projectile system.
+        ///</summary>
         public void Shutdown()
         {
             System.Diagnostics.Debug.WriteLine("Shutting down Projectile System");
 
             ClearAllProjectiles();
 
-            // Clear pools
+            //Clear pools
             _pools.Clear();
 
             _isInitialized = false;
@@ -413,9 +415,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         }
     }
 
-    /// <summary>
-    /// Specialized projectile pool for different projectile types.
-    /// </summary>
+    ///<summary>
+    ///Specialized projectile pool for different projectile types.
+    ///</summary>
     public class ProjectilePool : ObjectPool<Projectile>
     {
         private readonly ProjectileType _projectileType;
@@ -428,20 +430,20 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         {
             _projectileType = type;
 
-            // Pre-warm pool based on projectile type
+            //Pre-warm pool based on projectile type
             var prewarmCount = GetPrewarmCount(type);
             Prewarm(prewarmCount);
         }
 
-        /// <summary>
-        /// Create a projectile of the specified type.
-        /// </summary>
+        ///<summary>
+        ///Create a projectile of the specified type.
+        ///</summary>
         private static Projectile CreateProjectile(ProjectileType type)
         {
             var projectile = new Projectile();
             projectile.Type = type;
 
-            // Set type-specific properties
+            //Set type-specific properties
             switch (type)
             {
                 case ProjectileType.Bullet:
@@ -491,7 +493,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                     break;
             }
 
-            // Create trail effect for certain projectile types
+            //Create trail effect for certain projectile types
             if (type == ProjectileType.Laser || type == ProjectileType.Plasma)
             {
                 projectile.Trail = new TrailEffect(projectile.Color, projectile.Size * 0.5f);
@@ -500,15 +502,15 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             return projectile;
         }
 
-        /// <summary>
-        /// Get prewarm count based on projectile type.
-        /// </summary>
+        ///<summary>
+        ///Get prewarm count based on projectile type.
+        ///</summary>
         private static int GetPrewarmCount(ProjectileType type)
         {
             return type switch
             {
-                ProjectileType.Bullet => 100,  // High fire rate
-                ProjectileType.Rocket => 20,   // Lower fire rate
+                ProjectileType.Bullet => 100,  //High fire rate
+                ProjectileType.Rocket => 20,   //Lower fire rate
                 ProjectileType.Grenade => 15,
                 ProjectileType.Laser => 50,
                 ProjectileType.Plasma => 30,

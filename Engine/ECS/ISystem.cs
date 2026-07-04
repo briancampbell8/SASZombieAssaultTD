@@ -14,24 +14,26 @@ Notes:    This replaces all fragmented system interfaces across the engine.
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.ECS
 {
-    /// <summary>
-    /// Unified System interface for SASZombieAssaultTD engine.
-    /// Provides comprehensive system management with unified math integration.
-    /// This is the single authoritative ISystem type across the entire engine.
-    /// </summary>
+    ///<summary>
+    ///Unified System interface for SASZombieAssaultTD engine.
+    ///Provides comprehensive system management with unified math integration.
+    ///This is the single authoritative ISystem type across the entire engine.
+    ///</summary>
     public interface ISystem
     {
-        ///  Properties
+        /// Properties
         bool IsEnabled { get; }
         bool IsInitialized { get; }
         SystemPriority Priority { get; }
         float LastUpdateTime { get; }
         uint UpdateCount { get; }
-        /// 
+        ///
 
-        ///  Methods
+        /// Methods
         void Initialize();
         void Update(float deltaTime);
         void FixedUpdate(float fixedDeltaTime);
@@ -42,6 +44,6 @@ namespace SASZombieAssaultTD.Engine.ECS
         void Toggle();
         void Destroy();
         void Reset();
-        /// 
+        ///
     }
 }

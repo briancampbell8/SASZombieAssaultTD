@@ -1,10 +1,12 @@
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Animation.Components
 {
-    /// <summary>
-    /// Represents a snapshot of an animation state for an entity.
-    /// </summary>
+    ///<summary>
+    ///Represents a snapshot of an animation state for an entity.
+    ///</summary>
     public class AnimationStateSnapshot
     {
         public int EntityId { get; set; }

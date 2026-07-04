@@ -36,60 +36,68 @@
  *      - Must not contain partials; this is a complete standalone program.
  * ==================================================================================================== */
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using System;
 using System.Collections.Generic;
-
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Rendering.D3D11;
 namespace SASZombieAssaultTD.Engine.Systems
 {
-    /// <summary>
-    /// Manages the rendering pipeline and dispatches render calls to registered systems.
-    /// </summary>
-    public class RenderManager
+    ///<summary>
+    ///Manages the rendering pipeline and dispatches render calls to registered systems.
+    ///</summary>
+    public sealed class RenderManager
     {
-        // ----------------------------------------------------------------------------------------------------
-        //  Properties
-        // ----------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------------------------------------------
+        // Properties
+        //----------------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Whether the render manager is active and should process render calls.
-        /// </summary>
+        ///<summary>
+        ///Whether the render manager is active and should process render calls.
+        ///</summary>
         public bool IsActive { get; set; } = true;
 
-        /// <summary>
-        /// The active render context used by all render systems.
-        /// Must be assigned externally before rendering begins.
-        /// </summary>
-        public IRenderContext Context { get; set; }
+        ///<summary>
+        ///The active render context used by all render systems.
+        ///Must be assigned externally before rendering begins.
+        ///</summary>
+        public IRenderContext? Context { get; private set; }
 
-        // ----------------------------------------------------------------------------------------------------
-        //  Private Fields
-        // ----------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------------------------------------------
+        // Private Fields
+        //----------------------------------------------------------------------------------------------------
 
         private readonly List<IRenderSystem> _systems = new();
-        private object TheType;
-        private object TheMember;
+        internal static object Instance;
 
-        // ----------------------------------------------------------------------------------------------------
-        //  Construction
-        // ----------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------------------------------------------
+        // Construction
+        //----------------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Creates a new RenderManager instance.
-        /// </summary>
+        ///<summary>
+        ///Creates a new RenderManager instance.
+        ///</summary>
         public RenderManager()
         {
-            DebugLogger.LogInfo("RenderManager constructed");
+            DLogger.Log("RenderManager constructed");
         }
 
-        // ----------------------------------------------------------------------------------------------------
-        //  Public API
-        // ----------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------------------------------------------
+        // Public API
+        //----------------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Registers a render system for participation in the render pipeline.
-        /// </summary>
-        /// <param name="system">The render system to register.</param>
+        ///<summary>
+        ///Assigns the render context used by all render systems.
+        ///</summary>
+        public void SetRenderContext(IRenderContext context)
+        {
+            Context = context ?? throw new ArgumentNullException(nameof(context));
+            DLogger.Log($"RenderManager.SetRenderContext: Assigned '{context.GetType().Name}'");
+        }
+
+        ///<summary>
+        ///Registers a render system for participation in the render pipeline.
+        ///</summary>
         public void RegisterSystem(IRenderSystem system)
         {
             if (system == null)
@@ -98,13 +106,13 @@ namespace SASZombieAssaultTD.Engine.Systems
             if (!_systems.Contains(system))
             {
                 _systems.Add(system);
-                DebugLogger.LogInfo($"RenderManager.RegisterSystem: Registered '{system.GetType().FullName}'");
+                DLogger.Log($"RenderManager.RegisterSystem: Registered '{system.GetType().FullName}'");
             }
         }
 
-        /// <summary>
-        /// Invokes Render(context) on all registered render systems.
-        /// </summary>
+        ///<summary>
+        ///Invokes Render(context) on all registered render systems.
+        ///</summary>
         public void RenderAll()
         {
             if (!IsActive)
@@ -112,7 +120,7 @@ namespace SASZombieAssaultTD.Engine.Systems
 
             if (Context == null)
             {
-                DebugLogger.LogError("RenderManager.RenderAll: No render context assigned");
+                DLogger.Log("RenderManager.RenderAll: No render context assigned");
                 return;
             }
 
@@ -124,114 +132,112 @@ namespace SASZombieAssaultTD.Engine.Systems
                 }
                 catch (Exception ex)
                 {
-                    DebugLogger.LogError(
+                    DLogger.Log(
                         $"RenderManager.RenderAll: Exception in '{system.GetType().FullName}': {ex.Message}"
                     );
-                    DebugLogger.Exception(ex, $"RenderManager.RenderAll:{system.GetType().FullName}");
+                    DLogger.Log(
+                        LogSubsystems.Systems,
+                        LogLevel.Error,
+                        $"RenderManager.RenderAll: Exception in '{system.GetType().FullName}': {ex.Message}"
+                        );
                     throw;
                 }
             }
         }
 
-        /// <summary>
-        /// Returns diagnostic information about the render manager.
-        /// </summary>
+        ///<summary>
+        ///Returns diagnostic information about the render manager.
+        ///</summary>
         public string GetDiagnostics()
         {
             return $"RenderManager: {_systems.Count} systems registered, Active: {IsActive}";
         }
 
-        /// <summary>
-        /// Shuts down the render manager and clears all registered systems.
-        /// </summary>
+        ///<summary>
+        ///Shuts down the render manager and clears all registered systems.
+        ///</summary>
         public void Shutdown()
         {
-            DebugLogger.LogInfo("RenderManager.Shutdown: ENTER");
+            DLogger.Log("RenderManager.Shutdown: ENTER");
 
             IsActive = false;
             _systems.Clear();
 
-            DebugLogger.LogInfo("RenderManager.Shutdown: EXIT");
+            DLogger.Log("RenderManager.Shutdown: EXIT");
         }
 
-        // ----------------------------------------------------------------------------------------------------
-        //  REAL INITIALIZATION IMPLEMENTATION
-        // ----------------------------------------------------------------------------------------------------
+        //----------------------------------------------------------------------------------------------------
+        // Initialization
+        //----------------------------------------------------------------------------------------------------
 
-        /// <summary>
-        /// Initializes the render manager and validates the render context.
-        /// </summary>
+        ///<summary>
+        ///Initializes the render manager and validates the render context.
+        ///</summary>
         internal void Initialize()
         {
-            DebugLogger.LogInfo("RenderManager.Initialize: ENTER");
+            DLogger.Log("RenderManager.Initialize: ENTER");
 
-            // Ensure the manager is active
             IsActive = true;
 
-            // Validate that a render context has been assigned
             if (Context == null)
             {
-                DebugLogger.LogError("RenderManager.Initialize: No render context assigned");
+                DLogger.Log("RenderManager.Initialize: No render context assigned");
                 throw new InvalidOperationException("RenderManager requires a valid IRenderContext before initialization.");
             }
 
-            // Initialize the render context itself
             try
             {
-                DebugLogger.LogInfo("RenderManager.Initialize: Initializing render context...");
+                DLogger.Log("RenderManager.Initialize: Initializing render context...");
                 Context.Initialize();
             }
             catch (Exception ex)
             {
-                DebugLogger.LogError("RenderManager.Initialize: Render context initialization failed");
-                DebugLogger.Exception(ex, "RenderManager.Initialize");
+                DLogger.Log("RenderManager.Initialize: Render context initialization failed");
+                DLogger.Log(
+                    LogSubsystems.Systems,
+                    LogLevel.Error,
+                    ex.ToString(),
+                    "RenderManager.Initialize");
                 throw;
             }
 
-            // Validate registered systems (remove nulls)
+            //Remove null systems (defensive cleanup)
             for (int i = _systems.Count - 1; i >= 0; i--)
             {
                 if (_systems[i] == null)
                 {
-                    DebugLogger.LogWarning("RenderManager.Initialize: Null render system removed");
+                    DLogger.Log("RenderManager.Initialize: Null render system removed");
                     _systems.RemoveAt(i);
                 }
             }
 
-            DebugLogger.LogInfo($"RenderManager.Initialize: {_systems.Count} systems registered");
+            DLogger.Log($"RenderManager.Initialize: {_systems.Count} systems registered");
+            DLogger.Log("RenderManager.Initialize: EXIT");
+        }
 
-            DebugLogger.LogInfo("RenderManager.Initialize: EXIT");
+        internal void SetRenderContext(RenderContextD3D11 renderContext)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void SetRenderContext(Rendering.RenderContextD3D11Adapter renderContextAdapter)
+        {
+            throw new NotImplementedException();
         }
     }
 
-    // --------------------------------------------------------------------------------------------------------
-    //  Interfaces
-    // --------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------
+    // Interfaces
+    //--------------------------------------------------------------------------------------------------------
 
-    /// <summary>
-    /// Contract for render-capable systems.
-    /// </summary>
     public interface IRenderSystem
     {
-        /// <summary>
-        /// Renders the system using the provided render context.
-        /// </summary>
         void Render(IRenderContext context);
     }
 
-    /// <summary>
-    /// Contract for render context implementations.
-    /// </summary>
     public interface IRenderContext
     {
-        /// <summary>
-        /// Initializes the render context.
-        /// </summary>
         void Initialize();
-
-        /// <summary>
-        /// Shuts down the render context.
-        /// </summary>
         void Shutdown();
     }
 }

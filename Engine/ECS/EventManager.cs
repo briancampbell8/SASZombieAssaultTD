@@ -2,9 +2,11 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.ECS
 {
-    // Minimal event manager to satisfy Subscribe/Unsubscribe/Publish usage across the engine.
+    //Minimal event manager to satisfy Subscribe/Unsubscribe/Publish usage across the engine.
     public sealed class EventManager
     {
         private readonly ConcurrentDictionary<Type, List<Delegate>> _subscribers = new();

@@ -1,64 +1,64 @@
-/*
-File:    Input.cs
-Path:    Engine/GameLoop/Input.cs
-Purpose: P11-09-01 - Contains all input-related operations for GameLoop.
-         Handles input polling and routing within the game loop.
+﻿// ====================================================================================================
+//  FILE: Input.cs
+//  PATH: Engine/GameLoop/Input.cs
+//  PURPOSE: P11-09-01 — Contains all input-related operations for GameLoop.
+//           Handles input polling and routing within the game loop.
+//
+//  ROLE: Game loop input specialist.
+//      - Input polling coordination
+//      - UIInputRouter integration
+//      - InputDiagnostics class
+//      - Input state management
+//      - Input timing coordination
+//
+//  NOTES:
+//      - Contains all input logic extracted from GameLoop.
+//      - Delegates to UIInputRouter but coordinates timing and diagnostics.
+//      - Provides clean separation of input concerns.
+// ====================================================================================================
 
-Role:     Game loop input specialist.
-         - Input polling coordination
-         - UIInputRouter integration
-         - InputDiagnostics class
-         - Input state management
-         - Input timing coordination
-
-Notes:    Contains all input logic extracted from GameLoop.
-         Delegates to UIInputRouter but coordinates timing and diagnostics.
-         Provides clean separation of input concerns.
-*/
 
 using System;
-using System.Collections.Generic;
-using System.Drawing;
-using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.UI.Input;
-
 namespace SASZombieAssaultTD.Engine.Systems
+//
 {
-    /// <summary>
-    /// Partial class containing input logic for GameLoop.
-    /// </summary>
+    ///<summary>
+    ///Partial class containing input logic for GameLoop.
+    ///</summary>
     public partial class GameLoop
     {
-        // Input tracking
+        //Input tracking
         private float _lastInputTime = 0f;
         private int _inputEventsProcessed = 0;
         private readonly object _inputLock = new();
 
-        /// <summary>
-        /// Gets the input router for input operations.
-        /// </summary>
+        ///<summary>
+        ///Gets the input router for input operations.
+        ///</summary>
         public UIInputRouter InputRouter => _input;
 
-        /// <summary>
-        /// Gets whether input is currently active.
-        /// </summary>
+        ///<summary>
+        ///Gets whether input is currently active.
+        ///</summary>
         public bool IsInputActive => _input != null && _isRunning;
 
-        /// <summary>
-        /// Gets the number of input events processed.
-        /// </summary>
+        ///<summary>
+        ///Gets the number of input events processed.
+        ///</summary>
         public int InputEventsProcessed => _inputEventsProcessed;
 
-        /// <summary>
-        /// Gets the last input time.
-        /// </summary>
+        ///<summary>
+        ///Gets the last input time.
+        ///</summary>
         public float LastInputTime => _lastInputTime;
 
-        /// <summary>
-        /// Processes input for the current frame.
-        /// </summary>
-        /// <param name="deltaTime">Time since last frame in seconds.</param>
+        ///<summary>
+        ///Processes input for the current frame.
+        ///</summary>
+        ///<param name="deltaTime">Time since last frame in seconds.</param>
         private void ProcessInputFrame(float deltaTime)
         {
             if (_input == null || !_isRunning)
@@ -70,27 +70,30 @@ namespace SASZombieAssaultTD.Engine.Systems
                 {
                     var inputStartTime = DateTime.Now;
 
-                    // Process input through the input router
+                    //Process input through the input router
                     _input.ProcessInput(deltaTime);
 
-                    // Update input statistics
+                    //Update input statistics
                     UpdateInputStatistics(inputStartTime);
 
-                    Engine.Diagnostics.DebugLogger.LogDebug($"Input processed in {deltaTime:F4}s");
+                    DLogger.Log($"Input processed in {deltaTime:F4}s");
                 }
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Input processing failed: {ex.Message}");
-                Engine.Diagnostics.DebugLogger.Exception(ex, "Input processing");
+                DLogger.Log(LogSubsystems.GameLoop, LogLevel.Info, "ERROR", $"Input processing failed: {ex.Message}");
+                DLogger.Log(
+                    LogSubsystems.GameLoop,
+                    LogLevel.Info, ex.ToString(),
+                     "Input processing");
                 _diagnostics.RecordFrameError(ex);
             }
         }
 
-        /// <summary>
-        /// Updates input statistics.
-        /// </summary>
-        /// <param name="inputStartTime">The time when input processing started.</param>
+        ///<summary>
+        ///Updates input statistics.
+        ///</summary>
+        ///<param name="inputStartTime">The time when input processing started.</param>
         private void UpdateInputStatistics(DateTime inputStartTime)
         {
             var inputProcessingTime = (float)(DateTime.Now - inputStartTime).TotalSeconds;
@@ -98,10 +101,10 @@ namespace SASZombieAssaultTD.Engine.Systems
             _inputEventsProcessed++;
         }
 
-        /// <summary>
-        /// Gets detailed input diagnostics.
-        /// </summary>
-        /// <returns>Input diagnostics information.</returns>
+        ///<summary>
+        ///Gets detailed input diagnostics.
+        ///</summary>
+        ///<returns>Input diagnostics information.</returns>
         public InputDiagnostics GetDetailedInputDiagnostics()
         {
             lock (_inputLock)
@@ -117,10 +120,10 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
         }
 
-        /// <summary>
-        /// Gets the current mouse position.
-        /// </summary>
-        /// <returns>The current mouse position.</returns>
+        ///<summary>
+        ///Gets the current mouse position.
+        ///</summary>
+        ///<returns>The current mouse position.</returns>
         private System.Drawing.Point GetMousePosition()
         {
             try
@@ -130,34 +133,38 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to get mouse position: {ex.Message}");
-                Engine.Diagnostics.DebugLogger.Exception(ex, "Mouse position");
+                DLogger.Log(LogSubsystems.GameLoop, LogLevel.Info, "ERROR", $"Failed to get mouse position: {ex.Message}");
+                DLogger.Log(
+                    LogSubsystems.GameLoop,
+                    LogLevel.Info,
+                    ex.ToString(), "Mouse position");
                 return System.Drawing.Point.Empty;
             }
         }
 
-        /// <summary>
-        /// Gets the current keyboard state.
-        /// </summary>
-        /// <returns>Array of key states.</returns>
+        ///<summary>
+        ///Gets the current keyboard state.
+        ///</summary>
+        ///<returns>Array of key states.</returns>
         private bool[] GetKeyStates()
         {
             try
             {
-                // This would be implemented based on the actual input system
+                //This would be implemented based on the actual input system
                 return _input?.GetKeyStates() ?? new bool[256];
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to get key states: {ex.Message}");
-                Engine.Diagnostics.DebugLogger.Exception(ex, "Key states");
+                DLogger.Log(LogSubsystems.GameLoop, LogLevel.Info, "ERROR", $"Failed to get key states: {ex.Message}");
+                DLogger.Log(
+                    LogSubsystems.GameLoop, LogLevel.Info, ex.ToString(), "Key states");
                 return new bool[256];
             }
         }
 
-        /// <summary>
-        /// Resets input statistics.
-        /// </summary>
+        ///<summary>
+        ///Resets input statistics.
+        ///</summary>
         public void ResetInputStatistics()
         {
             lock (_inputLock)
@@ -167,23 +174,23 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
         }
 
-        /// <summary>
-        /// Enables or disables input processing.
-        /// </summary>
-        /// <param name="enabled">Whether input should be enabled.</param>
+        ///<summary>
+        ///Enables or disables input processing.
+        ///</summary>
+        ///<param name="enabled">Whether input should be enabled.</param>
         public void SetInputEnabled(bool enabled)
         {
             if (_input != null)
             {
                 _input.SetEnabled(enabled);
-                Engine.Diagnostics.DebugLogger.LogInfo($"Input processing {(enabled ? "enabled" : "disabled")}");
+                DLogger.Log($"Input processing {(enabled ? "enabled" : "disabled")}");
             }
         }
 
-        /// <summary>
-        /// Gets input performance metrics.
-        /// </summary>
-        /// <returns>Input performance metrics.</returns>
+        ///<summary>
+        ///Gets input performance metrics.
+        ///</summary>
+        ///<returns>Input performance metrics.</returns>
         public InputMetrics GetInputMetrics()
         {
             lock (_inputLock)
@@ -199,9 +206,9 @@ namespace SASZombieAssaultTD.Engine.Systems
         }
     }
 
-    /// <summary>
-    /// Input performance metrics.
-    /// </summary>
+    ///<summary>
+    ///Input performance metrics.
+    ///</summary>
     public class InputMetrics
     {
         public int EventsProcessed { get; set; }

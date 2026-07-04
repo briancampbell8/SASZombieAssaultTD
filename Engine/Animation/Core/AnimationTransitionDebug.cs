@@ -29,17 +29,19 @@ using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using SASZombieAssaultTD.Engine.Math;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Animation.Core
 {
-    /// <summary>
-    /// Animation transition debugging and visualization system.
-    /// Implements P11-16-05: Animation transition debugging and visualization.
-    /// </summary>
+    ///<summary>
+    ///Animation transition debugging and visualization system.
+    ///Implements P11-16-05: Animation transition debugging and visualization.
+    ///</summary>
     public class AnimationTransitionDebug
     {
         private readonly object _transitionLock = new();
 
-        // Transition properties
+        //Transition properties
         private readonly int _entityId;
         private readonly string _fromState;
         private readonly string _toState;
@@ -52,60 +54,60 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
         private float _progress;
         private float _elapsedTime;
 
-        /// <summary>
-        /// Gets the entity ID being debugged.
-        /// </summary>
+        ///<summary>
+        ///Gets the entity ID being debugged.
+        ///</summary>
         public int EntityId => _entityId;
 
-        /// <summary>
-        /// Gets the from state name.
-        /// </summary>
+        ///<summary>
+        ///Gets the from state name.
+        ///</summary>
         public string FromState => _fromState;
 
-        /// <summary>
-        /// Gets the to state name.
-        /// </summary>
+        ///<summary>
+        ///Gets the to state name.
+        ///</summary>
         public string ToState => _toState;
 
-        /// <summary>
-        /// Gets the start position.
-        /// </summary>
+        ///<summary>
+        ///Gets the start position.
+        ///</summary>
         public Vector3 StartPosition => _startPosition;
 
-        /// <summary>
-        /// Gets the end position.
-        /// </summary>
+        ///<summary>
+        ///Gets the end position.
+        ///</summary>
         public Vector3 EndPosition => _endPosition;
 
-        /// <summary>
-        /// Gets the transition progress (0.0 to 1.0).
-        /// </summary>
+        ///<summary>
+        ///Gets the transition progress (0.0 to 1.0).
+        ///</summary>
         public float Progress => _progress;
 
-        /// <summary>
-        /// Gets the transition duration.
-        /// </summary>
+        ///<summary>
+        ///Gets the transition duration.
+        ///</summary>
         public float Duration => _duration;
 
-        /// <summary>
-        /// Gets whether the transition is currently active.
-        /// </summary>
+        ///<summary>
+        ///Gets whether the transition is currently active.
+        ///</summary>
         public bool IsActive => _isActive;
 
-        /// <summary>
-        /// Gets the elapsed time since transition start.
-        /// </summary>
+        ///<summary>
+        ///Gets the elapsed time since transition start.
+        ///</summary>
         public float ElapsedTime => _elapsedTime;
 
-        /// <summary>
-        /// Initializes a new instance of AnimationTransitionDebug.
-        /// </summary>
-        /// <param name="entityId">The entity ID.</param>
-        /// <param name="fromState">The from state name.</param>
-        /// <param name="toState">The to state name.</param>
-        /// <param name="startPosition">The start position.</param>
-        /// <param name="endPosition">The end position.</param>
-        /// <param name="duration">The transition duration.</param>
+        ///<summary>
+        ///Initializes a new instance of AnimationTransitionDebug.
+        ///</summary>
+        ///<param name="entityId">The entity ID.</param>
+        ///<param name="fromState">The from state name.</param>
+        ///<param name="toState">The to state name.</param>
+        ///<param name="startPosition">The start position.</param>
+        ///<param name="endPosition">The end position.</param>
+        ///<param name="duration">The transition duration.</param>
         public AnimationTransitionDebug(int entityId, string fromState, string toState, Vector3 startPosition, Vector3 endPosition, float duration)
         {
             _entityId = entityId;
@@ -120,10 +122,10 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             _elapsedTime = 0f;
         }
 
-        /// <summary>
-        /// Updates the transition debug data.
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds.</param>
+        ///<summary>
+        ///Updates the transition debug data.
+        ///</summary>
+        ///<param name="deltaTime">Time since last update in seconds.</param>
         public void Update(float deltaTime)
         {
             if (deltaTime < 0) throw new ArgumentOutOfRangeException(nameof(deltaTime), "Delta time cannot be negative.");
@@ -142,10 +144,10 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             }
         }
 
-        /// <summary>
-        /// Gets the current position based on transition progress.
-        /// </summary>
-        /// <returns>The current interpolated position.</returns>
+        ///<summary>
+        ///Gets the current position based on transition progress.
+        ///</summary>
+        ///<returns>The current interpolated position.</returns>
         public Vector3 GetCurrentPosition()
         {
             lock (_transitionLock)
@@ -154,10 +156,10 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             }
         }
 
-        /// <summary>
-        /// Gets the remaining time for the transition.
-        /// </summary>
-        /// <returns>The remaining time in seconds.</returns>
+        ///<summary>
+        ///Gets the remaining time for the transition.
+        ///</summary>
+        ///<returns>The remaining time in seconds.</returns>
         public float GetRemainingTime()
         {
             lock (_transitionLock)
@@ -166,10 +168,10 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             }
         }
 
-        /// <summary>
-        /// Gets the completion percentage.
-        /// </summary>
-        /// <returns>The completion percentage (0.0 to 100.0).</returns>
+        ///<summary>
+        ///Gets the completion percentage.
+        ///</summary>
+        ///<returns>The completion percentage (0.0 to 100.0).</returns>
         public float GetCompletionPercentage()
         {
             lock (_transitionLock)
@@ -178,9 +180,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             }
         }
 
-        /// <summary>
-        /// Resets the transition.
-        /// </summary>
+        ///<summary>
+        ///Resets the transition.
+        ///</summary>
         public void Reset()
         {
             lock (_transitionLock)
@@ -191,9 +193,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             }
         }
 
-        /// <summary>
-        /// Cancels the transition.
-        /// </summary>
+        ///<summary>
+        ///Cancels the transition.
+        ///</summary>
         public void Cancel()
         {
             lock (_transitionLock)
@@ -202,10 +204,10 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             }
         }
 
-        /// <summary>
-        /// Gets transition debug information.
-        /// </summary>
-        /// <returns>Transition debug information.</returns>
+        ///<summary>
+        ///Gets transition debug information.
+        ///</summary>
+        ///<returns>Transition debug information.</returns>
         public AnimationTransitionDebugInfo GetDebugInfo()
         {
             lock (_transitionLock)
@@ -230,9 +232,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
         }
     }
 
-    /// <summary>
-    /// Animation transition debug information container.
-    /// </summary>
+    ///<summary>
+    ///Animation transition debug information container.
+    ///</summary>
     public class AnimationTransitionDebugInfo
     {
         public int EntityId { get; set; }

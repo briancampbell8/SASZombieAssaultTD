@@ -8,11 +8,13 @@ using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.Dictionary;
 using SASZombieAssaultTD.Engine.Core.Random;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves
 {
-    /// <summary>
-    /// Spawn pattern parameters for configuration.
-    /// </summary>
+    ///<summary>
+    ///Spawn pattern parameters for configuration.
+    ///</summary>
     public sealed class SpawnPatternParameterss
     {
         public Vector3 Center { get; set; }
@@ -37,9 +39,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Spawn pattern description for UI display.
-    /// </summary>
+    ///<summary>
+    ///Spawn pattern description for UI display.
+    ///</summary>
     public sealed class SpawnPatternDescription
     {
         public string Name { get; set; }
@@ -54,9 +56,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Spawn pattern parameter for UI display.
-    /// </summary>
+    ///<summary>
+    ///Spawn pattern parameter for UI display.
+    ///</summary>
     public sealed class SpawnPatternParameters
     {
         public string Name { get; set; }
@@ -68,9 +70,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         public bool Required { get; set; }
     }
 
-    /// <summary>
-    /// Spawn pattern validation result for spawn pattern parameters.
-    /// </summary>
+    ///<summary>
+    ///Spawn pattern validation result for spawn pattern parameters.
+    ///</summary>
     public sealed class SpawnPatternValidationResult
     {
         public bool IsValid { get; set; }
@@ -87,18 +89,18 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Spawn pattern system for SAS Zombie Assault TD.
-    /// Defines how enemies are positioned and arranged during spawning.
-    /// </summary>
+    ///<summary>
+    ///Spawn pattern system for SAS Zombie Assault TD.
+    ///Defines how enemies are positioned and arranged during spawning.
+    ///</summary>
     public class SpawnPattern
     {
         private readonly Dictionary<SpawnPatternType, ISpawnPatternStrategy> _strategies;
         private static SpawnPattern _instance;
 
-        /// <summary>
-        /// Singleton instance.
-        /// </summary>
+        ///<summary>
+        ///Singleton instance.
+        ///</summary>
         public static SpawnPattern Instance => _instance ??= new SpawnPattern();
 
         private SpawnPattern()
@@ -107,25 +109,25 @@ namespace SASZombieAssaultTD.Engine.Waves
             InitializeStrategies();
         }
 
-        /// <summary>
-        /// Create a SpawnPattern instance from a SpawnPatternType.
-        /// </summary>
-        /// <param name="type">The pattern type.</param>
-        /// <returns>A SpawnPattern instance configured for the specified type.</returns>
+        ///<summary>
+        ///Create a SpawnPattern instance from a SpawnPatternType.
+        ///</summary>
+        ///<param name="type">The pattern type.</param>
+        ///<returns>A SpawnPattern instance configured for the specified type.</returns>
         public static SpawnPattern FromType(SpawnPatternType type)
         {
             var pattern = new SpawnPattern();
-            // The pattern is already configured with all strategies via InitializeStrategies()
+            //The pattern is already configured with all strategies via InitializeStrategies()
             return pattern;
         }
 
-        /// <summary>
-        /// Get spawn positions for a specific pattern.
-        /// </summary>
-        /// <param name="patternType">Type of spawn pattern.</param>
-        /// <param name="enemyCount">Number of enemies to spawn.</param>
-        /// <param name="parameters">Pattern-specific parameters.</param>
-        /// <returns>List of spawn positions.</returns>
+        ///<summary>
+        ///Get spawn positions for a specific pattern.
+        ///</summary>
+        ///<param name="patternType">Type of spawn pattern.</param>
+        ///<param name="enemyCount">Number of enemies to spawn.</param>
+        ///<param name="parameters">Pattern-specific parameters.</param>
+        ///<returns>List of spawn positions.</returns>
         public List<Vector3> GetSpawnPositions(SpawnPatternType patternType, int enemyCount, SpawnPatternParameterss parameters = null)
         {
             if (!_strategies.TryGetValue(patternType, out var strategy))
@@ -145,22 +147,22 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
         }
 
-        /// <summary>
-        /// Register a custom spawn pattern strategy.
-        /// </summary>
-        /// <param name="patternType">Pattern type to register.</param>
-        /// <param name="strategy">Strategy implementation.</param>
+        ///<summary>
+        ///Register a custom spawn pattern strategy.
+        ///</summary>
+        ///<param name="patternType">Pattern type to register.</param>
+        ///<param name="strategy">Strategy implementation.</param>
         public void RegisterStrategy(SpawnPatternType patternType, ISpawnPatternStrategy strategy)
         {
             _strategies[patternType] = strategy;
             System.Diagnostics.Debug.WriteLine($"Registered custom strategy for {patternType}");
         }
 
-        /// <summary>
-        /// Get pattern description and requirements.
-        /// </summary>
-        /// <param name="patternType">Pattern type to describe.</param>
-        /// <returns>Pattern description.</returns>
+        ///<summary>
+        ///Get pattern description and requirements.
+        ///</summary>
+        ///<param name="patternType">Pattern type to describe.</param>
+        ///<returns>Pattern description.</returns>
         public SpawnPatternDescription GetPatternDescription(SpawnPatternType patternType)
         {
             if (!_strategies.TryGetValue(patternType, out var strategy))
@@ -178,12 +180,12 @@ namespace SASZombieAssaultTD.Engine.Waves
             return strategy.GetDescription();
         }
 
-        /// <summary>
-        /// Validate pattern parameters.
-        /// </summary>
-        /// <param name="patternType">Pattern type to validate.</param>
-        /// <param name="parameters">Parameters to validate.</param>
-        /// <returns>Validation result.</returns>
+        ///<summary>
+        ///Validate pattern parameters.
+        ///</summary>
+        ///<param name="patternType">Pattern type to validate.</param>
+        ///<param name="parameters">Parameters to validate.</param>
+        ///<returns>Validation result.</returns>
         public ValidationResult ValidateParameters(SpawnPatternType patternType, SpawnPatternParameterss parameters)
         {
             if (!_strategies.TryGetValue(patternType, out var strategy))
@@ -196,11 +198,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             return strategy.ValidateParameters(parameters);
         }
 
-        /// <summary>
-        /// Get default spawn positions (fallback).
-        /// </summary>
-        /// <param name="enemyCount">Number of enemies.</param>
-        /// <returns>List of default positions.</returns>
+        ///<summary>
+        ///Get default spawn positions (fallback).
+        ///</summary>
+        ///<param name="enemyCount">Number of enemies.</param>
+        ///<returns>List of default positions.</returns>
         private List<Vector3> GetDefaultPositions(int enemyCount)
         {
             var positions = new List<Vector3>();
@@ -208,7 +210,7 @@ namespace SASZombieAssaultTD.Engine.Waves
 
             if (spawnPoints == null || spawnPoints.Count == 0)
             {
-                // Fallback to origin
+                //Fallback to origin
                 for (int i = 0; i < enemyCount; i++)
                 {
                     positions.Add(new Vector3(0, i * 1f, 0));
@@ -216,7 +218,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 return positions;
             }
 
-            // Distribute across spawn points
+            //Distribute across spawn points
             for (int i = 0; i < enemyCount; i++)
             {
                 var spawnPoint = spawnPoints[i % spawnPoints.Count];
@@ -227,12 +229,12 @@ namespace SASZombieAssaultTD.Engine.Waves
             return positions;
         }
 
-        /// <summary>
-        /// Initialize default spawn pattern strategies.
-        /// </summary>
+        ///<summary>
+        ///Initialize default spawn pattern strategies.
+        ///</summary>
         private void InitializeStrategies()
         {
-            // Register all built-in strategies
+            //Register all built-in strategies
             _strategies[SpawnPatternType.Line] = new SingleSpawnStrategy();
             _strategies[SpawnPatternType.Line] = new LineSpawnStrategy();
             _strategies[SpawnPatternType.Cluster] = new ClusterSpawnStrategy();
@@ -250,36 +252,36 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Interface for spawn pattern strategies.
-    /// </summary>
+    ///<summary>
+    ///Interface for spawn pattern strategies.
+    ///</summary>
     public interface ISpawnPatternStrategy
     {
-        /// <summary>
-        /// Generate spawn positions for this pattern.
-        /// </summary>
-        /// <param name="enemyCount">Number of enemies to spawn.</param>
-        /// <param name="parameters">Pattern parameters.</param>
-        /// <returns>List of spawn positions.</returns>
+        ///<summary>
+        ///Generate spawn positions for this pattern.
+        ///</summary>
+        ///<param name="enemyCount">Number of enemies to spawn.</param>
+        ///<param name="parameters">Pattern parameters.</param>
+        ///<returns>List of spawn positions.</returns>
         List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters);
 
-        /// <summary>
-        /// Get pattern description.
-        /// </summary>
-        /// <returns>Pattern description.</returns>
+        ///<summary>
+        ///Get pattern description.
+        ///</summary>
+        ///<returns>Pattern description.</returns>
         SpawnPatternDescription GetDescription();
 
-        /// <summary>
-        /// Validate pattern parameters.
-        /// </summary>
-        /// <param name="parameters">Parameters to validate.</param>
-        /// <returns>Validation result.</returns>
+        ///<summary>
+        ///Validate pattern parameters.
+        ///</summary>
+        ///<param name="parameters">Parameters to validate.</param>
+        ///<returns>Validation result.</returns>
         ValidationResult ValidateParameters(SpawnPatternParameterss parameters);
     }
 
-    /// <summary>
-    /// Base class for spawn pattern strategies.
-    /// </summary>
+    ///<summary>
+    ///Base class for spawn pattern strategies.
+    ///</summary>
     public abstract class BaseSpawnStrategy : ISpawnPatternStrategy
     {
         protected List<Vector3> GetSpawnPoints()
@@ -310,9 +312,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         public abstract ValidationResult ValidateParameters(SpawnPatternParameterss parameters);
     }
 
-    /// <summary>
-    /// Single spawn strategy - all enemies from one point.
-    /// </summary>
+    ///<summary>
+    ///Single spawn strategy - all enemies from one point.
+    ///</summary>
     public class SingleSpawnStrategy : BaseSpawnStrategy
     {
         public override List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters)
@@ -322,7 +324,7 @@ namespace SASZombieAssaultTD.Engine.Waves
 
             for (int i = 0; i < enemyCount; i++)
             {
-                // Add small offset to prevent exact overlap
+                //Add small offset to prevent exact overlap
                 var offset = new Vector3(
                     EngineRandom.Range(-0.2f, 0.2f),
                     EngineRandom.Range(-0.2f, 0.2f),
@@ -361,9 +363,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Line spawn strategy - enemies in a line formation.
-    /// </summary>
+    ///<summary>
+    ///Line spawn strategy - enemies in a line formation.
+    ///</summary>
     public class LineSpawnStrategy : BaseSpawnStrategy
     {
         public override List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters)
@@ -438,9 +440,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Cluster spawn strategy - enemies grouped together.
-    /// </summary>
+    ///<summary>
+    ///Cluster spawn strategy - enemies grouped together.
+    ///</summary>
     public class ClusterSpawnStrategy : BaseSpawnStrategy
     {
         public override List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters)
@@ -451,7 +453,7 @@ namespace SASZombieAssaultTD.Engine.Waves
 
             for (int i = 0; i < enemyCount; i++)
             {
-                // Generate random position within cluster radius
+                //Generate random position within cluster radius
                 var angle = EngineRandom.Range(0f, 1f) * 2f * System.MathF.PI;
                 var distance = EngineRandom.Range(0f, 1f) * radius;
 
@@ -511,9 +513,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Spread spawn strategy - enemies distributed across spawn points.
-    /// </summary>
+    ///<summary>
+    ///Spread spawn strategy - enemies distributed across spawn points.
+    ///</summary>
     public class SpreadSpawnStrategy : BaseSpawnStrategy
     {
         public override List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters)
@@ -524,12 +526,12 @@ namespace SASZombieAssaultTD.Engine.Waves
             if (spawnPoints.Count == 0)
                 return positions;
 
-            // Distribute enemies across all spawn points
+            //Distribute enemies across all spawn points
             for (int i = 0; i < enemyCount; i++)
             {
                 var spawnPoint = spawnPoints[i % spawnPoints.Count];
 
-                // Add small random offset
+                //Add small random offset
                 var offset = new Vector3(
                     EngineRandom.Range(-0.5f, 0.5f),
                     EngineRandom.Range(-0.5f, 0.5f),
@@ -560,9 +562,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Wave spawn strategy - enemies in wave pattern.
-    /// </summary>
+    ///<summary>
+    ///Wave spawn strategy - enemies in wave pattern.
+    ///</summary>
     public class WaveSpawnStrategy : BaseSpawnStrategy
     {
         public override List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters)
@@ -651,9 +653,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Circle spawn strategy - enemies in circular formation.
-    /// </summary>
+    ///<summary>
+    ///Circle spawn strategy - enemies in circular formation.
+    ///</summary>
     public class CircleSpawnStrategy : BaseSpawnStrategy
     {
         public override List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters)
@@ -721,9 +723,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Random spawn strategy - enemies at random positions.
-    /// </summary>
+    ///<summary>
+    ///Random spawn strategy - enemies at random positions.
+    ///</summary>
     public class RandomSpawnStrategy : BaseSpawnStrategy
     {
         public override List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters)
@@ -734,8 +736,8 @@ namespace SASZombieAssaultTD.Engine.Waves
             if (spawnPoints.Count == 0)
                 return positions;
 
-            // TODO: Fix type mismatch - Bounds is Rect?, can't use ?? with Vector3
-            // var bounds = parameters.Bounds ?? new Vector3(10f, 10f, 0f);
+            //TODO: Fix type mismatch - Bounds is Rect?, can't use ?? with Vector3
+            //var bounds = parameters.Bounds ?? new Vector3(10f, 10f, 0f);
             var bounds = new Vector3(10f, 10f, 0f);
             var center = parameters.CenterPoint ?? spawnPoints[0];
 
@@ -787,9 +789,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Flanking spawn strategy - enemies from multiple sides.
-    /// </summary>
+    ///<summary>
+    ///Flanking spawn strategy - enemies from multiple sides.
+    ///</summary>
     public class FlankingSpawnStrategy : BaseSpawnStrategy
     {
         public override List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters)
@@ -803,14 +805,14 @@ namespace SASZombieAssaultTD.Engine.Waves
             var leftSide = enemyCount / 2;
             var rightSide = enemyCount - leftSide;
 
-            // Left side enemies
+            //Left side enemies
             for (int i = 0; i < leftSide; i++)
             {
                 var spawnPoint = spawnPoints[i % (spawnPoints.Count / 2)];
                 positions.Add(spawnPoint);
             }
 
-            // Right side enemies
+            //Right side enemies
             for (int i = 0; i < rightSide; i++)
             {
                 var spawnPoint = spawnPoints[(spawnPoints.Count / 2) + (i % (spawnPoints.Count / 2))];
@@ -838,9 +840,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Pincer spawn strategy - enemies attack from two opposite sides.
-    /// </summary>
+    ///<summary>
+    ///Pincer spawn strategy - enemies attack from two opposite sides.
+    ///</summary>
     public class PincerSpawnStrategy : BaseSpawnStrategy
     {
         public override List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters)
@@ -881,9 +883,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Spiral spawn strategy - enemies in spiral pattern.
-    /// </summary>
+    ///<summary>
+    ///Spiral spawn strategy - enemies in spiral pattern.
+    ///</summary>
     public class SpiralSpawnStrategy : BaseSpawnStrategy
     {
         public override List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters)
@@ -897,7 +899,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             {
                 var progress = (float)i / (enemyCount - 1);
                 var radius = radiusStart + (radiusEnd - radiusStart) * progress;
-                var angle = i * 0.5f; // Spiral rotation
+                var angle = i * 0.5f; //Spiral rotation
 
                 var position = new Vector3(
                     centerPoint.X + MathF.Cos(angle) * radius,
@@ -970,9 +972,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Grid spawn strategy - enemies in grid formation.
-    /// </summary>
+    ///<summary>
+    ///Grid spawn strategy - enemies in grid formation.
+    ///</summary>
     public class GridSpawnStrategy : BaseSpawnStrategy
     {
         public override List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters)
@@ -1053,9 +1055,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// V-formation spawn strategy - enemies in V formation.
-    /// </summary>
+    ///<summary>
+    ///V-formation spawn strategy - enemies in V formation.
+    ///</summary>
     public class VFormationSpawnStrategy : BaseSpawnStrategy
     {
         public override List<Vector3> GeneratePositions(int enemyCount, SpawnPatternParameterss parameters)
@@ -1065,10 +1067,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             var spread = parameters.Spread ?? 2f;
             var depth = parameters.Depth ?? 3f;
 
-            // Tip of V (first enemy)
+            //Tip of V (first enemy)
             positions.Add(centerPoint);
 
-            // Left and right arms of V
+            //Left and right arms of V
             var armSize = (enemyCount - 1) / 2;
             for (int i = 1; i <= armSize; i++)
             {
@@ -1079,7 +1081,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 positions.Add(centerPoint + rightOffset);
             }
 
-            // Handle odd number (extra enemy on right arm)
+            //Handle odd number (extra enemy on right arm)
             if (enemyCount % 2 == 0)
             {
                 var extraOffset = new Vector3(0, -depth, 0);

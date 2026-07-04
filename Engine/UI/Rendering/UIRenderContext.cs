@@ -1,13 +1,14 @@
+//
+using System;
 using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.VectorMath;
-using System;
 
 namespace SASZombieAssaultTD.Engine.UI.Rendering
 {
-    /// <summary>
-    /// UI-specific render context for UI rendering operations.
-    /// </summary>
+    ///<summary>
+    ///UI-specific render context for UI rendering operations.
+    ///</summary>
     public class UIRenderContext : IRenderContext
     {
         private object TheContainingType;
@@ -16,19 +17,19 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public int Width { get; set; }
         public int Height { get; set; }
 
-        // Corrected ViewportSize to explicitly use the canonical Vector3
+        //Corrected ViewportSize to explicitly use the canonical Vector3
         public SASZombieAssaultTD.Engine.VectorMath.Vector3 ViewportSize { get; set; } = SASZombieAssaultTD.Engine.VectorMath.Vector3.Zero;
 
         public void Clear(Color color) { }
 
-        /// <summary>
-        /// Clears render target with specified RGBA components.
-        /// Adapts component-based clear calls to the canonical Clear implementation.
-        /// </summary>
-        /// <param name="r">Red component (0.0-1.0).</param>
-        /// <param name="g">Green component (0.0-1.0).</param>
-        /// <param name="b">Blue component (0.0-1.0).</param>
-        /// <param name="a">Alpha component (0.0-1.0).</param>
+        ///<summary>
+        ///Clears render target with specified RGBA components.
+        ///Adapts component-based clear calls to the canonical Clear implementation.
+        ///</summary>
+        ///<param name="r">Red component (0.0-1.0).</param>
+        ///<param name="g">Green component (0.0-1.0).</param>
+        ///<param name="b">Blue component (0.0-1.0).</param>
+        ///<param name="a">Alpha component (0.0-1.0).</param>
         public void Clear(float r, float g, float b, float a)
         {
             var color = Color.FromArgb(
@@ -41,15 +42,15 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         }
         public void DrawLine(SASZombieAssaultTD.Engine.VectorMath.Vector3 start, SASZombieAssaultTD.Engine.VectorMath.Vector3 end, Color color, float thickness = 1.0f) { }
 
-        /// <summary>
-        /// Draws a line between two points using coordinate components.
-        /// Adapts component-based line drawing calls to the canonical DrawLine implementation.
-        /// </summary>
-        /// <param name="x1">Start X coordinate.</param>
-        /// <param name="y1">Start Y coordinate.</param>
-        /// <param name="x2">End X coordinate.</param>
-        /// <param name="y2">End Y coordinate.</param>
-        /// <param name="color">Line color.</param>
+        ///<summary>
+        ///Draws a line between two points using coordinate components.
+        ///Adapts component-based line drawing calls to the canonical DrawLine implementation.
+        ///</summary>
+        ///<param name="x1">Start X coordinate.</param>
+        ///<param name="y1">Start Y coordinate.</param>
+        ///<param name="x2">End X coordinate.</param>
+        ///<param name="y2">End Y coordinate.</param>
+        ///<param name="color">Line color.</param>
         public void DrawLine(float x1, float y1, float x2, float y2, Color color)
         {
             var start = new SASZombieAssaultTD.Engine.VectorMath.Vector3(x1, y1, 0);
@@ -58,30 +59,30 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         }
         public void DrawRectangle(Rectangle rect, Color color, float thickness = 1.0f) { }
 
-        /// <summary>
-        /// Draws a rectangle using coordinate components.
-        /// Adapts component-based rectangle drawing calls to the canonical DrawRectangle implementation.
-        /// </summary>
-        /// <param name="x">X coordinate.</param>
-        /// <param name="y">Y coordinate.</param>
-        /// <param name="width">Rectangle width.</param>
-        /// <param name="height">Rectangle height.</param>
-        /// <param name="color">Rectangle color.</param>
+        ///<summary>
+        ///Draws a rectangle using coordinate components.
+        ///Adapts component-based rectangle drawing calls to the canonical DrawRectangle implementation.
+        ///</summary>
+        ///<param name="x">X coordinate.</param>
+        ///<param name="y">Y coordinate.</param>
+        ///<param name="width">Rectangle width.</param>
+        ///<param name="height">Rectangle height.</param>
+        ///<param name="color">Rectangle color.</param>
         public void DrawRectangle(float x, float y, float width, float height, Color color)
         {
             var rect = new Rectangle((int)x, (int)y, (int)width, (int)height);
             DrawRectangle(rect, color);
         }
 
-        /// <summary>
-        /// Draws a rectangle using integer coordinate components.
-        /// Adapts integer component-based rectangle drawing calls to the canonical DrawRectangle implementation.
-        /// </summary>
-        /// <param name="x">X coordinate.</param>
-        /// <param name="y">Y coordinate.</param>
-        /// <param name="width">Rectangle width.</param>
-        /// <param name="height">Rectangle height.</param>
-        /// <param name="color">Rectangle color.</param>
+        ///<summary>
+        ///Draws a rectangle using integer coordinate components.
+        ///Adapts integer component-based rectangle drawing calls to the canonical DrawRectangle implementation.
+        ///</summary>
+        ///<param name="x">X coordinate.</param>
+        ///<param name="y">Y coordinate.</param>
+        ///<param name="width">Rectangle width.</param>
+        ///<param name="height">Rectangle height.</param>
+        ///<param name="color">Rectangle color.</param>
         public void DrawRectangle(int x, int y, int width, int height, Color color)
         {
             var rect = new Rectangle(x, y, width, height);
@@ -90,14 +91,14 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public void FillRectangle(Rectangle rect, Color color) { }
         public void DrawCircle(SASZombieAssaultTD.Engine.VectorMath.Vector3 center, float radius, Color color, float thickness = 1.0f) { }
 
-        /// <summary>
-        /// Draws a circle using coordinate components.
-        /// Adapts component-based circle drawing calls to the canonical DrawCircle implementation.
-        /// </summary>
-        /// <param name="x">Center X coordinate.</param>
-        /// <param name="y">Center Y coordinate.</param>
-        /// <param name="radius">Circle radius.</param>
-        /// <param name="color">Circle color.</param>
+        ///<summary>
+        ///Draws a circle using coordinate components.
+        ///Adapts component-based circle drawing calls to the canonical DrawCircle implementation.
+        ///</summary>
+        ///<param name="x">Center X coordinate.</param>
+        ///<param name="y">Center Y coordinate.</param>
+        ///<param name="radius">Circle radius.</param>
+        ///<param name="color">Circle color.</param>
         public void DrawCircle(float x, float y, float radius, Color color)
         {
             var center = new SASZombieAssaultTD.Engine.VectorMath.Vector3(x, y, 0);
@@ -106,37 +107,37 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public void FillCircle(SASZombieAssaultTD.Engine.VectorMath.Vector3 center, float radius, Color color) { }
         public void DrawText(string text, SASZombieAssaultTD.Engine.VectorMath.Vector3 position, Color color, float size = 12.0f) { }
 
-        /// <summary>
-        /// Draws text using coordinate components.
-        /// Adapts component-based text drawing calls to the canonical DrawText implementation.
-        /// </summary>
-        /// <param name="text">Text to draw.</param>
-        /// <param name="x">X coordinate.</param>
-        /// <param name="y">Y coordinate.</param>
-        /// <param name="size">Font size.</param>
-        /// <param name="color">Text color.</param>
+        ///<summary>
+        ///Draws text using coordinate components.
+        ///Adapts component-based text drawing calls to the canonical DrawText implementation.
+        ///</summary>
+        ///<param name="text">Text to draw.</param>
+        ///<param name="x">X coordinate.</param>
+        ///<param name="y">Y coordinate.</param>
+        ///<param name="size">Font size.</param>
+        ///<param name="color">Text color.</param>
         public void DrawText(string text, float x, float y, float size, Color color)
         {
             var position = new SASZombieAssaultTD.Engine.VectorMath.Vector3(x, y, 0);
             DrawText(text, position, color, size);
         }
 
-        /// <summary>
-        /// Draws text using integer coordinate components.
-        /// Adapts integer component-based text drawing calls to the canonical DrawText implementation.
-        /// </summary>
-        /// <param name="text">Text to draw.</param>
-        /// <param name="x">X coordinate.</param>
-        /// <param name="y">Y coordinate.</param>
-        /// <param name="size">Font size.</param>
-        /// <param name="color">Text color.</param>
+        ///<summary>
+        ///Draws text using integer coordinate components.
+        ///Adapts integer component-based text drawing calls to the canonical DrawText implementation.
+        ///</summary>
+        ///<param name="text">Text to draw.</param>
+        ///<param name="x">X coordinate.</param>
+        ///<param name="y">Y coordinate.</param>
+        ///<param name="size">Font size.</param>
+        ///<param name="color">Text color.</param>
         public void DrawText(string text, int x, int y, int size, Color color)
         {
             var position = new SASZombieAssaultTD.Engine.VectorMath.Vector3(x, y, 0);
             DrawText(text, position, color, size);
         }
 
-        // Overloads for KillFeedSystem compatibility
+        //Overloads for KillFeedSystem compatibility
         public void DrawText(string text, float x, float y, Color color, float fontSize)
         {
             DrawText(text, new SASZombieAssaultTD.Engine.VectorMath.Vector3(x, y, 0), color, fontSize);
@@ -146,64 +147,64 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public void BeginBatch() { }
         public void EndBatch() { }
 
-        // Missing interface methods that need to be implemented
+        //Missing interface methods that need to be implemented
         public void ClearScreen()
         {
             Clear(Color.Black);
         }
 
-        /// <summary>
-        /// Measures text dimensions.
-        /// </summary>
-        /// <param name="text">Text to measure.</param>
-        /// <param name="size">Font size.</param>
-        /// <returns>Text dimensions as Vector3.</returns>
+        ///<summary>
+        ///Measures text dimensions.
+        ///</summary>
+        ///<param name="text">Text to measure.</param>
+        ///<param name="size">Font size.</param>
+        ///<returns>Text dimensions as Vector3.</returns>
         public SASZombieAssaultTD.Engine.VectorMath.Vector3 MeasureText(string text, float size = 12.0f)
         {
-            // Simple text measurement
-            float width = text.Length * size * 0.6f; // Approximate width
+            //Simple text measurement
+            float width = text.Length * size * 0.6f; //Approximate width
             float height = size;
             return new SASZombieAssaultTD.Engine.VectorMath.Vector3(width, height, 0);
         }
 
-        /// <summary>
-        /// Initializes the UI render context.
-        /// </summary>
+        ///<summary>
+        ///Initializes the UI render context.
+        ///</summary>
         public void Initialize()
         {
-            // Initialize UI render context
+            //Initialize UI render context
         }
 
-        /// <summary>
-        /// Shuts down the UI render context.
-        /// </summary>
+        ///<summary>
+        ///Shuts down the UI render context.
+        ///</summary>
         public void Shutdown()
         {
-            // Shutdown UI render context
+            //Shutdown UI render context
         }
 
-        /// <summary>
-        /// Draws a texture at specified position.
-        /// </summary>
-        /// <param name="texture">Texture to draw.</param>
-        /// <param name="position">Position to draw at.</param>
-        /// <param name="color">Color tint.</param>
+        ///<summary>
+        ///Draws a texture at specified position.
+        ///</summary>
+        ///<param name="texture">Texture to draw.</param>
+        ///<param name="position">Position to draw at.</param>
+        ///<param name="color">Color tint.</param>
         public void DrawTexture(object texture, SASZombieAssaultTD.Engine.VectorMath.Vector3 position, Color color)
         {
-            // Simple texture drawing for UI
+            //Simple texture drawing for UI
             FillRectangle(new Rectangle((int)position.X, (int)position.Y, 32, 32), color);
         }
 
-        /// <summary>
-        /// Draws a sprite using coordinate components.
-        /// Adapts component-based sprite drawing calls to the canonical DrawTexture implementation.
-        /// </summary>
-        /// <param name="texture">Texture/sprite to draw.</param>
-        /// <param name="x">X coordinate.</param>
-        /// <param name="y">Y coordinate.</param>
-        /// <param name="width">Draw width.</param>
-        /// <param name="height">Draw height.</param>
-        /// <param name="color">Color tint.</param>
+        ///<summary>
+        ///Draws a sprite using coordinate components.
+        ///Adapts component-based sprite drawing calls to the canonical DrawTexture implementation.
+        ///</summary>
+        ///<param name="texture">Texture/sprite to draw.</param>
+        ///<param name="x">X coordinate.</param>
+        ///<param name="y">Y coordinate.</param>
+        ///<param name="width">Draw width.</param>
+        ///<param name="height">Draw height.</param>
+        ///<param name="color">Color tint.</param>
         public void DrawSprite(object texture, float x, float y, float width, float height, Color color)
         {
             var position = new SASZombieAssaultTD.Engine.VectorMath.Vector3(x, y, 0);
@@ -211,33 +212,33 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             FillRectangle(rect, color);
         }
 
-        /// <summary>
-        /// Draws a sprite using coordinate components with separate color parameter.
-        /// Adapts component-based sprite drawing calls to the canonical DrawTexture implementation.
-        /// </summary>
-        /// <param name="texture">Texture/sprite to draw.</param>
-        /// <param name="x">X coordinate.</param>
-        /// <param name="y">Y coordinate.</param>
-        /// <param name="color">Color tint.</param>
+        ///<summary>
+        ///Draws a sprite using coordinate components with separate color parameter.
+        ///Adapts component-based sprite drawing calls to the canonical DrawTexture implementation.
+        ///</summary>
+        ///<param name="texture">Texture/sprite to draw.</param>
+        ///<param name="x">X coordinate.</param>
+        ///<param name="y">Y coordinate.</param>
+        ///<param name="color">Color tint.</param>
         public void DrawSprite(object texture, float x, float y, Color color)
         {
             var position = new SASZombieAssaultTD.Engine.VectorMath.Vector3(x, y, 0);
             DrawTexture(texture, position, color);
         }
 
-        // Additional methods for compatibility
+        //Additional methods for compatibility
         public void ClearClipRect() { }
         public void SetAlpha(float alpha) { }
         public void Reset() { }
 
-        /// <summary>
-        /// Sets the transformation matrix for UI rendering.
-        /// </summary>
-        /// <param name="transform">The transformation matrix to apply.</param>
+        ///<summary>
+        ///Sets the transformation matrix for UI rendering.
+        ///</summary>
+        ///<param name="transform">The transformation matrix to apply.</param>
         public void SetTransform(object transform)
         {
-            // Placeholder implementation for UI transformation
-            // In a full implementation, this would apply the transform to subsequent rendering operations
+            //Placeholder implementation for UI transformation
+            //In a full implementation, this would apply the transform to subsequent rendering operations
         }
 
         public void DrawLine(int x, Vector3 start, Vector3 end, Color color, float thickness = 1)
@@ -272,6 +273,16 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             NotImplementedGuard.Hit("NOT_IMPLEMENTED");
 
+            throw new NotImplementedException();
+        }
+
+        public void DrawText(string displayText, int v1, int v2, System.Drawing.Color sysText)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawFilledRectangle(int x, int y, int width, int height, System.Drawing.Color sysFill)
+        {
             throw new NotImplementedException();
         }
     }

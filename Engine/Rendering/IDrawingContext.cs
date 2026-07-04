@@ -2,11 +2,13 @@ using System;
 using System.Drawing;
 using SASZombieAssaultTD.Engine.VectorMath;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Rendering
 {
-    /// <summary>
-    /// Interface for drawing context operations.
-    /// </summary>
+    ///<summary>
+    ///Interface for drawing context operations.
+    ///</summary>
     public interface IDrawingContext
     {
         void DrawCircle(float x, float y, float radius, Color color);
@@ -39,7 +41,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         void DrawLine(int x1, int y1, int x2, int y2, uint pathColor);
         void DrawLine(int x, int y, int v1, int v2, object value);
         void DrawCircle(int x, int y, int v, uint pathColor);
-        void DrawText(string stateText, int v1, int v2);
+        void DrawText(string stateText, int v1, int v2, Color textColor);
         void DrawText(string iconText, float x, float y, int fontSize, Core.Color iconColor);
         void DrawRectangle(int x, int y, int cellSize1, int cellSize2, object color);
         void DrawTexture(Texture2D pixelRed, Rectangle dest, System.Drawing.Color red);

@@ -10,25 +10,26 @@ Discover method returns empty list on error and logs details.
 
 using SASZombieAssaultTD.Engine.Assets;
 using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using System;
 using System.Collections.Generic;
 using System.IO;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Resources
 {
-    /// <summary>
-    /// Discovers resources on disk and produces RSSource + RSMetadata pairs.
-    /// </summary>
+    ///<summary>
+    ///Discovers resources on disk and produces RSSource + RSMetadata pairs.
+    ///</summary>
     public sealed class RSDiscovery
     {
         private object TheType;
         private object TheMember;
 
-        /// <summary>
-        /// Scans the root directory and returns discovered resources.
-        /// Returns empty list on error; logs error details.
-        /// </summary>
+        ///<summary>
+        ///Scans the root directory and returns discovered resources.
+        ///Returns empty list on error; logs error details.
+        ///</summary>
         public IReadOnlyList<DiscoveredResource> Discover(RSLoadContext context)
         {
             if (context is null)
@@ -48,7 +49,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("Error", $"[Assets] Failed to enumerate files under '{root}': {ex.Message}");
+                DLogger.Log("Error", $"[Assets] Failed to enumerate files under '{root}': {ex.Message}");
                 return results;
             }
 
@@ -74,7 +75,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                     bool isValid = ValidateMetadata(metadata);
                     if (!isValid)
                     {
-                        Engine.Diagnostics.DebugLogger.LogDebug("Warn", $"[Assets] Invalid metadata for {metadata.Key}: Type={metadata.Type}, Format={metadata.Format ?? "unknown"}");
+                        DLogger.Log("Warn", $"[Assets] Invalid metadata for {metadata.Key}: Type={metadata.Type}, Format={metadata.Format ?? "unknown"}");
                         continue;
                     }
 
@@ -87,7 +88,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 }
                 catch (Exception ex)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("Error", $"[Assets] Failed to process file '{file}': {ex.Message}");
+                    DLogger.Log("Error", $"[Assets] Failed to process file '{file}': {ex.Message}");
                     continue;
                 }
             }
@@ -95,9 +96,9 @@ namespace SASZombieAssaultTD.Engine.Resources
             return results;
         }
 
-        /// <summary>
-        /// Maps file extensions to resource types.
-        /// </summary>
+        ///<summary>
+        ///Maps file extensions to resource types.
+        ///</summary>
         private static RSType InferTypeFromExtension(string ext)
         {
             ext = ext.ToLowerInvariant();
@@ -112,9 +113,9 @@ namespace SASZombieAssaultTD.Engine.Resources
             };
         }
 
-        /// <summary>
-        /// Validates that metadata is consistent with the resource type.
-        /// </summary>
+        ///<summary>
+        ///Validates that metadata is consistent with the resource type.
+        ///</summary>
         private static bool ValidateMetadata(RSMetadata metadata)
         {
             if (metadata is null)
@@ -140,9 +141,9 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 
-    /// <summary>
-    /// Discovered resource for asset discovery system.
-    /// </summary>
+    ///<summary>
+    ///Discovered resource for asset discovery system.
+    ///</summary>
     public class DiscoveredResource
     {
         public string Name { get; set; }

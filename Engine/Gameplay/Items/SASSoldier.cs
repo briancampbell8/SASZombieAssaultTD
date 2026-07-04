@@ -14,83 +14,85 @@ Notes:   This is a placeholder implementation for SAS soldier units.
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Gameplay.Items
 {
-    /// <summary>
-    /// Player-controlled or AI-controlled soldier unit.
-    /// Represents a general-purpose soldier archetype.
-    /// </summary>
+    ///<summary>
+    ///Player-controlled or AI-controlled soldier unit.
+    ///Represents a general-purpose soldier archetype.
+    ///</summary>
     public class SASSoldier
     {
-        ///  Properties
+        /// Properties
         
-        /// <summary>Unique identifier for this soldier instance.</summary>
+        ///<summary>Unique identifier for this soldier instance.</summary>
         public string Id { get; private set; }
         
-        /// <summary>Type identifier for this unit.</summary>
+        ///<summary>Type identifier for this unit.</summary>
         public string UnitType => "SASSoldier";
         
-        /// <summary>Category of this unit.</summary>
+        ///<summary>Category of this unit.</summary>
         public string Category => "Infantry";
         
-        /// <summary>Display name for this unit.</summary>
+        ///<summary>Display name for this unit.</summary>
         public string DisplayName => "SAS Soldier";
         
-        /// <summary>Base health value for this unit type.</summary>
+        ///<summary>Base health value for this unit type.</summary>
         public float BaseHealth => 100f;
         
-        /// <summary>Base movement speed multiplier.</summary>
+        ///<summary>Base movement speed multiplier.</summary>
         public float BaseSpeed => 1.0f;
         
-        /// <summary>Base damage value for this unit type.</summary>
+        ///<summary>Base damage value for this unit type.</summary>
         public float BaseDamage => 25f;
         
-        /// <summary>Base attack range for this unit.</summary>
+        ///<summary>Base attack range for this unit.</summary>
         public float BaseRange => 3.0f;
         
-        /// <summary>Base attack speed for this unit.</summary>
+        ///<summary>Base attack speed for this unit.</summary>
         public float BaseAttackSpeed => 1.2f;
         
-        /// <summary>Whether this unit is player-controlled.</summary>
+        ///<summary>Whether this unit is player-controlled.</summary>
         public bool IsPlayerControlled { get; private set; }
         
-        /// <summary>Current level of this unit.</summary>
+        ///<summary>Current level of this unit.</summary>
         public int Level { get; private set; }
         
-        /// <summary>Experience points for this unit.</summary>
+        ///<summary>Experience points for this unit.</summary>
         public int Experience { get; private set; }
         
-        /// <summary>Current health of this unit.</summary>
+        ///<summary>Current health of this unit.</summary>
         public float CurrentHealth { get; private set; }
         
-        /// <summary>Whether this unit is currently active.</summary>
+        ///<summary>Whether this unit is currently active.</summary>
         public bool IsActive { get; private set; }
         
-        /// <summary>Weapon type for this unit.</summary>
+        ///<summary>Weapon type for this unit.</summary>
         public string WeaponType => "AssaultRifle";
         
-        /// <summary>Ammo capacity for this unit.</summary>
+        ///<summary>Ammo capacity for this unit.</summary>
         public int AmmoCapacity => 30;
         
-        /// <summary>Current ammo count.</summary>
+        ///<summary>Current ammo count.</summary>
         public int CurrentAmmo { get; private set; }
         
-        /// <summary>Accuracy rating (0.0-1.0).</summary>
+        ///<summary>Accuracy rating (0.0-1.0).</summary>
         public float Accuracy => 0.8f;
         
-        /// <summary>Whether this unit can target air units.</summary>
+        ///<summary>Whether this unit can target air units.</summary>
         public bool CanTargetAir => false;
         
-        /// <summary>Whether this unit can target ground units.</summary>
+        ///<summary>Whether this unit can target ground units.</summary>
         public bool CanTargetGround => true;
         
-        /// 
+        ///
 
-        ///  Constructors
+        /// Constructors
         
-        /// <summary>
-        /// Creates a new SAS soldier instance.
-        /// </summary>
+        ///<summary>
+        ///Creates a new SAS soldier instance.
+        ///</summary>
         public SASSoldier()
         {
             Id = GenerateId();
@@ -102,10 +104,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             IsPlayerControlled = false;
         }
         
-        /// <summary>
-        /// Creates a new SAS soldier instance with specified control type.
-        /// </summary>
-        /// <param name="isPlayerControlled">Whether this unit is player-controlled.</param>
+        ///<summary>
+        ///Creates a new SAS soldier instance with specified control type.
+        ///</summary>
+        ///<param name="isPlayerControlled">Whether this unit is player-controlled.</param>
         public SASSoldier(bool isPlayerControlled)
         {
             Id = GenerateId();
@@ -117,11 +119,11 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             IsPlayerControlled = isPlayerControlled;
         }
         
-        /// <summary>
-        /// Creates a new SAS soldier instance with specified ID and control type.
-        /// </summary>
-        /// <param name="id">Unique identifier.</param>
-        /// <param name="isPlayerControlled">Whether this unit is player-controlled.</param>
+        ///<summary>
+        ///Creates a new SAS soldier instance with specified ID and control type.
+        ///</summary>
+        ///<param name="id">Unique identifier.</param>
+        ///<param name="isPlayerControlled">Whether this unit is player-controlled.</param>
         public SASSoldier(string id, bool isPlayerControlled = false)
         {
             Id = id ?? GenerateId();
@@ -133,31 +135,31 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             IsPlayerControlled = isPlayerControlled;
         }
         
-        /// 
+        ///
 
-        ///  Unit Operations (Placeholder)
+        /// Unit Operations (Placeholder)
         
-        /// <summary>
-        /// Activates this unit.
-        /// </summary>
+        ///<summary>
+        ///Activates this unit.
+        ///</summary>
         public virtual void Activate()
         {
             IsActive = true;
         }
         
-        /// <summary>
-        /// Deactivates this unit.
-        /// </summary>
+        ///<summary>
+        ///Deactivates this unit.
+        ///</summary>
         public virtual void Deactivate()
         {
             IsActive = false;
         }
         
-        /// <summary>
-        /// Applies damage to this unit.
-        /// </summary>
-        /// <param name="damage">Damage amount.</param>
-        /// <returns>True if unit was destroyed.</returns>
+        ///<summary>
+        ///Applies damage to this unit.
+        ///</summary>
+        ///<param name="damage">Damage amount.</param>
+        ///<returns>True if unit was destroyed.</returns>
         public virtual bool TakeDamage(float damage)
         {
             CurrentHealth -= damage;
@@ -170,11 +172,11 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             return false;
         }
         
-        /// <summary>
-        /// Heals this unit.
-        /// </summary>
-        /// <param name="amount">Heal amount.</param>
-        /// <returns>Actual amount healed.</returns>
+        ///<summary>
+        ///Heals this unit.
+        ///</summary>
+        ///<param name="amount">Heal amount.</param>
+        ///<returns>Actual amount healed.</returns>
         public virtual float Heal(float amount)
         {
             var maxHealth = GetMaxHealthAtLevel(Level);
@@ -183,18 +185,18 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             return healAmount;
         }
         
-        /// <summary>
-        /// Reloads this unit's weapon.
-        /// </summary>
+        ///<summary>
+        ///Reloads this unit's weapon.
+        ///</summary>
         public virtual void Reload()
         {
             CurrentAmmo = AmmoCapacity;
         }
         
-        /// <summary>
-        /// Fires this unit's weapon.
-        /// </summary>
-        /// <returns>True if shot was fired successfully.</returns>
+        ///<summary>
+        ///Fires this unit's weapon.
+        ///</summary>
+        ///<returns>True if shot was fired successfully.</returns>
         public virtual bool Fire()
         {
             if (CurrentAmmo <= 0)
@@ -204,11 +206,11 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             return true;
         }
         
-        /// <summary>
-        /// Adds experience to this unit.
-        /// </summary>
-        /// <param name="amount">Experience amount.</param>
-        /// <returns>True if unit leveled up.</returns>
+        ///<summary>
+        ///Adds experience to this unit.
+        ///</summary>
+        ///<param name="amount">Experience amount.</param>
+        ///<returns>True if unit leveled up.</returns>
         public virtual bool AddExperience(int amount)
         {
             Experience += amount;
@@ -223,14 +225,14 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             return false;
         }
         
-        /// 
+        ///
 
-        ///  Unit Characteristics
+        /// Unit Characteristics
         
-        /// <summary>
-        /// Gets the behavior characteristics for this unit type.
-        /// </summary>
-        /// <returns>Behavior characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the behavior characteristics for this unit type.
+        ///</summary>
+        ///<returns>Behavior characteristics dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetBehaviorCharacteristics()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -243,10 +245,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             };
         }
         
-        /// <summary>
-        /// Gets the combat characteristics for this unit type.
-        /// </summary>
-        /// <returns>Combat characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the combat characteristics for this unit type.
+        ///</summary>
+        ///<returns>Combat characteristics dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetCombatCharacteristics()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -262,10 +264,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             };
         }
         
-        /// <summary>
-        /// Gets the current stats for this unit.
-        /// </summary>
-        /// <returns>Unit stats dictionary.</returns>
+        ///<summary>
+        ///Gets the current stats for this unit.
+        ///</summary>
+        ///<returns>Unit stats dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetCurrentStats()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -284,102 +286,102 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Items
             };
         }
         
-        /// 
+        ///
 
-        ///  Level-based Calculations
+        /// Level-based Calculations
         
-        /// <summary>
-        /// Gets the maximum health at a specific level.
-        /// </summary>
-        /// <param name="level">Unit level.</param>
-        /// <returns>Maximum health at specified level.</returns>
+        ///<summary>
+        ///Gets the maximum health at a specific level.
+        ///</summary>
+        ///<param name="level">Unit level.</param>
+        ///<returns>Maximum health at specified level.</returns>
         protected virtual float GetMaxHealthAtLevel(int level)
         {
             return BaseHealth * (1f + (level - 1) * 0.1f);
         }
         
-        /// <summary>
-        /// Gets the damage at a specific level.
-        /// </summary>
-        /// <param name="level">Unit level.</param>
-        /// <returns>Damage at specified level.</returns>
+        ///<summary>
+        ///Gets the damage at a specific level.
+        ///</summary>
+        ///<param name="level">Unit level.</param>
+        ///<returns>Damage at specified level.</returns>
         protected virtual float GetDamageAtLevel(int level)
         {
             return BaseDamage * (1f + (level - 1) * 0.15f);
         }
         
-        /// <summary>
-        /// Gets the range at a specific level.
-        /// </summary>
-        /// <param name="level">Unit level.</param>
-        /// <returns>Range at specified level.</returns>
+        ///<summary>
+        ///Gets the range at a specific level.
+        ///</summary>
+        ///<param name="level">Unit level.</param>
+        ///<returns>Range at specified level.</returns>
         protected virtual float GetRangeAtLevel(int level)
         {
             return BaseRange * (1f + (level - 1) * 0.05f);
         }
         
-        /// <summary>
-        /// Gets the attack speed at a specific level.
-        /// </summary>
-        /// <param name="level">Unit level.</param>
-        /// <returns>Attack speed at specified level.</returns>
+        ///<summary>
+        ///Gets the attack speed at a specific level.
+        ///</summary>
+        ///<param name="level">Unit level.</param>
+        ///<returns>Attack speed at specified level.</returns>
         protected virtual float GetAttackSpeedAtLevel(int level)
         {
             return BaseAttackSpeed * (1f + (level - 1) * 0.1f);
         }
         
-        /// <summary>
-        /// Gets the movement speed at a specific level.
-        /// </summary>
-        /// <param name="level">Unit level.</param>
-        /// <returns>Movement speed at specified level.</returns>
+        ///<summary>
+        ///Gets the movement speed at a specific level.
+        ///</summary>
+        ///<param name="level">Unit level.</param>
+        ///<returns>Movement speed at specified level.</returns>
         protected virtual float GetSpeedAtLevel(int level)
         {
             return BaseSpeed * (1f + (level - 1) * 0.08f);
         }
         
-        /// <summary>
-        /// Gets the required experience for a specific level.
-        /// </summary>
-        /// <param name="level">Target level.</param>
-        /// <returns>Required experience.</returns>
+        ///<summary>
+        ///Gets the required experience for a specific level.
+        ///</summary>
+        ///<param name="level">Target level.</param>
+        ///<returns>Required experience.</returns>
         protected virtual int GetRequiredExperienceForLevel(int level)
         {
-            return level * 100; // Simple linear progression
+            return level * 100; //Simple linear progression
         }
         
-        /// 
+        ///
 
-        ///  Utility Methods
+        /// Utility Methods
         
-        /// <summary>
-        /// Generates a unique ID for this unit instance.
-        /// </summary>
-        /// <returns>Unique identifier string.</returns>
+        ///<summary>
+        ///Generates a unique ID for this unit instance.
+        ///</summary>
+        ///<returns>Unique identifier string.</returns>
         private static string GenerateId()
         {
             return $"SASSoldier_{Guid.NewGuid():N}";
         }
         
-        /// <summary>
-        /// Creates a copy of this unit instance.
-        /// </summary>
-        /// <returns>New SAS soldier instance.</returns>
+        ///<summary>
+        ///Creates a copy of this unit instance.
+        ///</summary>
+        ///<returns>New SAS soldier instance.</returns>
         public SASSoldier Clone()
         {
             return new SASSoldier(Id, IsPlayerControlled);
         }
         
-        /// <summary>
-        /// Gets a summary of this unit type.
-        /// </summary>
-        /// <returns>Summary string.</returns>
+        ///<summary>
+        ///Gets a summary of this unit type.
+        ///</summary>
+        ///<returns>Summary string.</returns>
         public override string ToString()
         {
             var control = IsPlayerControlled ? "Player" : "AI";
             return $"{DisplayName} (ID: {Id}, Level: {Level}, Control: {control})";
         }
         
-        /// 
+        ///
     }
 }

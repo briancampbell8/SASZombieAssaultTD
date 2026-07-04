@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Core;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
@@ -171,7 +169,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             _frameTimeHistory.Clear();
             _recentFrameTimes.Clear();
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "FrameDiagnostics reset");
+            DLogger.Log("INFO", "FrameDiagnostics reset");
         }
 
         /// <summary>

@@ -6,9 +6,9 @@ using System.Linq;
 
 public static class TowerUpgradeManagerExtensionsBase
 {
-    /// <summary>
-    /// Get upgrade efficiency for a tower.
-    /// </summary>
+    ///<summary>
+    ///Get upgrade efficiency for a tower.
+    ///</summary>
     public static float GetUpgradeEfficiency(
         this TowerUpgradeManager manager,
         Tower tower)

@@ -2,12 +2,14 @@ using SASZombieAssaultTD.Engine.Rendering;
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
-    /// <summary>
-    /// Simple HUD component for SAS Zombie Assault TD.
-    /// Manages basic HUD elements and player interface.
-    /// </summary>
+    ///<summary>
+    ///Simple HUD component for SAS Zombie Assault TD.
+    ///Manages basic HUD elements and player interface.
+    ///</summary>
     public class SimpleHUD
     {
         private readonly List<UIElementBase> _elements = new List<UIElementBase>();
@@ -30,7 +32,7 @@ namespace SASZombieAssaultTD.Engine.UI
                 element.Render(context);
         }
 
-        // Compatibility overloads for old scene code
+        //Compatibility overloads for old scene code
         public void Update(UIElementBase _, TimeSpan deltaTime)
         {
             Update((float)deltaTime.TotalSeconds);

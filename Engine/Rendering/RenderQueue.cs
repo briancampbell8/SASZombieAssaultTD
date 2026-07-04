@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Rendering
 {
-    /// <summary>
-    /// Rendering queue for ordering draw calls in the rendering pipeline.
-    /// Part of the rendering domain, not systems domain.
-    /// </summary>
+    ///<summary>
+    ///Rendering queue for ordering draw calls in the rendering pipeline.
+    ///Part of the rendering domain, not systems domain.
+    ///</summary>
     public sealed class RenderQueue
     {
         private readonly List<object> _queue = new();
@@ -28,7 +30,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
         public void SortByLayer()
         {
-            // Simple sorting implementation - would need proper layer comparison in real implementation
+            //Simple sorting implementation - would need proper layer comparison in real implementation
             _queue.Sort((x, y) => 0);
         }
     }

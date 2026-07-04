@@ -1,16 +1,17 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.State
 {
-    /// <summary>
-    /// Debugging and monitoring utilities for the state machine system.
-    /// P20-02-Enhancement: Comprehensive debugging and profiling tools.
-    /// </summary>
+    ///<summary>
+    ///Debugging and monitoring utilities for the state machine system.
+    ///P20-02-Enhancement: Comprehensive debugging and profiling tools.
+    ///</summary>
     public static class StateDebugger
     {
         private static readonly List<StateDebugEvent> _debugEvents = new List<StateDebugEvent>();
@@ -18,31 +19,31 @@ namespace SASZombieAssaultTD.Engine.State
         private static bool _debugEnabled = true;
         private static int _maxDebugEvents = 1000;
         
-        /// <summary>
-        /// Enables or disables state debugging.
-        /// </summary>
+        ///<summary>
+        ///Enables or disables state debugging.
+        ///</summary>
         public static bool DebugEnabled
         {
             get => _debugEnabled;
             set => _debugEnabled = value;
         }
         
-        /// <summary>
-        /// Gets or sets the maximum number of debug events to keep.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the maximum number of debug events to keep.
+        ///</summary>
         public static int MaxDebugEvents
         {
             get => _maxDebugEvents;
             set => _maxDebugEvents = System.Math.Max(0, value);
         }
         
-        /// <summary>
-        /// Logs a state machine event for debugging.
-        /// </summary>
-        /// <param name="eventType">The type of debug event.</param>
-        /// <param name="stateType">The state type involved.</param>
-        /// <param name="message">The debug message.</param>
-        /// <param name="data">Additional data associated with the event.</param>
+        ///<summary>
+        ///Logs a state machine event for debugging.
+        ///</summary>
+        ///<param name="eventType">The type of debug event.</param>
+        ///<param name="stateType">The state type involved.</param>
+        ///<param name="message">The debug message.</param>
+        ///<param name="data">Additional data associated with the event.</param>
         public static void LogStateEvent(StateDebugEventType eventType, GameStateType stateType, string message, object? data = null)
         {
             if (!_debugEnabled)
@@ -61,20 +62,20 @@ namespace SASZombieAssaultTD.Engine.State
                 
                 _debugEvents.Add(debugEvent);
                 
-                // Maintain maximum event count
+                //Maintain maximum event count
                 while (_debugEvents.Count > _maxDebugEvents)
                 {
                     _debugEvents.RemoveAt(0);
                 }
                 
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"StateDebugger: [{eventType}] {stateType} - {message}");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"StateDebugger: [{eventType}] {stateType} - {message}");
             }
         }
         
-        /// <summary>
-        /// Gets all debug events.
-        /// </summary>
-        /// <returns>Read-only list of debug events.</returns>
+        ///<summary>
+        ///Gets all debug events.
+        ///</summary>
+        ///<returns>Read-only list of debug events.</returns>
         public static IReadOnlyList<StateDebugEvent> GetDebugEvents()
         {
             lock (_debugLock)
@@ -83,11 +84,11 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Gets debug events filtered by event type.
-        /// </summary>
-        /// <param name="eventType">The event type to filter by.</param>
-        /// <returns>Filtered list of debug events.</returns>
+        ///<summary>
+        ///Gets debug events filtered by event type.
+        ///</summary>
+        ///<param name="eventType">The event type to filter by.</param>
+        ///<returns>Filtered list of debug events.</returns>
         public static IReadOnlyList<StateDebugEvent> GetDebugEvents(StateDebugEventType eventType)
         {
             lock (_debugLock)
@@ -96,11 +97,11 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Gets debug events filtered by state type.
-        /// </summary>
-        /// <param name="stateType">The state type to filter by.</param>
-        /// <returns>Filtered list of debug events.</returns>
+        ///<summary>
+        ///Gets debug events filtered by state type.
+        ///</summary>
+        ///<param name="stateType">The state type to filter by.</param>
+        ///<returns>Filtered list of debug events.</returns>
         public static IReadOnlyList<StateDebugEvent> GetDebugEvents(GameStateType stateType)
         {
             lock (_debugLock)
@@ -109,12 +110,12 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Gets debug events within a time range.
-        /// </summary>
-        /// <param name="startTime">The start time.</param>
-        /// <param name="endTime">The end time.</param>
-        /// <returns>Filtered list of debug events.</returns>
+        ///<summary>
+        ///Gets debug events within a time range.
+        ///</summary>
+        ///<param name="startTime">The start time.</param>
+        ///<param name="endTime">The end time.</param>
+        ///<returns>Filtered list of debug events.</returns>
         public static IReadOnlyList<StateDebugEvent> GetDebugEvents(DateTime startTime, DateTime endTime)
         {
             lock (_debugLock)
@@ -123,22 +124,22 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Clears all debug events.
-        /// </summary>
+        ///<summary>
+        ///Clears all debug events.
+        ///</summary>
         public static void ClearDebugEvents()
         {
             lock (_debugLock)
             {
                 _debugEvents.Clear();
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateDebugger: Debug events cleared");
+                DLogger.Log(LogSubsystems.State,LogLevel.Info, "StateDebugger: Debug events cleared");
             }
         }
         
-        /// <summary>
-        /// Exports debug events to a file.
-        /// </summary>
-        /// <param name="filePath">The file path to export to.</param>
+        ///<summary>
+        ///Exports debug events to a file.
+        ///</summary>
+        ///<param name="filePath">The file path to export to.</param>
         public static void ExportDebugEvents(string filePath)
         {
             lock (_debugLock)
@@ -163,21 +164,21 @@ namespace SASZombieAssaultTD.Engine.State
                     }
                     
                     File.WriteAllLines(filePath, lines);
-                    Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"StateDebugger: Exported {_debugEvents.Count} debug events to {filePath}");
+                    DLogger.Log(LogSubsystems.State,LogLevel.Info, $"StateDebugger: Exported {_debugEvents.Count} debug events to {filePath}");
                 }
                 catch (Exception ex)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"StateDebugger: Failed to export debug events - {ex.Message}");
+ DLogger.Log(LogSubsystems.State,LogLevel.Info,"ERROR",$"StateDebugger: Failed to export debug events - {ex.Message}");
                     throw;
                 }
             }
         }
         
-        /// <summary>
-        /// Generates a state machine performance report.
-        /// </summary>
-        /// <param name="stateMachine">The state machine to analyze.</param>
-        /// <returns>Performance report as a string.</returns>
+        ///<summary>
+        ///Generates a state machine performance report.
+        ///</summary>
+        ///<param name="stateMachine">The state machine to analyze.</param>
+        ///<returns>Performance report as a string.</returns>
         public static string GeneratePerformanceReport(StateMachine stateMachine)
         {
             if (stateMachine == null)
@@ -190,14 +191,14 @@ namespace SASZombieAssaultTD.Engine.State
                 ""
             };
             
-            // Basic statistics
+            //Basic statistics
             report.Add("=== Basic Statistics ===");
             report.Add($"Current State: {stateMachine.CurrentStateType}");
             report.Add($"Registered States: {stateMachine.GetRegisteredStates().Length}");
             report.Add($"Valid Transitions: {stateMachine.GetValidTransitions().Length}");
             report.Add("");
             
-            // Debug event statistics
+            //Debug event statistics
             lock (_debugLock)
             {
                 report.Add("=== Debug Event Statistics ===");
@@ -212,7 +213,7 @@ namespace SASZombieAssaultTD.Engine.State
                 }
                 report.Add("");
                 
-                // State-specific statistics
+                //State-specific statistics
                 report.Add("=== State-Specific Statistics ===");
                 var stateCounts = _debugEvents.GroupBy(e => e.StateType)
                 .ToDictionary(g => g.Key, g => g.Count());
@@ -223,7 +224,7 @@ namespace SASZombieAssaultTD.Engine.State
                 }
                 report.Add("");
                 
-                // Recent events
+                //Recent events
                 report.Add("=== Recent Events (Last 10) ===");
                 var recentEvents = _debugEvents.TakeLast(10);
                 foreach (var debugEvent in recentEvents)
@@ -235,11 +236,11 @@ namespace SASZombieAssaultTD.Engine.State
             return string.Join(Environment.NewLine, report);
         }
         
-        /// <summary>
-        /// Validates state machine configuration and reports issues.
-        /// </summary>
-        /// <param name="stateMachine">The state machine to validate.</param>
-        /// <returns>List of validation issues.</returns>
+        ///<summary>
+        ///Validates state machine configuration and reports issues.
+        ///</summary>
+        ///<param name="stateMachine">The state machine to validate.</param>
+        ///<returns>List of validation issues.</returns>
         public static List<string> ValidateStateMachine(StateMachine stateMachine)
         {
             if (stateMachine == null)
@@ -247,13 +248,13 @@ namespace SASZombieAssaultTD.Engine.State
             
             var issues = new List<string>();
             
-            // Check if current state is registered
+            //Check if current state is registered
             if (stateMachine.CurrentState != null && !stateMachine.HasState(stateMachine.CurrentStateType))
             {
                 issues.Add($"Current state {stateMachine.CurrentStateType} is not registered");
             }
             
-            // Check for required states
+            //Check for required states
             var requiredStates = new[] { GameStateType.Boot, GameStateType.MainMenu, GameStateType.Gameplay, GameStateType.Paused };
             foreach (var requiredState in requiredStates)
             {
@@ -263,7 +264,7 @@ namespace SASZombieAssaultTD.Engine.State
                 }
             }
             
-            // Check for valid transitions
+            //Check for valid transitions
             var registeredStates = stateMachine.GetRegisteredStates();
             foreach (var fromState in registeredStates)
             {
@@ -276,7 +277,7 @@ namespace SASZombieAssaultTD.Engine.State
                 }
             }
             
-            // Check debug event consistency
+            //Check debug event consistency
             lock (_debugLock)
             {
                 var stateEnterEvents = _debugEvents.Where(e => e.EventType == StateDebugEventType.StateEntered);
@@ -298,78 +299,78 @@ namespace SASZombieAssaultTD.Engine.State
         }
     }
     
-    /// <summary>
-    /// Types of debug events for state machine debugging.
-    /// </summary>
+    ///<summary>
+    ///Types of debug events for state machine debugging.
+    ///</summary>
     public enum StateDebugEventType
     {
-        /// <summary>State was entered.</summary>
+        ///<summary>State was entered.</summary>
         StateEntered,
         
-        /// <summary>State was exited.</summary>
+        ///<summary>State was exited.</summary>
         StateExited,
         
-        /// <summary>State transition started.</summary>
+        ///<summary>State transition started.</summary>
         TransitionStarted,
         
-        /// <summary>State transition completed.</summary>
+        ///<summary>State transition completed.</summary>
         TransitionCompleted,
         
-        /// <summary>State transition failed.</summary>
+        ///<summary>State transition failed.</summary>
         TransitionFailed,
         
-        /// <summary>State update called.</summary>
+        ///<summary>State update called.</summary>
         StateUpdate,
         
-        /// <summary>Event handled by state.</summary>
+        ///<summary>Event handled by state.</summary>
         EventHandled,
         
-        /// <summary>Event ignored by state.</summary>
+        ///<summary>Event ignored by state.</summary>
         EventIgnored,
         
-        /// <summary>State registered.</summary>
+        ///<summary>State registered.</summary>
         StateRegistered,
         
-        /// <summary>State machine reset.</summary>
+        ///<summary>State machine reset.</summary>
         StateMachineReset,
         
-        /// <summary>Custom debug event.</summary>
+        ///<summary>Custom debug event.</summary>
         Custom
     }
     
-    /// <summary>
-    /// Represents a debug event for state machine debugging.
-    /// </summary>
+    ///<summary>
+    ///Represents a debug event for state machine debugging.
+    ///</summary>
     public class StateDebugEvent
     {
-        /// <summary>
-        /// Timestamp when the event occurred.
-        /// </summary>
+        ///<summary>
+        ///Timestamp when the event occurred.
+        ///</summary>
         public DateTime Timestamp { get; set; }
         
-        /// <summary>
-        /// Type of debug event.
-        /// </summary>
+        ///<summary>
+        ///Type of debug event.
+        ///</summary>
         public StateDebugEventType EventType { get; set; }
         
-        /// <summary>
-        /// State type involved in the event.
-        /// </summary>
+        ///<summary>
+        ///State type involved in the event.
+        ///</summary>
         public GameStateType StateType { get; set; }
         
-        /// <summary>
-        /// Debug message.
-        /// </summary>
+        ///<summary>
+        ///Debug message.
+        ///</summary>
         public string Message { get; set; }
         
-        /// <summary>
-        /// Additional data associated with the event.
-        /// </summary>
+        ///<summary>
+        ///Additional data associated with the event.
+        ///</summary>
         public object Data { get; set; }
         
-        /// <summary>
-        /// Returns a string representation of the debug event.
-        /// </summary>
+        ///<summary>
+        ///Returns a string representation of the debug event.
+        ///</summary>
         public override string ToString()
         {
             return $"{Timestamp:HH:mm:ss.fff} | {EventType} | {StateType} | {Message}";

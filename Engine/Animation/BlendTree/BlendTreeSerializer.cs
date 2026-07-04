@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using SASZombieAssaultTD.Engine.Core;
 
+
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Animation.BlendTree
+//
 {
-    /// <summary>
-    /// P11-18-13: Serialization and deserialization for blend trees with validation and fallback behavior.
-    /// Provides deterministic JSON-based serialization with comprehensive error handling.
-    /// </summary>
+    ///<summary>
+    ///P11-18-13: Serialization and deserialization for blend trees with validation and fallback behavior.
+    ///Provides deterministic JSON-based serialization with comprehensive error handling.
+    ///</summary>
     public static class BlendTreeSerializer
     {
         private static readonly JsonSerializerOptions _serializerOptions = new()
@@ -21,23 +22,26 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             Converters = { new JsonStringEnumConverter() }
         };
 
-        /// <summary>
-        /// P11-18-13: Serializes a blend tree to JSON string with validation.
-        /// Deterministic serialization with comprehensive error handling and validation.
-        /// </summary>
-        /// <param name="blendTree">Blend tree to serialize</param>
-        /// <returns>JSON string representation of the blend tree</returns>
+        public static object DebugLogger { get; private set; }
+
+        ///<summary>
+        ///P11-18-13: Serializes a blend tree to JSON string with validation.
+        ///Deterministic serialization with comprehensive error handling and validation.
+        ///</summary>
+        ///<param name="blendTree">Blend tree to serialize</param>
+        ///<returns>JSON string representation of the blend tree</returns>
         public static string SerializeBlendTree(BlendTree blendTree)
         {
             if (blendTree == null)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "BlendTreeSerializer: Cannot serialize null blend tree");
+                DLogger.Log(
+                    LogSubsystems.Animation, LogLevel.Error, "BlendTreeSerializer: Cannot serialize null blend tree");
                 return string.Empty;
             }
 
             try
             {
-                // Validate blend tree before serialization
+                //Validate blend tree before serialization
                 var validationResult = ValidateBlendTreeForSerialization(blendTree);
                 if (!validationResult.IsValid)
                 {
@@ -45,56 +49,56 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                     return string.Empty;
                 }
 
-                // Convert to serializable format
+                //Convert to serializable format
                 var serializableTree = ConvertToSerializableFormat(blendTree);
 
-                // Serialize to JSON
+                //Serialize to JSON
                 var json = JsonSerializer.Serialize(serializableTree, _serializerOptions);
 
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BlendTreeSerializer: Successfully serialized blend tree '{blendTree.TreeId}'");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"BlendTreeSerializer: Successfully serialized blend tree '{blendTree.TreeId}'");
                 return json;
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"BlendTreeSerializer: Error serializing blend tree '{blendTree.TreeId}': {ex.Message}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"BlendTreeSerializer: Error serializing blend tree '{blendTree.TreeId}': {ex.Message}");
                 return string.Empty;
             }
         }
 
-        /// <summary>
-        /// P11-18-13: Deserializes a blend tree from JSON string with validation and fallback.
-        /// Deterministic deserialization with comprehensive error handling and fallback behavior.
-        /// </summary>
-        /// <param name="json">JSON string to deserialize</param>
-        /// <param name="fallbackTree">Optional fallback blend tree if deserialization fails</param>
-        /// <returns>Deserialized blend tree or fallback</returns>
+        ///<summary>
+        ///P11-18-13: Deserializes a blend tree from JSON string with validation and fallback.
+        ///Deterministic deserialization with comprehensive error handling and fallback behavior.
+        ///</summary>
+        ///<param name="json">JSON string to deserialize</param>
+        ///<param name="fallbackTree">Optional fallback blend tree if deserialization fails</param>
+        ///<returns>Deserialized blend tree or fallback</returns>
         public static BlendTree DeserializeBlendTree(string json, BlendTree? fallbackTree = null)
         {
             if (string.IsNullOrEmpty(json))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "BlendTreeSerializer: Cannot deserialize null or empty JSON string");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Warning, "BlendTreeSerializer: Cannot deserialize null or empty JSON string");
                 return fallbackTree;
             }
 
             try
             {
-                // Deserialize from JSON
+                //Deserialize from JSON
                 var serializableTree = JsonSerializer.Deserialize<SerializableBlendTree>(json, _serializerOptions);
                 if (serializableTree == null)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "BlendTreeSerializer: Deserialized JSON resulted in null blend tree");
+                    DLogger.Log(LogSubsystems.Animation, LogLevel.Error, "BlendTreeSerializer: Deserialized JSON resulted in null blend tree");
                     return fallbackTree;
                 }
 
-                // Convert from serializable format
+                //Convert from serializable format
                 var blendTree = ConvertFromSerializableFormat(serializableTree);
                 if (blendTree == null)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "BlendTreeSerializer: Failed to convert from serializable format");
+                    DLogger.Log(LogSubsystems.Animation, LogLevel.Error, "BlendTreeSerializer: Failed to convert from serializable format");
                     return fallbackTree;
                 }
 
-                // Validate deserialized blend tree
+                //Validate deserialized blend tree
                 var validationResult = ValidateBlendTreeForSerialization(blendTree);
                 if (!validationResult.IsValid)
                 {
@@ -102,27 +106,27 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                     return fallbackTree;
                 }
 
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BlendTreeSerializer: Successfully deserialized blend tree '{blendTree.TreeId}'");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"BlendTreeSerializer: Successfully deserialized blend tree '{blendTree.TreeId}'");
                 return blendTree;
             }
             catch (JsonException ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"BlendTreeSerializer: JSON error during deserialization: {ex.Message}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"BlendTreeSerializer: JSON error during deserialization: {ex.Message}");
                 return fallbackTree;
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"BlendTreeSerializer: Error deserializing blend tree: {ex.Message}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"BlendTreeSerializer: Error deserializing blend tree: {ex.Message}");
                 return fallbackTree;
             }
         }
 
-        /// <summary>
-        /// P11-18-13: Validates a blend tree for serialization compatibility.
-        /// Ensures the blend tree can be safely serialized and deserialized.
-        /// </summary>
-        /// <param name="blendTree">Blend tree to validate</param>
-        /// <returns>Validation result</returns>
+        ///<summary>
+        ///P11-18-13: Validates a blend tree for serialization compatibility.
+        ///Ensures the blend tree can be safely serialized and deserialized.
+        ///</summary>
+        ///<param name="blendTree">Blend tree to validate</param>
+        ///<returns>Validation result</returns>
         private static BlendNodeValidationResult ValidateBlendTreeForSerialization(BlendTree blendTree)
         {
             if (blendTree == null)
@@ -131,30 +135,30 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             var errors = new List<string>();
             var warnings = new List<string>();
 
-            // Validate tree ID
+            //Validate tree ID
             if (string.IsNullOrEmpty(blendTree.TreeId))
             {
                 errors.Add("Blend tree ID cannot be null or empty");
             }
 
-            // Validate display name
+            //Validate display name
             if (string.IsNullOrEmpty(blendTree.DisplayName))
             {
                 errors.Add("Blend tree display name cannot be null or empty");
             }
 
-            // Validate root node
+            //Validate root node
             if (blendTree.RootNode == null)
             {
                 errors.Add("Blend tree root node cannot be null");
             }
             else
             {
-                // Recursively validate nodes
+                //Recursively validate nodes
                 ValidateNodeRecursive(blendTree.RootNode, errors, warnings);
             }
 
-            // Validate child nodes
+            //Validate child nodes
             foreach (var childNode in blendTree.ChildNodes)
             {
                 ValidateNodeRecursive(childNode, errors, warnings);
@@ -163,13 +167,13 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             return new BlendNodeValidationResult(errors.Count == 0, errors.ToArray(), warnings.ToArray());
         }
 
-        /// <summary>
-        /// P11-18-13: Recursively validates a blend node and its children.
-        /// Ensures all nodes in the tree are valid for serialization.
-        /// </summary>
-        /// <param name="node">Node to validate</param>
-        /// <param name="errors">Error list to populate</param>
-        /// <param name="warnings">Warning list to populate</param>
+        ///<summary>
+        ///P11-18-13: Recursively validates a blend node and its children.
+        ///Ensures all nodes in the tree are valid for serialization.
+        ///</summary>
+        ///<param name="node">Node to validate</param>
+        ///<param name="errors">Error list to populate</param>
+        ///<param name="warnings">Warning list to populate</param>
         private static void ValidateNodeRecursive(IBlendNode node, List<string> errors, List<string> warnings)
         {
             if (node == null)
@@ -178,24 +182,24 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 return;
             }
 
-            // Validate node ID
+            //Validate node ID
             if (string.IsNullOrEmpty(node.NodeId))
             {
                 errors.Add($"Node of type {node.GetType().Name} has null or empty ID");
             }
 
-            // Validate display name
+            //Validate display name
             if (string.IsNullOrEmpty(node.DisplayName))
             {
                 warnings.Add($"Node '{node.NodeId}' has null or empty display name");
             }
 
-            // Validate node-specific properties
+            //Validate node-specific properties
             var nodeValidation = node.Validate();
             errors.AddRange(nodeValidation.Errors);
             warnings.AddRange(nodeValidation.Warnings);
 
-            // Recursively validate child nodes based on type
+            //Recursively validate child nodes based on type
             if (node is LinearBlendNode linearNode)
             {
                 ValidateNodeRecursive(linearNode.ChildA, errors, warnings);
@@ -210,12 +214,12 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             }
         }
 
-        /// <summary>
-        /// P11-18-13: Converts a blend tree to serializable format.
-        /// Transforms the runtime blend tree into a JSON-serializable structure.
-        /// </summary>
-        /// <param name="blendTree">Blend tree to convert</param>
-        /// <returns>Serializable blend tree structure</returns>
+        ///<summary>
+        ///P11-18-13: Converts a blend tree to serializable format.
+        ///Transforms the runtime blend tree into a JSON-serializable structure.
+        ///</summary>
+        ///<param name="blendTree">Blend tree to convert</param>
+        ///<returns>Serializable blend tree structure</returns>
         private static SerializableBlendTree ConvertToSerializableFormat(BlendTree blendTree)
         {
             var serializableTree = new SerializableBlendTree
@@ -226,7 +230,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 Nodes = new List<SerializableBlendNode>()
             };
 
-            // Convert all nodes to serializable format
+            //Convert all nodes to serializable format
             var processedNodes = new HashSet<string>();
             ConvertNodeRecursive(blendTree.RootNode, processedNodes, serializableTree.Nodes);
 
@@ -238,13 +242,13 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             return serializableTree;
         }
 
-        /// <summary>
-        /// P11-18-13: Recursively converts blend nodes to serializable format.
-        /// Transforms runtime nodes into JSON-serializable node structures.
-        /// </summary>
-        /// <param name="node">Node to convert</param>
-        /// <param name="processedNodes">Set of already processed node IDs</param>
-        /// <param name="serializableNodes">List to add serializable nodes to</param>
+        ///<summary>
+        ///P11-18-13: Recursively converts blend nodes to serializable format.
+        ///Transforms runtime nodes into JSON-serializable node structures.
+        ///</summary>
+        ///<param name="node">Node to convert</param>
+        ///<param name="processedNodes">Set of already processed node IDs</param>
+        ///<param name="serializableNodes">List to add serializable nodes to</param>
         private static void ConvertNodeRecursive(IBlendNode node, HashSet<string> processedNodes, List<SerializableBlendNode> serializableNodes)
         {
             if (node == null || processedNodes.Contains(node.NodeId))
@@ -260,7 +264,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 RequiredParameters = new List<string>(node.RequiredParameters)
             };
 
-            // Convert node-specific properties
+            //Convert node-specific properties
             if (node is SingleClipNode singleClipNode)
             {
                 serializableNode.ClipId = singleClipNode.ClipId;
@@ -271,7 +275,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 serializableNode.ChildAId = linearNode.ChildA?.NodeId;
                 serializableNode.ChildBId = linearNode.ChildB?.NodeId;
 
-                // Recursively convert children
+                //Recursively convert children
                 ConvertNodeRecursive(linearNode.ChildA, processedNodes, serializableNodes);
                 ConvertNodeRecursive(linearNode.ChildB, processedNodes, serializableNodes);
             }
@@ -284,7 +288,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 serializableNode.ChildTopLeftId = twoDNode.ChildTopLeft?.NodeId;
                 serializableNode.ChildTopRightId = twoDNode.ChildTopRight?.NodeId;
 
-                // Recursively convert children
+                //Recursively convert children
                 ConvertNodeRecursive(twoDNode.ChildBottomLeft, processedNodes, serializableNodes);
                 ConvertNodeRecursive(twoDNode.ChildBottomRight, processedNodes, serializableNodes);
                 ConvertNodeRecursive(twoDNode.ChildTopLeft, processedNodes, serializableNodes);
@@ -294,12 +298,12 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             serializableNodes.Add(serializableNode);
         }
 
-        /// <summary>
-        /// P11-18-13: Converts a serializable blend tree back to runtime format.
-        /// Transforms the JSON-deserialized structure back into a functional blend tree.
-        /// </summary>
-        /// <param name="serializableTree">Serializable blend tree structure</param>
-        /// <returns>Runtime blend tree</returns>
+        ///<summary>
+        ///P11-18-13: Converts a serializable blend tree back to runtime format.
+        ///Transforms the JSON-deserialized structure back into a functional blend tree.
+        ///</summary>
+        ///<param name="serializableTree">Serializable blend tree structure</param>
+        ///<returns>Runtime blend tree</returns>
         private static BlendTree ConvertFromSerializableFormat(SerializableBlendTree serializableTree)
         {
             if (serializableTree == null)
@@ -308,7 +312,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             var blendTree = new BlendTree(serializableTree.DisplayName);
             var nodeMap = new Dictionary<string, IBlendNode>();
 
-            // First pass: create all nodes
+            //First pass: create all nodes
             foreach (var serializableNode in serializableTree.Nodes)
             {
                 var node = CreateNodeFromSerializable(serializableNode);
@@ -319,7 +323,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 }
             }
 
-            // Second pass: establish node relationships
+            //Second pass: establish node relationships
             foreach (var serializableNode in serializableTree.Nodes)
             {
                 if (serializableNode.NodeType == nameof(LinearBlendNode) &&
@@ -346,7 +350,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 }
             }
 
-            // Set root node
+            //Set root node
             if (!string.IsNullOrEmpty(serializableTree.RootNodeId) &&
             nodeMap.TryGetValue(serializableTree.RootNodeId, out var rootNode))
             {
@@ -356,12 +360,12 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             return blendTree;
         }
 
-        /// <summary>
-        /// P11-18-13: Creates a runtime node from serializable node data.
-        /// Factory method for creating appropriate node types from serialized data.
-        /// </summary>
-        /// <param name="serializableNode">Serializable node data</param>
-        /// <returns>Runtime blend node</returns>
+        ///<summary>
+        ///P11-18-13: Creates a runtime node from serializable node data.
+        ///Factory method for creating appropriate node types from serialized data.
+        ///</summary>
+        ///<param name="serializableNode">Serializable node data</param>
+        ///<returns>Runtime blend node</returns>
         private static IBlendNode CreateNodeFromSerializable(SerializableBlendNode serializableNode)
         {
             return serializableNode.NodeType switch
@@ -374,7 +378,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 nameof(LinearBlendNode) => LinearBlendNode.CreateAuto(
                 serializableNode.DisplayName,
                 serializableNode.BlendParameter,
-                null, // Children will be set in second pass
+                null, //Children will be set in second pass
                 null),
 
                 nameof(TwoDBlendNode) => TwoDBlendNode.CreateAuto(
@@ -389,18 +393,18 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
 
         private static void LogValidationErrors(string treeId, IEnumerable<string> errors)
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"BlendTreeSerializer: Blend tree '{treeId}' failed validation");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"BlendTreeSerializer: Blend tree '{treeId}' failed validation");
             foreach (var error in errors)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"  Validation Error: {error}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"  Validation Error: {error}");
             }
         }
     }
 
-    /// <summary>
-    /// P11-18-13: Serializable blend tree structure for JSON serialization.
-    /// Deterministic data structure for blend tree serialization.
-    /// </summary>
+    ///<summary>
+    ///P11-18-13: Serializable blend tree structure for JSON serialization.
+    ///Deterministic data structure for blend tree serialization.
+    ///</summary>
     public class SerializableBlendTree
     {
         public string TreeId { get; set; } = string.Empty;
@@ -409,10 +413,10 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
         public List<SerializableBlendNode> Nodes { get; set; } = new();
     }
 
-    /// <summary>
-    /// P11-18-13: Serializable blend node structure for JSON serialization.
-    /// Deterministic data structure for blend node serialization.
-    /// </summary>
+    ///<summary>
+    ///P11-18-13: Serializable blend node structure for JSON serialization.
+    ///Deterministic data structure for blend node serialization.
+    ///</summary>
     public class SerializableBlendNode
     {
         public string NodeId { get; set; } = string.Empty;
@@ -420,15 +424,15 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
         public string NodeType { get; set; } = string.Empty;
         public List<string> RequiredParameters { get; set; } = new();
 
-        // SingleClipNode properties
+        //SingleClipNode properties
         public string ClipId { get; set; } = string.Empty;
 
-        // LinearBlendNode properties
+        //LinearBlendNode properties
         public string BlendParameter { get; set; } = string.Empty;
         public string ChildAId { get; set; } = string.Empty;
         public string ChildBId { get; set; } = string.Empty;
 
-        // TwoDBlendNode properties
+        //TwoDBlendNode properties
         public string ParameterX { get; set; } = string.Empty;
         public string ParameterY { get; set; } = string.Empty;
         public string ChildBottomLeftId { get; set; } = string.Empty;

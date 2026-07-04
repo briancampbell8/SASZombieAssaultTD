@@ -48,7 +48,7 @@
  *
  * ==================================================================================================== */
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Gameplay;
 using System;
@@ -59,14 +59,16 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Text.Json;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
-    /// <summary>
-    /// Public façade for the progression system.
-    /// </summary>
+    ///<summary>
+    ///Public façade for the progression system.
+    ///</summary>
     public class LevelProgression
     {
-        // INTERNAL STATE (exposed to serializer and logic through internal accessors)
+        //INTERNAL STATE (exposed to serializer and logic through internal accessors)
         internal readonly List<ProgressionMilestone> _milestones;
         internal readonly Dictionary<string, ProgressionAchievement> _achievements;
         internal readonly List<ProgressionEvent> _events;
@@ -74,18 +76,18 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         private bool _isInitialized;
         private static LevelProgression _instance;
 
-        // Optional external blob (kept for compatibility)
+        //Optional external blob (kept for compatibility)
         private Dictionary<string, object> AchievementData;
         private object TheType;
         private object TheMember;
 
-        // EVENTS EXPOSED TO OTHER SYSTEMS
+        //EVENTS EXPOSED TO OTHER SYSTEMS
         public event Action<ProgressionMilestone> OnMilestoneReached;
         public event Action<ProgressionAchievement> OnAchievementUnlocked;
         public event Action<ProgressionEvent> OnProgressionEvent;
         public event Action OnAllMilestonesCompleted;
 
-        // PUBLIC PROPERTIES
+        //PUBLIC PROPERTIES
         public bool IsInitialized => _isInitialized;
         public int TotalMilestones => _milestones.Count;
         public int TotalAchievements => _achievements.Count;
@@ -94,14 +96,14 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public IReadOnlyList<ProgressionMilestone> AllMilestones => _milestones;
         public IReadOnlyDictionary<string, ProgressionAchievement> AllAchievements => _achievements;
 
-        // SINGLETON ACCESSOR
+        //SINGLETON ACCESSOR
         public static LevelProgression Instance => _instance ??= new LevelProgression();
 
-        // METHOD: Constructor
-        // PURPOSE: Initialize internal collections and load static definitions.
-        // CALLED BY: Singleton accessor
-        // CALLS INTO: ProgressionDefinitions
-        // NOTES: Heavy logic is delegated; constructor must remain lightweight.
+        //METHOD: Constructor
+        //PURPOSE: Initialize internal collections and load static definitions.
+        //CALLED BY: Singleton accessor
+        //CALLS INTO: ProgressionDefinitions
+        //NOTES: Heavy logic is delegated; constructor must remain lightweight.
         private LevelProgression()
         {
             _milestones = new List<ProgressionMilestone>();
@@ -113,11 +115,11 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             ProgressionDefinitions.InitializeEvents(_events);
         }
 
-        // METHOD: Initialize()
-        // PURPOSE: Hook into PlayerLevel events and activate the progression system.
-        // CALLED BY: Game startup systems
-        // CALLS INTO: PlayerLevel event subscriptions
-        // NOTES: Must be idempotent.
+        //METHOD: Initialize()
+        //PURPOSE: Hook into PlayerLevel events and activate the progression system.
+        //CALLED BY: Game startup systems
+        //CALLS INTO: PlayerLevel event subscriptions
+        //NOTES: Must be idempotent.
         public void Initialize()
         {
             if (_isInitialized) return;
@@ -141,10 +143,10 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        // METHOD: AddMilestone()
-        // PURPOSE: Add a custom milestone at runtime.
-        // CALLED BY: Mod systems, dynamic content loaders
-        // CALLS INTO: None
+        //METHOD: AddMilestone()
+        //PURPOSE: Add a custom milestone at runtime.
+        //CALLED BY: Mod systems, dynamic content loaders
+        //CALLS INTO: None
         public bool AddMilestone(ProgressionMilestone milestone)
         {
             if (milestone == null) return false;
@@ -154,8 +156,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             return true;
         }
 
-        // METHOD: AddAchievement()
-        // PURPOSE: Add a custom achievement at runtime.
+        //METHOD: AddAchievement()
+        //PURPOSE: Add a custom achievement at runtime.
         public bool AddAchievement(ProgressionAchievement achievement)
         {
             if (achievement == null) return false;
@@ -165,8 +167,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             return true;
         }
 
-        // METHOD: AddProgressionEvent()
-        // PURPOSE: Add a custom event at runtime.
+        //METHOD: AddProgressionEvent()
+        //PURPOSE: Add a custom event at runtime.
         public bool AddProgressionEvent(ProgressionEvent progressionEvent)
         {
             if (progressionEvent == null) return false;
@@ -174,37 +176,37 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             return true;
         }
 
-        // METHOD: IsMilestoneCompleted()
-        // PURPOSE: Query milestone completion state.
+        //METHOD: IsMilestoneCompleted()
+        //PURPOSE: Query milestone completion state.
         public bool IsMilestoneCompleted(string milestoneId)
         {
             return _milestones.FirstOrDefault(m => m.Id == milestoneId)?.IsCompleted ?? false;
         }
 
-        // METHOD: IsAchievementUnlocked()
-        // PURPOSE: Query achievement unlock state.
+        //METHOD: IsAchievementUnlocked()
+        //PURPOSE: Query achievement unlock state.
         public bool IsAchievementUnlocked(string achievementId)
         {
             return _achievements.TryGetValue(achievementId, out var a) && a.IsUnlocked;
         }
 
-        // METHOD: GetCompletedMilestones()
-        // PURPOSE: Return all completed milestones.
+        //METHOD: GetCompletedMilestones()
+        //PURPOSE: Return all completed milestones.
         public IReadOnlyList<ProgressionMilestone> GetCompletedMilestones()
         {
             return _milestones.Where(m => m.IsCompleted).ToList();
         }
 
-        // METHOD: GetAvailableAchievements()
-        // PURPOSE: Return all unlocked achievements.
+        //METHOD: GetAvailableAchievements()
+        //PURPOSE: Return all unlocked achievements.
         public IReadOnlyList<ProgressionAchievement> GetAvailableAchievements()
         {
             return _achievements.Values.Where(a => a.IsUnlocked).ToList();
         }
 
-        // METHOD: GetStatistics()
-        // PURPOSE: Build a statistics snapshot for UI.
-        // CALLS INTO: None
+        //METHOD: GetStatistics()
+        //PURPOSE: Build a statistics snapshot for UI.
+        //CALLS INTO: None
         public ProgressionStatistics GetStatistics()
         {
             return new ProgressionStatistics
@@ -227,8 +229,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             };
         }
 
-        // METHOD: ResetProgression()
-        // PURPOSE: Reset all progression state.
+        //METHOD: ResetProgression()
+        //PURPOSE: Reset all progression state.
         public void ResetProgression()
         {
             foreach (var m in _milestones)
@@ -247,16 +249,16 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             _events.Clear();
         }
 
-        // METHOD: SaveProgression()
-        // PURPOSE: Save progression using serializer.
+        //METHOD: SaveProgression()
+        //PURPOSE: Save progression using serializer.
         public bool SaveProgression()
         {
             return SaveProgression(AchievementData);
         }
 
-        // METHOD: SaveProgression(achievementData)
-        // PURPOSE: Save progression with external achievement blob.
-        // CALLS INTO: ProgressionSerializer
+        //METHOD: SaveProgression(achievementData)
+        //PURPOSE: Save progression with external achievement blob.
+        //CALLS INTO: ProgressionSerializer
         public bool SaveProgression(Dictionary<string, object> achievementData)
         {
             try
@@ -277,9 +279,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        // METHOD: LoadProgression()
-        // PURPOSE: Load progression using serializer.
-        // CALLS INTO: ProgressionSerializer
+        //METHOD: LoadProgression()
+        //PURPOSE: Load progression using serializer.
+        //CALLS INTO: ProgressionSerializer
         public bool LoadProgression()
         {
             try
@@ -305,7 +307,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        // EVENT HANDLERS — delegate heavy logic to ProgressionLogic
+        //EVENT HANDLERS — delegate heavy logic to ProgressionLogic
 
         private void OnPlayerLevelUp(int newLevel)
         {

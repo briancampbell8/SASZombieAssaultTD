@@ -1,35 +1,37 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Layout
 {
-    /// <summary>
-    /// Layout calculation and element positioning logic
-    /// P80-02-01: UILayoutSystem providing layout calculation and element positioning logic
-    /// </summary>
+    ///<summary>
+    ///Layout calculation and element positioning logic
+    ///P80-02-01: UILayoutSystem providing layout calculation and element positioning logic
+    ///</summary>
     public class UILayoutSystem
     {
         private readonly Dictionary<UIElement, UILayoutData> _layoutData;
         private bool _needsRecalculation = true;
 
-        /// <summary>
-        /// Gets whether the layout system needs recalculation
-        /// </summary>
+        ///<summary>
+        ///Gets whether the layout system needs recalculation
+        ///</summary>
         public bool NeedsRecalculation => _needsRecalculation;
 
-        /// <summary>
-        /// Initializes a new UILayoutSystem
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UILayoutSystem
+        ///</summary>
         public UILayoutSystem()
         {
             _layoutData = new Dictionary<UIElement, UILayoutData>();
             System.Diagnostics.Debug.WriteLine("UILayoutSystem: Initialized");
         }
 
-        /// <summary>
-        /// Calculates layout for a UI element and its children
-        /// </summary>
-        /// <param name="element">Root element to calculate layout for</param>
+        ///<summary>
+        ///Calculates layout for a UI element and its children
+        ///</summary>
+        ///<param name="element">Root element to calculate layout for</param>
         public void CalculateLayout(UIElement element)
         {
             try
@@ -39,10 +41,10 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
 
                 System.Diagnostics.Debug.WriteLine($"UILayoutSystem: Calculating layout for element");
 
-                // Calculate layout for the element
+                //Calculate layout for the element
                 CalculateElementLayout(element);
 
-                // Calculate layouts for children
+                //Calculate layouts for children
                 foreach (var child in element.Children)
                 {
                     CalculateLayout(child);
@@ -57,26 +59,26 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
             }
         }
 
-        /// <summary>
-        /// Calculates layout for a single element
-        /// </summary>
-        /// <param name="element">Element to calculate layout for</param>
+        ///<summary>
+        ///Calculates layout for a single element
+        ///</summary>
+        ///<param name="element">Element to calculate layout for</param>
         private void CalculateElementLayout(UIElement element)
         {
             try
             {
-                // Get or create layout data for this element
+                //Get or create layout data for this element
                 if (!_layoutData.TryGetValue(element, out var layoutData))
                 {
                     layoutData = new UILayoutData();
                     _layoutData[element] = layoutData;
                 }
 
-                // Calculate position based on anchor and alignment
+                //Calculate position based on anchor and alignment
                 var calculatedPosition = CalculateElementPosition(element);
                 var calculatedSize = CalculateElementSize(element);
 
-                // Update element position and size if different
+                //Update element position and size if different
                 if (element.Position != calculatedPosition)
                 {
                     element.Position = calculatedPosition;
@@ -87,7 +89,7 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
                     element.Size = calculatedSize;
                 }
 
-                // Store layout data
+                //Store layout data
                 layoutData.CalculatedPosition = calculatedPosition;
                 layoutData.CalculatedSize = calculatedSize;
                 layoutData.LastCalculated = DateTime.Now;
@@ -98,18 +100,18 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
             }
         }
 
-        /// <summary>
-        /// Calculates the position of an element based on its anchor and alignment
-        /// </summary>
-        /// <param name="element">Element to calculate position for</param>
-        /// <returns>Calculated position</returns>
+        ///<summary>
+        ///Calculates the position of an element based on its anchor and alignment
+        ///</summary>
+        ///<param name="element">Element to calculate position for</param>
+        ///<returns>Calculated position</returns>
         private System.Drawing.PointF CalculateElementPosition(UIElement element)
         {
             try
             {
                 if (element.Parent == null)
                 {
-                    // Root element stays at its current position
+                    //Root element stays at its current position
                     return element.Position;
                 }
 
@@ -120,7 +122,7 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
 
                 var position = element.Position;
 
-                // Apply anchor positioning
+                //Apply anchor positioning
                 switch (anchor)
                 {
                     case UIAnchor.TopCenter:
@@ -153,7 +155,7 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
                         break;
                     case UIAnchor.TopLeft:
                     default:
-                        // Keep current position for top-left anchor
+                        //Keep current position for top-left anchor
                         break;
                 }
 
@@ -166,11 +168,11 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
             }
         }
 
-        /// <summary>
-        /// Calculates the size of an element based on constraints and content
-        /// </summary>
-        /// <param name="element">Element to calculate size for</param>
-        /// <returns>Calculated size</returns>
+        ///<summary>
+        ///Calculates the size of an element based on constraints and content
+        ///</summary>
+        ///<param name="element">Element to calculate size for</param>
+        ///<returns>Calculated size</returns>
         private System.Drawing.SizeF CalculateElementSize(UIElement element)
         {
             try
@@ -178,11 +180,11 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
                 var constraints = GetElementConstraints(element);
                 var currentSize = element.Size;
 
-                // Apply size constraints
+                //Apply size constraints
                 var width = System.Math.Max(constraints.MinWidth, System.Math.Min(constraints.MaxWidth, currentSize.Width));
                 var height = System.Math.Max(constraints.MinHeight, System.Math.Min(constraints.MaxHeight, currentSize.Height));
 
-                // Use preferred size if current size is zero
+                //Use preferred size if current size is zero
                 if (currentSize.Width == 0 && constraints.PreferredWidth > 0)
                     width = constraints.PreferredWidth;
                 if (currentSize.Height == 0 && constraints.PreferredHeight > 0)
@@ -197,46 +199,46 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
             }
         }
 
-        /// <summary>
-        /// Gets the anchor for an element (placeholder implementation)
-        /// </summary>
-        /// <param name="element">Element to get anchor for</param>
-        /// <returns>Anchor value</returns>
+        ///<summary>
+        ///Gets the anchor for an element (placeholder implementation)
+        ///</summary>
+        ///<param name="element">Element to get anchor for</param>
+        ///<returns>Anchor value</returns>
         private UIAnchor GetElementAnchor(UIElement element)
         {
-            // This would be stored in the element's style or layout properties
-            // For now, default to top-left
+            //This would be stored in the element's style or layout properties
+            //For now, default to top-left
             return UIAnchor.TopLeft;
         }
 
-        /// <summary>
-        /// Gets the alignment for an element (placeholder implementation)
-        /// </summary>
-        /// <param name="element">Element to get alignment for</param>
-        /// <returns>Alignment value</returns>
+        ///<summary>
+        ///Gets the alignment for an element (placeholder implementation)
+        ///</summary>
+        ///<param name="element">Element to get alignment for</param>
+        ///<returns>Alignment value</returns>
         private UIAlignment GetElementAlignment(UIElement element)
         {
-            // This would be stored in the element's style or layout properties
-            // For now, default to left
+            //This would be stored in the element's style or layout properties
+            //For now, default to left
             return UIAlignment.Left;
         }
 
-        /// <summary>
-        /// Gets the layout constraints for an element (placeholder implementation)
-        /// </summary>
-        /// <param name="element">Element to get constraints for</param>
-        /// <returns>Layout constraints</returns>
+        ///<summary>
+        ///Gets the layout constraints for an element (placeholder implementation)
+        ///</summary>
+        ///<param name="element">Element to get constraints for</param>
+        ///<returns>Layout constraints</returns>
         private UILayoutConstraints GetElementConstraints(UIElement element)
         {
-            // This would be stored in the element's style or layout properties
-            // For now, return unconstrained
+            //This would be stored in the element's style or layout properties
+            //For now, return unconstrained
             return UILayoutConstraints.Unconstrained;
         }
 
-        /// <summary>
-        /// Invalidates layout for an element and its children
-        /// </summary>
-        /// <param name="element">Element to invalidate</param>
+        ///<summary>
+        ///Invalidates layout for an element and its children
+        ///</summary>
+        ///<param name="element">Element to invalidate</param>
         public void InvalidateLayout(UIElement element)
         {
             try
@@ -246,10 +248,10 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
 
                 _needsRecalculation = true;
 
-                // Remove cached layout data
+                //Remove cached layout data
                 _layoutData.Remove(element);
 
-                // Invalidate children
+                //Invalidate children
                 foreach (var child in element.Children)
                 {
                     InvalidateLayout(child);
@@ -263,11 +265,11 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
             }
         }
 
-        /// <summary>
-        /// Gets the layout data for an element
-        /// </summary>
-        /// <param name="element">Element to get layout data for</param>
-        /// <returns>Layout data, or null if not found</returns>
+        ///<summary>
+        ///Gets the layout data for an element
+        ///</summary>
+        ///<param name="element">Element to get layout data for</param>
+        ///<returns>Layout data, or null if not found</returns>
         public UILayoutData GetLayoutData(UIElement element)
         {
             try
@@ -282,9 +284,9 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
             }
         }
 
-        /// <summary>
-        /// Clears all layout data
-        /// </summary>
+        ///<summary>
+        ///Clears all layout data
+        ///</summary>
         public void Clear()
         {
             try
@@ -300,9 +302,9 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
         }
     }
 
-    /// <summary>
-    /// Internal data structure for storing layout information
-    /// </summary>
+    ///<summary>
+    ///Internal data structure for storing layout information
+    ///</summary>
     public class UILayoutData
     {
         public System.Drawing.PointF CalculatedPosition { get; set; }

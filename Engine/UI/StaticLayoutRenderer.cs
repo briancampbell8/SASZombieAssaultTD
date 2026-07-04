@@ -1,47 +1,51 @@
-/*
+//============================================================================
+// File Path: Engine/UI/StaticLayoutRenderer.cs
 // File: StaticLayoutRenderer.cs
-// Purpose: Render static layout images using texture handles provided by StaticLayoutLoader.
-// Notes:   This renderer draws only pre-defined static UI elements. No animation, no logic.
-//          All visibility, ordering, and asset resolution is handled externally.
-*/
+// Program: StaticLayoutRenderer
+// Subsystem: UI / Legacy Static Layout Rendering
+//
+// Purpose:
+//     Renders static UI layout images using texture handles supplied by
+//     StaticLayoutLoader. This renderer draws only pre-defined static UI
+//     elements with no animation or behavioral logic. All visibility,
+//     ordering, and asset resolution are handled externally.
+//
+// Responsibilities:
+//     - Iterate through StaticLayout image definitions
+//     - Validate visibility and texture handle availability
+//     - Issue deterministic draw commands via IDrawingContext
+//     - Emit EngineDiagnostics trace events for all rendering actions
+//
+// Doctrine:
+//     - No System.Diagnostics.Debug in modern engine (use DLogger instead)
+//     - No silent failures; all skips must be logged
+//     - No fallback rendering logic beyond explicit visibility checks
+//     - Renderer performs no state mutation; pure read → draw pipeline
+//
+// Modernization Notes:
+//     - This class is part of the legacy UI/Rendering subsystem
+//     - Scheduled for migration into unified Engine.Rendering pipeline
+//     - Color pipeline will be upgraded to Engine.Core.Color
+//     - StaticLayout + StaticLayoutImage will be replaced by modern UIState
+//============================================================================
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.Drawing;
 using SASZombieAssaultTD.Engine.Rendering;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
-    /*
-    // Class: StaticLayoutRenderer
-    // Purpose: Iterate through StaticLayout images and draw them using IDrawingContext.
-    // Notes:   This class performs no state mutation. It only reads layout data and issues draw calls.
-    */
     internal sealed class StaticLayoutRenderer
     {
         private readonly StaticLayout _layout;
         private readonly StaticLayoutLoader _loader;
 
-        /*
-        // Method: Constructor
-        // Purpose: Initialize renderer with layout and loader references.
-        // Parameters:
-        //   layout - StaticLayout containing image definitions.
-        //   loader - StaticLayoutLoader providing texture handles.
-        */
         internal StaticLayoutRenderer(StaticLayout layout, StaticLayoutLoader loader)
         {
             _layout = layout ?? throw new ArgumentNullException(nameof(layout));
             _loader = loader ?? throw new ArgumentNullException(nameof(loader));
         }
 
-        /*
-        // Method: Render
-        // Purpose: Draw all visible static layout images in the order they appear.
-        // Parameters:
-        //   context - Rendering context used to issue draw commands.
-        */
         public void Render(IDrawingContext context)
         {
             System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] Render called, image count: {_layout.Images.Count}");
@@ -49,14 +53,13 @@ namespace SASZombieAssaultTD.Engine.UI
             foreach (var image in _layout.Images)
             {
                 System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] Processing image: {image.Id}");
-                // Visibility check
+
                 if (!image.Visible)
                 {
                     System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] Image {image.Id} skipped - not visible");
                     continue;
                 }
 
-                // Retrieve texture handle
                 var handle = _loader.TryGetHandle(image.Id);
                 if (handle == null)
                 {
@@ -64,21 +67,6 @@ namespace SASZombieAssaultTD.Engine.UI
                     continue;
                 }
 
-                // Validate handle state
-                // TODO: RSHandle doesn't have IsLoaded/HasFailed properties
-                // if (!handle.IsLoaded)
-                // {
-                //     System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] Image {image.Id} skipped - not loaded");
-                //     continue;
-                // }
-
-                // if (handle.HasFailed)
-                // {
-                //     System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] Image {image.Id} skipped - load failed");
-                //     continue;
-                // }
-
-                // Draw sprite
                 System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] Drawing" +
                     $" {image.Id} at ({image.X},{image.Y}) size {image.Width}x{image.Height}");
 
@@ -88,7 +76,7 @@ namespace SASZombieAssaultTD.Engine.UI
                     image.Y,
                     image.Width,
                     image.Height,
-                    Color.White // Static UI always draws full white tint
+                    Color.White
                 );
 
                 System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] DrawSprite completed for {image.Id}");
@@ -96,21 +84,11 @@ namespace SASZombieAssaultTD.Engine.UI
         }
     }
 
-    /* 
-    // Class: StaticLayout
-    // Purpose: Container for static UI image definitions.
-    // Notes:   Ordering is preserved as inserted.
-    */
     internal sealed class StaticLayout
     {
         internal List<StaticLayoutImage> Images { get; } = new();
     }
 
-    /* 
-    // Class: StaticLayoutImage
-    // Purpose: Represents a single static UI image entry.
-    // Notes:   No logic, no behavior. Pure data container.
-    */
     internal sealed class StaticLayoutImage
     {
         internal string Id { get; set; }

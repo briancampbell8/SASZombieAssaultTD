@@ -4,11 +4,13 @@ using SASZombieAssaultTD.Engine.VectorMath;
 using System.Collections.Generic;
 using System.Drawing;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Enemies
 {
-    /// <summary>
-    /// Handles pathfinding calculations for navigation.
-    /// </summary>
+    ///<summary>
+    ///Handles pathfinding calculations for navigation.
+    ///</summary>
     public class Pathfinder
     {
         private readonly bool[,] _walkableGrid;
@@ -21,7 +23,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
             _height = height;
             _walkableGrid = new bool[width, height];
 
-            // Initialize all cells as walkable
+            //Initialize all cells as walkable
             for (int x = 0; x < _width; x++)
             {
                 for (int y = 0; y < _height; y++)
@@ -31,9 +33,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
         }
 
-        /// <summary>
-        /// Sets whether a cell is walkable.
-        /// </summary>
+        ///<summary>
+        ///Sets whether a cell is walkable.
+        ///</summary>
         public void SetWalkable(int x, int y, bool walkable)
         {
             if (IsWithinBounds(x, y))
@@ -42,18 +44,18 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
         }
 
-        /// <summary>
-        /// Finds a path from start to end.
-        /// </summary>
+        ///<summary>
+        ///Finds a path from start to end.
+        ///</summary>
         public List<PointF> FindPath(PointF start, PointF end)
         {
-            // Placeholder implementation - returns direct path
+            //Placeholder implementation - returns direct path
             return new List<PointF> { start, end };
         }
 
-        /// <summary>
-        /// Checks if a position is walkable.
-        /// </summary>
+        ///<summary>
+        ///Checks if a position is walkable.
+        ///</summary>
         public bool IsWalkable(PointF position)
         {
             int x = (int)position.X;
@@ -61,9 +63,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             return IsWithinBounds(x, y) && _walkableGrid[x, y];
         }
 
-        /// <summary>
-        /// Checks if the given coordinates are within the grid bounds.
-        /// </summary>
+        ///<summary>
+        ///Checks if the given coordinates are within the grid bounds.
+        ///</summary>
         private bool IsWithinBounds(int x, int y) => x >= 0 && x < _width && y >= 0 && y < _height;
     }
 
@@ -74,9 +76,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
         Attack
     }
 
-    /// <summary>
-    /// Represents the AI behavior for a zombie entity.
-    /// </summary>
+    ///<summary>
+    ///Represents the AI behavior for a zombie entity.
+    ///</summary>
     public class ZombieAI
     {
         private static readonly Pathfinder _pathfinder = new Pathfinder();
@@ -97,10 +99,10 @@ namespace SASZombieAssaultTD.Engine.Enemies
         public PointF CurrentPosition { get; set; }
         public float MoveSpeed { get; set; } = 50f;
 
-        /// <summary>
-        /// Updates the zombie AI state.
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since last frame.</param>
+        ///<summary>
+        ///Updates the zombie AI state.
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since last frame.</param>
         public void UpdateAI(float deltaTime)
         {
             if (!CurrentTarget.IsValid)
@@ -128,19 +130,19 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
         }
 
-        /// <summary>
-        /// Sets the target for the zombie.
-        /// </summary>
-        /// <param name="target">The target entity.</param>
+        ///<summary>
+        ///Sets the target for the zombie.
+        ///</summary>
+        ///<param name="target">The target entity.</param>
         public void SetTarget(Entity target)
         {
             _currentTarget = target;
         }
 
-        /// <summary>
-        /// Moves the zombie toward the target.
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since last frame.</param>
+        ///<summary>
+        ///Moves the zombie toward the target.
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since last frame.</param>
         public void MoveToTarget(float deltaTime)
         {
             if (!CurrentTarget.IsValid) return;
@@ -153,27 +155,27 @@ namespace SASZombieAssaultTD.Engine.Enemies
                 CurrentPosition.Y + direction.Y * MoveSpeed * deltaTime);
         }
 
-        /// <summary>
-        /// Attacks the current target.
-        /// </summary>
+        ///<summary>
+        ///Attacks the current target.
+        ///</summary>
         public void AttackTarget()
         {
-            // Attack logic would go here
-            // For now, this is a placeholder
+            //Attack logic would go here
+            //For now, this is a placeholder
         }
 
-        /// <summary>
-        /// Checks if the zombie can attack.
-        /// </summary>
-        /// <returns>True if in attack range and cooldown is ready.</returns>
+        ///<summary>
+        ///Checks if the zombie can attack.
+        ///</summary>
+        ///<returns>True if in attack range and cooldown is ready.</returns>
         public bool CanAttack()
         {
             return State == ZombieAIState.Attack && CurrentTarget.IsValid;
         }
 
-        /// <summary>
-        /// Requests a path to the target position.
-        /// </summary>
+        ///<summary>
+        ///Requests a path to the target position.
+        ///</summary>
         public void RequestPath(PointF start, PointF end)
         {
             _currentPath.Clear();
@@ -181,9 +183,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             _pathIndex = 0;
         }
 
-        /// <summary>
-        /// Moves zombie along the current path toward target.
-        /// </summary>
+        ///<summary>
+        ///Moves zombie along the current path toward target.
+        ///</summary>
         private void MoveTowardTarget(float deltaTime)
         {
             if (_currentPath.Count == 0 && CurrentTarget.IsValid)
@@ -215,9 +217,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
         }
 
-        /// <summary>
-        /// Calculates distance between two points.
-        /// </summary>
+        ///<summary>
+        ///Calculates distance between two points.
+        ///</summary>
         private static float Distance(PointF a, PointF b)
         {
             float dx = b.X - a.X;

@@ -1,5 +1,7 @@
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Core
 {
     public readonly struct Rect : IEquatable<Rect>
@@ -87,17 +89,17 @@ namespace SASZombieAssaultTD.Engine.Core
         public static bool operator ==(Rect left, Rect right) => left.Equals(right);
         public static bool operator !=(Rect left, Rect right) => !left.Equals(right);
         
-        /// <summary>
-        /// Creates a Rect from position and size.
-        /// </summary>
+        ///<summary>
+        ///Creates a Rect from position and size.
+        ///</summary>
         public static Rect FromPositionAndSize(float x, float y, float width, float height)
         {
             return new Rect(x, y, width, height);
         }
         
-        /// <summary>
-        /// Empty rectangle.
-        /// </summary>
+        ///<summary>
+        ///Empty rectangle.
+        ///</summary>
         public static Rect Empty { get; } = new Rect(0, 0, 0, 0);
         
         public override string ToString() => $"Rect(X: {X:F1}, Y: {Y:F1}, Width: {Width:F1}, Height: {Height:F1})";

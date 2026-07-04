@@ -1,4 +1,6 @@
-﻿namespace SASZombieAssaultTD.Engine.Dictionary
+using SASZombieAssaultTD.Engine.Diagnostics;
+
+namespace SASZombieAssaultTD.Engine.Dictionary
 {
     public enum EnemyType
     {
@@ -53,11 +55,11 @@
 
     public class SpawnPatternParameter
     {
-        // Missing properties
+        //Missing properties
         public string Type { get; set; }
         public bool Required { get; set; }
         
-        // Alias properties for compatibility
+        //Alias properties for compatibility
         public string ParameterType { get; set; }
         public bool IsRequired { get; set; }
     }

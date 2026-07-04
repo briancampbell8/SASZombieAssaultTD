@@ -5,12 +5,14 @@ using SASZombieAssaultTD.Engine.Towers;
 using SASZombieAssaultTD.Engine.Projectiles;
 using SASZombieAssaultTD.Engine.Rendering;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Performance
 {
-    /// <summary>
-    /// Performance manager for SAS Zombie Assault TD.
-    /// Manages object pools, performance monitoring, and budgeting.
-    /// </summary>
+    ///<summary>
+    ///Performance manager for SAS Zombie Assault TD.
+    ///Manages object pools, performance monitoring, and budgeting.
+    ///</summary>
     public class PerformanceManager
     {
         private readonly Dictionary<string, object> _pools = new();
@@ -18,32 +20,32 @@ namespace SASZombieAssaultTD.Engine.Performance
         private readonly PerformanceBudget _budget = new();
         private bool _isInitialized = false;
 
-        // Performance targets
+        //Performance targets
         private const int TARGET_FPS = 60;
         private const int MIN_ACCEPTABLE_FPS = 55;
         private const int MAX_ENEMIES = 100;
         private const int MAX_PROJECTILES = 200;
 
-        /// <summary>
-        /// Current performance metrics.
-        /// </summary>
+        ///<summary>
+        ///Current performance metrics.
+        ///</summary>
         public PerformanceMetrics Metrics => _metrics;
 
-        /// <summary>
-        /// Performance budget settings.
-        /// </summary>
+        ///<summary>
+        ///Performance budget settings.
+        ///</summary>
         public PerformanceBudget Budget => _budget;
 
-        /// <summary>
-        /// Singleton instance.
-        /// </summary>
+        ///<summary>
+        ///Singleton instance.
+        ///</summary>
         public static PerformanceManager Instance { get; } = new PerformanceManager();
 
         private PerformanceManager() { }
 
-        /// <summary>
-        /// Initialize performance systems and object pools.
-        /// </summary>
+        ///<summary>
+        ///Initialize performance systems and object pools.
+        ///</summary>
         public void Initialize()
         {
             if (_isInitialized) return;
@@ -52,13 +54,13 @@ namespace SASZombieAssaultTD.Engine.Performance
 
             try
             {
-                // Initialize object pools
+                //Initialize object pools
                 InitializeObjectPools();
 
-                // Initialize performance monitoring
+                //Initialize performance monitoring
                 InitializeMonitoring();
 
-                // Set initial budget
+                //Set initial budget
                 SetInitialBudget();
 
                 _isInitialized = true;
@@ -71,19 +73,19 @@ namespace SASZombieAssaultTD.Engine.Performance
             }
         }
 
-        /// <summary>
-        /// Update performance monitoring and adjust pools as needed.
-        /// </summary>
+        ///<summary>
+        ///Update performance monitoring and adjust pools as needed.
+        ///</summary>
         public void Update()
         {
             if (!_isInitialized) return;
 
             try
             {
-                // Update performance metrics
+                //Update performance metrics
                 _metrics.Update();
 
-                // Check if we need to adjust performance
+                //Check if we need to adjust performance
                 if (_metrics.AverageFPS < MIN_ACCEPTABLE_FPS)
                 {
                     HandlePerformanceIssue();
@@ -93,7 +95,7 @@ namespace SASZombieAssaultTD.Engine.Performance
                     OptimizeForPerformance();
                 }
 
-                // Update object pools
+                //Update object pools
                 UpdateObjectPools();
             }
             catch (Exception ex)
@@ -102,11 +104,11 @@ namespace SASZombieAssaultTD.Engine.Performance
             }
         }
 
-        /// <summary>
-        /// Get an object from a specific pool.
-        /// </summary>
-        /// <typeparam name="T">Type of object to get.</typeparam>
-        /// <returns>Object from pool or new instance.</returns>
+        ///<summary>
+        ///Get an object from a specific pool.
+        ///</summary>
+        ///<typeparam name="T">Type of object to get.</typeparam>
+        ///<returns>Object from pool or new instance.</returns>
         public T Get<T>() where T : class, new()
         {
             var poolName = typeof(T).Name;
@@ -116,17 +118,17 @@ namespace SASZombieAssaultTD.Engine.Performance
                 return typedPool.Get();
             }
 
-            // Create pool if it doesn't exist
+            //Create pool if it doesn't exist
             var newPool = new ObjectPool<T>();
             _pools[poolName] = newPool;
             return newPool.Get();
         }
 
-        /// <summary>
-        /// Return an object to its pool.
-        /// </summary>
-        /// <typeparam name="T">Type of object to return.</typeparam>
-        /// <param name="item">Object to return to pool.</param>
+        ///<summary>
+        ///Return an object to its pool.
+        ///</summary>
+        ///<typeparam name="T">Type of object to return.</typeparam>
+        ///<param name="item">Object to return to pool.</param>
         public void Return<T>(T item) where T : class, new()
         {
             if (item == null) return;
@@ -139,10 +141,10 @@ namespace SASZombieAssaultTD.Engine.Performance
             }
         }
 
-        /// <summary>
-        /// Get performance statistics for debugging.
-        /// </summary>
-        /// <returns>Performance statistics string.</returns>
+        ///<summary>
+        ///Get performance statistics for debugging.
+        ///</summary>
+        ///<returns>Performance statistics string.</returns>
         public string GetStats()
         {
             var stats = $"Performance Stats:\n";
@@ -166,19 +168,19 @@ namespace SASZombieAssaultTD.Engine.Performance
             return stats;
         }
 
-        /// <summary>
-        /// Initialize all object pools for SAS TD.
-        /// </summary>
+        ///<summary>
+        ///Initialize all object pools for SAS TD.
+        ///</summary>
         private void InitializeObjectPools()
         {
             System.Diagnostics.Debug.WriteLine("Initializing object pools");
 
-            // Create specialized pools for common game objects
+            //Create specialized pools for common game objects
             _pools["Projectile"] = new ProjectilePool();
             _pools["Enemy"] = new EnemyPool();
             _pools["Effect"] = new ObjectPool<object>();
 
-            // Create generic pools for other objects - changed to object to support abstract types
+            //Create generic pools for other objects - changed to object to support abstract types
             _pools["Tower"] = new ObjectPool<object>();
             _pools["Grenade"] = new ObjectPool<object>();
             _pools["Particle"] = new ObjectPool<object>();
@@ -187,35 +189,35 @@ namespace SASZombieAssaultTD.Engine.Performance
         }
 
 
-        /// <summary>
-        /// Initialize performance monitoring systems.
-        /// </summary>
+        ///<summary>
+        ///Initialize performance monitoring systems.
+        ///</summary>
         private void InitializeMonitoring()
         {
             _metrics.StartMonitoring();
         }
 
-        /// <summary>
-        /// Set initial performance budget based on system capabilities.
-        /// </summary>
+        ///<summary>
+        ///Set initial performance budget based on system capabilities.
+        ///</summary>
         private void SetInitialBudget()
         {
-            // Detect system capabilities and set budget accordingly
-            var systemMemory = GC.GetTotalMemory(false) / (1024 * 1024); // MB
+            //Detect system capabilities and set budget accordingly
+            var systemMemory = GC.GetTotalMemory(false) / (1024 * 1024); //MB
 
-            if (systemMemory < 2048) // Less than 2GB RAM
+            if (systemMemory < 2048) //Less than 2GB RAM
             {
                 _budget.MaxEnemies = 50;
                 _budget.MaxProjectiles = 100;
                 _budget.MaxEffects = 30;
             }
-            else if (systemMemory < 4096) // Less than 4GB RAM
+            else if (systemMemory < 4096) //Less than 4GB RAM
             {
                 _budget.MaxEnemies = 75;
                 _budget.MaxProjectiles = 150;
                 _budget.MaxEffects = 50;
             }
-            else // 4GB+ RAM
+            else //4GB+ RAM
             {
                 _budget.MaxEnemies = MAX_ENEMIES;
                 _budget.MaxProjectiles = MAX_PROJECTILES;
@@ -225,14 +227,14 @@ namespace SASZombieAssaultTD.Engine.Performance
             System.Diagnostics.Debug.WriteLine($"Performance budget set: {_budget}");
         }
 
-        /// <summary>
-        /// Handle performance issues by reducing quality or pool sizes.
-        /// </summary>
+        ///<summary>
+        ///Handle performance issues by reducing quality or pool sizes.
+        ///</summary>
         private void HandlePerformanceIssue()
         {
             System.Diagnostics.Debug.WriteLine("Performance issue detected, optimizing...");
 
-            // Reduce pool sizes
+            //Reduce pool sizes
             foreach (var kvp in _pools)
             {
                 if (kvp.Value is ObjectPool<object> pool)
@@ -241,21 +243,21 @@ namespace SASZombieAssaultTD.Engine.Performance
                 }
             }
 
-            // Reduce budget limits
+            //Reduce budget limits
             _budget.MaxEnemies = System.Math.Max(20, _budget.MaxEnemies / 2);
             _budget.MaxProjectiles = System.Math.Max(30, _budget.MaxProjectiles / 2);
             _budget.MaxEffects = System.Math.Max(10, _budget.MaxEffects / 2);
 
-            // Notify other systems to reduce quality
+            //Notify other systems to reduce quality
             OnPerformanceDegraded?.Invoke();
         }
 
-        /// <summary>
-        /// Optimize for better performance when FPS is high.
-        /// </summary>
+        ///<summary>
+        ///Optimize for better performance when FPS is high.
+        ///</summary>
         private void OptimizeForPerformance()
         {
-            // Gradually increase pool sizes if performance is good
+            //Gradually increase pool sizes if performance is good
             foreach (var kvp in _pools)
             {
                 if (kvp.Value is ObjectPool<object> pool)
@@ -264,41 +266,41 @@ namespace SASZombieAssaultTD.Engine.Performance
                 }
             }
 
-            // Gradually increase budget limits
+            //Gradually increase budget limits
             _budget.MaxEnemies = System.Math.Min(MAX_ENEMIES, _budget.MaxEnemies + 5);
             _budget.MaxProjectiles = System.Math.Min(MAX_PROJECTILES, _budget.MaxProjectiles + 10);
             _budget.MaxEffects = System.Math.Min(100, _budget.MaxEffects + 5);
         }
 
-        /// <summary>
-        /// Update object pools based on current usage.
-        /// </summary>
+        ///<summary>
+        ///Update object pools based on current usage.
+        ///</summary>
         private void UpdateObjectPools()
         {
-            // Update metrics for active objects
+            //Update metrics for active objects
             _metrics.ActiveEnemies = GetActiveCount<Enemy>();
             _metrics.ActiveProjectiles = GetActiveCount<Projectile>();
         }
 
-        /// <summary>
-        /// Get estimated count of active objects of type T.
-        /// </summary>
+        ///<summary>
+        ///Get estimated count of active objects of type T.
+        ///</summary>
         private int GetActiveCount<T>() where T : class, new()
         {
-            // This is a simplified estimate - in a real implementation,
-            // you'd track actual active objects
+            //This is a simplified estimate - in a real implementation,
+            //you'd track actual active objects
             return 0;
         }
 
-        /// <summary>
-        /// Event fired when performance degrades and optimization is needed.
-        /// </summary>
+        ///<summary>
+        ///Event fired when performance degrades and optimization is needed.
+        ///</summary>
         public event Action OnPerformanceDegraded;
     }
 
-    /// <summary>
-    /// Performance metrics tracking.
-    /// </summary>
+    ///<summary>
+    ///Performance metrics tracking.
+    ///</summary>
     public class PerformanceMetrics
     {
         private readonly Queue<float> _fpsSamples = new(60);
@@ -322,7 +324,7 @@ namespace SASZombieAssaultTD.Engine.Performance
 
         public void Update()
         {
-            // Calculate FPS
+            //Calculate FPS
             var currentTime = (float)_frameTimer.Elapsed.TotalSeconds;
             var deltaTime = currentTime - _lastFrameTime;
             _lastFrameTime = currentTime;
@@ -337,7 +339,7 @@ namespace SASZombieAssaultTD.Engine.Performance
                 AverageFPS = CalculateAverage(_fpsSamples);
             }
 
-            // Update memory usage
+            //Update memory usage
             MemoryUsageMB = GC.GetTotalMemory(false) / (1024f * 1024f);
         }
 
@@ -371,9 +373,9 @@ namespace SASZombieAssaultTD.Engine.Performance
         }
     }
 
-    /// <summary>
-    /// Performance budget settings.
-    /// </summary>
+    ///<summary>
+    ///Performance budget settings.
+    ///</summary>
     public class PerformanceBudget
     {
         public int MaxEnemies { get; set; } = 100;

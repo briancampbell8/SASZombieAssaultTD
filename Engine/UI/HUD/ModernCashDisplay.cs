@@ -1,26 +1,36 @@
-/*
-Program Name: SASZombieAssaultTD
-File Path: Engine/UI/HUD/ModernCashDisplay.cs
-Purpose: P80 UI/HUD Rendering Modernization - Modern cash display using P80 UI widgets.
-Features:
-  - Extends ModernHUDComponent for P80 widget integration
-  - Uses P80 UIText and UIPanel widgets for modern rendering
-  - Maintains backward compatibility with CashDisplay API
-  - Supports cash animations and visual feedback via P80 system
-  - Demonstrates migration pattern from legacy HUD to P80 UI
-*/
+// ====================================================================================================
+//  FILE: ModernCashDisplay.cs
+//  PATH: Engine/UI/HUD/
+//  MODULE: UI/HUD Components (Modern Cash Display)
+//
+//  ROLE:
+//      Displays the player's cash using modern P80 UI widgets while preserving legacy behavior.
+//
+//  RESPONSIBILITIES:
+//      - Update and animate cash value changes.
+//      - Present visual feedback for cash changes using P80 UIText and UIPanel widgets.
+//      - Maintain API compatibility with legacy CashDisplay where feasible.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level audio/timing systems (those are provided by other subsystems).
+//
+//  ARCHITECTURAL NOTES:
+//      - Prefer composition and minimal allocations in per-frame code.
+// ====================================================================================================
 
 using System;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.UI.Widgets;
 using System.Drawing;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.HUD
 {
-    /// <summary>
-    /// P80 UI/HUD Rendering Modernization - Modern cash display using P80 UI widgets.
-    /// Demonstrates migration from legacy HUD rendering to P80 UI system.
-    /// </summary>
+    ///<summary>
+    ///P80 UI/HUD Rendering Modernization - Modern cash display using P80 UI widgets.
+    ///Demonstrates migration from legacy HUD rendering to P80 UI system.
+    ///</summary>
     public class ModernCashDisplay : ModernHUDComponent
     {
         private int _currentCash = 0;
@@ -31,34 +41,34 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         private bool _isAnimating = false;
         private bool _showChangeEffect = true;
 
-        // Animation properties
+        //Animation properties
         private float _animationSpeed = 2f;
         private float _pulseSpeed = 3f;
         private float _pulseAmount = 0.2f;
         private float _changeEffectDuration = 1f;
 
-        // Visual properties
+        //Visual properties
         private Color _normalColor = Color.Yellow;
         private Color _warningColor = Color.Orange;
         private Color _dangerColor = Color.Red;
         private Color _currentColor;
 
-        // Text properties
+        //Text properties
         private string _prefix = "$";
         private string _format = "{0:N0}";
 
-        // P80 UI Widgets
+        //P80 UI Widgets
         private UIText _cashTextWidget;
         private UIPanel _backgroundPanel;
 
-        // Events
+        //Events
         public event Action<int> OnCashChanged;
         public event Action<int> OnCashWarning;
         public event Action<int> OnCashDanger;
 
-        /// <summary>
-        /// Set the cash amount.
-        /// </summary>
+        ///<summary>
+        ///Set the cash amount.
+        ///</summary>
         public void SetAmount(int amount)
         {
             if (amount < 0)
@@ -70,19 +80,19 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _currentCash = amount;
             _targetCash = amount;
 
-            // Trigger change effect
+            //Trigger change effect
             if (_showChangeEffect && System.Math.Abs(amount - _previousCash) > 0)
             {
                 StartChangeAnimation();
             }
 
-            // Update color based on cash level
+            //Update color based on cash level
             UpdateCashColor();
 
-            // Update P80 widgets
+            //Update P80 widgets
             UpdateCashTextWidget();
 
-            // Trigger events
+            //Trigger events
             OnCashChanged?.Invoke(amount);
 
             if (amount < 100)
@@ -97,45 +107,45 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             System.Diagnostics.Debug.WriteLine($"ModernCashDisplay: Cash updated to ${amount}");
         }
 
-        /// <summary>
-        /// Set display position.
-        /// </summary>
+        ///<summary>
+        ///Set display position.
+        ///</summary>
         public void SetPosition(Vector3 position)
         {
             Position = position;
             UpdateWidgetPositions();
         }
 
-        /// <summary>
-        /// Set display size.
-        /// </summary>
+        ///<summary>
+        ///Set display size.
+        ///</summary>
         public void SetSize(Vector3 size)
         {
             Size = size;
             UpdateWidgetSizes();
         }
 
-        /// <summary>
-        /// Set text prefix.
-        /// </summary>
+        ///<summary>
+        ///Set text prefix.
+        ///</summary>
         public void SetPrefix(string prefix)
         {
             _prefix = prefix;
             UpdateCashTextWidget();
         }
 
-        /// <summary>
-        /// Set text format.
-        /// </summary>
+        ///<summary>
+        ///Set text format.
+        ///</summary>
         public void SetFormat(string format)
         {
             _format = format;
             UpdateCashTextWidget();
         }
 
-        /// <summary>
-        /// Set normal color.
-        /// </summary>
+        ///<summary>
+        ///Set normal color.
+        ///</summary>
         public void SetNormalColor(Color color)
         {
             _normalColor = color;
@@ -143,9 +153,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             UpdateWidgetColors();
         }
 
-        /// <summary>
-        /// Set warning color.
-        /// </summary>
+        ///<summary>
+        ///Set warning color.
+        ///</summary>
         public void SetWarningColor(Color color)
         {
             _warningColor = color;
@@ -153,9 +163,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             UpdateWidgetColors();
         }
 
-        /// <summary>
-        /// Set danger color.
-        /// </summary>
+        ///<summary>
+        ///Set danger color.
+        ///</summary>
         public void SetDangerColor(Color color)
         {
             _dangerColor = color;
@@ -163,34 +173,34 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             UpdateWidgetColors();
         }
 
-        /// <summary>
-        /// Enable or disable change effects.
-        /// </summary>
+        ///<summary>
+        ///Enable or disable change effects.
+        ///</summary>
         public void SetChangeEffectsEnabled(bool enabled)
         {
             _showChangeEffect = enabled;
         }
 
-        /// <summary>
-        /// Set animation speed.
-        /// </summary>
+        ///<summary>
+        ///Set animation speed.
+        ///</summary>
         public void SetAnimationSpeed(float speed)
         {
             _animationSpeed = System.Math.Max(0.1f, speed);
         }
 
-        /// <summary>
-        /// Initialize P80 UI widgets for cash display.
-        /// </summary>
+        ///<summary>
+        ///Initialize P80 UI widgets for cash display.
+        ///</summary>
         protected override void InitializeP80Widgets()
         {
             base.InitializeP80Widgets();
 
-            // Set initial position and size
+            //Set initial position and size
             _position = new Vector3(50f, 50f, 0);
             _size = new Vector3(200f, 40f, 0);
 
-            // Create background panel
+            //Create background panel
             _backgroundPanel = CreatePanelWidget(
                 "background",
                 Color.FromArgb(180, 0, 0, 0),
@@ -199,7 +209,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             );
             _backgroundPanel.SetBorder(_currentColor, 2f);
 
-            // Create cash text widget
+            //Create cash text widget
             _cashTextWidget = CreateTextWidget(
                 "cashText",
                 $"{_prefix}{string.Format(_format, _currentCash)}",
@@ -210,32 +220,32 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _cashTextWidget.FontSize = 16f;
             _cashTextWidget.Alignment = ContentAlignment.MiddleCenter;
 
-            // Set initial values
+            //Set initial values
             UpdateCashColor();
 
             System.Diagnostics.Debug.WriteLine("ModernCashDisplay: P80 widgets initialized");
         }
 
-        /// <summary>
-        /// Update the modern cash display.
-        /// </summary>
+        ///<summary>
+        ///Update the modern cash display.
+        ///</summary>
         public override void Update(float deltaTime)
         {
             base.Update(deltaTime);
 
-            // Update animations
+            //Update animations
             if (_isAnimating)
             {
                 UpdateChangeAnimation(deltaTime);
             }
 
-            // Update display timer
+            //Update display timer
             if (_displayTimer > 0)
             {
                 _displayTimer -= deltaTime;
             }
 
-            // Update pulse effect for low cash
+            //Update pulse effect for low cash
             if (_currentCash < 100 && _cashTextWidget != null)
             {
                 var pulse = 1f + (MathF.Sin(_displayTimer * _pulseSpeed) * _pulseAmount);
@@ -243,9 +253,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Start cash change animation.
-        /// </summary>
+        ///<summary>
+        ///Start cash change animation.
+        ///</summary>
         private void StartChangeAnimation()
         {
             _isAnimating = true;
@@ -253,7 +263,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _displayTimer = _changeEffectDuration;
             _targetCash = _currentCash;
 
-            // Play cash change sound (placeholder)
+            //Play cash change sound (placeholder)
             if (_currentCash > _previousCash)
             {
                 System.Diagnostics.Debug.WriteLine("ModernCashDisplay: Playing cash_increase sound");
@@ -264,14 +274,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Update cash change animation.
-        /// </summary>
+        ///<summary>
+        ///Update cash change animation.
+        ///</summary>
         private void UpdateChangeAnimation(float deltaTime)
         {
             _animationTimer += deltaTime * _animationSpeed;
 
-            // Smooth interpolation to target cash
+            //Smooth interpolation to target cash
             var progress = System.Math.Min(1f, _animationTimer / _changeEffectDuration);
             var animatedCash = (int)(_previousCash + (_targetCash - _previousCash) * progress);
 
@@ -287,9 +297,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Update cash color based on amount.
-        /// </summary>
+        ///<summary>
+        ///Update cash color based on amount.
+        ///</summary>
         private void UpdateCashColor()
         {
             if (_currentCash < 100)
@@ -306,40 +316,40 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Update cash text widget content.
-        /// </summary>
+        ///<summary>
+        ///Update cash text widget content.
+        ///</summary>
         private void UpdateCashTextWidget()
         {
             if (_cashTextWidget != null)
             {
                 var text = $"{_prefix}{string.Format(_format, _currentCash)}";
                 _cashTextWidget.Text = text;
-                // TODO: Cannot assign Engine.Core.Color to System.Drawing.Color
-                // _cashTextWidget.Color = _currentColor;
+                //TODO: Cannot assign Engine.Core.Color to System.Drawing.Color
+                //_cashTextWidget.Color = _currentColor;
             }
         }
 
-        /// <summary>
-        /// Update widget positions based on component position.
-        /// </summary>
+        ///<summary>
+        ///Update widget positions based on component position.
+        ///</summary>
         private void UpdateWidgetPositions()
         {
             if (_backgroundPanel != null)
             {
-                // TODO: PointF doesn't have a 2-argument constructor
-                // _backgroundPanel.Position = new PointF(_position.X, _position.Y);
+                //TODO: PointF doesn't have a 2-argument constructor
+                //_backgroundPanel.Position = new PointF(_position.X, _position.Y);
             }
             if (_cashTextWidget != null)
             {
-                // TODO: PointF doesn't have a 2-argument constructor
-                // _cashTextWidget.Position = new PointF(_position.X, _position.Y);
+                //TODO: PointF doesn't have a 2-argument constructor
+                //_cashTextWidget.Position = new PointF(_position.X, _position.Y);
             }
         }
 
-        /// <summary>
-        /// Update widget sizes based on component size.
-        /// </summary>
+        ///<summary>
+        ///Update widget sizes based on component size.
+        ///</summary>
         private void UpdateWidgetSizes()
         {
             if (_backgroundPanel != null)
@@ -352,9 +362,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Update widget colors based on current cash color.
-        /// </summary>
+        ///<summary>
+        ///Update widget colors based on current cash color.
+        ///</summary>
         private void UpdateWidgetColors()
         {
             if (_cashTextWidget != null)
@@ -367,9 +377,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Cleanup the modern cash display.
-        /// </summary>
+        ///<summary>
+        ///Cleanup the modern cash display.
+        ///</summary>
         public new void Cleanup()
         {
             RemoveWidget("background");

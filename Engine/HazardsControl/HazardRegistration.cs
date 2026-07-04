@@ -19,12 +19,14 @@ using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Extensions;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.HazardsControl
 {
-    /// <summary>
-    /// Registration manager for hazard systems.
-    /// Manages hazard creation, destruction, and validation.
-    /// </summary>
+    ///<summary>
+    ///Registration manager for hazard systems.
+    ///Manages hazard creation, destruction, and validation.
+    ///</summary>
     public class HazardRegistration
     {
         private readonly Dictionary<int, Hazard> _registeredHazards = new();
@@ -32,9 +34,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         private int _nextHazardId = 1;
         private bool _isInitialized;
 
-        /// <summary>
-        /// Initializes the hazard registration system.
-        /// </summary>
+        ///<summary>
+        ///Initializes the hazard registration system.
+        ///</summary>
         public void Init()
         {
             _registeredHazards.Clear();
@@ -42,11 +44,11 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             _isInitialized = true;
         }
 
-        /// <summary>
-        /// Adds a hazard to the registration system.
-        /// </summary>
-        /// <param name="hazard">The hazard to add.</param>
-        /// <returns>True if successfully added.</returns>
+        ///<summary>
+        ///Adds a hazard to the registration system.
+        ///</summary>
+        ///<param name="hazard">The hazard to add.</param>
+        ///<returns>True if successfully added.</returns>
         public bool AddHazard(Hazard hazard)
         {
             if (!_isInitialized || hazard == null || _registeredHazards.ContainsKey(hazard.Id))
@@ -57,11 +59,11 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             return true;
         }
 
-        /// <summary>
-        /// Removes a hazard by ID.
-        /// </summary>
-        /// <param name="hazardId">The ID of the hazard to remove.</param>
-        /// <returns>True if successfully removed.</returns>
+        ///<summary>
+        ///Removes a hazard by ID.
+        ///</summary>
+        ///<param name="hazardId">The ID of the hazard to remove.</param>
+        ///<returns>True if successfully removed.</returns>
         public bool RemoveHazard(int hazardId)
         {
             if (!_isInitialized || !_registeredHazards.Remove(hazardId, out var hazard))
@@ -71,11 +73,11 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             return true;
         }
 
-        /// <summary>
-        /// Validates a hazard for registration.
-        /// </summary>
-        /// <param name="hazard">The hazard to validate.</param>
-        /// <returns>True if hazard is valid for registration.</returns>
+        ///<summary>
+        ///Validates a hazard for registration.
+        ///</summary>
+        ///<param name="hazard">The hazard to validate.</param>
+        ///<returns>True if hazard is valid for registration.</returns>
         public bool ValidateHazard(Hazard hazard)
         {
             if (!_isInitialized || hazard == null)
@@ -90,10 +92,10 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
                    && ValidateHazardType(hazard.Type, hazard);
         }
 
-        /// <summary>
-        /// Assigns a unique hazard ID.
-        /// </summary>
-        /// <returns>A unique hazard ID, or null if unavailable.</returns>
+        ///<summary>
+        ///Assigns a unique hazard ID.
+        ///</summary>
+        ///<returns>A unique hazard ID, or null if unavailable.</returns>
         public int? AssignHazardId()
         {
             if (!_isInitialized)
@@ -110,10 +112,10 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             return _nextHazardId++;
         }
 
-        /// <summary>
-        /// Registers a hazard type.
-        /// </summary>
-        /// <param name="type">The hazard type to register.</param>
+        ///<summary>
+        ///Registers a hazard type.
+        ///</summary>
+        ///<param name="type">The hazard type to register.</param>
         public void RegisterHazardType(string type)
         {
             if (!_isInitialized || string.IsNullOrWhiteSpace(type))
@@ -136,41 +138,41 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             }
         }
 
-        /// <summary>
-        /// Gets a registered hazard by ID.
-        /// </summary>
-        /// <param name="hazardId">The hazard ID.</param>
-        /// <returns>The hazard, or null if not found.</returns>
+        ///<summary>
+        ///Gets a registered hazard by ID.
+        ///</summary>
+        ///<param name="hazardId">The hazard ID.</param>
+        ///<returns>The hazard, or null if not found.</returns>
         public Hazard GetHazard(int hazardId)
         {
             return _isInitialized && _registeredHazards.TryGetValue(hazardId, out var hazard) ? hazard : null;
         }
 
-        /// <summary>
-        /// Gets all registered hazards.
-        /// </summary>
-        /// <returns>Copy of all registered hazards.</returns>
+        ///<summary>
+        ///Gets all registered hazards.
+        ///</summary>
+        ///<returns>Copy of all registered hazards.</returns>
         public List<Hazard> GetAllHazards()
         {
             return _isInitialized ? new List<Hazard>(_registeredHazards.Values) : new List<Hazard>();
         }
 
-        /// <summary>
-        /// Gets a registered hazard type.
-        /// </summary>
-        /// <param name="type">The hazard type name.</param>
-        /// <returns>The hazard type, or null if not found.</returns>
+        ///<summary>
+        ///Gets a registered hazard type.
+        ///</summary>
+        ///<param name="type">The hazard type name.</param>
+        ///<returns>The hazard type, or null if not found.</returns>
         public HazardType GetHazardType(string type)
         {
             return _isInitialized && _registeredTypes.TryGetValue(type, out var hazardType) ? hazardType : null;
         }
 
-        /// <summary>
-        /// Validates hazard type specific properties.
-        /// </summary>
-        /// <param name="type">The hazard type.</param>
-        /// <param name="hazard">The hazard instance.</param>
-        /// <returns>True if type-specific validation passes.</returns>
+        ///<summary>
+        ///Validates hazard type specific properties.
+        ///</summary>
+        ///<param name="type">The hazard type.</param>
+        ///<param name="hazard">The hazard instance.</param>
+        ///<returns>True if type-specific validation passes.</returns>
         private static bool ValidateHazardType(string type, Hazard hazard)
         {
             return type.ToLowerInvariant() switch
@@ -179,13 +181,13 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
                 "radiation" => hazard.Intensity() is >= 0.5f and <= 5f,
                 "fire" => hazard.MaxLifetime is >= 5f and <= 60f,
                 "chemical" => hazard.Radius is >= 50 and <= 500,
-                _ => true // Unknown types pass basic validation
+                _ => true //Unknown types pass basic validation
             };
         }
 
-        /// <summary>
-        /// Cleans up the hazard registration system.
-        /// </summary>
+        ///<summary>
+        ///Cleans up the hazard registration system.
+        ///</summary>
         public void Cleanup()
         {
             _registeredHazards.Clear();
@@ -193,25 +195,25 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             _isInitialized = false;
         }
 
-        /// <summary>
-        /// Event triggered when a hazard is registered.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when a hazard is registered.
+        ///</summary>
         public event Action<Hazard> OnHazardRegistered;
 
-        /// <summary>
-        /// Event triggered when a hazard is unregistered.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when a hazard is unregistered.
+        ///</summary>
         public event Action<Hazard> OnHazardUnregistered;
 
-        /// <summary>
-        /// Event triggered when a hazard type is registered.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when a hazard type is registered.
+        ///</summary>
         public event Action<string> OnHazardTypeRegistered;
     }
 
-    /// <summary>
-    /// Information about a registered hazard type.
-    /// </summary>
+    ///<summary>
+    ///Information about a registered hazard type.
+    ///</summary>
     public class HazardType
     {
         public string Name { get; set; }

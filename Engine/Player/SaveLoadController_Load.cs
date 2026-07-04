@@ -1,20 +1,21 @@
-/// File:    E:\BDC\Projects\SASZombieAssaultTD\Engine\Player\SaveLoadController_Load.cs
-/// Purpose: Player action validation and execution system for SAS Zombie Assault TD.
-/// Features: Tower placement validation, upgrade processing, damage handling, and game state management.
-/// Validation: Comprehensive action validation with game state checking and affordability validation.
-/// Performance: Optimized for frequent action processing with minimal overhead.
-/// Threading: Thread-safe operations with proper locking for concurrent access.
-/// Integration: Designed for use with PlayerSystem, TowerManager, and WaveManager.
-/// Persistence: Action logging for debugging and player feedback.
-/// ****************************************************************************************************
+//
+using System;
+//
+using System.Collections.Generic;
+//
+using System.IO;
+///File:    E:\BDC\Projects\SASZombieAssaultTD\Engine\Player\SaveLoadController_Load.cs
+///Purpose: Player action validation and execution system for SAS Zombie Assault TD.
+///Features: Tower placement validation, upgrade processing, damage handling, and game state management.
+///Validation: Comprehensive action validation with game state checking and affordability validation.
+///Performance: Optimized for frequent action processing with minimal overhead.
+///Threading: Thread-safe operations with proper locking for concurrent access.
+///Integration: Designed for use with PlayerSystem, TowerManager, and WaveManager.
+///Persistence: Action logging for debugging and player feedback.
+///****************************************************************************************************
+//
 using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Snapshot;
-using SASZombieAssaultTD.Engine.Diagnostics;
-using System;
-using SASZombieAssaultTD.Engine.Diagnostics;
-using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Diagnostics;
-using System.IO;
 namespace SASZombieAssaultTD.Engine.Player
 {
     public partial class SaveLoadController
@@ -26,20 +27,20 @@ namespace SASZombieAssaultTD.Engine.Player
         public PlayerProgression Progression { get; set; }
         public int CurrentExperience { get; private set; }
 
-        // public object Progression { get; private set; }
+        //public object Progression { get; private set; }
 
-        /// <summary>
-        /// Loads player game state from file.
-        /// </summary>
-        /// <param name="playerSystem">The PlayerSystem instance to restore with loaded data.</param>
-        /// <returns>True if the load was successful, false otherwise.</returns>
+        ///<summary>
+        ///Loads player game state from file.
+        ///</summary>
+        ///<param name="playerSystem">The PlayerSystem instance to restore with loaded data.</param>
+        ///<returns>True if the load was successful, false otherwise.</returns>
         //public void RestoreExperience(int experience) not needed since we can directly
         //set CurrentExperience from the loaded data in RestorePlayerSystemFromData method
         //{
-        //    if (Progression != null)
-        //    {
-        //        CurrentExperience = experience;
-        //    }
+        //   if (Progression != null)
+        //   {
+        //       CurrentExperience = experience;
+        //   }
         //}
 
         public bool LoadGame(PlayerSystem playerSystem)
@@ -53,14 +54,14 @@ namespace SASZombieAssaultTD.Engine.Player
                 {
                     System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: Starting load operation");
 
-                    // Check if save file exists
+                    //Check if save file exists
                     if (!File.Exists(_savePath))
                     {
                         System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: No save file found");
                         return false;
                     }
 
-                    // Read save file
+                    //Read save file
                     string json = ReadSaveFile();
 
                     if (string.IsNullOrEmpty(json))
@@ -69,7 +70,7 @@ namespace SASZombieAssaultTD.Engine.Player
                         return AttemptBackupLoad(playerSystem);
                     }
 
-                    // Deserialize player data using SaveLoadCore
+                    //Deserialize player data using SaveLoadCore
                     var playerData = SaveLoadCore.Deserialize(json);
 
                     if (playerData == null)
@@ -78,14 +79,14 @@ namespace SASZombieAssaultTD.Engine.Player
                         return AttemptBackupLoad(playerSystem);
                     }
 
-                    // Validate loaded data using SaveLoadCore
+                    //Validate loaded data using SaveLoadCore
                     if (!SaveLoadCore.ValidatePlayerData(playerData))
                     {
                         System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Loaded player data validation failed");
                         return AttemptBackupLoad(playerSystem);
                     }
 
-                    // Restore player system state
+                    //Restore player system state
                     if (!RestorePlayerSystemFromData(playerSystem, playerData))
                     {
                         System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Failed to restore player system");
@@ -103,15 +104,15 @@ namespace SASZombieAssaultTD.Engine.Player
                 {
                     System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: Load failed - Error: {ex.Message}");
 
-                    // Attempt to load backup on failure
+                    //Attempt to load backup on failure
                     return AttemptBackupLoad(playerSystem);
                 }
             }
         }
 
-        /// <summary>
-        /// Attempts to load from the backup save file.
-        /// </summary>
+        ///<summary>
+        ///Attempts to load from the backup save file.
+        ///</summary>
         private bool AttemptBackupLoad(PlayerSystem playerSystem)
         {
             try
@@ -124,16 +125,16 @@ namespace SASZombieAssaultTD.Engine.Player
 
                 System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: Attempting to load from backup");
 
-                // Load backup data
+                //Load backup data
                 string backupJson = File.ReadAllText(_backupPath);
                 var backupData = SaveLoadCore.Deserialize(backupJson);
 
                 if (backupData != null && SaveLoadCore.ValidatePlayerData(backupData))
                 {
-                    // Restore from backup and create new backup
+                    //Restore from backup and create new backup
                     if (RestorePlayerSystemFromData(playerSystem, backupData))
                     {
-                        // Save backup as new main save
+                        //Save backup as new main save
                         var newPlayerData = CreatePlayerDataFromSystem(playerSystem);
                         string json = SaveLoadCore.Serialize(newPlayerData);
                         WriteSaveFile(json);
@@ -153,37 +154,37 @@ namespace SASZombieAssaultTD.Engine.Player
             }
         }
 
-        /// <summary>
-        /// Restores player system state from loaded data.
-        /// </summary>
+        ///<summary>
+        ///Restores player system state from loaded data.
+        ///</summary>
 
         private bool RestorePlayerSystemFromData(PlayerSystem playerSystem, PlayerData PlayerStateData)
         {
             try
             {
-                // Restore player state using dedicated restore methods
-                PlayerStateData.Progression = new PlayerProgression(); // Placeholder for actual progression data
-                PlayerStateData.State = new PlayerState(); // Placeholder for actual state data
+                //Restore player state using dedicated restore methods
+                PlayerStateData.Progression = new PlayerProgression(); //Placeholder for actual progression data
+                PlayerStateData.State = new PlayerState(); //Placeholder for actual state data
                 playerSystem.Cash = PlayerStateData.Cash;
                 playerSystem.Score = PlayerStateData.Score;
                 playerSystem.Lives = PlayerStateData.Lives;
                 playerSystem.WaveNumber = (int)PlayerStateData.WaveNumber;
                 playerSystem.IsGameOver = PlayerStateData.IsGameOver;
                 playerSystem.IsPaused = PlayerStateData.IsPaused;
-                
+
 
                 //playerSystem.RestoreScore(PlayerStateData.State.Score);
                 playerSystem.RestoreExperience(PlayerStateData.Progression);
                 //playerSystem.RestoreLevel(PlayerStateData.Progression.CurrentLevel);
                 //playerSystem.RestoreUnlockedTowers(new List<string>(PlayerStateData.Progression.UnlockedTowers));
-                //// Restore additional state properties
+                ////Restore additional state properties
                 //playerSystem.State.Lives = PlayerStateData.State.Lives;
                 //playerSystem.State.MaxLives = PlayerStateData.State.MaxLives;
                 //playerSystem.State.WaveNumber = PlayerStateData.State.WaveNumber;
                 //playerSystem.State.IsGameOver = PlayerStateData.State.IsGameOver;
                 //playerSystem.State.IsPaused = PlayerStateData.State.IsPaused;
 
-                // Validate the restored state
+                //Validate the restored state
                 playerSystem.Validate();
 
                 System.Diagnostics.Debug.WriteLine(
@@ -202,14 +203,14 @@ namespace SASZombieAssaultTD.Engine.Player
 
     //internal class PlayerData Already defined in SaveLoadCore.cs, so we can use it directly here without redefining it.
     //{
-    //    internal object Progression;
-    //    internal object State;
-    //    internal object Cash;
-    //    internal object Score;
-    //    internal object Lives;
-    //    internal object WaveNumber;
-    //    internal bool IsGameOver;
-    //    internal bool IsPaused;
+    //   internal object Progression;
+    //   internal object State;
+    //   internal object Cash;
+    //   internal object Score;
+    //   internal object Lives;
+    //   internal object WaveNumber;
+    //   internal bool IsGameOver;
+    //   internal bool IsPaused;
     //}
 
     public class PlayerProgression
@@ -238,24 +239,24 @@ namespace SASZombieAssaultTD.Engine.Player
 
     //public class PlayerState already defined in SaveLoadCore.cs, so we can use it directly here without redefining it.
     //{
-    //    public int Cash { get; set; }
-    //    public int Score { get; set; }
-    //    public int Lives { get; set; }
-    //    public int WaveNumber { get; set; }
-    //    public bool IsGameOver { get; set; }
-    //    public bool IsPaused { get; set; }
+    //   public int Cash { get; set; }
+    //   public int Score { get; set; }
+    //   public int Lives { get; set; }
+    //   public int WaveNumber { get; set; }
+    //   public bool IsGameOver { get; set; }
+    //   public bool IsPaused { get; set; }
 
-    //    public void Validate()
-    //    {
-    //        // Add your validation rules here if needed
-    //    }
+    //   public void Validate()
+    //   {
+    //       //Add your validation rules here if needed
+    //   }
     //}
 
     //public class PlayerProgression already defined in SaveLoadCore.cs, so we can use it directly here without redefining it.
     //{
-    //    public int CurrentExperience { get; set; }
-    //    public int CurrentLevel { get; set; }
-    //    public HashSet<string> UnlockedTowers { get; set; } = new();
+    //   public int CurrentExperience { get; set; }
+    //   public int CurrentLevel { get; set; }
+    //   public HashSet<string> UnlockedTowers { get; set; } = new();
     //}
 
 }

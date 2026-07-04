@@ -4,12 +4,14 @@ using System.Linq;
 using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Enemies;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves
 {
-    /// <summary>
-    /// Wave script for SAS Zombie Assault TD.
-    /// Defines enemy composition, timing, and patterns for a single wave.
-    /// </summary>
+    ///<summary>
+    ///Wave script for SAS Zombie Assault TD.
+    ///Defines enemy composition, timing, and patterns for a single wave.
+    ///</summary>
     public class WaveScript
     {
         public int WaveNumber { get; set; }
@@ -32,20 +34,20 @@ namespace SASZombieAssaultTD.Engine.Waves
             Environment = new WaveEnvironment();
         }
 
-        /// <summary>
-        /// Get total enemy count for this wave.
-        /// </summary>
-        /// <returns>Total number of enemies.</returns>
+        ///<summary>
+        ///Get total enemy count for this wave.
+        ///</summary>
+        ///<returns>Total number of enemies.</returns>
         public int GetTotalEnemyCount()
         {
             return SpawnGroups.Sum(group => group.Count);
         }
 
-        /// <summary>
-        /// Get total count of specific enemy type.
-        /// </summary>
-        /// <param name="enemyType">Enemy type to count.</param>
-        /// <returns>Number of enemies of specified type.</returns>
+        ///<summary>
+        ///Get total count of specific enemy type.
+        ///</summary>
+        ///<param name="enemyType">Enemy type to count.</param>
+        ///<returns>Number of enemies of specified type.</returns>
         public int GetEnemyCount(ZombieType enemyType)
         {
             return SpawnGroups
@@ -53,38 +55,38 @@ namespace SASZombieAssaultTD.Engine.Waves
                 .Sum(group => group.Count);
         }
 
-        /// <summary>
-        /// Get all enemy types in this wave.
-        /// </summary>
-        /// <returns>Collection of enemy types.</returns>
+        ///<summary>
+        ///Get all enemy types in this wave.
+        ///</summary>
+        ///<returns>Collection of enemy types.</returns>
         public IEnumerable<ZombieType> GetEnemyTypes()
         {
             return SpawnGroups.Select(group => (SASZombieAssaultTD.Engine.Enemies.ZombieType)group.EnemyType).Distinct();
         }
 
-        /// <summary>
-        /// Check if wave contains boss enemies.
-        /// </summary>
-        /// <returns>True if wave contains boss enemies.</returns>
+        ///<summary>
+        ///Check if wave contains boss enemies.
+        ///</summary>
+        ///<returns>True if wave contains boss enemies.</returns>
         public bool HasBossEnemies()
         {
             return SpawnGroups.Any(group => group.IsBoss);
         }
 
-        /// <summary>
-        /// Get estimated wave duration in seconds.
-        /// </summary>
-        /// <returns>Estimated duration.</returns>
+        ///<summary>
+        ///Get estimated wave duration in seconds.
+        ///</summary>
+        ///<returns>Estimated duration.</returns>
         public float GetEstimatedDuration()
         {
             var duration = 0f;
 
             foreach (var group in SpawnGroups)
             {
-                // Time to spawn all enemies in group
+                //Time to spawn all enemies in group
                 var spawnTime = (group.Count - 1) * group.SpawnDelay;
 
-                // Add delay after group
+                //Add delay after group
                 var totalTime = spawnTime + group.DelayAfterGroup;
 
                 duration = System.Math.Max(duration, totalTime);
@@ -93,28 +95,28 @@ namespace SASZombieAssaultTD.Engine.Waves
             return duration;
         }
 
-        /// <summary>
-        /// Get wave difficulty rating.
-        /// </summary>
-        /// <returns>Difficulty rating (1-10).</returns>
+        ///<summary>
+        ///Get wave difficulty rating.
+        ///</summary>
+        ///<returns>Difficulty rating (1-10).</returns>
         public int GetDifficultyRating()
         {
             var rating = 1;
 
-            // Base rating from wave number
+            //Base rating from wave number
             rating += System.Math.Min(WaveNumber / 5, 5);
 
-            // Add rating for enemy count
+            //Add rating for enemy count
             var enemyCount = GetTotalEnemyCount();
             rating += System.Math.Min(enemyCount / 10, 2);
 
-            // Add rating for boss enemies
+            //Add rating for boss enemies
             if (HasBossEnemies())
             {
                 rating += 3;
             }
 
-            // Add rating for special enemy types
+            //Add rating for special enemy types
             var specialTypes = GetEnemyTypes().Count(type =>
                 type == ZombieType.Shadow ||
                 type == ZombieType.Toxic ||
@@ -127,22 +129,22 @@ namespace SASZombieAssaultTD.Engine.Waves
             return System.Math.Min(rating, 10);
         }
 
-        /// <summary>
-        /// Validate wave script.
-        /// </summary>
-        /// <returns>Validation result.</returns>
+        ///<summary>
+        ///Validate wave script.
+        ///</summary>
+        ///<returns>Validation result.</returns>
         public ValidationResult Validate()
         {
             var result = new ValidationResult { IsValid = true };
 
-            // Check wave number
+            //Check wave number
             if (WaveNumber <= 0)
             {
                 result.IsValid = false;
                 result.AddError("Wave number must be positive");
             }
 
-            // Check spawn groups
+            //Check spawn groups
             if (SpawnGroups == null || SpawnGroups.Count == 0)
             {
                 result.IsValid = false;
@@ -161,14 +163,14 @@ namespace SASZombieAssaultTD.Engine.Waves
                 }
             }
 
-            // Check inter-wave delay
+            //Check inter-wave delay
             if (InterWaveDelay < 0)
             {
                 result.IsValid = false;
                 result.AddError("Inter-wave delay cannot be negative");
             }
 
-            // Check difficulty multiplier
+            //Check difficulty multiplier
             if (DifficultyMultiplier == null)
             {
                 result.IsValid = false;
@@ -178,10 +180,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             return result;
         }
 
-        /// <summary>
-        /// Clone this wave script.
-        /// </summary>
-        /// <returns>Cloned wave script.</returns>
+        ///<summary>
+        ///Clone this wave script.
+        ///</summary>
+        ///<returns>Cloned wave script.</returns>
         public WaveScript Clone()
         {
             var clone = new WaveScript
@@ -196,25 +198,25 @@ namespace SASZombieAssaultTD.Engine.Waves
                 Environment = this.Environment.Clone()
             };
 
-            // Clone spawn groups
+            //Clone spawn groups
             clone.SpawnGroups = this.SpawnGroups.Select(group => group.Clone()).ToList();
 
             return clone;
         }
 
-        /// <summary>
-        /// Create a deep copy of this wave script for modification.
-        /// </summary>
-        /// <returns>Deep copied wave script.</returns>
+        ///<summary>
+        ///Create a deep copy of this wave script for modification.
+        ///</summary>
+        ///<returns>Deep copied wave script.</returns>
         public WaveScript DeepCopy()
         {
             return Clone();
         }
 
-        /// <summary>
-        /// Get wave summary for display.
-        /// </summary>
-        /// <returns>Wave summary string.</returns>
+        ///<summary>
+        ///Get wave summary for display.
+        ///</summary>
+        ///<returns>Wave summary string.</returns>
         public string GetSummary()
         {
             var summary = $"Wave {WaveNumber}: {WaveName}\n";
@@ -230,10 +232,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             return summary.Trim();
         }
 
-        /// <summary>
-        /// Get detailed wave information.
-        /// </summary>
-        /// <returns>Detailed wave information.</returns>
+        ///<summary>
+        ///Get detailed wave information.
+        ///</summary>
+        ///<returns>Detailed wave information.</returns>
         public string GetDetailedInfo()
         {
             var info = GetSummary() + "\n\n";
@@ -264,9 +266,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Wave modifiers for special effects.
-    /// </summary>
+    ///<summary>
+    ///Wave modifiers for special effects.
+    ///</summary>
     public class WaveModifiers
     {
         public bool FastSpawn { get; set; }
@@ -285,10 +287,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             RestrictedUpgrades = new List<string>();
         }
 
-        /// <summary>
-        /// Clone this wave modifier.
-        /// </summary>
-        /// <returns>Cloned modifier.</returns>
+        ///<summary>
+        ///Clone this wave modifier.
+        ///</summary>
+        ///<returns>Cloned modifier.</returns>
         public WaveModifiers Clone()
         {
             return new WaveModifiers
@@ -306,9 +308,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Wave rewards for completing the wave.
-    /// </summary>
+    ///<summary>
+    ///Wave rewards for completing the wave.
+    ///</summary>
     public class WaveRewards
     {
         public int CashBonus { get; set; }
@@ -323,10 +325,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             UnlockUpgrades = new List<string>();
         }
 
-        /// <summary>
-        /// Clone this wave reward.
-        /// </summary>
-        /// <returns>Cloned reward.</returns>
+        ///<summary>
+        ///Clone this wave reward.
+        ///</summary>
+        ///<returns>Cloned reward.</returns>
         public WaveRewards Clone()
         {
             return new WaveRewards
@@ -340,9 +342,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Wave environment settings.
-    /// </summary>
+    ///<summary>
+    ///Wave environment settings.
+    ///</summary>
     public class WaveEnvironment
     {
         public string Weather { get; set; }
@@ -355,10 +357,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             EnvironmentalHazards = new List<string>();
         }
 
-        /// <summary>
-        /// Clone this wave environment.
-        /// </summary>
-        /// <returns>Cloned environment.</returns>
+        ///<summary>
+        ///Clone this wave environment.
+        ///</summary>
+        ///<returns>Cloned environment.</returns>
         public WaveEnvironment Clone()
         {
             return new WaveEnvironment
@@ -371,9 +373,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Enemy modifier for special abilities.
-    /// </summary>
+    ///<summary>
+    ///Enemy modifier for special abilities.
+    ///</summary>
     public class EnemyModifier
     {
         public string ModifierType { get; set; }
@@ -386,10 +388,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             Parameters = new Dictionary<string, object>();
         }
 
-        /// <summary>
-        /// Clone this enemy modifier.
-        /// </summary>
-        /// <returns>Cloned modifier.</returns>
+        ///<summary>
+        ///Clone this enemy modifier.
+        ///</summary>
+        ///<returns>Cloned modifier.</returns>
         public EnemyModifier Clone()
         {
             return new EnemyModifier
@@ -402,9 +404,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Spawn conditions for enemy groups.
-    /// </summary>
+    ///<summary>
+    ///Spawn conditions for enemy groups.
+    ///</summary>
     public class SpawnConditions
     {
         public int MinimumWaveNumber { get; set; }
@@ -420,27 +422,27 @@ namespace SASZombieAssaultTD.Engine.Waves
             ForbiddenTowers = new List<string>();
         }
 
-        /// <summary>
-        /// Check if conditions are met.
-        /// </summary>
-        /// <param name="currentWave">Current wave number.</param>
-        /// <param name="playerLevel">Player level.</param>
-        /// <param name="builtTowers">List of built towers.</param>
-        /// <returns>True if conditions are met.</returns>
+        ///<summary>
+        ///Check if conditions are met.
+        ///</summary>
+        ///<param name="currentWave">Current wave number.</param>
+        ///<param name="playerLevel">Player level.</param>
+        ///<param name="builtTowers">List of built towers.</param>
+        ///<returns>True if conditions are met.</returns>
         public bool AreConditionsMet(int currentWave, int playerLevel, List<string> builtTowers)
         {
-            // Check wave number range
+            //Check wave number range
             if (MinimumWaveNumber > 0 && currentWave < MinimumWaveNumber)
                 return false;
 
             if (MaximumWaveNumber > 0 && currentWave > MaximumWaveNumber)
                 return false;
 
-            // Check player level
+            //Check player level
             if (MinimumPlayerLevel > 0 && playerLevel < MinimumPlayerLevel)
                 return false;
 
-            // Check required towers
+            //Check required towers
             if (RequiredTowers.Count > 0)
             {
                 foreach (var requiredTower in RequiredTowers)
@@ -450,7 +452,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 }
             }
 
-            // Check forbidden towers
+            //Check forbidden towers
             if (ForbiddenTowers.Count > 0)
             {
                 foreach (var forbiddenTower in ForbiddenTowers)
@@ -463,10 +465,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             return true;
         }
 
-        /// <summary>
-        /// Clone this spawn condition.
-        /// </summary>
-        /// <returns>Cloned condition.</returns>
+        ///<summary>
+        ///Clone this spawn condition.
+        ///</summary>
+        ///<returns>Cloned condition.</returns>
         public SpawnConditions Clone()
         {
             return new SpawnConditions

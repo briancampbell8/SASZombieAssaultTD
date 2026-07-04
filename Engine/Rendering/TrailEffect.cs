@@ -1,11 +1,13 @@
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Rendering
 {
-    /// <summary>
-    /// Lightweight representation of a visual trail effect attached to projectiles.
-    /// Kept intentionally small: stores a color and a width so existing code can construct one.
-    /// </summary>
+    ///<summary>
+    ///Lightweight representation of a visual trail effect attached to projectiles.
+    ///Kept intentionally small: stores a color and a width so existing code can construct one.
+    ///</summary>
     public sealed class TrailEffect
     {
         public Color Color { get; }

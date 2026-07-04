@@ -6,51 +6,53 @@ Features: Tower type definitions with associated properties.
 P11-04-07-B: Tower type enumeration following established enum pattern.
 */
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Towers
 {
-    /// <summary>
-    /// Enumeration of available tower types.
-    /// </summary>
+    ///<summary>
+    ///Enumeration of available tower types.
+    ///</summary>
     public enum TowerType
     {
-        /// <summary>
-        /// Basic tower with standard damage and range.
-        /// </summary>
+        ///<summary>
+        ///Basic tower with standard damage and range.
+        ///</summary>
         Basic,
 
-        /// <summary>
-        /// Sniper tower with long range and high damage.
-        /// </summary>
+        ///<summary>
+        ///Sniper tower with long range and high damage.
+        ///</summary>
         Sniper,
 
-        /// <summary>
-        /// Splash damage tower with area effect.
-        /// </summary>
+        ///<summary>
+        ///Splash damage tower with area effect.
+        ///</summary>
         Splash,
 
-        /// <summary>
-        /// Freeze tower that slows enemies.
-        /// </summary>
+        ///<summary>
+        ///Freeze tower that slows enemies.
+        ///</summary>
         Freeze,
 
-        /// <summary>
-        /// Rapid fire tower with low damage but high fire rate.
-        /// </summary>
+        ///<summary>
+        ///Rapid fire tower with low damage but high fire rate.
+        ///</summary>
         Rapid,
 
-        /// <summary>
-        /// Poison tower with damage over time.
-        /// </summary>
+        ///<summary>
+        ///Poison tower with damage over time.
+        ///</summary>
         Poison,
 
-        /// <summary>
-        /// Laser tower with instant hit capability.
-        /// </summary>
+        ///<summary>
+        ///Laser tower with instant hit capability.
+        ///</summary>
         Laser,
 
-        /// <summary>
-        /// Tesla tower with chain lightning.
-        /// </summary>
+        ///<summary>
+        ///Tesla tower with chain lightning.
+        ///</summary>
         Tesla
     }
 }

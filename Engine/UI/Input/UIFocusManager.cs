@@ -1,41 +1,43 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Input
 {
-    /// <summary>
-    /// Focus tracking and focus change logic for UI elements
-    /// P80-05-03: UIFocusManager providing focus tracking and focus change logic for UI elements
-    /// </summary>
+    ///<summary>
+    ///Focus tracking and focus change logic for UI elements
+    ///P80-05-03: UIFocusManager providing focus tracking and focus change logic for UI elements
+    ///</summary>
     public class UIFocusManager
     {
         private UIElement _focusedElement;
         private readonly List<UIElement> _focusableElements;
         private bool _focusChangeRequested = false;
 
-        /// <summary>
-        /// Gets the currently focused element
-        /// </summary>
+        ///<summary>
+        ///Gets the currently focused element
+        ///</summary>
         public UIElement FocusedElement => _focusedElement;
 
-        /// <summary>
-        /// Gets whether a focus change is requested
-        /// </summary>
+        ///<summary>
+        ///Gets whether a focus change is requested
+        ///</summary>
         public bool FocusChangeRequested => _focusChangeRequested;
 
-        /// <summary>
-        /// Initializes a new UIFocusManager
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UIFocusManager
+        ///</summary>
         public UIFocusManager()
         {
             _focusableElements = new List<UIElement>();
             System.Diagnostics.Debug.WriteLine("UIFocusManager: Initialized");
         }
 
-        /// <summary>
-        /// Adds a focusable element to the manager
-        /// </summary>
-        /// <param name="element">Element to add</param>
+        ///<summary>
+        ///Adds a focusable element to the manager
+        ///</summary>
+        ///<param name="element">Element to add</param>
         public void RegisterFocusableElement(UIElement element)
         {
             try
@@ -61,10 +63,10 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Removes a focusable element from the manager
-        /// </summary>
-        /// <param name="element">Element to remove</param>
+        ///<summary>
+        ///Removes a focusable element from the manager
+        ///</summary>
+        ///<param name="element">Element to remove</param>
         public void UnregisterFocusableElement(UIElement element)
         {
             try
@@ -79,7 +81,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 {
                     System.Diagnostics.Debug.WriteLine($"UIFocusManager: Unregistered focusable element, remaining: {_focusableElements.Count}");
 
-                    // Clear focus if this element was focused
+                    //Clear focus if this element was focused
                     if (_focusedElement == element)
                     {
                         _focusedElement = null;
@@ -96,10 +98,10 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Sets focus to a specific element
-        /// </summary>
-        /// <param name="element">Element to focus</param>
+        ///<summary>
+        ///Sets focus to a specific element
+        ///</summary>
+        ///<param name="element">Element to focus</param>
         public void SetFocus(UIElement element)
         {
             try
@@ -116,13 +118,13 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     return;
                 }
 
-                // Call focus lost on currently focused element
+                //Call focus lost on currently focused element
                 if (_focusedElement != null && _focusedElement != element)
                 {
                     _focusedElement.OnFocusLost();
                 }
 
-                // Set new focused element
+                //Set new focused element
                 _focusedElement = element;
                 element.OnFocused();
 
@@ -134,9 +136,9 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Clears focus from the current element
-        /// </summary>
+        ///<summary>
+        ///Clears focus from the current element
+        ///</summary>
         public void ClearFocus()
         {
             try
@@ -159,16 +161,16 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Moves focus to the next element in the focus order
-        /// </summary>
+        ///<summary>
+        ///Moves focus to the next element in the focus order
+        ///</summary>
         public void FocusNext()
         {
             try
             {
                 if (_focusedElement == null)
                 {
-                    // Focus first focusable element
+                    //Focus first focusable element
                     if (_focusableElements.Count > 0)
                     {
                         SetFocus(_focusableElements[0]);
@@ -176,7 +178,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 }
                 else
                 {
-                    // Find next element in the list
+                    //Find next element in the list
                     var currentIndex = _focusableElements.IndexOf(_focusedElement);
                     if (currentIndex >= 0 && currentIndex < _focusableElements.Count - 1)
                     {
@@ -184,7 +186,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     }
                     else
                     {
-                        // Wrap to first element
+                        //Wrap to first element
                         SetFocus(_focusableElements[0]);
                     }
                 }
@@ -195,16 +197,16 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Moves focus to the previous element in the focus order
-        /// </summary>
+        ///<summary>
+        ///Moves focus to the previous element in the focus order
+        ///</summary>
         public void FocusPrevious()
         {
             try
             {
                 if (_focusedElement == null)
                 {
-                    // Focus last focusable element
+                    //Focus last focusable element
                     if (_focusableElements.Count > 0)
                     {
                         SetFocus(_focusableElements[_focusableElements.Count - 1]);
@@ -212,7 +214,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 }
                 else
                 {
-                    // Find previous element in the list
+                    //Find previous element in the list
                     var currentIndex = _focusableElements.IndexOf(_focusedElement);
                     if (currentIndex > 0)
                     {
@@ -220,7 +222,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     }
                     else
                     {
-                        // Wrap to last element
+                        //Wrap to last element
                         SetFocus(_focusableElements[_focusableElements.Count - 1]);
                     }
                 }
@@ -231,14 +233,14 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Updates the focus manager
-        /// </summary>
+        ///<summary>
+        ///Updates the focus manager
+        ///</summary>
         public void Update()
         {
             try
             {
-                // Update focus animations or effects here
+                //Update focus animations or effects here
                 UpdateFocusAnimation();
             }
             catch (Exception ex)
@@ -247,19 +249,19 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Updates focus animations (placeholder implementation)
-        /// </summary>
+        ///<summary>
+        ///Updates focus animations (placeholder implementation)
+        ///</summary>
         private void UpdateFocusAnimation()
         {
-            // Override in derived classes for focus animations
-            // Examples: focus ring, pulse effect, color transitions
+            //Override in derived classes for focus animations
+            //Examples: focus ring, pulse effect, color transitions
         }
 
-        /// <summary>
-        /// Gets a string representation of the focus state
-        /// </summary>
-        /// <returns>String representation</returns>
+        ///<summary>
+        ///Gets a string representation of the focus state
+        ///</summary>
+        ///<returns>String representation</returns>
         public override string ToString()
         {
             try

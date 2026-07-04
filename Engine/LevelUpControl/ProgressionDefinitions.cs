@@ -34,17 +34,19 @@
 
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
-    /// <summary>
-    /// Static content definitions for milestones, achievements, and events.
-    /// </summary>
+    ///<summary>
+    ///Static content definitions for milestones, achievements, and events.
+    ///</summary>
     public static class ProgressionDefinitions
     {
-        // METHOD: InitializeMilestones()
-        // PURPOSE: Populate the milestone list with all built-in milestones.
-        // CALLED BY: LevelProgression constructor
-        // CALLS INTO: None
+        //METHOD: InitializeMilestones()
+        //PURPOSE: Populate the milestone list with all built-in milestones.
+        //CALLED BY: LevelProgression constructor
+        //CALLS INTO: None
         public static void InitializeMilestones(List<ProgressionMilestone> milestones)
         {
             milestones.Add(new ProgressionMilestone
@@ -123,9 +125,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             });
         }
 
-        // METHOD: InitializeAchievements()
-        // PURPOSE: Populate the achievement dictionary with all built-in achievements.
-        // CALLED BY: LevelProgression constructor
+        //METHOD: InitializeAchievements()
+        //PURPOSE: Populate the achievement dictionary with all built-in achievements.
+        //CALLED BY: LevelProgression constructor
         public static void InitializeAchievements(Dictionary<string, ProgressionAchievement> achievements)
         {
             achievements["sharpshooter"] = new ProgressionAchievement
@@ -173,9 +175,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             };
         }
 
-        // METHOD: InitializeEvents()
-        // PURPOSE: Populate the event list with all built-in progression events.
-        // CALLED BY: LevelProgression constructor
+        //METHOD: InitializeEvents()
+        //PURPOSE: Populate the event list with all built-in progression events.
+        //CALLED BY: LevelProgression constructor
         public static void InitializeEvents(List<ProgressionEvent> events)
         {
             events.Add(new ProgressionEvent

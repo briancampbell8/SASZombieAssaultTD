@@ -1,30 +1,38 @@
-/*
-Program Name: SASZombieAssaultTD
-File Path: Engine/UI/Rendering/HUDRenderAdapter.cs
-Purpose: P80 UI/HUD Rendering Modernization - Adapter integrating HUD rendering with P80 UI system.
-Features:
-  - Integrates HUD rendering with P80 UIRenderer for modern UI rendering pipeline
-  - Provides DrawTexture, DrawRect, DrawText methods using P80 UI rendering system
-  - Provides scissor rectangle management: SetScissorRect, ClearScissorRect
-  - Supports render target switching with SetRenderTarget
-  - Includes statistics tracking: DrawCallsConverted, BatchesSubmitted
-  - Thread-safe operations with lock-based synchronization
-  - Preserves public API surface for backward compatibility
-*/
+// ====================================================================================================
+//  FILE: HUDRenderAdapter.cs
+//  PATH: Engine/UI/Rendering/
+//  MODULE: UI Rendering Adapter (P80 Integration)
+//
+//  ROLE:
+//      Adapts legacy HUD rendering calls to the P80 UI rendering backend.
+//
+//  RESPONSIBILITIES:
+//      - Provide DrawTexture, DrawRect, DrawText, and scissor management using P80 UIRenderer.
+//      - Maintain minimal diagnostic counters for draw call conversion and batch submission.
+//      - Ensure thread-safety for render-target and state transitions.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level GPU resource management beyond the UIRenderer abstraction.
+//
+//  ARCHITECTURAL NOTES:
+//      - Acts as a bridge during modernization; keep surface compatibility with previous APIs.
+// ====================================================================================================
 
 using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using System;
 using System.Drawing;
 using System.Security.AccessControl;
 using Vortice.Mathematics;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Rendering
 {
-    /// <summary>
-    /// P80 UI/HUD Rendering Modernization adapter integrating HUD with P80 UI rendering system.
-    /// Replaces stub implementation with proper P80 UIRenderer integration.
-    /// </summary>
+    ///<summary>
+    ///P80 UI/HUD Rendering Modernization adapter integrating HUD with P80 UI rendering system.
+    ///Replaces stub implementation with proper P80 UIRenderer integration.
+    ///</summary>
     public class HUDRenderAdapter
     {
         private readonly object _lock = new();
@@ -40,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             if (renderer == null) throw new ArgumentNullException(nameof(renderer));
             
-            // Initialize P80 UIRenderer for modern UI rendering
+            //Initialize P80 UIRenderer for modern UI rendering
             _uiRenderer = new UIRenderer();
             _uiRenderer.Initialize();
             
@@ -50,9 +58,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public int ViewportWidth => 1920;
         public int ViewportHeight => 1080;
 
-        /// <summary>
-        /// Draws a texture using P80 UIRenderer.
-        /// </summary>
+        ///<summary>
+        ///Draws a texture using P80 UIRenderer.
+        ///</summary>
         public void DrawTexture(ITexture2D texture, Vortice.Mathematics.Rect destRect, System.Drawing.Color color)
         {
             System.Diagnostics.Debug.WriteLine("[DIAG] HUDRenderAdapter.DrawTexture() ENTRY");
@@ -67,10 +75,10 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 try
                 {
-                    // Convert Rect to RectangleF for P80 renderer
+                    //Convert Rect to RectangleF for P80 renderer
                     var rect = new System.Drawing.RectangleF(destRect.X, destRect.Y, destRect.Width, destRect.Height);
                     
-                    // Use P80 UIRenderer to draw the texture
+                    //Use P80 UIRenderer to draw the texture
                     _uiRenderer.RenderRectangle(rect, color, texture?.ToString());
                     
                     _drawCallsConverted++;
@@ -85,9 +93,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             System.Diagnostics.Debug.WriteLine("[DIAG] HUDRenderAdapter.DrawTexture() EXIT");
         }
 
-        /// <summary>
-        /// Draws a rectangle using P80 UIRenderer.
-        /// </summary>
+        ///<summary>
+        ///Draws a rectangle using P80 UIRenderer.
+        ///</summary>
         public void DrawRect(Vortice.Mathematics.Rect rect, System.Drawing.Color color)
         {
             System.Diagnostics.Debug.WriteLine("[DIAG] HUDRenderAdapter.DrawRect() ENTRY");
@@ -96,10 +104,10 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 try
                 {
-                    // Convert Rect to RectangleF for P80 renderer
+                    //Convert Rect to RectangleF for P80 renderer
                     var rectF = new System.Drawing.RectangleF(rect.X, rect.Y, rect.Width, rect.Height);
                     
-                    // Use P80 UIRenderer to draw the rectangle
+                    //Use P80 UIRenderer to draw the rectangle
                     _uiRenderer.RenderRectangle(rectF, color);
                     
                     _drawCallsConverted++;
@@ -114,9 +122,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             System.Diagnostics.Debug.WriteLine("[DIAG] HUDRenderAdapter.DrawRect() EXIT");
         }
 
-        /// <summary>
-        /// Draws text using P80 UIRenderer.
-        /// </summary>
+        ///<summary>
+        ///Draws text using P80 UIRenderer.
+        ///</summary>
         public void DrawText(string text, int x, int y, System.Drawing.Color color, float scale = 1.0f)
         {
             if (string.IsNullOrEmpty(text))
@@ -126,10 +134,10 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 try
                 {
-                    // Convert position to PointF for P80 renderer
+                    //Convert position to PointF for P80 renderer
                     var position = new System.Drawing.PointF(x, y);
                     
-                    // Use P80 UIRenderer to draw text
+                    //Use P80 UIRenderer to draw text
                     _uiRenderer.RenderText(text, position, "default", color);
                     
                     _drawCallsConverted++;
@@ -144,16 +152,16 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             System.Diagnostics.Debug.WriteLine("[DIAG] HUDRenderAdapter.DrawText() EXIT");
         }
 
-        /// <summary>
-        /// Clears the render target with specified color.
-        /// </summary>
+        ///<summary>
+        ///Clears the render target with specified color.
+        ///</summary>
         public void Clear(System.Drawing.Color color)
         {
             lock (_lock)
             {
                 try
                 {
-                    // P80 implementation would clear the render target
+                    //P80 implementation would clear the render target
                     System.Diagnostics.Debug.WriteLine($"HUDRenderAdapter: Clear with color {color}");
                 }
                 catch (Exception ex)
@@ -163,9 +171,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Shuts down the adapter and P80 renderer.
-        /// </summary>
+        ///<summary>
+        ///Shuts down the adapter and P80 renderer.
+        ///</summary>
         public void Shutdown()
         {
             Flush();
@@ -173,9 +181,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             System.Diagnostics.Debug.WriteLine("HUDRenderAdapter: Shutdown complete");
         }
 
-        /// <summary>
-        /// Sets the scissor rectangle for clipping.
-        /// </summary>
+        ///<summary>
+        ///Sets the scissor rectangle for clipping.
+        ///</summary>
         public void SetScissorRect(Vortice.Mathematics.Rect rect)
         {
             lock (_lock)
@@ -184,7 +192,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                 
                 try
                 {
-                    // Convert to RectangleF for P80 renderer
+                    //Convert to RectangleF for P80 renderer
                     var rectF = new System.Drawing.RectangleF(rect.X, rect.Y, rect.Width, rect.Height);
                     _uiRenderer.SetClipRect(rectF);
                 }
@@ -195,9 +203,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Clears the scissor rectangle.
-        /// </summary>
+        ///<summary>
+        ///Clears the scissor rectangle.
+        ///</summary>
         public void ClearScissorRect()
         {
             lock (_lock)
@@ -215,9 +223,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Sets the active render target.
-        /// </summary>
+        ///<summary>
+        ///Sets the active render target.
+        ///</summary>
         public void SetRenderTarget(string targetId)
         {
             lock (_lock)
@@ -227,9 +235,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Presents the rendered frame.
-        /// </summary>
+        ///<summary>
+        ///Presents the rendered frame.
+        ///</summary>
         public void Present()
         {
             lock (_lock)
@@ -246,9 +254,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Flushes pending draw calls.
-        /// </summary>
+        ///<summary>
+        ///Flushes pending draw calls.
+        ///</summary>
         public void Flush()
         {
             lock (_lock)
@@ -265,9 +273,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Gets rendering statistics.
-        /// </summary>
+        ///<summary>
+        ///Gets rendering statistics.
+        ///</summary>
         public (int DrawCallsConverted, int BatchesSubmitted, int PendingCommands) GetStats()
         {
             lock (_lock)
@@ -276,9 +284,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Resets rendering statistics.
-        /// </summary>
+        ///<summary>
+        ///Resets rendering statistics.
+        ///</summary>
         public void ResetStats()
         {
             lock (_lock)
@@ -290,7 +298,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
 
         internal void DrawTexture(EngineTexture texture, Rectangle destRect, System.Drawing.Color white)
         {
-            // Legacy method - redirect to new implementation
+            //Legacy method - redirect to new implementation
             var rect = new System.Windows.Rect(destRect.X, destRect.Y, destRect.Width, destRect.Height);
             if (texture is ITexture2D texture2D)
             {

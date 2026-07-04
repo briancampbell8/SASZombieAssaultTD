@@ -8,16 +8,18 @@ using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Rendering;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Utilities
 {
-    /// <summary>
-    /// Compatibility utilities for engine APIs.
-    /// </summary>
+    ///<summary>
+    ///Compatibility utilities for engine APIs.
+    ///</summary>
     public static class EngineCompatibility
     {
-        /// <summary>
-        /// Math functions compatibility.
-        /// </summary>
+        ///<summary>
+        ///Math functions compatibility.
+        ///</summary>
         public static class MathFunctions
         {
             public static float Clamp(float value, float min, float max)
@@ -36,9 +38,9 @@ namespace SASZombieAssaultTD.Engine.Utilities
             }
         }
 
-        /// <summary>
-        /// Vector3 compatibility helpers.
-        /// </summary>
+        ///<summary>
+        ///Vector3 compatibility helpers.
+        ///</summary>
         public static class Vector3Helpers
         {
             public static Vector3 Zero => new Vector3(0f, 0f, 0f);
@@ -62,9 +64,9 @@ namespace SASZombieAssaultTD.Engine.Utilities
             }
         }
 
-        /// <summary>
-        /// Color compatibility helpers.
-        /// </summary>
+        ///<summary>
+        ///Color compatibility helpers.
+        ///</summary>
         public static class ColorHelpers
         {
             public static Color FromArgb(int r, int g, int b) => Color.FromArgb(255, r, g, b);
@@ -72,9 +74,9 @@ namespace SASZombieAssaultTD.Engine.Utilities
             public static Color FromRgb(int r, int g, int b) => Color.FromArgb(255, r, g, b);
         }
 
-        /// <summary>
-        /// Common missing properties and methods.
-        /// </summary>
+        ///<summary>
+        ///Common missing properties and methods.
+        ///</summary>
         public static class CommonProperties
         {
             public static float GetDefaultRange() => 100f;
@@ -86,27 +88,27 @@ namespace SASZombieAssaultTD.Engine.Utilities
         }
     }
 
-    /// <summary>
-    /// Extensions for common types.
-    /// </summary>
+    ///<summary>
+    ///Extensions for common types.
+    ///</summary>
     public static class TypeExtensions
     {
-        /// <summary>
-        /// Safe ToString() for potentially null objects.
-        /// </summary>
+        ///<summary>
+        ///Safe ToString() for potentially null objects.
+        ///</summary>
         public static string SafeToString(this object obj) => obj?.ToString() ?? string.Empty;
 
-        /// <summary>
-        /// Get value or default for nullable types.
-        /// </summary>
+        ///<summary>
+        ///Get value or default for nullable types.
+        ///</summary>
         public static T ValueOrDefault<T>(this T? nullable, T defaultValue = default) where T : struct
         {
             return nullable ?? defaultValue;
         }
 
-        /// <summary>
-        /// Clamp a value between min and max.
-        /// </summary>
+        ///<summary>
+        ///Clamp a value between min and max.
+        ///</summary>
         public static float Clamp(this float value, float min, float max)
         {
             return EngineCompatibility.MathFunctions.Clamp(value, min, max);

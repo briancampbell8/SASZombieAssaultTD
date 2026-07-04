@@ -1,3 +1,29 @@
+// ====================================================================================================
+//  FILE: ParticleSystem.cs
+//  PATH: Engine/Rendering/ 
+//  PROGRAM: ParticleSystem.cs
+//  MODULE: Resource Management Framework
+//  ROLE:
+//      Defines the structures, loaders, and integration points responsible for discovering, validating, and providing engine resources in a deterministic manner.
+//
+//  RESPONSIBILITIES:
+//      - Provide a unified API for loading, caching, and resolving engine resources.
+//      - Enforce deterministic resource lookup and lifecycle rules.
+//      - Abstract file formats, storage locations, and integration layers behind a stable interface.
+//      - Ensure resource availability for all engine subsystems (Rendering, Audio, Gameplay, UI).
+//
+//  NON-RESPONSIBILITIES:
+//      - Performing rendering or GPU upload operations.
+//      - Managing gameplay logic or scene entities.
+//      - Handling diagnostics, logging, or performance metrics.
+//      - Encoding or authoring resource files.
+//
+//  ARCHITECTURAL NOTES:
+//      - The Resource Management Framework acts as the central authority for all asset retrieval.
+//      - Resource modules must remain pure: no side effects outside resource acquisition and validation.
+//      - All resource types (textures, data files, definitions, metadata) must follow deterministic load rules.
+//  ====================================================================================================
+
 /*
 File:    ParticleSystem.cs
 Purpose: Subsystem for managing particle effects and simulation.
@@ -8,22 +34,19 @@ updates particle properties, removes expired particles, and handles rendering da
 */
 
 using System;
-using SASZombieAssaultTD.Engine.Dictionary;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.Components;
+using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.Resources;
-using Vector3 = SASZombieAssaultTD.Engine.VectorMath.Vector3;
-using SASZombieAssaultTD.Engine.Extensions;
-
-// Alias directives to resolve ambiguity
+//Alias directives to resolve ambiguity
 using Components_TransformComponent = SASZombieAssaultTD.Engine.Components.TransformComponent;
+using Vector3 = SASZombieAssaultTD.Engine.VectorMath.Vector3;
 
 namespace SASZombieAssaultTD.Engine.Rendering
 {
-    /// <summary>
-    /// Represents a single particle in the simulation.
-    /// </summary>
+    ///<summary>
+    ///Represents a single particle in the simulation.
+    ///</summary>
     public class Particle
     {
         public Vector3 Position { get; set; }
@@ -47,20 +70,20 @@ namespace SASZombieAssaultTD.Engine.Rendering
             IsAlive = true;
         }
 
-        /// <summary>
-        /// Updates the particle's state based on elapsed time.
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since the last update.</param>
+        ///<summary>
+        ///Updates the particle's state based on elapsed time.
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since the last update.</param>
         public void Update(float deltaTime)
         {
             if (!IsAlive) return;
 
             Age += deltaTime;
 
-            // Update position based on velocity
+            //Update position based on velocity
             Position += Velocity * deltaTime;
 
-            // Check if the particle has expired
+            //Check if the particle has expired
             if (Age >= Lifetime)
                 IsAlive = false;
         }
@@ -71,9 +94,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
         }
     }
 
-    /// <summary>
-    /// Subsystem for managing particle effects and simulation.
-    /// </summary>
+    ///<summary>
+    ///Subsystem for managing particle effects and simulation.
+    ///</summary>
     public class ParticleSystem
     {
         private readonly EntityManager _entityManager;
@@ -81,7 +104,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
         private readonly EventRouter _eventBus;
         private readonly List<Particle> _particles = new();
         private readonly Queue<Particle> _particlePool = new();
-        private readonly string _particleAssetId = "particle_default"; // Default particle asset
+        private readonly string _particleAssetId = "particle_default"; //Default particle asset
 
         private bool _initialized;
         private readonly bool _debugOutput = true;
@@ -91,12 +114,12 @@ namespace SASZombieAssaultTD.Engine.Rendering
         private static ParticleSystem _instance;
         public static ParticleSystem Instance => _instance ??= new ParticleSystem(null, null, null);
 
-        /// <summary>
-        /// Creates a new ParticleSystem with required dependencies.
-        /// </summary>
-        /// <param name="entityManager">Entity manager for component access.</param>
-        /// <param name="assetManager">Asset manager for particle textures.</param>
-        /// <param name="eventBus">Event bus for system communication.</param>
+        ///<summary>
+        ///Creates a new ParticleSystem with required dependencies.
+        ///</summary>
+        ///<param name="entityManager">Entity manager for component access.</param>
+        ///<param name="assetManager">Asset manager for particle textures.</param>
+        ///<param name="eventBus">Event bus for system communication.</param>
         public ParticleSystem(EntityManager entityManager, RSManager assetManager, EventRouter eventBus)
         {
             _entityManager = entityManager ?? throw new ArgumentNullException(nameof(entityManager));
@@ -106,9 +129,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
             DebugLog("ParticleSystem: Constructed with required dependencies");
         }
 
-        /// <summary>
-        /// Initializes the particle system.
-        /// </summary>
+        ///<summary>
+        ///Initializes the particle system.
+        ///</summary>
         public void Initialize()
         {
             if (_initialized) return;
@@ -117,7 +140,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             {
                 DebugLog("ParticleSystem: Starting initialization...");
 
-                // Pre-populate particle pool
+                //Pre-populate particle pool
                 for (int i = 0; i < 200; i++)
                 {
                     _particlePool.Enqueue(new Particle(Vector3.Zero, Vector3.Zero, 0.0f, 1.0f, Color.White, 1.0f));
@@ -133,10 +156,10 @@ namespace SASZombieAssaultTD.Engine.Rendering
             }
         }
 
-        /// <summary>
-        /// Updates all particles and emitters based on elapsed time.
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since the last update.</param>
+        ///<summary>
+        ///Updates all particles and emitters based on elapsed time.
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since the last update.</param>
         public void Update(float deltaTime)
         {
             if (!_initialized)
@@ -147,7 +170,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
             try
             {
-                // Update existing particles
+                //Update existing particles
                 for (int i = _particles.Count - 1; i >= 0; i--)
                 {
                     var particle = _particles[i];
@@ -155,13 +178,13 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
                     if (!particle.IsAlive)
                     {
-                        // Remove dead particle and return to pool
+                        //Remove dead particle and return to pool
                         _particles.RemoveAt(i);
                         ReturnParticleToPool(particle);
                     }
                 }
 
-                // Process emitters and spawn new particles
+                //Process emitters and spawn new particles
                 ProcessEmitters(deltaTime);
 
                 DebugLog($"ParticleSystem: Update complete - Active particles: {_particles.Count}");
@@ -172,9 +195,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
             }
         }
 
-        /// <summary>
-        /// Processes all particle emitters and spawns new particles.
-        /// </summary>
+        ///<summary>
+        ///Processes all particle emitters and spawns new particles.
+        ///</summary>
         private void ProcessEmitters(float deltaTime)
         {
             var emitters = GetEntitiesWithParticleEmitterAndTransform();
@@ -187,14 +210,14 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 if (emitter == null || transform == null || !emitter.IsActive)
                     continue;
 
-                // Update emission accumulator
+                //Update emission accumulator
                 emitter.EmissionAccumulator += deltaTime;
 
-                // Calculate how many particles to emit this frame
+                //Calculate how many particles to emit this frame
                 var particlesToEmit = (int)(emitter.EmissionAccumulator * emitter.EmissionRate);
                 emitter.EmissionAccumulator -= particlesToEmit / emitter.EmissionRate;
 
-                // Spawn particles
+                //Spawn particles
                 for (int i = 0; i < particlesToEmit && _particles.Count < emitter.MaxParticles; i++)
                 {
                     SpawnParticle(emitter, transform);
@@ -202,20 +225,20 @@ namespace SASZombieAssaultTD.Engine.Rendering
             }
         }
 
-        /// <summary>
-        /// Spawns a single particle from an emitter.
-        /// </summary>
+        ///<summary>
+        ///Spawns a single particle from an emitter.
+        ///</summary>
         private void SpawnParticle(ParticleEmitterComponent emitter, Components_TransformComponent transform)
         {
             var particle = GetParticleFromPool();
             if (particle == null) return;
 
-            // Set initial particle properties from emitter ranges
+            //Set initial particle properties from emitter ranges
             particle.Position = transform.Position;
-            
+
             var velocity = emitter.InitialVelocityRange.GetRandom();
             particle.Velocity = new Vector3(velocity.X, velocity.Y, 0);
-            
+
             var rotation = emitter.InitialRotationRange.GetRandom();
             particle.Rotation = rotation;
             var scale = emitter.InitialScaleRange.GetRandom();
@@ -229,20 +252,20 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _particles.Add(particle);
         }
 
-        /// <summary>
-        /// Gets a particle from the pool or creates a new one if the pool is empty.
-        /// </summary>
+        ///<summary>
+        ///Gets a particle from the pool or creates a new one if the pool is empty.
+        ///</summary>
         private Particle? GetParticleFromPool()
         {
             return _particlePool.Count > 0 ? _particlePool.Dequeue() : new Particle(Vector3.Zero, Vector3.Zero, 0.0f, 1.0f, Color.White, 1.0f);
         }
 
-        /// <summary>
-        /// Returns a particle to the pool for reuse.
-        /// </summary>
+        ///<summary>
+        ///Returns a particle to the pool for reuse.
+        ///</summary>
         private void ReturnParticleToPool(Particle particle)
         {
-            if (_particlePool.Count < 200) // Limit pool size
+            if (_particlePool.Count < 200) //Limit pool size
             {
                 particle.Age = 0.0f;
                 particle.IsAlive = true;
@@ -250,9 +273,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
             }
         }
 
-        /// <summary>
-        /// Gets all entities that have both ParticleEmitterComponent and TransformComponent.
-        /// </summary>
+        ///<summary>
+        ///Gets all entities that have both ParticleEmitterComponent and TransformComponent.
+        ///</summary>
         private IReadOnlyList<object> GetEntitiesWithParticleEmitterAndTransform()
         {
             var result = new List<object>();
@@ -270,43 +293,43 @@ namespace SASZombieAssaultTD.Engine.Rendering
             return result;
         }
 
-        /// <summary>
-        /// Stops the particle system and clears all particles.
-        /// </summary>
+        ///<summary>
+        ///Stops the particle system and clears all particles.
+        ///</summary>
         public void Stop()
         {
             if (!_initialized) return;
-            
+
             _particles.Clear();
             DebugLog("ParticleSystem: Stopped - All particles cleared");
         }
 
-        /// <summary>
-        /// Pauses the particle system.
-        /// </summary>
+        ///<summary>
+        ///Pauses the particle system.
+        ///</summary>
         public void Pause()
         {
             _isPaused = true;
             DebugLog("ParticleSystem: Paused");
         }
 
-        /// <summary>
-        /// Resumes the particle system.
-        /// </summary>
+        ///<summary>
+        ///Resumes the particle system.
+        ///</summary>
         public void Resume()
         {
             _isPaused = false;
             DebugLog("ParticleSystem: Resumed");
         }
 
-        /// <summary>
-        /// Starts confetti particle effects.
-        /// </summary>
+        ///<summary>
+        ///Starts confetti particle effects.
+        ///</summary>
         public void StartConfetti()
         {
             if (!_initialized) return;
-            
-            // Create confetti particles
+
+            //Create confetti particles
             for (int i = 0; i < 50; i++)
             {
                 var particle = GetParticleFromPool();
@@ -336,22 +359,22 @@ namespace SASZombieAssaultTD.Engine.Rendering
             DebugLog("ParticleSystem: Started confetti effects");
         }
 
-        /// <summary>
-        /// Stops confetti particle effects.
-        /// </summary>
+        ///<summary>
+        ///Stops confetti particle effects.
+        ///</summary>
         public void StopConfetti()
         {
             if (!_initialized) return;
-            
-            // Remove confetti particles (simplified - just clear all)
+
+            //Remove confetti particles (simplified - just clear all)
             _particles.Clear();
             DebugLog("ParticleSystem: Stopped confetti effects");
         }
 
-        /// <summary>
-        /// Renders all particles.
-        /// </summary>
-        /// <param name="context">Render context</param>
+        ///<summary>
+        ///Renders all particles.
+        ///</summary>
+        ///<param name="context">Render context</param>
         public void Render(IRenderContext context)
         {
             if (!_initialized || _isPaused) return;
@@ -360,8 +383,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
             {
                 if (particle.IsAlive)
                 {
-                    // Simple particle rendering - would integrate with actual rendering system
-                    RenderSystem.DrawRectangle(
+                    //Simple particle rendering - would integrate with actual rendering system
+                    RenderSystem renderSystem = new RenderSystem();
+                    renderSystem.DrawRectangle(
                         particle.Position.X - particle.Scale * 0.5f,
                         particle.Position.Y - particle.Scale * 0.5f,
                         particle.Scale,
@@ -372,9 +396,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
             }
         }
 
-        /// <summary>
-        /// Logs debug messages if debug output is enabled.
-        /// </summary>
+        ///<summary>
+        ///Logs debug messages if debug output is enabled.
+        ///</summary>
         private void DebugLog(string message)
         {
             if (_debugOutput)

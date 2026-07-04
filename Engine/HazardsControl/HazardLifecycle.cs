@@ -18,31 +18,33 @@ Notes:    This file handles the temporal aspects of hazards.
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.HazardsControl
 {
-    /// <summary>
-    /// Lifecycle manager for hazard systems.
-    /// Handles state transitions, timers, and activation logic.
-    /// </summary>
+    ///<summary>
+    ///Lifecycle manager for hazard systems.
+    ///Handles state transitions, timers, and activation logic.
+    ///</summary>
     public class HazardLifecycle
     {
         private readonly Dictionary<int, HazardTimer> _hazardTimers = new();
         private bool _isInitialized;
 
-        /// <summary>
-        /// Initializes the hazard lifecycle system.
-        /// </summary>
+        ///<summary>
+        ///Initializes the hazard lifecycle system.
+        ///</summary>
         public void Init()
         {
             _hazardTimers.Clear();
             _isInitialized = true;
         }
 
-        /// <summary>
-        /// Updates all hazards with lifecycle processing.
-        /// </summary>
-        /// <param name="hazards">List of active hazards.</param>
-        /// <param name="deltaTime">Time since last update.</param>
+        ///<summary>
+        ///Updates all hazards with lifecycle processing.
+        ///</summary>
+        ///<param name="hazards">List of active hazards.</param>
+        ///<param name="deltaTime">Time since last update.</param>
         public void UpdateAllHazards(List<Hazard> hazards, float deltaTime)
         {
             if (!_isInitialized || hazards == null) return;
@@ -60,11 +62,11 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             CleanupCompletedTimers();
         }
 
-        /// <summary>
-        /// Advances the state of a hazard.
-        /// </summary>
-        /// <param name="hazard">The hazard to update.</param>
-        /// <param name="deltaTime">Time since last update.</param>
+        ///<summary>
+        ///Advances the state of a hazard.
+        ///</summary>
+        ///<param name="hazard">The hazard to update.</param>
+        ///<param name="deltaTime">Time since last update.</param>
         public void AdvanceHazardState(Hazard hazard, float deltaTime)
         {
             if (!_isInitialized || hazard == null) return;
@@ -97,33 +99,33 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             }
         }
 
-        /// <summary>
-        /// Applies timers to a hazard.
-        /// </summary>
-        /// <param name="hazard">The hazard to process.</param>
-        /// <param name="deltaTime">Time since last update.</param>
+        ///<summary>
+        ///Applies timers to a hazard.
+        ///</summary>
+        ///<param name="hazard">The hazard to process.</param>
+        ///<param name="deltaTime">Time since last update.</param>
         public void ApplyHazardTimers(Hazard hazard, float deltaTime)
         {
             if (!_isInitialized || hazard == null || !_hazardTimers.TryGetValue(hazard.Id, out var timer)) return;
 
             timer.ElapsedTime += deltaTime;
 
-            // Process periodic effects
+            //Process periodic effects
             if (timer.ElapsedTime >= timer.Period)
             {
                 ProcessPeriodicEffect(hazard);
                 timer.ElapsedTime = 0;
             }
 
-            // Update hazard's internal timer
+            //Update hazard's internal timer
             hazard.ElapsedTime = timer.ElapsedTime;
         }
 
-        /// <summary>
-        /// Processes decay for a hazard.
-        /// </summary>
-        /// <param name="hazard">The hazard to process.</param>
-        /// <param name="deltaTime">Time since last update.</param>
+        ///<summary>
+        ///Processes decay for a hazard.
+        ///</summary>
+        ///<param name="hazard">The hazard to process.</param>
+        ///<param name="deltaTime">Time since last update.</param>
         public void ProcessHazardDecay(Hazard hazard, float deltaTime)
         {
             if (!_isInitialized || hazard == null || hazard.State != HazardState.Active || !hazard.HasDecay) return;
@@ -136,17 +138,17 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
                 hazard.DecayProgress = 0f;
             }
 
-            // Apply intensity decay if applicable
+            //Apply intensity decay if applicable
             if (hazard.IntensityDecayRate > 0)
             {
                 hazard.CurrentIntensity = System.Math.Max(0, hazard.CurrentIntensity - hazard.IntensityDecayRate * deltaTime);
             }
         }
 
-        /// <summary>
-        /// Processes activation for a hazard.
-        /// </summary>
-        /// <param name="hazard">The hazard to process.</param>
+        ///<summary>
+        ///Processes activation for a hazard.
+        ///</summary>
+        ///<param name="hazard">The hazard to process.</param>
         public void ProcessHazardActivation(Hazard hazard)
         {
             if (!_isInitialized || hazard == null || hazard.State != HazardState.Active || hazard.HasActivated) return;
@@ -154,14 +156,14 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             hazard.HasActivated = true;
             hazard.ActivationTime = DateTime.Now;
 
-            // Trigger activation effects
+            //Trigger activation effects
             OnHazardActivated?.Invoke(hazard);
         }
 
-        /// <summary>
-        /// Starts a timer for a hazard.
-        /// </summary>
-        /// <param name="hazard">The hazard to start timer for.</param>
+        ///<summary>
+        ///Starts a timer for a hazard.
+        ///</summary>
+        ///<param name="hazard">The hazard to start timer for.</param>
         private void StartHazardTimer(Hazard hazard)
         {
             if (hazard == null) return;
@@ -174,10 +176,10 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             };
         }
 
-        /// <summary>
-        /// Stops a timer for a hazard.
-        /// </summary>
-        /// <param name="hazard">The hazard to stop timer for.</param>
+        ///<summary>
+        ///Stops a timer for a hazard.
+        ///</summary>
+        ///<param name="hazard">The hazard to stop timer for.</param>
         private void StopHazardTimer(Hazard hazard)
         {
             if (hazard == null) return;
@@ -185,21 +187,21 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             _hazardTimers.Remove(hazard.Id);
         }
 
-        /// <summary>
-        /// Processes periodic effects for a hazard.
-        /// </summary>
-        /// <param name="hazard">The hazard to process effects for.</param>
+        ///<summary>
+        ///Processes periodic effects for a hazard.
+        ///</summary>
+        ///<param name="hazard">The hazard to process effects for.</param>
         private void ProcessPeriodicEffect(Hazard hazard)
         {
             if (hazard == null) return;
 
-            // Trigger periodic effect event
+            //Trigger periodic effect event
             OnHazardPeriodicEffect?.Invoke(hazard);
         }
 
-        /// <summary>
-        /// Cleans up completed timers.
-        /// </summary>
+        ///<summary>
+        ///Cleans up completed timers.
+        ///</summary>
         private void CleanupCompletedTimers()
         {
             foreach (var timerId in _hazardTimers.Keys)
@@ -211,34 +213,34 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             }
         }
 
-        /// <summary>
-        /// Cleans up the hazard lifecycle system.
-        /// </summary>
+        ///<summary>
+        ///Cleans up the hazard lifecycle system.
+        ///</summary>
         public void Cleanup()
         {
             _hazardTimers.Clear();
             _isInitialized = false;
         }
 
-        /// <summary>
-        /// Event triggered when a hazard is activated.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when a hazard is activated.
+        ///</summary>
         public event Action<Hazard> OnHazardActivated;
 
-        /// <summary>
-        /// Event triggered when a hazard processes a periodic effect.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when a hazard processes a periodic effect.
+        ///</summary>
         public event Action<Hazard> OnHazardPeriodicEffect;
     }
 
-    /// <summary>
-    /// Timer data for hazard periodic effects.
-    /// </summary>
+    ///<summary>
+    ///Timer data for hazard periodic effects.
+    ///</summary>
     internal class HazardTimer
     {
         public int HazardId { get; set; }
         public float Period { get; set; }
         public float ElapsedTime { get; set; }
-        public bool IsCompleted => false; // Placeholder for future logic
+        public bool IsCompleted => false; //Placeholder for future logic
     }
 }

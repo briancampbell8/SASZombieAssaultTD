@@ -6,23 +6,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.Components;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Scenes.Battlefields;
 namespace SASZombieAssaultTD.Engine.ECS
+//
 {
-    /// <summary>
-    /// P11-12-10: Final verification and reporting for the ECS system.
-    /// </summary>
+    ///<summary>
+    ///P11-12-10: Final verification and reporting for the ECS system.
+    ///</summary>
     public static class ECSVerificationReport
     {
-        /// <summary>
-        /// Runs comprehensive verification and generates a report.
-        /// </summary>
-        /// <returns>Verification report.</returns>
+        ///<summary>
+        ///Runs comprehensive verification and generates a report.
+        ///</summary>
+        ///<returns>Verification report.</returns>
         public static string RunVerification()
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "ECSVerificationReport: Starting comprehensive verification");
+            Dlogger.Log(LogSubsystems.ECS, LogLevel.Info, "ECSVerificationReport: Starting comprehensive verification");
 
             var report = new StringBuilder();
             AppendHeader(report);
@@ -37,7 +39,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             AppendComplianceVerification(report);
             AppendSummaryAndRecommendations(report);
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "ECSVerificationReport: Verification completed");
+            Dlogger.Log(LogSubsystems.ECS, LogLevel.Info, "ECSVerificationReport: Verification completed");
             return report.ToString();
         }
 
@@ -196,15 +198,15 @@ namespace SASZombieAssaultTD.Engine.ECS
             report.AppendLine("=== End Verification Report ===");
         }
 
-        /// <summary>
-        /// Runs a quick performance test.
-        /// </summary>
+        ///<summary>
+        ///Runs a quick performance test.
+        ///</summary>
         private static PerformanceTestResults RunPerformanceTest()
         {
             var world = new ECSWorld();
             var results = new PerformanceTestResults();
 
-            // Entity creation test
+            //Entity creation test
             var start = DateTime.UtcNow;
             for (int i = 0; i < 1000; i++)
             {
@@ -219,7 +221,7 @@ namespace SASZombieAssaultTD.Engine.ECS
             }
             results.CreationTime = (DateTime.UtcNow - start).TotalMilliseconds;
 
-            // Query test
+            //Query test
             start = DateTime.UtcNow;
             for (int i = 0; i < 100; i++)
             {
@@ -228,13 +230,13 @@ namespace SASZombieAssaultTD.Engine.ECS
             }
             results.QueryTime = (DateTime.UtcNow - start).TotalMilliseconds;
 
-            // Update test
+            //Update test
             start = DateTime.UtcNow;
             world.Update(0.016f);
             results.UpdateTime = (DateTime.UtcNow - start).TotalMilliseconds;
 
-            // Memory estimation
-            results.MemoryUsage = world.EntityCount * 64 + world.EntityCount * 2 * 32; // Rough estimate
+            //Memory estimation
+            results.MemoryUsage = world.EntityCount * 64 + world.EntityCount * 2 * 32; //Rough estimate
 
             return results;
         }
@@ -248,9 +250,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         }
     }
 
-    /// <summary>
-    /// Test suite for ECS system verification.
-    /// </summary>
+    ///<summary>
+    ///Test suite for ECS system verification.
+    ///</summary>
     public static class ECSTestSuite
     {
         public static TestResults RunAllTests()

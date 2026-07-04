@@ -1,42 +1,41 @@
+// ====================================================================================================
+//  FILE: EngineTexture.cs
+//  PATH: Engine/Rendering/ 
+//  PROGRAM: EngineTexture.cs
+//  MODULE: Resource Management Framework
+//  ROLE:
+//      Defines the structures, loaders, and integration points responsible for discovering, validating, and providing engine resources in a deterministic manner.
 //
-//    File:      EngineTexture.cs
-//  Program:    Engine Texture Module
-//  Purpose:    Engine-native texture storage with PNG import/export capabilities.
-//              Provides texture management with pixel data manipulation and GPU upload.
-//  Author:     BDC
-//  Created:    2026-02-10
+//  RESPONSIBILITIES:
+//      - Provide a unified API for loading, caching, and resolving engine resources.
+//      - Enforce deterministic resource lookup and lifecycle rules.
+//      - Abstract file formats, storage locations, and integration layers behind a stable interface.
+//      - Ensure resource availability for all engine subsystems (Rendering, Audio, Gameplay, UI).
 //
-//  Dependencies:
-//    - Engine.Rendering.Interfaces (IEngineTexture)
-//    - Vortice.Direct3D11
-//    - Vortice.DXGI
-//    - SixLabors.ImageSharp (v3.1.3 - MIT licensed)
-//    - SixLabors.ImageSharp.PixelFormats
-//    - SixLabors.ImageSharp.Formats.Png
+//  NON-RESPONSIBILITIES:
+//      - Performing rendering or GPU upload operations.
+//      - Managing gameplay logic or scene entities.
+//      - Handling diagnostics, logging, or performance metrics.
+//      - Encoding or authoring resource files.
 //
-//  Thread Safety:
-//    - Instance members require external synchronization for thread safety.
-//
-//  Notes:
-//    - Stores texture width, height, and pixel data in engine format (int[] ARGB32).
-//    - Uses ImageSharp for PNG import/export (RGBA32).
-//    - Converts between ARGB32 (engine) and RGBA32 (ImageSharp / GPU).
-//    - Provides integrated D3D11 ShaderResourceView creation via CreateNativeHandle.
-//    - No System.Drawing / GDI+ usage; fully .NET 8 compatible.
-//
+//  ARCHITECTURAL NOTES:
+//      - The Resource Management Framework acts as the central authority for all asset retrieval.
+//      - Resource modules must remain pure: no side effects outside resource acquisition and validation.
+//      - All resource types (textures, data files, definitions, metadata) must follow deterministic load rules.
+//  ====================================================================================================
 
-using Engine.Rendering.Interfaces;
+using System;
+using System.IO;
 using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.UI.Rendering;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
-using System;
-using System.IO;
 using Vortice.Direct3D11;
 using Vortice.DXGI;
 
-// Update line 39 in EngineTexture.cs:
+//Update line 39 in EngineTexture.cs:
 public sealed class EngineTexture : IEngineTexture, ITexture2D
 
 {
@@ -63,9 +62,9 @@ public sealed class EngineTexture : IEngineTexture, ITexture2D
         _pixels = pixels;
     }
 
-    // ------------------------------------------------------------
-    // PNG LOAD
-    // ------------------------------------------------------------
+    //------------------------------------------------------------
+    //PNG LOAD
+    //------------------------------------------------------------
     public static EngineTexture FromPng(byte[] data)
     {
         if (data == null) throw new ArgumentNullException(nameof(data));
@@ -92,9 +91,9 @@ public sealed class EngineTexture : IEngineTexture, ITexture2D
         return new EngineTexture(width, height, pixels);
     }
 
-    // ------------------------------------------------------------
-    // PNG SAVE
-    // ------------------------------------------------------------
+    //------------------------------------------------------------
+    //PNG SAVE
+    //------------------------------------------------------------
     public byte[] ToPng()
     {
         using var image = new Image<Rgba32>(_width, _height);
@@ -118,9 +117,9 @@ public sealed class EngineTexture : IEngineTexture, ITexture2D
         return memoryStream.ToArray();
     }
 
-    // ------------------------------------------------------------
-    // GPU UPLOAD (D3D11)
-    // ------------------------------------------------------------
+    //------------------------------------------------------------
+    //GPU UPLOAD (D3D11)
+    //------------------------------------------------------------
     public void CreateNativeHandle(ID3D11Device device)
     {
         if (device == null) throw new ArgumentNullException(nameof(device));
@@ -128,7 +127,7 @@ public sealed class EngineTexture : IEngineTexture, ITexture2D
         int pixelCount = _width * _height;
         var gpuData = new byte[pixelCount * 4];
 
-        // Convert ARGB32 → RGBA8
+        //Convert ARGB32 → RGBA8
         for (int i = 0; i < pixelCount; i++)
         {
             int argb = _pixels[i];
@@ -175,9 +174,9 @@ public sealed class EngineTexture : IEngineTexture, ITexture2D
         }
     }
 
-    // ------------------------------------------------------------
-    // Pixel Conversion Helpers
-    // ------------------------------------------------------------
+    //------------------------------------------------------------
+    //Pixel Conversion Helpers
+    //------------------------------------------------------------
     private static int Rgba32ToArgb(Rgba32 rgba)
     {
         return (rgba.A << 24) | (rgba.R << 16) | (rgba.G << 8) | rgba.B;
@@ -199,7 +198,7 @@ public sealed class EngineTexture : IEngineTexture, ITexture2D
     }
 
     //internal void CreateNativeHandle(object deviceCore) : Already defined above with ID3D11Device parameter
-    // {
-    //    NI.Hit();
-    // }
+    //{
+    //   NI.Hit();
+    //}
 }

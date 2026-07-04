@@ -4,12 +4,14 @@ using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Math;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.HUD
 {
-    /// <summary>
-    /// Lives display component for SAS Zombie Assault TD HUD.
-    /// Shows current player lives with visual feedback for low life situations.
-    /// </summary>
+    ///<summary>
+    ///Lives display component for SAS Zombie Assault TD HUD.
+    ///Shows current player lives with visual feedback for low life situations.
+    ///</summary>
     public class LivesDisplay : HUDComponent
     {
         private int _currentLives = 20;
@@ -21,8 +23,8 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         private bool _showDamageFlash = true;
         private float _deltaTime = 0f;
 
-        // Visual properties
-        // Removed duplicate _position field - using inherited field from HUDComponent
+        //Visual properties
+        //Removed duplicate _position field - using inherited field from HUDComponent
 
         public LivesDisplay(Vector3 position)
         {
@@ -34,20 +36,20 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         private Color _dangerColor = Color.Red;
         private Color _currentColor;
 
-        // Text properties
+        //Text properties
         private Font _font;
         private string _prefix = "LIVES";
         private string _format = "{0}/{1}";
         private List<HeartIcon> _hearts;
 
-        // Animation properties
+        //Animation properties
         private float _pulseSpeed = 3f;
         private float _pulseAmount = 0.15f;
         private float _pulseTimer = 0f;
         private bool _isPulsing = false;
         private float _shakeAmount = 0f;
 
-        // Events
+        //Events
         public event Action<int> OnLivesChanged;
         public event Action<int> OnLivesWarning;
         public event Action<int> OnLivesDanger;
@@ -61,34 +63,34 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _currentColor = _normalColor;
             _hearts = new List<HeartIcon>();
 
-            // Initialize heart icons
+            //Initialize heart icons
             InitializeHearts();
         }
 
-        /// <summary>
-        /// Set lives information.
-        /// </summary>
-        /// <param name="current">Current lives.</param>
-        /// <param name="max">Maximum lives.</param>
+        ///<summary>
+        ///Set lives information.
+        ///</summary>
+        ///<param name="current">Current lives.</param>
+        ///<param name="max">Maximum lives.</param>
         public void SetLives(int current, int max)
         {
             _currentLives = System.Math.Max(0, current);
             _maxLives = System.Math.Max(1, max);
 
-            // Update life status
+            //Update life status
             _isLowLives = _currentLives <= _maxLives * 0.25f;
             _isCriticalLives = _currentLives <= _maxLives * 0.1f;
 
-            // Update color and effects
+            //Update color and effects
             UpdateLivesColor();
 
-            // Trigger damage flash if lives decreased
+            //Trigger damage flash if lives decreased
             if (_showDamageFlash && _damageFlashTimer > 0)
             {
                 StartDamageFlash();
             }
 
-            // Trigger events
+            //Trigger events
             OnLivesChanged?.Invoke(_currentLives);
 
             if (_isLowLives)
@@ -111,131 +113,131 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             System.Diagnostics.Debug.WriteLine($"Lives updated: {current}/{max}");
         }
 
-        /// <summary>
-        /// Add lives.
-        /// </summary>
-        /// <param name="amount">Amount of lives to add.</param>
+        ///<summary>
+        ///Add lives.
+        ///</summary>
+        ///<param name="amount">Amount of lives to add.</param>
         public void AddLives(int amount)
         {
             SetLives(_currentLives + amount, _maxLives);
         }
 
-        /// <summary>
-        /// Remove lives.
-        /// </summary>
-        /// <param name="amount">Amount of lives to remove.</param>
+        ///<summary>
+        ///Remove lives.
+        ///</summary>
+        ///<param name="amount">Amount of lives to remove.</param>
         public void RemoveLives(int amount)
         {
             SetLives(_currentLives - amount, _maxLives);
         }
 
-        /// <summary>
-        /// Restore all lives.
-        /// </summary>
+        ///<summary>
+        ///Restore all lives.
+        ///</summary>
         public void RestoreAllLives()
         {
             SetLives(_maxLives, _maxLives);
             OnLivesRestored?.Invoke();
         }
 
-        /// <summary>
-        /// Set display position.
-        /// </summary>
-        /// <param name="position">New position.</param>
+        ///<summary>
+        ///Set display position.
+        ///</summary>
+        ///<param name="position">New position.</param>
         public void SetPosition(Vector3 position)
         {
             _position = position;
         }
 
-        /// <summary>
-        /// Set display size.
-        /// </summary>
-        /// <param name="size">New size.</param>
+        ///<summary>
+        ///Set display size.
+        ///</summary>
+        ///<param name="size">New size.</param>
         public void SetSize(Vector3 size)
         {
             _size = size;
             UpdateHeartPositions(0f);
         }
 
-        /// <summary>
-        /// Set normal color.
-        /// </summary>
-        /// <param name="color">Normal color.</param>
+        ///<summary>
+        ///Set normal color.
+        ///</summary>
+        ///<param name="color">Normal color.</param>
         public void SetNormalColor(Color color)
         {
             _normalColor = color;
             UpdateLivesColor();
         }
 
-        /// <summary>
-        /// Set warning color.
-        /// </summary>
-        /// <param name="color">Warning color.</param>
+        ///<summary>
+        ///Set warning color.
+        ///</summary>
+        ///<param name="color">Warning color.</param>
         public void SetWarningColor(Color color)
         {
             _warningColor = color;
             UpdateLivesColor();
         }
 
-        /// <summary>
-        /// Set danger color.
-        /// </summary>
-        /// <param name="color">Danger color.</param>
+        ///<summary>
+        ///Set danger color.
+        ///</summary>
+        ///<param name="color">Danger color.</param>
         public void SetDangerColor(Color color)
         {
             _dangerColor = color;
             UpdateLivesColor();
         }
 
-        /// <summary>
-        /// Enable or disable damage flash effect.
-        /// </summary>
-        /// <param name="enabled">Whether to show damage flash.</param>
+        ///<summary>
+        ///Enable or disable damage flash effect.
+        ///</summary>
+        ///<param name="enabled">Whether to show damage flash.</param>
         public void SetDamageFlashEnabled(bool enabled)
         {
             _showDamageFlash = enabled;
         }
 
-        /// <summary>
-        /// Set pulse animation speed.
-        /// </summary>
-        /// <param name="speed">Pulse speed multiplier.</param>
+        ///<summary>
+        ///Set pulse animation speed.
+        ///</summary>
+        ///<param name="speed">Pulse speed multiplier.</param>
         public void SetPulseSpeed(float speed)
         {
             _pulseSpeed = System.Math.Max(0.1f, speed);
         }
 
-        /// <summary>
-        /// Set pulse animation amount.
-        /// </summary>
-        /// <param name="amount">Pulse amount.</param>
+        ///<summary>
+        ///Set pulse animation amount.
+        ///</summary>
+        ///<param name="amount">Pulse amount.</param>
         public void SetPulseAmount(float amount)
         {
             _pulseAmount = System.Math.Clamp(0f, 0.5f, amount);
         }
 
-        /// <summary>
-        /// Set text prefix.
-        /// </summary>
-        /// <param name="prefix">Text prefix.</param>
+        ///<summary>
+        ///Set text prefix.
+        ///</summary>
+        ///<param name="prefix">Text prefix.</param>
         public void SetPrefix(string prefix)
         {
             _prefix = prefix;
         }
 
-        /// <summary>
-        /// Set text format.
-        /// </summary>
-        /// <param name="format">Text format string.</param>
+        ///<summary>
+        ///Set text format.
+        ///</summary>
+        ///<param name="format">Text format string.</param>
         public void SetFormat(string format)
         {
             _format = format;
         }
 
-        /// <summary>
-        /// Enable or disable pulsing animation.
-        /// </summary>
-        /// <param name="enabled">Whether to enable pulsing.</param>
+        ///<summary>
+        ///Enable or disable pulsing animation.
+        ///</summary>
+        ///<param name="enabled">Whether to enable pulsing.</param>
         public void SetPulsingEnabled(bool enabled)
         {
             _isPulsing = enabled;
@@ -249,11 +251,11 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         {
             base.Initialize();
 
-            // Load font
+            //Load font
             var cachedFont = FontCache.GetFont("large");
             _font = cachedFont != null ? new Font(cachedFont.Name, cachedFont.Size) : new Font("Arial", 12);
 
-            // Set initial values
+            //Set initial values
             UpdateLivesColor();
         }
 
@@ -261,13 +263,13 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         {
             base.Update(deltaTime);
 
-            // Update pulse animation
+            //Update pulse animation
             if (_isPulsing)
             {
                 UpdatePulseAnimation(deltaTime);
             }
 
-            // Update damage flash
+            //Update damage flash
             if (_damageFlashTimer > 0)
             {
                 UpdateDamageFlash(deltaTime);
@@ -278,22 +280,22 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         {
             base.Render();
 
-            // Render background
+            //Render background
             RenderBackground();
 
-            // Render hearts
+            //Render hearts
             RenderHearts();
 
-            // Render text
+            //Render text
             RenderText();
 
-            // Render effects
+            //Render effects
             RenderEffects();
         }
 
-        /// <summary>
-        /// Initialize heart icons.
-        /// </summary>
+        ///<summary>
+        ///Initialize heart icons.
+        ///</summary>
         private void InitializeHearts()
         {
             _hearts.Clear();
@@ -317,14 +319,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             UpdateHeartPositions(0f);
         }
 
-        /// <summary>
-        /// Update heart positions.
-        /// </summary>
+        ///<summary>
+        ///Update heart positions.
+        ///</summary>
         private void UpdateHeartPositions(float deltaTime)
         {
             var heartSize = new Vector3(20f, 20f, 0);
             var spacing = 25f;
-            var heartCount = _hearts.Count; // Define heartCount as the number of hearts in _hearts
+            var heartCount = _hearts.Count; //Define heartCount as the number of hearts in _hearts
             var startX = _position.X + (_size.X - (heartCount * spacing + heartSize.X) / 2f);
             var startY = _position.Y + (_size.Y - heartSize.Y) / 2f;
 
@@ -337,7 +339,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
                 heart.TargetPosition = targetPosition;
                 heart.Scale = heart.IsFull ? 1f : 0.5f;
 
-                // Animate heart position
+                //Animate heart position
                 if (heart.CurrentPosition != heart.TargetPosition)
                 {
                     var direction = (heart.TargetPosition - heart.CurrentPosition).Normalized;
@@ -352,34 +354,34 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Update lives color based on current state.
-        /// </summary>
+        ///<summary>
+        ///Update lives color based on current state.
+        ///</summary>
         private void UpdateLivesColor()
         {
             if (_isCriticalLives)
             {
                 _currentColor = _dangerColor;
-                _pulseAmount = 0.3f; // Stronger pulse for critical lives
-                _pulseSpeed = 4f; // Faster pulse for critical lives
+                _pulseAmount = 0.3f; //Stronger pulse for critical lives
+                _pulseSpeed = 4f; //Faster pulse for critical lives
             }
             else if (_isLowLives)
             {
                 _currentColor = _warningColor;
-                _pulseAmount = 0.2f; // Moderate pulse for low lives
+                _pulseAmount = 0.2f; //Moderate pulse for low lives
                 _pulseSpeed = 3f;
             }
             else
             {
                 _currentColor = _normalColor;
-                _pulseAmount = 0.1f; // Subtle pulse for normal lives
+                _pulseAmount = 0.1f; //Subtle pulse for normal lives
                 _pulseSpeed = 2f;
             }
         }
 
-        /// <summary>
-        /// Update damage flash animation.
-        /// </summary>
+        ///<summary>
+        ///Update damage flash animation.
+        ///</summary>
         private void UpdateDamageFlash(float deltaTime)
         {
             _damageFlashTimer -= deltaTime;
@@ -390,25 +392,25 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Start damage flash effect.
-        /// </summary>
+        ///<summary>
+        ///Start damage flash effect.
+        ///</summary>
         private void StartDamageFlash()
         {
             _damageFlashTimer = 0.5f;
         }
 
-        /// <summary>
-        /// Update pulse animation.
-        /// </summary>
+        ///<summary>
+        ///Update pulse animation.
+        ///</summary>
         private void UpdatePulseAnimation(float deltaTime)
         {
             _pulseTimer += deltaTime * _pulseSpeed;
         }
 
-        /// <summary>
-        /// Render background.
-        /// </summary>
+        ///<summary>
+        ///Render background.
+        ///</summary>
         private void RenderBackground()
         {
             var backgroundColor = new Color(0, 0, 0, 150);
@@ -418,9 +420,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             RenderSystem.DrawRectangle(_position.X, _position.Y, _size.X, _size.Y, borderColor, 2f);
         }
 
-        /// <summary>
-        /// Render heart icons.
-        /// </summary>
+        ///<summary>
+        ///Render heart icons.
+        ///</summary>
         private void RenderHearts()
         {
             foreach (var heart in _hearts)
@@ -429,60 +431,60 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
                 var heartSize = new Vector3(20f, 20f, 0) * heart.Scale;
                 var heartPosition = heart.CurrentPosition;
 
-                // Render heart
+                //Render heart
                 if (heart.IsFull)
                 {
-                    // TODO: Implement rendering system
-                    // RenderSystem.DrawHeart(heartPosition.X, heartPosition.Y, heartSize, heartColor);
+                    //TODO: Implement rendering system
+                    //RenderSystem.DrawHeart(heartPosition.X, heartPosition.Y, heartSize, heartColor);
                 }
                 else
                 {
-                    // TODO: Implement rendering system
-                    // RenderSystem.DrawEmptyHeart(heartPosition.X, heartPosition.Y, heartSize, heartColor);
+                    //TODO: Implement rendering system
+                    //RenderSystem.DrawEmptyHeart(heartPosition.X, heartPosition.Y, heartSize, heartColor);
                 }
             }
         }
 
-        /// <summary>
-        /// Render text.
-        /// </summary>
+        ///<summary>
+        ///Render text.
+        ///</summary>
         private void RenderText()
         {
             var text = $"{_prefix} {string.Format(_format, _currentLives, _maxLives)}";
             var textColor = new Color(_currentColor.R, _currentColor.G, _currentColor.B, 255);
 
-            // TODO: Replace with proper renderContext parameter
-            // RenderSystem.DrawString(text, _position.X + 10f, _position.Y + 10f, textColor, _font);
+            //TODO: Replace with proper renderContext parameter
+            //RenderSystem.DrawString(text, _position.X + 10f, _position.Y + 10f, textColor, _font);
         }
 
-        /// <summary>
-        /// Render visual effects.
-        /// </summary>
+        ///<summary>
+        ///Render visual effects.
+        ///</summary>
         private void RenderEffects()
         {
-            // Render damage flash overlay
+            //Render damage flash overlay
             if (_damageFlashTimer > 0)
             {
                 var flashAlpha = (_damageFlashTimer / 0.5f) * 0.5f;
                 var flashColor = new Color(255, 0, 0, (byte)(255 * flashAlpha));
-                // TODO: Replace with proper renderContext parameter
-                // RenderSystem.DrawRectangle(_position.X, _position.Y, _size.X, _size.Y, flashColor);
+                //TODO: Replace with proper renderContext parameter
+                //RenderSystem.DrawRectangle(_position.X, _position.Y, _size.X, _size.Y, flashColor);
             }
 
-            // Render pulse effect
+            //Render pulse effect
             if (_isPulsing)
             {
                 var pulse = 1f + (MathF.Sin(_pulseTimer * _pulseSpeed) * _pulseAmount);
                 var pulseColor = new Color(_currentColor.R, _currentColor.G, _currentColor.B, (byte)(255 * (0.3f + (MathF.Sin(_pulseTimer * _pulseSpeed * 2f) * 0.3f))));
-                // TODO: Replace with proper renderContext parameter
-                // RenderSystem.DrawRectangle(_position.X, _position.Y, _size.X, _size.Y, pulseColor, 1f);
+                //TODO: Replace with proper renderContext parameter
+                //RenderSystem.DrawRectangle(_position.X, _position.Y, _size.X, _size.Y, pulseColor, 1f);
             }
         }
     }
 
-    /// <summary>
-    /// Heart icon for lives display.
-    /// </summary>
+    ///<summary>
+    ///Heart icon for lives display.
+    ///</summary>
     public class HeartIcon
     {
         public int Index { get; set; }

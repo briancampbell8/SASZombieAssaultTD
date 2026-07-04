@@ -1,11 +1,12 @@
+//
 using System;
 
 namespace SASZombieAssaultTD.Engine.UI.Widgets
 {
-    /// <summary>
-    /// Shared widget utilities for all UI widgets
-    /// P80-04-04: UIWidgetBase defining shared widget utilities for all UI widgets
-    /// </summary>
+    ///<summary>
+    ///Shared widget utilities for all UI widgets
+    ///P80-04-04: UIWidgetBase defining shared widget utilities for all UI widgets
+    ///</summary>
     public abstract class UIWidgetBase : UIElement
     {
         private bool _isHovered = false;
@@ -13,24 +14,24 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         private bool _isDisabled = false;
         private string _tooltip = string.Empty;
 
-        /// <summary>
-        /// Gets whether the widget is currently hovered
-        /// </summary>
+        ///<summary>
+        ///Gets whether the widget is currently hovered
+        ///</summary>
         public bool IsHovered => _isHovered;
 
-        /// <summary>
-        /// Gets whether the widget is currently pressed
-        /// </summary>
+        ///<summary>
+        ///Gets whether the widget is currently pressed
+        ///</summary>
         public bool IsPressed => _isPressed;
 
-        /// <summary>
-        /// Gets whether the widget is disabled
-        /// </summary>
+        ///<summary>
+        ///Gets whether the widget is disabled
+        ///</summary>
         public bool IsDisabled => _isDisabled;
 
-        /// <summary>
-        /// Gets or sets the tooltip text
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the tooltip text
+        ///</summary>
         public string Tooltip
         {
             get => _tooltip;
@@ -44,17 +45,17 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Initializes a new UIWidgetBase
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UIWidgetBase
+        ///</summary>
         protected UIWidgetBase()
         {
             System.Diagnostics.Debug.WriteLine("UIWidgetBase: Created new widget base");
         }
 
-        /// <summary>
-        /// Called when the mouse enters the widget
-        /// </summary>
+        ///<summary>
+        ///Called when the mouse enters the widget
+        ///</summary>
         public override void OnMouseEnter()
         {
             try
@@ -68,9 +69,9 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Called when the mouse leaves the widget
-        /// </summary>
+        ///<summary>
+        ///Called when the mouse leaves the widget
+        ///</summary>
         public override void OnMouseExit()
         {
             try
@@ -84,9 +85,9 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Called when the widget is pressed
-        /// </summary>
+        ///<summary>
+        ///Called when the widget is pressed
+        ///</summary>
         protected virtual void OnPressed()
         {
             try
@@ -100,9 +101,9 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Called when the widget is released
-        /// </summary>
+        ///<summary>
+        ///Called when the widget is released
+        ///</summary>
         protected virtual void OnReleased()
         {
             try
@@ -116,10 +117,10 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Sets the widget disabled state
-        /// </summary>
-        /// <param name="disabled">Whether the widget should be disabled</param>
+        ///<summary>
+        ///Sets the widget disabled state
+        ///</summary>
+        ///<param name="disabled">Whether the widget should be disabled</param>
         public void SetDisabled(bool disabled)
         {
             try
@@ -136,24 +137,24 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Updates the widget state
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds</param>
+        ///<summary>
+        ///Updates the widget state
+        ///</summary>
+        ///<param name="deltaTime">Time since last update in seconds</param>
         public override void Update(float deltaTime)
         {
             try
             {
                 base.Update(deltaTime);
 
-                // Reset hover state (will be updated by input system)
+                //Reset hover state (will be updated by input system)
                 if (_isHovered && !_isDisabled)
                 {
-                    // Update hover animation or effects
+                    //Update hover animation or effects
                     UpdateHoverState(deltaTime);
                 }
 
-                // Update pressed state animation
+                //Update pressed state animation
                 if (_isPressed && !_isDisabled)
                 {
                     UpdatePressedState(deltaTime);
@@ -165,29 +166,29 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Renders the widget
-        /// </summary>
+        ///<summary>
+        ///Renders the widget
+        ///</summary>
         public override void Render()
         {
             try
             {
                 if (_isDisabled)
                 {
-                    // Render disabled state
+                    //Render disabled state
                     RenderDisabledState();
                 }
                 else
                 {
                     base.Render();
 
-                    // Render hover state
+                    //Render hover state
                     if (_isHovered)
                     {
                         RenderHoverState();
                     }
 
-                    // Render pressed state
+                    //Render pressed state
                     if (_isPressed)
                     {
                         RenderPressedState();
@@ -200,51 +201,51 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Updates hover state (placeholder implementation)
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds</param>
+        ///<summary>
+        ///Updates hover state (placeholder implementation)
+        ///</summary>
+        ///<param name="deltaTime">Time since last update in seconds</param>
         protected virtual void UpdateHoverState(float deltaTime)
         {
-            // Override in derived classes for hover animations
+            //Override in derived classes for hover animations
         }
 
-        /// <summary>
-        /// Updates pressed state (placeholder implementation)
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds</param>
+        ///<summary>
+        ///Updates pressed state (placeholder implementation)
+        ///</summary>
+        ///<param name="deltaTime">Time since last update in seconds</param>
         protected virtual void UpdatePressedState(float deltaTime)
         {
-            // Override in derived classes for press animations
+            //Override in derived classes for press animations
         }
 
-        /// <summary>
-        /// Renders disabled state (placeholder implementation)
-        /// </summary>
+        ///<summary>
+        ///Renders disabled state (placeholder implementation)
+        ///</summary>
         protected virtual void RenderDisabledState()
         {
-            // Override in derived classes for disabled appearance
+            //Override in derived classes for disabled appearance
         }
 
-        /// <summary>
-        /// Renders hover state (placeholder implementation)
-        /// </summary>
+        ///<summary>
+        ///Renders hover state (placeholder implementation)
+        ///</summary>
         protected virtual void RenderHoverState()
         {
-            // Override in derived classes for hover appearance
+            //Override in derived classes for hover appearance
         }
 
-        /// <summary>
-        /// Renders pressed state (placeholder implementation)
-        /// </summary>
+        ///<summary>
+        ///Renders pressed state (placeholder implementation)
+        ///</summary>
         protected virtual void RenderPressedState()
         {
-            // Override in derived classes for pressed appearance
+            //Override in derived classes for pressed appearance
         }
 
-        /// <summary>
-        /// Resets the widget state
-        /// </summary>
+        ///<summary>
+        ///Resets the widget state
+        ///</summary>
         public void ResetState()
         {
             try

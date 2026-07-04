@@ -30,87 +30,89 @@ using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Components
 {
-    /// <summary>
-    /// Component for sprite rendering properties.
-    /// P11-03-02-A: Stores texture/sprite asset ID, source rectangle, color tint, layer depth, and visibility flag.
-    /// </summary>
+    ///<summary>
+    ///Component for sprite rendering properties.
+    ///P11-03-02-A: Stores texture/sprite asset ID, source rectangle, color tint, layer depth, and visibility flag.
+    ///</summary>
     public class SpriteComponent : BaseComponent
     {
-        ///  Properties
+        /// Properties
 
-        /// <summary>
-        /// Texture or sprite asset ID for RSManager lookup.
-        /// </summary>
+        ///<summary>
+        ///Texture or sprite asset ID for RSManager lookup.
+        ///</summary>
         public string AssetId { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Sprite index for sprite sheet animations.
-        /// </summary>
+        ///<summary>
+        ///Sprite index for sprite sheet animations.
+        ///</summary>
         public int SpriteIndex { get; set; }
 
-        /// <summary>
-        /// Transform offset for positioning.
-        /// </summary>
+        ///<summary>
+        ///Transform offset for positioning.
+        ///</summary>
         public Vector3 TransformOffset { get; set; } = new Vector3(0, 0, 0);
 
-        /// <summary>
-        /// Optional source rectangle within the texture (null = full texture).
-        /// </summary>
+        ///<summary>
+        ///Optional source rectangle within the texture (null = full texture).
+        ///</summary>
         public Rectangle? SourceRectangle { get; set; } = null;
 
-        /// <summary>
-        /// Optional color tint applied to the sprite (white = no tint).
-        /// </summary>
+        ///<summary>
+        ///Optional color tint applied to the sprite (white = no tint).
+        ///</summary>
         public Color TintColor { get; set; } = Color.White;
 
-        /// <summary>
-        /// Color tint alias for compatibility.
-        /// </summary>
+        ///<summary>
+        ///Color tint alias for compatibility.
+        ///</summary>
         public Color ColorTint { get; set; } = Color.White;
 
-        /// <summary>
-        /// Animation time for sprite animations.
-        /// </summary>
+        ///<summary>
+        ///Animation time for sprite animations.
+        ///</summary>
         public float AnimationTime { get; set; }
 
-        /// <summary>
-        /// Layer depth for rendering order (lower values = render first, behind).
-        /// </summary>
+        ///<summary>
+        ///Layer depth for rendering order (lower values = render first, behind).
+        ///</summary>
         public float LayerDepth { get; set; } = 0.0f;
 
-        /// <summary>
-        /// Visibility flag - sprite is only rendered when true.
-        /// </summary>
+        ///<summary>
+        ///Visibility flag - sprite is only rendered when true.
+        ///</summary>
         public bool IsVisible { get; set; } = true;
 
-        /// 
+        ///
 
-        ///  Constructors
+        /// Constructors
 
-        /// <summary>
-        /// Creates a new SpriteComponent with default values.
-        /// </summary>
+        ///<summary>
+        ///Creates a new SpriteComponent with default values.
+        ///</summary>
         public SpriteComponent() { }
 
-        /// <summary>
-        /// Creates a new SpriteComponent with specified asset ID.
-        /// </summary>
-        /// <param name="assetId">Texture or sprite asset ID</param>
+        ///<summary>
+        ///Creates a new SpriteComponent with specified asset ID.
+        ///</summary>
+        ///<param name="assetId">Texture or sprite asset ID</param>
         public SpriteComponent(string assetId)
         {
             AssetId = assetId ?? throw new ArgumentNullException(nameof(assetId));
         }
 
-        /// <summary>
-        /// Creates a new SpriteComponent with full configuration.
-        /// </summary>
-        /// <param name="assetId">Texture or sprite asset ID</param>
-        /// <param name="sourceRectangle">Optional source rectangle</param>
-        /// <param name="tintColor">Optional color tint</param>
-        /// <param name="layerDepth">Layer depth for ordering</param>
-        /// <param name="isVisible">Initial visibility state</param>
+        ///<summary>
+        ///Creates a new SpriteComponent with full configuration.
+        ///</summary>
+        ///<param name="assetId">Texture or sprite asset ID</param>
+        ///<param name="sourceRectangle">Optional source rectangle</param>
+        ///<param name="tintColor">Optional color tint</param>
+        ///<param name="layerDepth">Layer depth for ordering</param>
+        ///<param name="isVisible">Initial visibility state</param>
         public SpriteComponent(
             string assetId,
             Rectangle? sourceRectangle = null,
@@ -129,21 +131,21 @@ namespace SASZombieAssaultTD.Engine.Components
         {
         }
 
-        /// 
+        ///
 
-        ///  Methods
+        /// Methods
 
-        /// <summary>
-        /// Toggles the visibility of the sprite.
-        /// </summary>
+        ///<summary>
+        ///Toggles the visibility of the sprite.
+        ///</summary>
         public void ToggleVisibility()
         {
             IsVisible = !IsVisible;
         }
 
-        /// <summary>
-        /// Resets the sprite component to its default state.
-        /// </summary>
+        ///<summary>
+        ///Resets the sprite component to its default state.
+        ///</summary>
         public void Reset()
         {
             AssetId = string.Empty;
@@ -153,15 +155,15 @@ namespace SASZombieAssaultTD.Engine.Components
             IsVisible = true;
         }
 
-        /// <summary>
-        /// Gets a string representation for debugging.
-        /// </summary>
+        ///<summary>
+        ///Gets a string representation for debugging.
+        ///</summary>
         public override string ToString()
         {
             return $"SpriteComponent(Asset: {AssetId}, Layer: {LayerDepth}, Visible: {IsVisible})";
         }
 
-        /// 
+        ///
     }
 }
 

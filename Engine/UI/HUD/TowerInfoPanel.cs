@@ -8,12 +8,14 @@ using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.UI.Rendering;
 using TowerUpgrade = SASZombieAssaultTD.Engine.UI.HUD.TowerUpgrade;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.HUD
 {
-    /// <summary>
-    /// Tower info panel for SAS Zombie Assault TD HUD.
-    /// Shows detailed information about selected tower.
-    /// </summary>
+    ///<summary>
+    ///Tower info panel for SAS Zombie Assault TD HUD.
+    ///Shows detailed information about selected tower.
+    ///</summary>
     public class TowerInfoPanel : HUDComponent
     {
         private Tower _currentTower;
@@ -24,14 +26,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         private float _transitionTimer = 0f;
         private float _transitionDuration = 0.3f;
 
-        // Panel sections
+        //Panel sections
         private TowerInfoSection _basicInfo;
         private TowerInfoSection _statsSection;
         private TowerInfoSection _upgradeSection;
         private TowerInfoSection _targetingSection;
         private TowerInfoSection _specialAbilitiesSection;
 
-        // Visual properties
+        //Visual properties
         private new Vector3 _position;
         private new Vector3 _size;
         private new Color _backgroundColor = new Color(0, 0, 0, 180);
@@ -39,13 +41,13 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         private Color _sectionColor = Color.White;
         private Color _sectionHoverColor = Color.LightGray;
 
-        // Text properties
+        //Text properties
         private Font _titleFont;
         private Font _textFont;
         private Font _smallFont;
         private Font _iconFont;
 
-        // Events
+        //Events
         public event Action<Tower> OnTowerUpgraded;
         public event Action<Tower> OnTowerSold;
         public event Action<Tower> OnTowerTargetChanged;
@@ -55,7 +57,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _position = new Vector3(300f, 50f, 0);
             _size = new Vector3(300f, 400f, 0);
 
-            // Initialize fonts
+            //Initialize fonts
             var cachedTitleFont = FontCache.GetFont("title");
             _titleFont = new Font(cachedTitleFont?.Name ?? "Arial", cachedTitleFont?.Size ?? 14);
             var cachedTextFont = FontCache.GetFont("default");
@@ -68,10 +70,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             InitializeSections();
         }
 
-        /// <summary>
-        /// Set tower to display.
-        /// </summary>
-        /// <param name="tower">Tower to display.</param>
+        ///<summary>
+        ///Set tower to display.
+        ///</summary>
+        ///<param name="tower">Tower to display.</param>
         public void SetTower(Tower tower)
         {
             if (tower == null)
@@ -87,13 +89,13 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _isTransitioning = true;
             _transitionTimer = 0f;
 
-            // Start transition animation
+            //Start transition animation
             StartTransition();
         }
 
-        /// <summary>
-        /// Hide the panel.
-        /// </summary>
+        ///<summary>
+        ///Hide the panel.
+        ///</summary>
         public void HidePanel()
         {
             _isVisible = false;
@@ -103,45 +105,45 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _previousTower = null;
         }
 
-        /// <summary>
-        /// Set panel position.
-        /// </summary>
-        /// <param name="position">New position.</param>
+        ///<summary>
+        ///Set panel position.
+        ///</summary>
+        ///<param name="position">New position.</param>
         public void SetPosition(Vector3 position)
         {
             _position = position;
         }
 
-        /// <summary>
-        /// Set panel size.
-        /// </summary>
-        /// <param name="size">New size.</param>
+        ///<summary>
+        ///Set panel size.
+        ///</summary>
+        ///<param name="size">New size.</param>
         public void SetSize(Vector3 size)
         {
             _size = size;
         }
 
-        /// <summary>
-        /// Set background color.
-        /// </summary>
-        /// <param name="color">Background color.</param>
+        ///<summary>
+        ///Set background color.
+        ///</summary>
+        ///<param name="color">Background color.</param>
         public void SetBackgroundColor(Color color)
         {
             _backgroundColor = color;
         }
 
-        /// <summary>
-        /// Set border color.
-        /// </summary>
-        /// <param name="color">Border color.</param>
+        ///<summary>
+        ///Set border color.
+        ///</summary>
+        ///<param name="color">Border color.</param>
         public void SetBorderColor(Color color)
         {
             _borderColor = color;
         }
 
-        /// <summary>
-        /// Set section colors.
-        /// </summary>
+        ///<summary>
+        ///Set section colors.
+        ///</summary>
         public void SetSectionColors(Color normal, Color hover)
         {
             _sectionColor = normal;
@@ -152,7 +154,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         {
             base.Initialize();
 
-            // Load fonts
+            //Load fonts
             var cachedLargeFont = FontCache.GetFont("large");
             _titleFont = new Font(cachedLargeFont?.Name ?? "Arial", cachedLargeFont?.Size ?? 14);
             var cachedMediumFont = FontCache.GetFont("medium");
@@ -162,7 +164,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             var cachedIconFont = FontCache.GetFont("icon");
             _iconFont = new Font(cachedIconFont?.Name ?? "Arial", cachedIconFont?.Size ?? 16);
 
-            // Initialize sections
+            //Initialize sections
             InitializeSections();
         }
 
@@ -170,19 +172,19 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         {
             base.Update(deltaTime);
 
-            // Update transition animation
+            //Update transition animation
             if (_isTransitioning)
             {
                 UpdateTransition(deltaTime);
             }
 
-            // Update display timer
+            //Update display timer
             if (_displayTimer > 0)
             {
                 _displayTimer -= deltaTime;
             }
 
-            // Update tower info if tower changed
+            //Update tower info if tower changed
             if (_currentTower != null || _currentTower != _previousTower)
             {
                 UpdateTowerInfo();
@@ -195,11 +197,11 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
 
             try
             {
-                // Render background
-                // TODO: RenderBackground is not a method
-                // RenderBackground();
+                //Render background
+                //TODO: RenderBackground is not a method
+                //RenderBackground();
 
-                // Render sections
+                //Render sections
                 RenderSections();
             }
             catch (Exception ex)
@@ -208,9 +210,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Initialize all panel sections.
-        /// </summary>
+        ///<summary>
+        ///Initialize all panel sections.
+        ///</summary>
         private void InitializeSections()
         {
             _basicInfo = new TowerInfoSection("Tower Information", 80f);
@@ -230,9 +232,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _isTransitioning = true;
         }
 
-        /// <summary>
-        /// Update transition animation.
-        /// </summary>
+        ///<summary>
+        ///Update transition animation.
+        ///</summary>
         private void UpdateTransition(float deltaTime)
         {
             _transitionTimer += deltaTime;
@@ -244,14 +246,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Update tower information display.
-        /// </summary>
+        ///<summary>
+        ///Update tower information display.
+        ///</summary>
         private void UpdateTowerInfo()
         {
             if (_currentTower == null) return;
 
-            // Update basic info
+            //Update basic info
             _basicInfo.ClearContent();
             _basicInfo.AddContent($"Name: {_currentTower.Name}");
             _basicInfo.AddContent($"Type: {_currentTower.Type}");
@@ -259,14 +261,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _basicInfo.AddContent($"Damage: {_currentTower.Damage}");
             _basicInfo.AddContent($"Range: {_currentTower.Range:F1}");
 
-            // Update stats
+            //Update stats
             _statsSection.ClearContent();
             _statsSection.AddContent($"Kills: {_currentTower.TotalKills}");
             _statsSection.AddContent($"Accuracy: {_currentTower.Accuracy:P1}");
             _statsSection.AddContent($"DPS: {_currentTower.DPS:F1}");
             _statsSection.AddContent($"Uptime: {_currentTower.Uptime:F1}s");
 
-            // Update upgrade info
+            //Update upgrade info
             _upgradeSection.ClearContent();
             var upgrades = _currentTower.AvailableUpgrades;
             foreach (var upgrade in upgrades)
@@ -274,31 +276,31 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
                 _upgradeSection.AddContent($"{upgrade.Name} (${upgrade.Cost})");
             }
 
-            // Update targeting info
+            //Update targeting info
             _targetingSection.ClearContent();
             _targetingSection.AddContent($"Mode: {_currentTower.TargetingMode}");
-            // TODO: Add TargetPriority property to Tower class
-            // _targetingSection.AddContent($"Priority: {_currentTower.TargetPriority}");
+            //TODO: Add TargetPriority property to Tower class
+            //_targetingSection.AddContent($"Priority: {_currentTower.TargetPriority}");
             _targetingSection.AddContent($"Range: {_currentTower.Range:F1}");
 
-            // Update special abilities
+            //Update special abilities
             _specialAbilitiesSection.ClearContent();
-            // TODO: Add SpecialAbilities property to Tower class
-            // var abilities = _currentTower.SpecialAbilities;
-            // foreach (var ability in abilities)
-            // {
-            //     _specialAbilitiesSection.AddContent(ability);
-            // }
+            //TODO: Add SpecialAbilities property to Tower class
+            //var abilities = _currentTower.SpecialAbilities;
+            //foreach (var ability in abilities)
+            //{
+            //    _specialAbilitiesSection.AddContent(ability);
+            //}
         }
 
-        /// <summary>
-        /// Render all sections.
-        /// </summary>
+        ///<summary>
+        ///Render all sections.
+        ///</summary>
         private void RenderSections()
         {
             var sectionY = _position.Y + 20f;
 
-            // Render each section
+            //Render each section
             RenderSection(_basicInfo, sectionY);
             sectionY += _basicInfo.Height + 10f;
 
@@ -314,57 +316,57 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             RenderSection(_specialAbilitiesSection, sectionY);
         }
 
-        /// <summary>
-        /// Render a section.
-        /// </summary>
-        /// <param name="section">Section to render.</param>
-        /// <param name="y">Y position.</param>
+        ///<summary>
+        ///Render a section.
+        ///</summary>
+        ///<param name="section">Section to render.</param>
+        ///<param name="y">Y position.</param>
         private void RenderSection(TowerInfoSection section, float y)
         {
             var sectionHeight = section.Height;
             var sectionY = _position.Y + y;
-            var sectionWidth = _size.X - 40f; // Margin
-            var sectionX = _position.X + 20f; // Margin
+            var sectionWidth = _size.X - 40f; //Margin
+            var sectionX = _position.X + 20f; //Margin
 
-            // Render section background
+            //Render section background
             var backgroundColor = new Color(
                 _backgroundColor.R, _backgroundColor.G, _backgroundColor.B,
                 (byte)(200 * GetTransitionProgress())
             );
-            // RenderSystem.DrawRectangle(sectionX, sectionY, sectionWidth, sectionHeight, backgroundColor); // TODO: implement
+            //RenderSystem.DrawRectangle(sectionX, sectionY, sectionWidth, sectionHeight, backgroundColor); //TODO: implement
 
-            // Render border
+            //Render border
             var borderColor = new Color(
                 _borderColor.R, _borderColor.G, _borderColor.B,
                 (byte)(255 * GetTransitionProgress())
             );
-            // RenderSystem.DrawRectangle(sectionX, sectionY, sectionWidth, sectionHeight, borderColor, 2f); // TODO: implement
+            //RenderSystem.DrawRectangle(sectionX, sectionY, sectionWidth, sectionHeight, borderColor, 2f); //TODO: implement
 
-            // Render section title
+            //Render section title
             var titleColor = new Color(_sectionColor.R, _sectionColor.G, _sectionColor.B, 255);
-            // RenderSystem.DrawString(section.Title, sectionX + 10f, sectionY + 10f, titleColor, _titleFont); // TODO: implement
+            //RenderSystem.DrawString(section.Title, sectionX + 10f, sectionY + 10f, titleColor, _titleFont); //TODO: implement
 
-            // Render section content
+            //Render section content
             var contentColor = new Color(_sectionColor.R, _sectionColor.G, _sectionColor.B, 255);
             foreach (var content in section.GetContent())
             {
-                // RenderSystem.DrawString(content, sectionX + 10f, sectionY + 30f + (section.GetContent().IndexOf(content) * 20f), contentColor, _textFont); // TODO: implement
+                //RenderSystem.DrawString(content, sectionX + 10f, sectionY + 30f + (section.GetContent().IndexOf(content) * 20f), contentColor, _textFont); //TODO: implement
             }
         }
 
-        /// <summary>
-        /// Get transition progress (0-1).
-        /// </summary>
-        /// <returns>Transition progress.</returns>
+        ///<summary>
+        ///Get transition progress (0-1).
+        ///</summary>
+        ///<returns>Transition progress.</returns>
         private float GetTransitionProgress()
         {
             if (!_isTransitioning) return 1f;
             return System.Math.Clamp(_transitionTimer / _transitionDuration, 0f, 1f);
         }
 
-        /// <summary>
-        /// Clear all section content.
-        /// </summary>
+        ///<summary>
+        ///Clear all section content.
+        ///</summary>
         public void ClearAllContent()
         {
             _basicInfo.ClearContent();
@@ -375,9 +377,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         }
     }
 
-    /// <summary>
-    /// Tower info section container.
-    /// </summary>
+    ///<summary>
+    ///Tower info section container.
+    ///</summary>
     public class TowerInfoSection
     {
         public string Title { get; set; }
@@ -406,38 +408,38 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         }
     }
 
-    /// <summary>
-    /// Extension methods for TowerInfoPanel.
-    /// </summary>
+    ///<summary>
+    ///Extension methods for TowerInfoPanel.
+    ///</summary>
     public static class TowerInfoPanelExtensions
     {
-        /// <summary>
-        /// Get tower upgrade cost.
-        /// </summary>
+        ///<summary>
+        ///Get tower upgrade cost.
+        ///</summary>
         public static int GetUpgradeCost(Tower tower)
         {
             return tower.AvailableUpgrades?.FirstOrDefault()?.Cost ?? 0;
         }
 
-        /// <summary>
-        /// Get tower upgrade level.
-        /// </summary>
+        ///<summary>
+        ///Get tower upgrade level.
+        ///</summary>
         public static int GetUpgradeLevel(Tower tower)
         {
             return tower.Level;
         }
 
-        /// <summary>
-        /// Check if tower can be upgraded.
-        /// </summary>
+        ///<summary>
+        ///Check if tower can be upgraded.
+        ///</summary>
         public static bool CanUpgrade(Tower tower)
         {
             return tower.CanUpgrade;
         }
 
-        /// <summary>
-        /// Get upgrade price for next level.
-        /// </summary>
+        ///<summary>
+        ///Get upgrade price for next level.
+        ///</summary>
         public static int GetNextUpgradeCost(Tower tower)
         {
             var currentLevel = GetUpgradeLevel(tower);
@@ -447,33 +449,33 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             return upgrades.FirstOrDefault(u => u.Level == nextLevel)?.Cost ?? 0;
         }
 
-        /// <summary>
-        /// Get all available upgrades for tower.
-        /// </summary>
+        ///<summary>
+        ///Get all available upgrades for tower.
+        ///</summary>
         public static List<Towers.TowerUpgrade> GetAvailableUpgrades(Tower tower)
         {
             return tower.AvailableUpgrades.ToList();
         }
 
-        /// <summary>
-        /// Get tower damage per second.
-        /// </summary>
+        ///<summary>
+        ///Get tower damage per second.
+        ///</summary>
         public static float GetDPS(Tower tower)
         {
             return (float)tower.DPS;
         }
 
-        /// <summary>
-        /// Get tower accuracy percentage.
-        /// </summary>
+        ///<summary>
+        ///Get tower accuracy percentage.
+        ///</summary>
         public static float GetAccuracy(Tower tower)
         {
             return (float)tower.Accuracy;
         }
 
-        /// <summary>
-        /// Get tower uptime.
-        /// </summary>
+        ///<summary>
+        ///Get tower uptime.
+        ///</summary>
         public static float GetUptime(Tower tower)
         {
             return tower.Uptime;

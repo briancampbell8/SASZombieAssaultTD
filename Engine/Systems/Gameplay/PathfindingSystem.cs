@@ -1,25 +1,27 @@
-// File: Engine/Systems/Gameplay/PathfindingSystem.cs
-// Purpose: Implements a pathfinding system for navigating a grid-based map.
-// Features: Supports walkability checks, cell management, and A* pathfinding algorithm.
+//File: Engine/Systems/Gameplay/PathfindingSystem.cs
+//Purpose: Implements a pathfinding system for navigating a grid-based map.
+//Features: Supports walkability checks, cell management, and A* pathfinding algorithm.
 
 using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Systems.Gameplay
 {
-    /// <summary>
-    /// Pathfinding system for navigating a grid-based map.
-    /// </summary>
+    ///<summary>
+    ///Pathfinding system for navigating a grid-based map.
+    ///</summary>
     public class PathfindingSystem
     {
         private readonly NavigationGrid _navigationGrid;
 
-        /// <summary>
-        /// Initializes a new instance of the PathfindingSystem class.
-        /// </summary>
-        /// <param name="width">Width of the navigation grid.</param>
-        /// <param name="height">Height of the navigation grid.</param>
+        ///<summary>
+        ///Initializes a new instance of the PathfindingSystem class.
+        ///</summary>
+        ///<param name="width">Width of the navigation grid.</param>
+        ///<param name="height">Height of the navigation grid.</param>
         public PathfindingSystem(int width, int height)
         {
             if (width <= 0 || height <= 0)
@@ -28,23 +30,23 @@ namespace SASZombieAssaultTD.Engine.Systems.Gameplay
             _navigationGrid = new NavigationGrid(width, height);
         }
 
-        /// <summary>
-        /// Checks if a cell is walkable.
-        /// </summary>
+        ///<summary>
+        ///Checks if a cell is walkable.
+        ///</summary>
         public bool IsWalkable(int x, int y) => _navigationGrid.IsWalkable(x, y);
 
-        /// <summary>
-        /// Sets a cell as walkable or blocked.
-        /// </summary>
+        ///<summary>
+        ///Sets a cell as walkable or blocked.
+        ///</summary>
         public void SetWalkable(int x, int y, bool walkable) =>
             _navigationGrid.SetWalkable(x, y, walkable);
 
-        /// <summary>
-        /// Finds the shortest path between two points using the A* algorithm.
-        /// </summary>
-        /// <param name="start">Start position.</param>
-        /// <param name="end">End position.</param>
-        /// <returns>A list of positions representing the path, or an empty list if no path is found.</returns>
+        ///<summary>
+        ///Finds the shortest path between two points using the A* algorithm.
+        ///</summary>
+        ///<param name="start">Start position.</param>
+        ///<param name="end">End position.</param>
+        ///<returns>A list of positions representing the path, or an empty list if no path is found.</returns>
         public List<Vector3> FindPath(Vector3 start, Vector3 end)
         {
             if (!IsValidPosition(start))
@@ -97,30 +99,30 @@ namespace SASZombieAssaultTD.Engine.Systems.Gameplay
             return new List<Vector3>();
         }
 
-        /// <summary>
-        /// Validates if a position is within bounds and walkable.
-        /// </summary>
+        ///<summary>
+        ///Validates if a position is within bounds and walkable.
+        ///</summary>
         private bool IsValidPosition(Vector3 position)
         {
             var gridPos = new Vector3Int((int)position.X, (int)position.Y);
             return _navigationGrid.IsWalkable(gridPos.X, gridPos.Y);
         }
 
-        /// <summary>
-        /// Calculates the Manhattan distance heuristic.
-        /// </summary>
+        ///<summary>
+        ///Calculates the Manhattan distance heuristic.
+        ///</summary>
         private static float Heuristic(Vector3 a, Vector3 b) =>
             System.Math.Abs(a.X - b.X) + System.Math.Abs(a.Y - b.Y);
 
-        /// <summary>
-        /// Calculates the Euclidean distance between two points.
-        /// </summary>
+        ///<summary>
+        ///Calculates the Euclidean distance between two points.
+        ///</summary>
         private static float Distance(Vector3 a, Vector3 b) =>
             (float)System.Math.Sqrt(System.Math.Pow(a.X - b.X, 2) + System.Math.Pow(a.Y - b.Y, 2));
 
-        /// <summary>
-        /// Reconstructs the path from the end node to the start node.
-        /// </summary>
+        ///<summary>
+        ///Reconstructs the path from the end node to the start node.
+        ///</summary>
         private static List<Vector3> ReconstructPath(Dictionary<Vector3, Vector3> cameFrom, Vector3 current)
         {
             var path = new List<Vector3> { current };

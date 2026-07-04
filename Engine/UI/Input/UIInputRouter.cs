@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Extensions;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Input
 {
-    /// <summary>
-    /// Input routing logic for mouse and keyboard events to UI elements
-    /// P80-05-01: UIInputRouter providing input routing logic for mouse and keyboard events to UI elements
-    /// </summary>
+    ///<summary>
+    ///Input routing logic for mouse and keyboard events to UI elements
+    ///P80-05-01: UIInputRouter providing input routing logic for mouse and keyboard events to UI elements
+    ///</summary>
     public class UIInputRouter
     {
         private readonly UIInputState _inputState;
@@ -19,36 +21,36 @@ namespace SASZombieAssaultTD.Engine.UI.Input
         private bool _isInitialized = false;
         private UIInputState _currentInput;
 
-        /// <summary>
-        /// Gets the currently hovered element
-        /// </summary>
+        ///<summary>
+        ///Gets the currently hovered element
+        ///</summary>
         public UIElement HoveredElement => _hoveredElement;
 
-        /// <summary>
-        /// Gets the currently pressed element
-        /// </summary>
+        ///<summary>
+        ///Gets the currently pressed element
+        ///</summary>
         public UIElement PressedElement => _pressedElement;
 
-        /// <summary>
-        /// Gets the input state
-        /// </summary>
+        ///<summary>
+        ///Gets the input state
+        ///</summary>
         public UIInputState InputState => _inputState;
 
-        /// <summary>
-        /// Gets the focus manager
-        /// </summary>
+        ///<summary>
+        ///Gets the focus manager
+        ///</summary>
         public UIFocusManager FocusManager => _focusManager;
 
-        /// <summary>
-        /// Gets whether the router is initialized
-        /// </summary>
+        ///<summary>
+        ///Gets whether the router is initialized
+        ///</summary>
         public bool IsInitialized => _isInitialized;
 
-        /// <summary>
-        /// Initializes a new UIInputRouter
-        /// </summary>
-        /// <param name="inputState">Input state to use</param>
-        /// <param name="focusManager">Focus manager to use</param>
+        ///<summary>
+        ///Initializes a new UIInputRouter
+        ///</summary>
+        ///<param name="inputState">Input state to use</param>
+        ///<param name="focusManager">Focus manager to use</param>
         public UIInputRouter(UIInputState inputState, UIFocusManager focusManager)
         {
             _inputState = inputState ?? throw new ArgumentNullException(nameof(inputState));
@@ -62,10 +64,14 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             System.Diagnostics.Debug.WriteLine("UIInputRouter: Initialized");
         }
 
-        /// <summary>
-        /// Adds a UI element to the router
-        /// </summary>
-        /// <param name="element">Element to add</param>
+        public UIInputRouter()
+        {
+        }
+
+        ///<summary>
+        ///Adds a UI element to the router
+        ///</summary>
+        ///<param name="element">Element to add</param>
         public void RegisterElement(UIElement element)
         {
             try
@@ -93,10 +99,10 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Removes a UI element from the router
-        /// </summary>
-        /// <param name="element">Element to remove</param>
+        ///<summary>
+        ///Removes a UI element from the router
+        ///</summary>
+        ///<param name="element">Element to remove</param>
         public void UnregisterElement(UIElement element)
         {
             try
@@ -111,7 +117,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 {
                     _focusManager.UnregisterFocusableElement(element);
 
-                    // Clear hover/pressed state if this element was affected
+                    //Clear hover/pressed state if this element was affected
                     if (_hoveredElement == element)
                     {
                         _hoveredElement = null;
@@ -137,12 +143,12 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Updates the input router
-        /// </summary>
-        /// <param name="mousePosition">Current mouse position</param>
-        /// <param name="mouseButtons">Current mouse button states</param>
-        /// <param name="keys">Current key states</param>
+        ///<summary>
+        ///Updates the input router
+        ///</summary>
+        ///<param name="mousePosition">Current mouse position</param>
+        ///<param name="mouseButtons">Current mouse button states</param>
+        ///<param name="keys">Current key states</param>
         public void Update(System.Drawing.PointF mousePosition, bool[] mouseButtons, bool[] keys)
         {
             try
@@ -153,16 +159,16 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     return;
                 }
 
-                // Update input state
+                //Update input state
                 _inputState.Update(mousePosition, mouseButtons, keys);
 
-                // Process hover state changes
+                //Process hover state changes
                 ProcessHoverChanges();
 
-                // Process press state changes
+                //Process press state changes
                 ProcessPressChanges();
 
-                // Process focus changes
+                //Process focus changes
                 ProcessFocusChanges();
             }
             catch (Exception ex)
@@ -171,22 +177,22 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Processes hover state changes
-        /// </summary>
+        ///<summary>
+        ///Processes hover state changes
+        ///</summary>
         private void ProcessHoverChanges()
         {
             try
             {
                 var newHoveredElement = GetElementAtPosition(_inputState.MousePosition);
 
-                // Clear hover on previous element
+                //Clear hover on previous element
                 if (_hoveredElement != null && _hoveredElement != newHoveredElement)
                 {
                     _hoveredElement.OnMouseExit();
                 }
 
-                // Set hover on new element
+                //Set hover on new element
                 if (newHoveredElement != null && newHoveredElement != _hoveredElement)
                 {
                     _hoveredElement = newHoveredElement;
@@ -201,14 +207,14 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Processes press state changes
-        /// </summary>
+        ///<summary>
+        ///Processes press state changes
+        ///</summary>
         private void ProcessPressChanges()
         {
             try
             {
-                // Check for new pressed element
+                //Check for new pressed element
                 UIElement newPressedElement = null;
 
                 foreach (var element in _elements)
@@ -220,13 +226,13 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     }
                 }
 
-                // Clear press on previous element
+                //Clear press on previous element
                 if (_pressedElement != null && _pressedElement != newPressedElement)
                 {
                     _pressedElement.OnMouseRelease();
                 }
 
-                // Set press on new element
+                //Set press on new element
                 if (newPressedElement != null && newPressedElement != _pressedElement)
                 {
                     _pressedElement = newPressedElement;
@@ -241,32 +247,32 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Processes focus changes
-        /// </summary>
+        ///<summary>
+        ///Processes focus changes
+        ///</summary>
         private void ProcessFocusChanges()
         {
             try
             {
-                // Check for focus changes based on input
+                //Check for focus changes based on input
                 bool focusRequested = false;
 
-                // Tab key for focus navigation
-                if (_inputState.IsKeyJustPressed(9)) // Tab key
+                //Tab key for focus navigation
+                if (_inputState.IsKeyJustPressed(9)) //Tab key
                 {
                     focusRequested = true;
                 }
 
-                // Mouse click for focus selection
-                if (_inputState.IsMouseButtonJustPressed(0)) // Left mouse button
+                //Mouse click for focus selection
+                if (_inputState.IsMouseButtonJustPressed(0)) //Left mouse button
                 {
                     focusRequested = true;
                 }
 
-                // Apply focus changes
+                //Apply focus changes
                 if (focusRequested)
                 {
-                    // Focus next element
+                    //Focus next element
                     _focusManager.FocusNext();
                 }
             }
@@ -276,16 +282,16 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Gets the element at the specified position
-        /// </summary>
-        /// <param name="position">Position to check</param>
-        /// <returns>Element at position, or null if none</returns>
+        ///<summary>
+        ///Gets the element at the specified position
+        ///</summary>
+        ///<param name="position">Position to check</param>
+        ///<returns>Element at position, or null if none</returns>
         private UIElement GetElementAtPosition(System.Drawing.PointF position)
         {
             try
             {
-                // Check elements in reverse order (top-to-bottom)
+                //Check elements in reverse order (top-to-bottom)
                 for (int i = _elements.Count - 1; i >= 0; i--)
                 {
                     var element = _elements[i];
@@ -304,9 +310,9 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Initializes the router
-        /// </summary>
+        ///<summary>
+        ///Initializes the router
+        ///</summary>
         public void Initialize()
         {
             try
@@ -329,9 +335,9 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Shuts down the router
-        /// </summary>
+        ///<summary>
+        ///Shuts down the router
+        ///</summary>
         public void Shutdown()
         {
             try
@@ -342,7 +348,7 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                     return;
                 }
 
-                // Clear all hover/press states
+                //Clear all hover/press states
                 if (_hoveredElement != null)
                 {
                     _hoveredElement.OnMouseExit();
@@ -366,14 +372,14 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Processes input events and routes them to UI elements.
-        /// </summary>
+        ///<summary>
+        ///Processes input events and routes them to UI elements.
+        ///</summary>
         public void ProcessInput()
         {
             try
             {
-                // Process input events for all registered elements
+                //Process input events for all registered elements
                 foreach (var element in _elements)
                 {
                     if (element.IsActive())
@@ -388,42 +394,42 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Gets the current mouse position.
-        /// </summary>
-        /// <returns>Current mouse position</returns>
+        ///<summary>
+        ///Gets the current mouse position.
+        ///</summary>
+        ///<returns>Current mouse position</returns>
         public Vector3 GetMousePosition()
         {
             return new Vector3(_inputState.MousePosition.X, _inputState.MousePosition.Y, 0f);
         }
 
-        /// <summary>
-        /// Gets the current key states.
-        /// </summary>
-        /// <returns>Current key states</returns>
+        ///<summary>
+        ///Gets the current key states.
+        ///</summary>
+        ///<returns>Current key states</returns>
         public bool[] GetKeyStates()
         {
             return (bool[])_inputState.KeyStates();
         }
 
-        /// <summary>
-        /// Gets diagnostic information about the UI input system.
-        /// </summary>
-        /// <returns>Diagnostic information</returns>
+        ///<summary>
+        ///Gets diagnostic information about the UI input system.
+        ///</summary>
+        ///<returns>Diagnostic information</returns>
         public string GetDiagnostics()
         {
             return $"UIInputRouter: Elements={_elements.Count}, Hovered={_hoveredElement?.GetType().Name ?? "None"}, Pressed={_pressedElement?.GetType().Name ?? "None"}, Initialized={_isInitialized}";
         }
 
-        /// <summary>
-        /// Enables or disables the input router.
-        /// </summary>
-        /// <param name="enabled">Whether the router should be enabled</param>
+        ///<summary>
+        ///Enables or disables the input router.
+        ///</summary>
+        ///<param name="enabled">Whether the router should be enabled</param>
         public void SetEnabled(bool enabled)
         {
             try
             {
-                // Enable/disable input processing
+                //Enable/disable input processing
                 if (enabled && !_isInitialized)
                 {
                     Initialize();
@@ -439,10 +445,10 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Gets menu-specific input state.
-        /// </summary>
-        /// <returns>Menu input state</returns>
+        ///<summary>
+        ///Gets menu-specific input state.
+        ///</summary>
+        ///<returns>Menu input state</returns>
         public object GetMenuInput()
         {
             return new

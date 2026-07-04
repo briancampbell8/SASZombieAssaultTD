@@ -1,33 +1,35 @@
-// File:    SaveLoadCore.cs
-// Purpose: Pure serialization and deserialization logic.
-//          No state, no side effects, no logging, no file I/O.
+//File:    SaveLoadCore.cs
+//Purpose: Pure serialization and deserialization logic.
+//         No state, no side effects, no logging, no file I/O.
 //
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 
 using System;
 
 using System.Text.Json;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Player
 
 {
-    /// <summary>
+    ///<summary>
 
-    /// Sealed, static, deterministic serialization engine for save/load operations.
+    ///Sealed, static, deterministic serialization engine for save/load operations.
 
-    /// Contains pure serialization/deserialization logic with no state or side effects.
+    ///Contains pure serialization/deserialization logic with no state or side effects.
 
-    /// </summary>
+    ///</summary>
 
     public sealed class SaveLoadCore
 
     {
-        /// <summary>
+        ///<summary>
 
-        /// JSON serializer options for save operations.
+        ///JSON serializer options for save operations.
 
-        /// </summary>
+        ///</summary>
 
         public static readonly JsonSerializerOptions SaveOptions = new()
 
@@ -37,11 +39,11 @@ namespace SASZombieAssaultTD.Engine.Player
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
 
-        /// <summary>
+        ///<summary>
 
-        /// JSON serializer options for load operations.
+        ///JSON serializer options for load operations.
 
-        /// </summary>
+        ///</summary>
 
         public static readonly JsonSerializerOptions LoadOptions = new()
 
@@ -49,17 +51,17 @@ namespace SASZombieAssaultTD.Engine.Player
             PropertyNameCaseInsensitive = true
         };
 
-        /// <summary>
+        ///<summary>
 
-        /// Serializes player data to JSON format.
+        ///Serializes player data to JSON format.
 
-        /// </summary>
+        ///</summary>
 
-        /// <param name="playerData">The player data to serialize.</param>
+        ///<param name="playerData">The player data to serialize.</param>
 
-        /// <returns>The JSON string representation of the player data.</returns>
+        ///<returns>The JSON string representation of the player data.</returns>
 
-        /// <exception cref="ArgumentNullException">Thrown when playerData is null.</exception>
+        ///<exception cref="ArgumentNullException">Thrown when playerData is null.</exception>
 
         public static string Serialize(PlayerData playerData)
 
@@ -71,15 +73,15 @@ namespace SASZombieAssaultTD.Engine.Player
             return JsonSerializer.Serialize(playerData, SaveOptions);
         }
 
-        /// <summary>
+        ///<summary>
 
-        /// Deserializes JSON data to player data structure.
+        ///Deserializes JSON data to player data structure.
 
-        /// </summary>
+        ///</summary>
 
-        /// <param name="json">The JSON string to deserialize.</param>
+        ///<param name="json">The JSON string to deserialize.</param>
 
-        /// <returns>The deserialized PlayerData structure, or null if deserialization fails.</returns>
+        ///<returns>The deserialized PlayerData structure, or null if deserialization fails.</returns>
 
         public static PlayerData Deserialize(string json)
 
@@ -88,28 +90,28 @@ namespace SASZombieAssaultTD.Engine.Player
 
                 return null;
 
-            //             try
+            //            try
 
             {
                 return JsonSerializer.Deserialize<PlayerData>(json, LoadOptions);
             }
 
-            //             catch
+            //            catch
 
             {
                 return null;
             }
         }
 
-        /// <summary>
+        ///<summary>
 
-        /// Validates player data structure for integrity.
+        ///Validates player data structure for integrity.
 
-        /// </summary>
+        ///</summary>
 
-        /// <param name="playerData">The PlayerData structure to validate.</param>
+        ///<param name="playerData">The PlayerData structure to validate.</param>
 
-        /// <returns>True if the data is valid, false otherwise.</returns>
+        ///<returns>True if the data is valid, false otherwise.</returns>
 
         public static bool ValidatePlayerData(PlayerData playerData)
 
@@ -126,21 +128,21 @@ namespace SASZombieAssaultTD.Engine.Player
 
                 return false;
 
-            // Validate state
+            //Validate state
 
-            //             try
+            //            try
 
             {
                 playerData.Validate();
             }
 
-            //             catch
+            //            catch
 
             {
                 return false;
             }
 
-            // Validate progression
+            //Validate progression
 
             if (playerData.Progression.CurrentLevel < 1 || playerData.Progression.CurrentLevel > 100)
 
@@ -157,15 +159,15 @@ namespace SASZombieAssaultTD.Engine.Player
             return true;
         }
 
-        /// <summary>
+        ///<summary>
 
-        /// Validates that a player system is in a valid state for saving.
+        ///Validates that a player system is in a valid state for saving.
 
-        /// </summary>
+        ///</summary>
 
-        /// <param name="playerSystem">The PlayerSystem instance to validate.</param>
+        ///<param name="playerSystem">The PlayerSystem instance to validate.</param>
 
-        /// <returns>True if the system is valid for saving, false otherwise.</returns>
+        ///<returns>True if the system is valid for saving, false otherwise.</returns>
 
         public static bool ValidatePlayerSystemForSave(PlayerSystem playerSystem)
 
@@ -178,7 +180,7 @@ namespace SASZombieAssaultTD.Engine.Player
 
                 return false;
 
-            //             try
+            //            try
 
             {
                 playerSystem.Validate();
@@ -186,22 +188,22 @@ namespace SASZombieAssaultTD.Engine.Player
                 return true;
             }
 
-            //             catch
+            //            catch
 
             {
                 return false;
             }
         }
 
-        /// <summary>
+        ///<summary>
 
-        /// Checks if a string appears to be valid JSON.
+        ///Checks if a string appears to be valid JSON.
 
-        /// </summary>
+        ///</summary>
 
-        /// <param name="json">The string to check.</param>
+        ///<param name="json">The string to check.</param>
 
-        /// <returns>True if the string appears to be valid JSON, false otherwise.</returns>
+        ///<returns>True if the string appears to be valid JSON, false otherwise.</returns>
 
         public static bool IsValidJson(string json)
 
@@ -210,7 +212,7 @@ namespace SASZombieAssaultTD.Engine.Player
 
                 return false;
 
-            //             try
+            //            try
 
             {
                 JsonDocument.Parse(json);
@@ -218,38 +220,38 @@ namespace SASZombieAssaultTD.Engine.Player
                 return true;
             }
 
-            //             catch
+            //            catch
 
             {
                 return false;
             }
         }
 
-        /// <summary>
+        ///<summary>
 
-        /// Gets the maximum allowed save file size in bytes.
+        ///Gets the maximum allowed save file size in bytes.
 
-        /// </summary>
+        ///</summary>
 
         public const int MaxFileSize = 1_000_000;
 
-        /// <summary>
+        ///<summary>
 
-        /// Gets the minimum allowed save file size in bytes.
+        ///Gets the minimum allowed save file size in bytes.
 
-        /// </summary>
+        ///</summary>
 
         public const int MinFileSize = 1;
 
-        /// <summary>
+        ///<summary>
 
-        /// Validates file size is within acceptable range.
+        ///Validates file size is within acceptable range.
 
-        /// </summary>
+        ///</summary>
 
-        /// <param name="fileSize">The file size in bytes.</param>
+        ///<param name="fileSize">The file size in bytes.</param>
 
-        /// <returns>True if the file size is valid, false otherwise.</returns>
+        ///<returns>True if the file size is valid, false otherwise.</returns>
 
         public static bool IsValidFileSize(long fileSize)
 
@@ -257,23 +259,23 @@ namespace SASZombieAssaultTD.Engine.Player
             return fileSize >= MinFileSize && fileSize <= MaxFileSize;
         }
 
-        /// <summary>
+        ///<summary>
 
-        /// Gets the current save data version.
+        ///Gets the current save data version.
 
-        /// </summary>
+        ///</summary>
 
         public const int CurrentVersion = 1;
 
-        /// <summary>
+        ///<summary>
 
-        /// Checks if a save data version is compatible with the current version.
+        ///Checks if a save data version is compatible with the current version.
 
-        /// </summary>
+        ///</summary>
 
-        /// <param name="version">The version to check.</param>
+        ///<param name="version">The version to check.</param>
 
-        /// <returns>True if the version is compatible, false otherwise.</returns>
+        ///<returns>True if the version is compatible, false otherwise.</returns>
 
         public static bool IsCompatibleVersion(int version)
 

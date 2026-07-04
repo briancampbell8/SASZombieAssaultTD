@@ -19,17 +19,19 @@ Notes:    Contains all diagnostic logic extracted from GameLoop.
 using System;
 using System.Diagnostics;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Systems
 {
-    /// <summary>
-    /// Partial class containing diagnostics logic for GameLoop.
-    /// </summary>
+    ///<summary>
+    ///Partial class containing diagnostics logic for GameLoop.
+    ///</summary>
     public partial class GameLoop
     {
-        /// <summary>
-        /// Gets diagnostic information about the game loop.
-        /// </summary>
-        /// <returns>Game loop diagnostic information.</returns>
+        ///<summary>
+        ///Gets diagnostic information about the game loop.
+        ///</summary>
+        ///<returns>Game loop diagnostic information.</returns>
         internal GameLoopDiagnostics GetGameLoopDiagnostics()
         {
             return new GameLoopDiagnostics
@@ -48,39 +50,39 @@ namespace SASZombieAssaultTD.Engine.Systems
             };
         }
 
-        /// <summary>
-        /// Gets input diagnostics information.
-        /// </summary>
-        /// <returns>Input diagnostics.</returns>
+        ///<summary>
+        ///Gets input diagnostics information.
+        ///</summary>
+        ///<returns>Input diagnostics.</returns>
         private InputDiagnostics GetInputDiagnostics()
         {
-            // This would be implemented based on the actual input system
+            //This would be implemented based on the actual input system
             return new InputDiagnostics
             {
                 IsInputActive = _input != null,
-                InputEventsProcessed = 0, // Would be tracked by input system
-                LastInputTime = 0f, // Would be tracked by input system
-                MousePosition = System.Drawing.Point.Empty, // Would come from input system
-                KeyStates = new bool[256] // Would come from input system
+                InputEventsProcessed = 0, //Would be tracked by input system
+                LastInputTime = 0f, //Would be tracked by input system
+                MousePosition = System.Drawing.Point.Empty, //Would come from input system
+                KeyStates = new bool[256] //Would come from input system
             };
         }
 
-        /// <summary>
-        /// Resets all diagnostic counters.
-        /// </summary>
+        ///<summary>
+        ///Resets all diagnostic counters.
+        ///</summary>
         public void ResetDiagnostics()
         {
             lock (_stateLock)
             {
                 ResetTimingStatistics();
-                // Reset other diagnostic counters as needed
+                //Reset other diagnostic counters as needed
             }
         }
 
-        /// <summary>
-        /// Gets performance metrics for monitoring.
-        /// </summary>
-        /// <returns>Performance metrics.</returns>
+        ///<summary>
+        ///Gets performance metrics for monitoring.
+        ///</summary>
+        ///<returns>Performance metrics.</returns>
         public GameLoopPerformanceMetrics GetPerformanceMetrics()
         {
             return new GameLoopPerformanceMetrics
@@ -95,9 +97,9 @@ namespace SASZombieAssaultTD.Engine.Systems
         }
     }
 
-    /// <summary>
-    /// Game loop diagnostic information.
-    /// </summary>
+    ///<summary>
+    ///Game loop diagnostic information.
+    ///</summary>
     public class GameLoopDiagnostics
     {
         public GameLoopState State { get; set; }
@@ -113,9 +115,9 @@ namespace SASZombieAssaultTD.Engine.Systems
         public TimingInfo TimingInfo { get; set; }
     }
 
-    /// <summary>
-    /// Frame diagnostics information.
-    /// </summary>
+    ///<summary>
+    ///Frame diagnostics information.
+    ///</summary>
     public class FrameDiagnostics
     {
         public int FrameCount { get; set; }
@@ -156,9 +158,9 @@ namespace SASZombieAssaultTD.Engine.Systems
         }
     }
 
-    /// <summary>
-    /// Input diagnostics information.
-    /// </summary>
+    ///<summary>
+    ///Input diagnostics information.
+    ///</summary>
     public class InputDiagnostics
     {
         public bool IsInputActive { get; set; }
@@ -180,9 +182,9 @@ namespace SASZombieAssaultTD.Engine.Systems
         }
     }
 
-    /// <summary>
-    /// Performance metrics for monitoring.
-    /// </summary>
+    ///<summary>
+    ///Performance metrics for monitoring.
+    ///</summary>
     public class GameLoopPerformanceMetrics
     {
         public int FrameCount { get; set; }

@@ -1,32 +1,34 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
-    /// <summary>
-    /// Root UI system class providing initialization, update, and render entry points
-    /// P80-01-01: UIRoot containing root UI system with initialization, update, and render entry points
-    /// </summary>
+    ///<summary>
+    ///Root UI system class providing initialization, update, and render entry points
+    ///P80-01-01: UIRoot containing root UI system with initialization, update, and render entry points
+    ///</summary>
     public class UIRoot : UIElement
     {
         private readonly List<UIElement> _elements;
         private bool _isInitialized = false;
 
-        /// <summary>
-        /// Gets whether the UI system is initialized
-        /// </summary>
+        ///<summary>
+        ///Gets whether the UI system is initialized
+        ///</summary>
         public bool IsInitialized => _isInitialized;
 
-        /// <summary>
-        /// Gets the collection of UI elements
-        /// </summary>
+        ///<summary>
+        ///Gets the collection of UI elements
+        ///</summary>
         public IReadOnlyList<UIElement> Elements => _elements.AsReadOnly();
 
         private bool needsLayoutUpdate = true;
 
-        /// <summary>
-        /// Gets whether the UI system needs a layout update
-        /// </summary>
+        ///<summary>
+        ///Gets whether the UI system needs a layout update
+        ///</summary>
         public bool GetNeedsLayoutUpdate()
         {
             return needsLayoutUpdate;
@@ -37,9 +39,9 @@ namespace SASZombieAssaultTD.Engine.UI
             needsLayoutUpdate = value;
         }
 
-        /// <summary>
-        /// Initializes the UI system
-        /// </summary>
+        ///<summary>
+        ///Initializes the UI system
+        ///</summary>
         public void Initialize()
         {
             try
@@ -65,10 +67,10 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Updates the UI system
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds</param>
+        ///<summary>
+        ///Updates the UI system
+        ///</summary>
+        ///<param name="deltaTime">Time since last update in seconds</param>
         public override void Update(float deltaTime)
         {
             try
@@ -79,13 +81,13 @@ namespace SASZombieAssaultTD.Engine.UI
                     return;
                 }
 
-                // Update all UI elements
+                //Update all UI elements
                 for (int i = 0; i < _elements.Count; i++)
                 {
                     _elements[i].Update(deltaTime);
                 }
 
-                // Mark layout as needing update if any element needs it
+                //Mark layout as needing update if any element needs it
                 foreach (var element in _elements)
                 {
                     if (element.NeedsLayoutUpdate)
@@ -103,9 +105,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Renders the UI system
-        /// </summary>
+        ///<summary>
+        ///Renders the UI system
+        ///</summary>
         public override void Render()
         {
             try
@@ -116,13 +118,13 @@ namespace SASZombieAssaultTD.Engine.UI
                     return;
                 }
 
-                // Update layouts if needed
+                //Update layouts if needed
                 if (GetNeedsLayoutUpdate())
                 {
                     UpdateLayouts();
                 }
 
-                // Render all UI elements
+                //Render all UI elements
                 for (int i = 0; i < _elements.Count; i++)
                 {
                     _elements[i].Render();
@@ -136,10 +138,10 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Adds a UI element to the root
-        /// </summary>
-        /// <param name="element">UI element to add</param>
+        ///<summary>
+        ///Adds a UI element to the root
+        ///</summary>
+        ///<param name="element">UI element to add</param>
         public void AddElement(UIElement element)
         {
             try
@@ -168,10 +170,10 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Removes a UI element from the root
-        /// </summary>
-        /// <param name="element">UI element to remove</param>
+        ///<summary>
+        ///Removes a UI element from the root
+        ///</summary>
+        ///<param name="element">UI element to remove</param>
         public void RemoveElement(UIElement element)
         {
             try
@@ -199,9 +201,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Updates layouts for all UI elements
-        /// </summary>
+        ///<summary>
+        ///Updates layouts for all UI elements
+        ///</summary>
         private void UpdateLayouts()
         {
             try
@@ -222,9 +224,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Shuts down the UI system
-        /// </summary>
+        ///<summary>
+        ///Shuts down the UI system
+        ///</summary>
         public void Shutdown()
         {
             try

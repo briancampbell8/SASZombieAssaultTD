@@ -11,12 +11,14 @@ using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Core;
 using DamageComponent = SASZombieAssaultTD.Engine.Components.DamageComponent;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Animation.Systems
+//
 {
-    /// <summary>
-    /// P11-16-05: System for managing animation playback and state machines.
-    /// Updates animation controllers and state machines based on deltaTime.
-    /// </summary>
+    ///<summary>
+    ///P11-16-05: System for managing animation playback and state machines.
+    ///Updates animation controllers and state machines based on deltaTime.
+    ///</summary>
     public sealed class AnimationSystem : ISystem
     {
         public bool IsEnabled { get; private set; } = true;
@@ -48,14 +50,14 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
         public AnimationSystem(ECSWorld ecsWorld)
         {
             _ecsWorld = ecsWorld ?? throw new ArgumentNullException(nameof(ecsWorld));
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "AnimationSystem: Initialized");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Info, "AnimationSystem: Initialized");
         }
 
         public void Initialize()
         {
             if (IsInitialized) return;
             IsInitialized = true;
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "AnimationSystem: System initialized");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Info, "AnimationSystem: System initialized");
         }
 
         public void Update(float deltaTime)
@@ -70,11 +72,11 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
                 UpdateStateMachines(deltaTime);
                 UpdateRenderableComponents();
 
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationSystem: Processed {_entitiesProcessed} entities, {_totalAnimationTime:F3}s total animation time");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationSystem: Processed {_entitiesProcessed} entities, {_totalAnimationTime:F3}s total animation time");
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationSystem: Error during update: {ex.Message}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"AnimationSystem: Error during update: {ex.Message}");
             }
         }
 
@@ -117,13 +119,13 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
             if (previousClip != currentClip && !string.IsNullOrEmpty(currentClip))
             {
                 OnAnimationStarted?.Invoke(controller, currentClip);
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} started animation '{currentClip}'");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationSystem: Entity {controller.Entity.Id} started animation '{currentClip}'");
             }
 
             if (previousClip == currentClip && clip != null && currentTime >= clip.Duration)
             {
                 OnAnimationCompleted?.Invoke(controller, currentClip);
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} completed animation '{currentClip}'");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationSystem: Entity {controller.Entity.Id} completed animation '{currentClip}'");
             }
 
             if (clip == null) return;
@@ -134,7 +136,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
                 {
                     OnAnimationEventFired?.Invoke(controller, animationEvent);
                     MarkEventFired(controller, animationEvent);
-                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} fired event '{animationEvent.EventName}' at time {animationEvent.Timestamp:F3}");
+                    DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationSystem: Entity {controller.Entity.Id} fired event '{animationEvent.EventName}' at time {animationEvent.Timestamp:F3}");
                     HandleGameplayCallbacks(controller, animationEvent);
                 }
             }
@@ -179,7 +181,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
                     HandleDamageAreaEvent(controller, animationEvent);
                     break;
                 default:
-                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationSystem: No specific handler for event '{animationEvent.EventName}'");
+                    DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationSystem: No specific handler for event '{animationEvent.EventName}'");
                     break;
             }
         }
@@ -190,28 +192,28 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
             if (damage.Equals(default(float))) damage = 10f;
             var damageComponent = new DamageComponent { Damage = damage };
             controller.Entity.AddComponent(damageComponent);
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} fired weapon for {damage} damage");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationSystem: Entity {controller.Entity.Id} fired weapon for {damage} damage");
         }
 
         private void HandleFootstepEvent(AnimationControllerComponent controller, AnimationEvent animationEvent)
         {
             var soundName = animationEvent.GetParameter<string>("Sound");
             if (string.IsNullOrEmpty(soundName)) soundName = "footstep";
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} footstep sound '{soundName}'");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationSystem: Entity {controller.Entity.Id} footstep sound '{soundName}'");
         }
 
         private void HandlePlaySoundEvent(AnimationControllerComponent controller, AnimationEvent animationEvent)
         {
             var soundName = animationEvent.GetParameter<string>("SoundName");
             if (string.IsNullOrEmpty(soundName)) soundName = "unknown";
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} playing sound '{soundName}'");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationSystem: Entity {controller.Entity.Id} playing sound '{soundName}'");
         }
 
         private void HandleSpawnEffectEvent(AnimationControllerComponent controller, AnimationEvent animationEvent)
         {
             var effectType = animationEvent.GetParameter<string>("EffectType");
             if (string.IsNullOrEmpty(effectType)) effectType = "default";
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} spawning effect '{effectType}'");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationSystem: Entity {controller.Entity.Id} spawning effect '{effectType}'");
         }
 
         private void HandleDamageAreaEvent(AnimationControllerComponent controller, AnimationEvent animationEvent)
@@ -220,12 +222,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
             if (damage.Equals(default(float))) damage = 25f;
             var damageComponent = new DamageComponent { Damage = damage };
             controller.Entity.AddComponent(damageComponent);
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} created area damage: {damage}");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationSystem: Entity {controller.Entity.Id} created area damage: {damage}");
         }
 
         private void UpdateStateMachines(float deltaTime)
         {
-            // Update all animation state machines
+            //Update all animation state machines
             foreach (var entity in _ecsWorld.GetEntitiesWith<AnimationStateMachineComponent>())
             {
                 var stateMachine = entity.GetComponent<AnimationStateMachineComponent>();
@@ -267,41 +269,41 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
             return new AnimationClip(clipName, 1.0f, false);
         }
 
-        // Missing ISystem interface methods
+        //Missing ISystem interface methods
         public void FixedUpdate(float fixedDeltaTime)
         {
             if (!IsEnabled || !IsInitialized) return;
-            // Animation system doesn't need fixed update logic
+            //Animation system doesn't need fixed update logic
         }
 
         public void LateUpdate(float deltaTime)
         {
             if (!IsEnabled || !IsInitialized) return;
-            // Animation system doesn't need late update logic
+            //Animation system doesn't need late update logic
         }
 
         public void Render()
         {
             if (!IsEnabled || !IsInitialized) return;
-            // Animation system doesn't need direct rendering logic
+            //Animation system doesn't need direct rendering logic
         }
 
         public void Enable()
         {
             IsEnabled = true;
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "AnimationSystem: System enabled");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Info, "AnimationSystem: System enabled");
         }
 
         public void Disable()
         {
             IsEnabled = false;
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "AnimationSystem: System disabled");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Info, "AnimationSystem: System disabled");
         }
 
         public void Toggle()
         {
             IsEnabled = !IsEnabled;
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"AnimationSystem: System {(IsEnabled ? "enabled" : "disabled")}");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Info, $"AnimationSystem: System {(IsEnabled ? "enabled" : "disabled")}");
         }
 
         public void Destroy()
@@ -310,7 +312,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
             _stateMachines.Clear();
             IsEnabled = false;
             IsInitialized = false;
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "AnimationSystem: System destroyed");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Info, "AnimationSystem: System destroyed");
         }
 
         public void Reset()
@@ -321,7 +323,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
             _totalAnimationTime = 0f;
             UpdateCount = 0;
             LastUpdateTime = 0f;
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "AnimationSystem: System reset");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Info, "AnimationSystem: System reset");
         }
     }
 }

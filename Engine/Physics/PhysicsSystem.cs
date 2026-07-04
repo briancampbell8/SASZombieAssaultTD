@@ -30,42 +30,44 @@ using System;
 using System.Drawing;
 using System.Linq;
 using SASZombieAssaultTD.Engine.ECS;
-using SASZombieAssaultTD.Engine.VectorMath; // Added for Vector3
+using SASZombieAssaultTD.Engine.VectorMath; //Added for Vector3
 using SASZombieAssaultTD.Engine.Physics.Components;
 using TransformComponent = SASZombieAssaultTD.Engine.Components.TransformComponent;
 using PhysicsComponent = SASZombieAssaultTD.Engine.Physics.Components.PhysicsComponent;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Physics
 {
-    /// <summary>
-    /// Subsystem for physics simulation and movement.
-    /// P11-04-02-B: Iterates over entities with PhysicsComponent and TransformComponent,
-    /// applies acceleration to velocity, applies velocity to position, applies drag,
-    /// clamps velocity to MaxSpeed, skips entities marked IsKinematic,
-    /// and does not handle collisions (CollisionSystem handles that).
-    /// </summary>
+    ///<summary>
+    ///Subsystem for physics simulation and movement.
+    ///P11-04-02-B: Iterates over entities with PhysicsComponent and TransformComponent,
+    ///applies acceleration to velocity, applies velocity to position, applies drag,
+    ///clamps velocity to MaxSpeed, skips entities marked IsKinematic,
+    ///and does not handle collisions (CollisionSystem handles that).
+    ///</summary>
     public class PhysicsSystem : SASZombieAssaultTD.Engine.ECS.ISystem
     {
-        // ISystem Implementation
+        //ISystem Implementation
         public bool IsEnabled { get; private set; } = true;
         public bool IsInitialized { get; private set; } = false;
         public SystemPriority Priority { get; private set; } = SystemPriority.High;
         public float LastUpdateTime { get; private set; } = 0f;
         public uint UpdateCount { get; private set; } = 0;
 
-        // PhysicsSystem Specific Fields
+        //PhysicsSystem Specific Fields
         private readonly SASZombieAssaultTD.Engine.ECS.EntityManager _entityManager;
         private readonly EventRouter _eventRouting;
 
         private bool _initialized;
         private readonly bool _debugOutput = true;
-        private readonly float _maxDeltaTime = 0.1f; // Cap delta time to prevent instability
+        private readonly float _maxDeltaTime = 0.1f; //Cap delta time to prevent instability
 
-        /// <summary>
-        /// Creates a new PhysicsSystem with required dependencies.
-        /// </summary>
-        /// <param name="entityManager">Entity manager for component access</param>
-        /// <param name="eventRouting">Event routing for system communication</param>
+        ///<summary>
+        ///Creates a new PhysicsSystem with required dependencies.
+        ///</summary>
+        ///<param name="entityManager">Entity manager for component access</param>
+        ///<param name="eventRouting">Event routing for system communication</param>
         public PhysicsSystem(EntityManager entityManager, EventRouter eventRouting)
         {
             _entityManager = entityManager ?? throw new ArgumentNullException(nameof(entityManager));
@@ -74,9 +76,9 @@ namespace SASZombieAssaultTD.Engine.Physics
             DebugLog("PhysicsSystem: Constructed with required dependencies");
         }
 
-        /// <summary>
-        /// Initializes the physics system.
-        /// </summary>
+        ///<summary>
+        ///Initializes the physics system.
+        ///</summary>
         public void Initialize()
         {
             if (_initialized)
@@ -96,23 +98,23 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        // ISystem Implementation
+        //ISystem Implementation
         public void FixedUpdate(float fixedDeltaTime)
         {
-            // PhysicsSystem uses fixed timestep for main physics simulation
+            //PhysicsSystem uses fixed timestep for main physics simulation
             Update(fixedDeltaTime);
         }
 
         public void LateUpdate(float deltaTime)
         {
-            // PhysicsSystem doesn't need late updates
-            // No-op implementation
+            //PhysicsSystem doesn't need late updates
+            //No-op implementation
         }
 
         public void Render()
         {
-            // PhysicsSystem doesn't render anything
-            // No-op implementation
+            //PhysicsSystem doesn't render anything
+            //No-op implementation
         }
 
         public void Enable() => IsEnabled = true;
@@ -134,17 +136,17 @@ namespace SASZombieAssaultTD.Engine.Physics
             DebugLog("PhysicsSystem: System reset");
         }
 
-        /// <summary>
-        /// P11-04-02-B: Updates physics simulation for all entities.
-        /// - Iterates over all entities with PhysicsComponent and TransformComponent
-        /// - Applies acceleration to velocity
-        /// - Applies velocity to position
-        /// - Applies drag
-        /// - Clamps velocity to MaxSpeed
-        /// - Skips entities marked IsKinematic
-        /// - Does not handle collisions (CollisionSystem handles that)
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since last update in seconds</param>
+        ///<summary>
+        ///P11-04-02-B: Updates physics simulation for all entities.
+        ///- Iterates over all entities with PhysicsComponent and TransformComponent
+        ///- Applies acceleration to velocity
+        ///- Applies velocity to position
+        ///- Applies drag
+        ///- Clamps velocity to MaxSpeed
+        ///- Skips entities marked IsKinematic
+        ///- Does not handle collisions (CollisionSystem handles that)
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since last update in seconds</param>
         public void Update(float deltaTime)
         {
             if (!IsEnabled || !IsInitialized)
@@ -158,10 +160,10 @@ namespace SASZombieAssaultTD.Engine.Physics
 
             try
             {
-                // Cap delta time to prevent physics instability
+                //Cap delta time to prevent physics instability
                 deltaTime = System.Math.Min(deltaTime, _maxDeltaTime);
 
-                // Get all entities with physics components
+                //Get all entities with physics components
                 var physicsEntities = _entityManager.GetEntitiesWithPhysicsAndTransform();
                 DebugLog($"PhysicsSystem: Processing {physicsEntities.Count()} physics entities");
 
@@ -178,9 +180,9 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        /// <summary>
-        /// Updates physics for a single entity.
-        /// </summary>
+        ///<summary>
+        ///Updates physics for a single entity.
+        ///</summary>
         private void UpdateEntityPhysics(object entity, float deltaTime)
         {
             try
@@ -192,27 +194,27 @@ namespace SASZombieAssaultTD.Engine.Physics
                 if (physics == null || transform == null || !physics.Enabled)
                     return;
 
-                // P11-04-02-B: Skip entities marked IsKinematic
+                //P11-04-02-B: Skip entities marked IsKinematic
                 if (physics.IsKinematic)
                 {
-                    // Kinematic entities still need position updates based on their velocity
+                    //Kinematic entities still need position updates based on their velocity
                     UpdateKinematicEntity(physics, transform, deltaTime);
                     return;
                 }
 
-                // P11-04-02-B: Apply acceleration to velocity
+                //P11-04-02-B: Apply acceleration to velocity
                 ApplyAccelerationToVelocity(physics, deltaTime);
 
-                // P11-04-02-B: Apply drag
+                //P11-04-02-B: Apply drag
                 ApplyDrag(physics, deltaTime);
 
-                // P11-04-02-B: Clamp velocity to MaxSpeed
+                //P11-04-02-B: Clamp velocity to MaxSpeed
                 ClampVelocity(physics);
 
-                // P11-04-02-B: Apply velocity to position
+                //P11-04-02-B: Apply velocity to position
                 ApplyVelocityToPosition(physics, transform, deltaTime);
 
-                // Reset acceleration for next frame (forces are applied each frame)
+                //Reset acceleration for next frame (forces are applied each frame)
                 physics.Acceleration = PointF.Empty;
             }
             catch (Exception ex)
@@ -221,19 +223,19 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        /// <summary>
-        /// Updates kinematic entity position based on velocity.
-        /// </summary>
+        ///<summary>
+        ///Updates kinematic entity position based on velocity.
+        ///</summary>
         private void UpdateKinematicEntity(PhysicsComponent physics, TransformComponent transform, float deltaTime)
         {
-            // Kinematic entities move based on their velocity but don't respond to forces
+            //Kinematic entities move based on their velocity but don't respond to forces
             transform.X += physics.Velocity.X * deltaTime;
             transform.Y += physics.Velocity.Y * deltaTime;
         }
 
-        /// <summary>
-        /// P11-04-02-B: Applies acceleration to velocity.
-        /// </summary>
+        ///<summary>
+        ///P11-04-02-B: Applies acceleration to velocity.
+        ///</summary>
         private void ApplyAccelerationToVelocity(PhysicsComponent physics, float deltaTime)
         {
             physics.Velocity = new PointF(
@@ -242,10 +244,10 @@ namespace SASZombieAssaultTD.Engine.Physics
             );
         }
 
-        /// <summary>
-        /// P11-04-02-B: Applies drag to velocity.
-        /// Drag is applied as a force opposing motion: F_drag = -drag * |v| * v_unit
-        /// </summary>
+        ///<summary>
+        ///P11-04-02-B: Applies drag to velocity.
+        ///Drag is applied as a force opposing motion: F_drag = -drag * |v| * v_unit
+        ///</summary>
         private void ApplyDrag(PhysicsComponent physics, float deltaTime)
         {
             if (physics.Drag <= 0.0f)
@@ -255,11 +257,11 @@ namespace SASZombieAssaultTD.Engine.Physics
             if (speed <= 0.0f)
                 return;
 
-            // Calculate drag force: F = -drag * speed * velocity_direction
+            //Calculate drag force: F = -drag * speed * velocity_direction
             var dragForceX = -physics.Drag * speed * (physics.Velocity.X / speed);
             var dragForceY = -physics.Drag * speed * (physics.Velocity.Y / speed);
 
-            // Apply drag as acceleration change
+            //Apply drag as acceleration change
             var dragAccelerationX = dragForceX / physics.Mass;
             var dragAccelerationY = dragForceY / physics.Mass;
 
@@ -269,9 +271,9 @@ namespace SASZombieAssaultTD.Engine.Physics
             );
         }
 
-        /// <summary>
-        /// P11-04-02-B: Clamps velocity to MaxSpeed if specified.
-        /// </summary>
+        ///<summary>
+        ///P11-04-02-B: Clamps velocity to MaxSpeed if specified.
+        ///</summary>
         private void ClampVelocity(PhysicsComponent physics)
         {
             if (!physics.MaxSpeed.HasValue)
@@ -281,7 +283,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             if (currentSpeed <= physics.MaxSpeed.Value)
                 return;
 
-            // Scale velocity to match max speed
+            //Scale velocity to match max speed
             var scale = physics.MaxSpeed.Value / currentSpeed;
             physics.Velocity = new PointF(
             physics.Velocity.X * scale,
@@ -289,20 +291,20 @@ namespace SASZombieAssaultTD.Engine.Physics
             );
         }
 
-        /// <summary>
-        /// P11-04-02-B: Applies velocity to position.
-        /// </summary>
+        ///<summary>
+        ///P11-04-02-B: Applies velocity to position.
+        ///</summary>
         private void ApplyVelocityToPosition(PhysicsComponent physics, TransformComponent transform, float deltaTime)
         {
             transform.X += physics.Velocity.X * deltaTime;
             transform.Y += physics.Velocity.Y * deltaTime;
         }
 
-        /// <summary>
-        /// Applies a force to an entity with physics component.
-        /// </summary>
-        /// <param name="entity">Entity to apply force to</param>
-        /// <param name="force">Force to apply in world units</param>
+        ///<summary>
+        ///Applies a force to an entity with physics component.
+        ///</summary>
+        ///<param name="entity">Entity to apply force to</param>
+        ///<param name="force">Force to apply in world units</param>
         public void ApplyForce(object entity, PointF force)
         {
             try
@@ -321,11 +323,11 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        /// <summary>
-        /// Applies an impulse to an entity with physics component.
-        /// </summary>
-        /// <param name="entity">Entity to apply impulse to</param>
-        /// <param name="impulse">Impulse to apply in world units</param>
+        ///<summary>
+        ///Applies an impulse to an entity with physics component.
+        ///</summary>
+        ///<param name="entity">Entity to apply impulse to</param>
+        ///<param name="impulse">Impulse to apply in world units</param>
         public void ApplyImpulse(object entity, PointF impulse)
         {
             try
@@ -344,9 +346,9 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
         }
 
-        /// <summary>
-        /// Gets statistics about the physics system.
-        /// </summary>
+        ///<summary>
+        ///Gets statistics about the physics system.
+        ///</summary>
         public PhysicsSystemStatistics GetStatistics()
         {
             var physicsEntities = _entityManager.GetEntitiesWithPhysicsAndTransform();
@@ -357,9 +359,9 @@ namespace SASZombieAssaultTD.Engine.Physics
             };
         }
 
-        /// <summary>
-        /// Shuts down the physics system and releases resources.
-        /// </summary>
+        ///<summary>
+        ///Shuts down the physics system and releases resources.
+        ///</summary>
         public void Shutdown()
         {
             if (!_initialized)
@@ -372,73 +374,73 @@ namespace SASZombieAssaultTD.Engine.Physics
             DebugLog("PhysicsSystem: Shutdown complete");
         }
 
-        /// <summary>
-        /// P11-04-02-E: Event subscription documentation for audit purposes.
-        /// P11-04-04-D: Updated to clarify event publishing status.
+        ///<summary>
+        ///P11-04-02-E: Event subscription documentation for audit purposes.
+        ///P11-04-04-D: Updated to clarify event publishing status.
         ///
-        /// AUDIT-FRIENDLY DOCUMENTATION:
-        /// The PhysicsSystem does NOT require any event subscriptions for its core functionality.
+        ///AUDIT-FRIENDLY DOCUMENTATION:
+        ///The PhysicsSystem does NOT require any event subscriptions for its core functionality.
         ///
-        /// P11-04-02-E: PhysicsSystem and CollisionSystem remain event-agnostic.
-        /// All updates are driven by per-frame ECS queries.
+        ///P11-04-02-E: PhysicsSystem and CollisionSystem remain event-agnostic.
+        ///All updates are driven by per-frame ECS queries.
         ///
-        /// P11-04-04-D: EVENT PUBLISHING DOCUMENTATION:
-        /// PhysicsSystem does not currently publish any events.
+        ///P11-04-04-D: EVENT PUBLISHING DOCUMENTATION:
+        ///PhysicsSystem does not currently publish any events.
         ///
-        /// CURRENT EVENT PUBLISHING STATUS:
-        /// - PhysicsSystem focuses on physics simulation and movement
-        /// - No events are published by PhysicsSystem at this time
-        /// - EventBus dependency retained for architectural consistency and future enhancements
-        /// - Ready to publish physics-related events if needed in future iterations
+        ///CURRENT EVENT PUBLISHING STATUS:
+        ///- PhysicsSystem focuses on physics simulation and movement
+        ///- No events are published by PhysicsSystem at this time
+        ///- EventBus dependency retained for architectural consistency and future enhancements
+        ///- Ready to publish physics-related events if needed in future iterations
         ///
-        /// POTENTIAL FUTURE EVENTS (NOT CURRENTLY IMPLEMENTED):
-        /// - PhysicsCollisionEvent: When physics-based collision occurs
-        /// - ForceAppliedEvent: When external forces are applied
-        /// - VelocityChangedEvent: When significant velocity changes occur
-        /// - PhysicsStateChangeEvent: When physics state changes (kinematic/dynamic)
+        ///POTENTIAL FUTURE EVENTS (NOT CURRENTLY IMPLEMENTED):
+        ///- PhysicsCollisionEvent: When physics-based collision occurs
+        ///- ForceAppliedEvent: When external forces are applied
+        ///- VelocityChangedEvent: When significant velocity changes occur
+        ///- PhysicsStateChangeEvent: When physics state changes (kinematic/dynamic)
         ///
-        /// PHYSICS SIMULATION IS DRIVEN PURELY BY ECS QUERIES:
-        /// - PhysicsSystem queries EntityManager for entities with required components
-        /// - Component data (PhysicsComponent + TransformComponent) determines all physics behavior
-        /// - Physics updates occur in Update() method called from main game loop
-        /// - No event-driven updates or subscriptions are used
+        ///PHYSICS SIMULATION IS DRIVEN PURELY BY ECS QUERIES:
+        ///- PhysicsSystem queries EntityManager for entities with required components
+        ///- Component data (PhysicsComponent + TransformComponent) determines all physics behavior
+        ///- Physics updates occur in Update() method called from main game loop
+        ///- No event-driven updates or subscriptions are used
         ///
-        /// ARCHITECTURAL RATIONALE:
-        /// - Component-based design provides deterministic physics based on entity state
-        /// - Direct component queries eliminate event subscription overhead
-        /// - Main game loop drives physics timing, not events
-        /// - EventBus dependency retained for architectural consistency and future enhancements
+        ///ARCHITECTURAL RATIONALE:
+        ///- Component-based design provides deterministic physics based on entity state
+        ///- Direct component queries eliminate event subscription overhead
+        ///- Main game loop drives physics timing, not events
+        ///- EventBus dependency retained for architectural consistency and future enhancements
         ///
-        /// FORCES APPLIED (CURRENT IMPLEMENTATION):
-        /// - Acceleration forces (from PhysicsComponent.Acceleration)
-        /// - Drag forces (proportional to velocity magnitude)
-        /// - External forces via ApplyForce() method
-        /// - Impulse forces via ApplyImpulse() method
+        ///FORCES APPLIED (CURRENT IMPLEMENTATION):
+        ///- Acceleration forces (from PhysicsComponent.Acceleration)
+        ///- Drag forces (proportional to velocity magnitude)
+        ///- External forces via ApplyForce() method
+        ///- Impulse forces via ApplyImpulse() method
         ///
-        /// DEFERRED FEATURES:
-        /// - Gravity forces (will be added in future iterations)
-        /// - Wind forces (will be added in future iterations)
-        /// - Magnetic/electromagnetic forces (future enhancement)
-        /// - Constraint forces (joints, springs, etc.)
+        ///DEFERRED FEATURES:
+        ///- Gravity forces (will be added in future iterations)
+        ///- Wind forces (will be added in future iterations)
+        ///- Magnetic/electromagnetic forces (future enhancement)
+        ///- Constraint forces (joints, springs, etc.)
         ///
-        /// INTERACTION WITH COLLISIONSYSTEM:
-        /// - PhysicsSystem handles movement and force application
-        /// - CollisionSystem handles collision detection and response
-        /// - CollisionSystem may apply bounce forces to PhysicsComponent
-        /// - Clear separation of concerns between movement and collision
+        ///INTERACTION WITH COLLISIONSYSTEM:
+        ///- PhysicsSystem handles movement and force application
+        ///- CollisionSystem handles collision detection and response
+        ///- CollisionSystem may apply bounce forces to PhysicsComponent
+        ///- Clear separation of concerns between movement and collision
         ///
-        /// POTENTIAL FUTURE EVENT SUBSCRIPTIONS (optional, not currently implemented):
-        /// - GravityChangedEvent: For dynamic gravity adjustments
-        /// - WindChangedEvent: For environmental force changes
-        /// - TimeScaleChangedEvent: For slow-motion/fast-forward effects
+        ///POTENTIAL FUTURE EVENT SUBSCRIPTIONS (optional, not currently implemented):
+        ///- GravityChangedEvent: For dynamic gravity adjustments
+        ///- WindChangedEvent: For environmental force changes
+        ///- TimeScaleChangedEvent: For slow-motion/fast-forward effects
         ///
-        /// CURRENT IMPLEMENTATION: No event subscriptions created or maintained.
-        /// No event publishing currently implemented.
-        /// </summary>
+        ///CURRENT IMPLEMENTATION: No event subscriptions created or maintained.
+        ///No event publishing currently implemented.
+        ///</summary>
         private void DocumentEventSubscriptions()
         {
-            // This method exists solely to document event subscription requirements
-            // as specified in P11-04-02-E. No actual event subscriptions are implemented.
+            //This method exists solely to document event subscription requirements
+            //as specified in P11-04-02-E. No actual event subscriptions are implemented.
         }
 
         private void DebugLog(string message)
@@ -450,9 +452,9 @@ namespace SASZombieAssaultTD.Engine.Physics
         }
     }
 
-    /// <summary>
-    /// Statistics about the physics system state.
-    /// </summary>
+    ///<summary>
+    ///Statistics about the physics system state.
+    ///</summary>
     public class PhysicsSystemStatistics
     {
         public bool Initialized { get; set; }

@@ -1,92 +1,106 @@
-// ============================================================================
-// PROGRAM: MarkdownLogWriter.cs
-// FILE PATH E:\SASZombieAssaultTD\Engine\Diagnostics
-// PURPOSE: Writes engine diagnostic output to a Markdown file for forensic
-//          analysis, debugging, and post-run review.
-// FEATURES:
-//   - Creates timestamped Markdown log files.
-//   - Buffers log entries in memory before flushing to disk.
-//   - Writes structured sections for each diagnostic level.
-//   - Ensures the Logs directory exists before writing.
-// RESPONSIBILITIES:
-//   - Provide a deterministic Markdown sink for DebugLogger.
-//   - Maintain a stable file format for external tools and analysis.
-//   - Avoid formatting drift or uncontrolled file growth.
-// INTERACTIONS:
-//   - Called exclusively by DebugLogger.
-//   - Does not perform any filtering or routing logic.
-// NOTES:
-//   - File is flushed on every write to prevent data loss on crash.
-//   - Safe for multi-run usage; each run generates a new file.
-// ============================================================================
+// ====================================================================================================
+//  FILE: MarkdownLogWriter.cs
+//  PATH: Engine/Diagnostics/
+//  MODULE: Diagnostics Pipeline (Markdown Sink)
+//
+//  ROLE:
+//      Writes each diagnostic entry to a unified Markdown log file. This writer is intended for
+//      developer-facing diagnostics, providing readable, structured output without altering or
+//      reformatting the message content.
+//
+//  RESPONSIBILITIES:
+//      - Append DiagnosticEntry records to a Markdown file.
+//      - Preserve message content EXACTLY as provided.
+//      - Guarantee non-blocking, non-throwing behavior.
+//      - Provide deterministic formatting for developer inspection.
+//
+//  NON-RESPONSIBILITIES:
+//      - Does not generate timestamps (DiagnosticEntry provides them).
+//      - Does not categorize or filter diagnostics.
+//      - Does not perform log rotation or backup management.
+//      - Does not modify message formatting.
+//
+//  ARCHITECTURAL NOTES:
+//      - This writer MUST NEVER throw.
+//      - This writer MUST NEVER block engine execution.
+//      - This writer MUST NEVER reformat messages.
+//      - This writer MUST ALWAYS append exactly what DiagnosticEntry provides.
+// ====================================================================================================
 
-using System;
 using System.IO;
-using System.Text;
+using System.Reflection;
 
-namespace SASZombieAssaultTD.Engine.Diagnostics
+namespace SASZombieAssaultTD.Engine.Diagnostics.Writers
 {
-    /// <summary>
-    /// Writes structured Markdown log output to a timestamped file.
-    /// </summary>
-    public sealed class MarkdownLogWriter
+    public static class MarkdownLogWriter
     {
-        // Stores the full path to the log file created for this run.
-        private readonly string _filePath;
+        private static readonly object _lock = new();
+        private static readonly string _baseDir;
 
-        // In-memory buffer used to accumulate Markdown content before flushing.
-        private readonly StringBuilder _buffer = new();
-
-        /// <summary>
-        /// Initializes the writer and prepares the log directory and file.
-        /// </summary>
-        public MarkdownLogWriter(string directory = "Logs")
+        static MarkdownLogWriter()
         {
-            // Ensure the log directory exists before writing.
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
+            try
+            {
+                // Runtime folder (bin/Debug/net8.0-windows/)
+                string runtimeDir = Path.GetDirectoryName(
+                    Assembly.GetExecutingAssembly().Location
+                );
 
-            // Generate a timestamped filename for this run.
-            string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-            _filePath = Path.Combine(directory, $"log_{timestamp}.md");
+                // Walk up 3 levels: net8.0-windows → Debug → bin → project root
+                string projectRoot = Path.GetFullPath(
+                    Path.Combine(runtimeDir, @"..\..\..")
+                );
 
-            // Write the initial header block to the buffer.
-            WriteHeader();
+                // Final target: Engine/Reporting/Logs
+                _baseDir = Path.Combine(projectRoot, "Engine", "Reporting", "Logs");
+
+                if (!Directory.Exists(_baseDir))
+                    Directory.CreateDirectory(_baseDir);
+            }
+            catch
+            {
+                _baseDir = null; // Safe no-op mode
+            }
         }
 
         /// <summary>
-        /// Writes the top-of-file Markdown header containing run metadata.
+        /// Writes a DiagnosticEntry to the Markdown log file.
         /// </summary>
-        private void WriteHeader()
+        public static void Write(DiagnosticEntry entry)
         {
-            _buffer.AppendLine("# Engine Diagnostic Log");
-            _buffer.AppendLine($"**Run Timestamp:** {DateTime.Now}");
-            _buffer.AppendLine($"**Session ID:** {Guid.NewGuid()}");
-            _buffer.AppendLine("\n---\n");
-        }
+            if (entry == null)
+                return;
 
-        /// <summary>
-        /// Appends a structured log entry to the Markdown buffer.
-        /// </summary>
-        public void Write(string level, string message)
-        {
-            // Write the diagnostic level section header.
-            _buffer.AppendLine($"## {level}");
+            if (_baseDir == null)
+                return;
 
-            // Write the timestamped message entry.
-            _buffer.AppendLine($"- [{DateTime.Now:HH:mm:ss}] {message}");
-            _buffer.AppendLine();
+            try
+            {
+                string filePath = Path.Combine(_baseDir, "DiagnosticsReport.md");
 
-            // Flush the updated buffer to disk.
-            Flush();
-        }
+                string block =
+                    $"### Diagnostic Entry\n" +
+                    $"- **Subsystem:** {entry.Subsystem}\n" +
+                    $"- **Level:** {entry.Level}\n" +
+                    $"- **Category:** {entry.Category}\n" +
+                    $"- **Priority:** {entry.Priority}\n" +
+                    $"- **Message:** {entry.Message}\n" +
+                    $"- **Timestamp:** {entry.Timestamp:yyyy-MM-dd HH:mm:ss.fff}\n" +
+                    $"- **CorrelationId:** {entry.CorrelationId}\n" +
+                    $"- **RequestId:** {entry.RequestId}\n" +
+                    $"- **Operation:** {entry.Operation}\n" +
+                    $"- **PatternTag:** {entry.PatternTag}\n" +
+                    $"- **OverloadArgs:** {entry.OverloadArgs}\n\n";
 
-        /// <summary>
-        /// Writes the current buffer contents to the log file.
-        /// </summary>
-        private void Flush()
-        {
-            File.WriteAllText(_filePath, _buffer.ToString());
+                lock (_lock)
+                {
+                    File.AppendAllText(filePath, block);
+                }
+            }
+            catch
+            {
+                // MUST NEVER throw.
+            }
         }
     }
 }

@@ -4,6 +4,8 @@ Purpose: DeltaTime smoothing; fixed timestep placeholder.
 */
 
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Utility
 {
     public static class Time

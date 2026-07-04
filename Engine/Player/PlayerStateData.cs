@@ -1,28 +1,30 @@
-// ============================================================================
-// File:        PlayerStateData.cs
-// File Path:   E:\SASZombieAssaultTD\Engine\Player
-// Program:     PlayerStateData
-// Author:      BDC
-// Created:     2026-05-19
-// Purpose:     Serializable DTO for PlayerState used by SnapshotData.
-// Notes:       Pure data. Immutable structure. No runtime dependencies.
-//              Used exclusively for save/load, snapshot, and persistence.
-// ============================================================================
+//============================================================================
+//File:        PlayerStateData.cs
+//File Path:   E:\SASZombieAssaultTD\Engine\Player
+//Program:     PlayerStateData
+//Author:      BDC
+//Created:     2026-05-19
+//Purpose:     Serializable DTO for PlayerState used by SnapshotData.
+//Notes:       Pure data. Immutable structure. No runtime dependencies.
+//             Used exclusively for save/load, snapshot, and persistence.
+//============================================================================
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Snapshot
 {
-    /// <summary>
-    /// Serializable snapshot of the player's state.
-    /// Pure data container with no runtime logic.
-    /// </summary>
+    ///<summary>
+    ///Serializable snapshot of the player's state.
+    ///Pure data container with no runtime logic.
+    ///</summary>
     [Serializable]
     public sealed class PlayerStateData
     {
-        // --------------------------------------------------------------------
-        //  Core Player State Fields
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        // Core Player State Fields
+        //--------------------------------------------------------------------
 
         public int Level { get; set; }
         public int Experience { get; set; }
@@ -31,18 +33,18 @@ namespace SASZombieAssaultTD.Engine.Snapshot
         public int Score { get; set; }
         public int WaveNumber { get; set; }
 
-        // --------------------------------------------------------------------
-        //  Constructors
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        // Constructors
+        //--------------------------------------------------------------------
 
-        /// <summary>
-        /// Default constructor for serializers.
-        /// </summary>
+        ///<summary>
+        ///Default constructor for serializers.
+        ///</summary>
         public PlayerStateData() { }
 
-        /// <summary>
-        /// Creates a snapshot from a live PlayerState instance.
-        /// </summary>
+        ///<summary>
+        ///Creates a snapshot from a live PlayerState instance.
+        ///</summary>
         public PlayerStateData(PlayerState state)
         {
             if (state == null)
@@ -56,13 +58,13 @@ namespace SASZombieAssaultTD.Engine.Snapshot
             WaveNumber = state.WaveNumber;
         }
 
-        // --------------------------------------------------------------------
-        //  Deep Clone
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        // Deep Clone
+        //--------------------------------------------------------------------
 
-        /// <summary>
-        /// Creates a deep copy of this PlayerStateData instance.
-        /// </summary>
+        ///<summary>
+        ///Creates a deep copy of this PlayerStateData instance.
+        ///</summary>
         public PlayerStateData DeepClone()
         {
             return new PlayerStateData
@@ -76,9 +78,9 @@ namespace SASZombieAssaultTD.Engine.Snapshot
             };
         }
 
-        // --------------------------------------------------------------------
-        //  Diagnostics
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        // Diagnostics
+        //--------------------------------------------------------------------
 
         public override string ToString()
         {

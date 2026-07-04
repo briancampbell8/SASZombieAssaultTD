@@ -12,7 +12,7 @@ Features:
   - All UI rendering is GPU-accelerated with no CPU rendering path
 */
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 
 using System;
 using System.Drawing;
@@ -21,11 +21,13 @@ using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.UI.Rendering;
 using SASZombieAssaultTD.Engine.UI.Rendering.Modern;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Rendering.D3D11
 {
-    /// <summary>
-    /// Bridge between the engine Renderer and the ModernUIRenderer.
-    /// </summary>
+    ///<summary>
+    ///Bridge between the engine Renderer and the ModernUIRenderer.
+    ///</summary>
     public sealed class D3D11RenderContextBridge : IDisposable
     {
         private readonly Renderer _renderer;

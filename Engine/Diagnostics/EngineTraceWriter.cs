@@ -1,72 +1,88 @@
-/* ====================================================================================================
- *  FILE: EngineTraceWriter.cs
- *  PATH: Engine/Diagnostics/EngineTraceWriter.cs
- *  SUBSYSTEM: Diagnostics
- *  ROLE: Dedicated Markdown trace file writer for engine diagnostics.
- *
- *  RESPONSIBILITIES:
- *      - Append all diagnostic log entries to EngineTrace.md.
- *      - Maintain deterministic, audit-friendly Markdown formatting.
- *      - Provide a secondary sink for DebugLogger without replacing it.
- *      - Ensure thread-safe, zero-throw file output.
- *
- *  NON-RESPONSIBILITIES:
- *      - Console logging (handled by DebugLogger).
- *      - Log level filtering.
- *      - Real-time formatting logic (caller provides formatted message).
- *
- *  DEPENDENCIES:
- *      - System.IO
- *      - System.Threading
- *
- *  CALLED BY:
- *      - DebugLogger (optional integration)
- *      - EngineDiagnostics.Trace
- *
- *  ARCHITECTURAL NOTES:
- *      - Must never throw exceptions.
- *      - Must never block engine execution.
- *      - Must remain a pure append-only file writer.
- * ==================================================================================================== */
+// ====================================================================================================
+//  FILE: EngineTraceWriter.cs
+//  PATH: Engine/Diagnostics/
+//  MODULE: Diagnostics Pipeline (Primary Markdown Sink)
+//
+//  ROLE:
+//      Writes fully formatted Markdown diagnostic entries to EngineTrace.md. This file serves as the
+//      authoritative, chronological, unfiltered diagnostic trace for the entire engine. ALL
+//      diagnostic messages—across all subsystems, categories, and severity levels (Info → Exception)
+//      MUST be written here without exception.
+// ====================================================================================================
 
 using System;
 using System.IO;
-using System.Text;
-using System.Threading;
+using System.Reflection;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
     public static class EngineTraceWriter
     {
-        private static readonly object _fileLock = new();
-        private static readonly string _tracePath =
-            Path.Combine(AppContext.BaseDirectory, "EngineTrace.md");
+        private static readonly string TracePath;
+
+        static EngineTraceWriter()
+        {
+            try
+            {
+                // Resolve runtime directory (bin/Debug/net8.0-windows/)
+                string runtimeDir = Path.GetDirectoryName(
+                    Assembly.GetExecutingAssembly().Location
+                )!;
+
+                // Resolve project root (three levels up)
+                string projectRoot = Path.GetFullPath(
+                    Path.Combine(runtimeDir, @"..\..\..")
+                );
+
+                // Resolve Engine/Reporting/Logs directory
+                string logsDir = Path.Combine(projectRoot, "Engine", "Reporting", "Logs");
+
+                if (!Directory.Exists(logsDir))
+                    Directory.CreateDirectory(logsDir);
+
+                // Final trace file path
+                TracePath = Path.Combine(logsDir, "EngineTrace.md");
+            }
+            catch
+            {
+                // Absolute fallback — MUST NOT throw
+                TracePath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "EngineTrace.md"
+                );
+            }
+        }
 
         /// <summary>
-        /// Appends a fully formatted Markdown trace entry to EngineTrace.md.
+        /// Writes a diagnostic entry to EngineTrace.md deterministically.
         /// </summary>
-        /// <param name="formattedMessage">The message already formatted by DebugLogger or Diagnostics.</param>
-        public static void WriteMarkdownEntry(string formattedMessage)
+        public static void Write(DiagnosticEntry entry)
         {
-            if (string.IsNullOrWhiteSpace(formattedMessage))
+            if (entry == null)
                 return;
 
             try
             {
-                var sb = new StringBuilder();
+                using var writer = new StreamWriter(TracePath, append: true);
 
-                sb.AppendLine($"- **Time:** {DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}");
-                sb.AppendLine($"- **Details:** {formattedMessage}");
-                sb.AppendLine();
-
-                lock (_fileLock)
-                {
-                    File.AppendAllText(_tracePath, sb.ToString());
-                }
+                writer.WriteLine($"Subsystem: {entry.Subsystem}");
+                writer.WriteLine($"Level: {entry.Level}");
+                writer.WriteLine($"Category: {entry.Category}");
+                writer.WriteLine($"Priority: {entry.Priority}");
+                writer.WriteLine($"Message: {entry.Message}");
+                writer.WriteLine($"Timestamp: {entry.Timestamp:yyyy-MM-dd HH:mm:ss.fff}");
+                writer.WriteLine($"CorrelationId: {entry.CorrelationId}");
+                writer.WriteLine($"RequestId: {entry.RequestId}");
+                writer.WriteLine($"Operation: {entry.Operation}");
+                writer.WriteLine($"PatternTag: {entry.PatternTag}");
+                writer.WriteLine($"OverloadArgs: {entry.OverloadArgs}");
+                writer.WriteLine("------------------------------------------------------------");
+                writer.WriteLine();
             }
             catch
             {
-                // File writer must never throw.
+                // Diagnostics MUST NEVER throw.
+                // If writing fails, swallow silently.
             }
         }
     }

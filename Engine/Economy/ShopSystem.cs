@@ -1,4 +1,4 @@
-/*
+﻿/*
 File:    ShopSystem.cs
 Purpose: Tower and upgrade purchasing system for SAS Zombie Assault TD.
 Features: Tower catalog, pricing, purchase validation, special offers.
@@ -9,11 +9,13 @@ using System.Collections.Generic;
 using System.Linq;
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Economy
+//
 {
-    /// <summary>
-    /// Represents an item available for purchase in the shop.
-    /// </summary>
+    ///<summary>
+    ///Represents an item available for purchase in the shop.
+    ///</summary>
     public class ShopItem
     {
         public string Id { get; set; }
@@ -31,10 +33,10 @@ namespace SASZombieAssaultTD.Engine.Economy
         }
     }
 
-    /// <summary>
-    /// Manages the in-game shop for purchasing towers and upgrades.
-    /// Handles pricing, availability, and special offers.
-    /// </summary>
+    ///<summary>
+    ///Manages the in-game shop for purchasing towers and upgrades.
+    ///Handles pricing, availability, and special offers.
+    ///</summary>
     public class ShopSystem
     {
         private static ShopSystem _instance;
@@ -49,35 +51,35 @@ namespace SASZombieAssaultTD.Engine.Economy
             _shopItems = new Dictionary<string, ShopItem>();
             _specialOffers = new List<string>();
             InitializeShopItems();
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "ShopSystem: Initialized with shop catalog");
+            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, "ShopSystem: Initialized with shop catalog");
         }
 
-        /// <summary>
-        /// Gets all available shop items.
-        /// </summary>
+        ///<summary>
+        ///Gets all available shop items.
+        ///</summary>
         public IReadOnlyDictionary<string, ShopItem> ShopItems => _shopItems;
 
-        /// <summary>
-        /// Gets current special offers.
-        /// </summary>
+        ///<summary>
+        ///Gets current special offers.
+        ///</summary>
         public IReadOnlyList<string> SpecialOffers => _specialOffers;
 
-        /// <summary>
-        /// Event fired when shop items change.
-        /// </summary>
+        ///<summary>
+        ///Event fired when shop items change.
+        ///</summary>
         public event Action OnShopUpdated;
 
-        /// <summary>
-        /// Event fired when special offers change.
-        /// </summary>
+        ///<summary>
+        ///Event fired when special offers change.
+        ///</summary>
         public event Action<List<string>> OnSpecialOffersChanged;
 
-        /// <summary>
-        /// Initializes the default shop items.
-        /// </summary>
+        ///<summary>
+        ///Initializes the default shop items.
+        ///</summary>
         private void InitializeShopItems()
         {
-            // Basic Towers
+            //Basic Towers
             AddShopItem(new ShopItem
             {
                 Id = "tower_basic",
@@ -108,7 +110,7 @@ namespace SASZombieAssaultTD.Engine.Economy
                 Category = "Towers"
             });
 
-            // Upgrades
+            //Upgrades
             AddShopItem(new ShopItem
             {
                 Id = "upgrade_damage",
@@ -139,70 +141,70 @@ namespace SASZombieAssaultTD.Engine.Economy
                 Category = "Upgrades"
             });
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Initialized {_shopItems.Count} shop items");
+            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Initialized {_shopItems.Count} shop items");
         }
 
-        /// <summary>
-        /// Adds a new shop item.
-        /// </summary>
+        ///<summary>
+        ///Adds a new shop item.
+        ///</summary>
         public void AddShopItem(ShopItem item)
         {
             if (string.IsNullOrEmpty(item.Id))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "ShopSystem: Cannot add shop item without ID");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", "ShopSystem: Cannot add shop item without ID");
                 return;
             }
 
             _shopItems[item.Id] = item;
             OnShopUpdated?.Invoke();
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Added shop item {item.Name} ({item.Id})");
+            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Added shop item {item.Name} ({item.Id})");
         }
 
-        /// <summary>
-        /// Removes a shop item.
-        /// </summary>
+        ///<summary>
+        ///Removes a shop item.
+        ///</summary>
         public bool RemoveShopItem(string itemId)
         {
             if (_shopItems.Remove(itemId))
             {
                 OnShopUpdated?.Invoke();
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Removed shop item {itemId}");
+                DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Removed shop item {itemId}");
                 return true;
             }
 
-            Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"ShopSystem: Shop item {itemId} not found");
+            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"ShopSystem: Shop item {itemId} not found");
             return false;
         }
 
-        /// <summary>
-        /// Gets a shop item by ID.
-        /// </summary>
+        ///<summary>
+        ///Gets a shop item by ID.
+        ///</summary>
         public ShopItem GetShopItem(string itemId)
         {
             return _shopItems.TryGetValue(itemId, out var item) ? item : null;
         }
 
-        /// <summary>
-        /// Purchases an item from the shop.
-        /// </summary>
+        ///<summary>
+        ///Purchases an item from the shop.
+        ///</summary>
         public bool PurchaseItem(string itemId)
         {
             var item = GetShopItem(itemId);
             if (item == null)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"ShopSystem: Shop item {itemId} not found");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"ShopSystem: Shop item {itemId} not found");
                 return false;
             }
 
             if (!item.IsAvailable)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"ShopSystem: Shop item {itemId} is not available");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"ShopSystem: Shop item {itemId} is not available");
                 return false;
             }
 
             var finalCost = item.GetFinalCost();
 
-            // Trigger purchase attempt event
+            //Trigger purchase attempt event
             EconomyEvents.TriggerPurchaseAttempted(itemId, item.Name, finalCost);
 
             if (!EconomyManager.HasEnoughCash(finalCost))
@@ -214,13 +216,13 @@ namespace SASZombieAssaultTD.Engine.Economy
             EconomyManager.Spend(finalCost);
 
             EconomyEvents.TriggerPurchaseCompleted(itemId, item.Name, finalCost, true);
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Purchased {item.Name} for {finalCost} cash");
+            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Purchased {item.Name} for {finalCost} cash");
             return true;
         }
 
-        /// <summary>
-        /// Gets shop items by category.
-        /// </summary>
+        ///<summary>
+        ///Gets shop items by category.
+        ///</summary>
         public List<ShopItem> GetItemsByCategory(string category)
         {
             return _shopItems.Values
@@ -228,9 +230,9 @@ namespace SASZombieAssaultTD.Engine.Economy
                 .ToList();
         }
 
-        /// <summary>
-        /// Gets available shop items.
-        /// </summary>
+        ///<summary>
+        ///Gets available shop items.
+        ///</summary>
         public List<ShopItem> GetAvailableItems()
         {
             return _shopItems.Values
@@ -238,44 +240,44 @@ namespace SASZombieAssaultTD.Engine.Economy
                 .ToList();
         }
 
-        /// <summary>
-        /// Sets a global discount for all items.
-        /// </summary>
+        ///<summary>
+        ///Sets a global discount for all items.
+        ///</summary>
         public void SetGlobalDiscount(float discountMultiplier)
         {
             _globalDiscount = System.Math.Max(0.1f, System.Math.Min(1.0f, discountMultiplier));
             OnShopUpdated?.Invoke();
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Set global discount to {_globalDiscount:F2}");
+            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Set global discount to {_globalDiscount:F2}");
         }
 
-        /// <summary>
-        /// Adds a special offer.
-        /// </summary>
+        ///<summary>
+        ///Adds a special offer.
+        ///</summary>
         public void AddSpecialOffer(string itemId)
         {
             if (!_specialOffers.Contains(itemId))
             {
                 _specialOffers.Add(itemId);
                 OnSpecialOffersChanged?.Invoke(new List<string>(_specialOffers));
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Added special offer {itemId}");
+                DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Added special offer {itemId}");
             }
         }
 
-        /// <summary>
-        /// Removes a special offer.
-        /// </summary>
+        ///<summary>
+        ///Removes a special offer.
+        ///</summary>
         public void RemoveSpecialOffer(string itemId)
         {
             if (_specialOffers.Remove(itemId))
             {
                 OnSpecialOffersChanged?.Invoke(new List<string>(_specialOffers));
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ShopSystem: Removed special offer {itemId}");
+                DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Removed special offer {itemId}");
             }
         }
 
-        /// <summary>
-        /// Checks if an item is on special offer.
-        /// </summary>
+        ///<summary>
+        ///Checks if an item is on special offer.
+        ///</summary>
         public bool IsSpecialOffer(string itemId)
         {
             return _specialOffers.Contains(itemId);

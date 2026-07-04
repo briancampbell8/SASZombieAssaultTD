@@ -1,11 +1,11 @@
-//// Program Name: CompositeSurface.cs
-//// File Path: Engine/Rendering/CompositeSurface.cs
-//// Program Purpose: The program provides a pixel data buffer for storing composite texture data.
-//// Program Features:
-//// - Stores width and height dimensions
-//// - Stores pixel data as an integer array
-//// - Initializes pixel array with specified dimensions in constructor
-using SASZombieAssaultTD.Engine.Diagnostics;
+////Program Name: CompositeSurface.cs
+////File Path: Engine/Rendering/CompositeSurface.cs
+////Program Purpose: The program provides a pixel data buffer for storing composite texture data.
+////Program Features:
+////- Stores width and height dimensions
+////- Stores pixel data as an integer array
+////- Initializes pixel array with specified dimensions in constructor
+//
 
 using Engine.Rendering.Interfaces;
 

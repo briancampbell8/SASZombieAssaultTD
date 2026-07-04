@@ -18,21 +18,23 @@ Notes:    This file keeps visuals out of gameplay logic.
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.HazardsControl
 {
-    /// <summary>
-    /// Visual manager for hazard systems.
-    /// Triggers visual effects and manages hazard visual state.
-    /// </summary>
+    ///<summary>
+    ///Visual manager for hazard systems.
+    ///Triggers visual effects and manages hazard visual state.
+    ///</summary>
     public class HazardVisuals
     {
         private Dictionary<int, HazardVisualStateData> _hazardVisualStates;
         private Queue<VisualEffectRequest> _effectQueue;
         private bool _isInitialized = false;
 
-        /// <summary>
-        /// Initializes the hazard visuals system.
-        /// </summary>
+        ///<summary>
+        ///Initializes the hazard visuals system.
+        ///</summary>
         public void Init()
         {
             _hazardVisualStates = new Dictionary<int, HazardVisualStateData>();
@@ -40,11 +42,11 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             _isInitialized = true;
         }
 
-        /// <summary>
-        /// Triggers a visual effect for a hazard.
-        /// </summary>
-        /// <param name="hazard">The hazard to trigger the effect for.</param>
-        /// <param name="effectType">The type of visual effect.</param>
+        ///<summary>
+        ///Triggers a visual effect for a hazard.
+        ///</summary>
+        ///<param name="hazard">The hazard to trigger the effect for.</param>
+        ///<param name="effectType">The type of visual effect.</param>
         public void TriggerVisualEffect(Hazard hazard, HazardVisualEffectType effectType)
         {
             if (!_isInitialized || hazard == null) return;
@@ -67,10 +69,10 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             OnVisualEffectTriggered?.Invoke(hazard, effectType);
         }
 
-        /// <summary>
-        /// Updates visual state for hazards.
-        /// </summary>
-        /// <param name="hazards">List of hazards to update.</param>
+        ///<summary>
+        ///Updates visual state for hazards.
+        ///</summary>
+        ///<param name="hazards">List of hazards to update.</param>
         public void UpdateHazardVisualState(List<Hazard> hazards)
         {
             if (!_isInitialized || hazards == null) return;
@@ -86,11 +88,11 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             ProcessEffectQueue();
         }
 
-        /// <summary>
-        /// Updates visual state for a specific hazard.
-        /// </summary>
-        /// <param name="hazard">The hazard to update.</param>
-        /// <param name="visualState">The new visual state.</param>
+        ///<summary>
+        ///Updates visual state for a specific hazard.
+        ///</summary>
+        ///<param name="hazard">The hazard to update.</param>
+        ///<param name="visualState">The new visual state.</param>
         private void UpdateHazardVisualState(Hazard hazard, HazardVisualState visualState)
         {
             if (!_hazardVisualStates.ContainsKey(hazard.Id))
@@ -115,9 +117,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             OnHazardVisualStateChanged?.Invoke(hazard, visualState);
         }
 
-        /// <summary>
-        /// Processes the visual effect queue.
-        /// </summary>
+        ///<summary>
+        ///Processes the visual effect queue.
+        ///</summary>
         private void ProcessEffectQueue()
         {
             while (_effectQueue.Count > 0)
@@ -127,22 +129,22 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             }
         }
 
-        /// <summary>
-        /// Processes a single visual effect.
-        /// </summary>
-        /// <param name="effect">The effect to process.</param>
+        ///<summary>
+        ///Processes a single visual effect.
+        ///</summary>
+        ///<param name="effect">The effect to process.</param>
         private void ProcessVisualEffect(VisualEffectRequest effect)
         {
-            // This would integrate with the actual rendering system
-            // For now, we just trigger events
+            //This would integrate with the actual rendering system
+            //For now, we just trigger events
             OnVisualEffectProcessed?.Invoke(effect);
         }
 
-        /// <summary>
-        /// Determines the visual state for a hazard.
-        /// </summary>
-        /// <param name="hazard">The hazard to determine state for.</param>
-        /// <returns>Visual state for the hazard.</returns>
+        ///<summary>
+        ///Determines the visual state for a hazard.
+        ///</summary>
+        ///<param name="hazard">The hazard to determine state for.</param>
+        ///<returns>Visual state for the hazard.</returns>
         private HazardVisualState DetermineVisualState(Hazard hazard)
         {
             return hazard.State switch
@@ -156,11 +158,11 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             };
         }
 
-        /// <summary>
-        /// Gets the visual state corresponding to a visual effect type.
-        /// </summary>
-        /// <param name="effectType">The visual effect type.</param>
-        /// <returns>The corresponding visual state.</returns>
+        ///<summary>
+        ///Gets the visual state corresponding to a visual effect type.
+        ///</summary>
+        ///<param name="effectType">The visual effect type.</param>
+        ///<returns>The corresponding visual state.</returns>
         private HazardVisualState GetVisualStateFromEffectType(HazardVisualEffectType effectType)
         {
             return effectType switch
@@ -172,12 +174,12 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             };
         }
 
-        /// <summary>
-        /// Gets the duration of a visual effect based on its type and hazard type.
-        /// </summary>
-        /// <param name="effectType">The visual effect type.</param>
-        /// <param name="hazardType">The hazard type.</param>
-        /// <returns>The duration of the effect.</returns>
+        ///<summary>
+        ///Gets the duration of a visual effect based on its type and hazard type.
+        ///</summary>
+        ///<param name="effectType">The visual effect type.</param>
+        ///<param name="hazardType">The hazard type.</param>
+        ///<returns>The duration of the effect.</returns>
         private float GetEffectDuration(HazardVisualEffectType effectType, string hazardType)
         {
             return effectType switch
@@ -196,12 +198,12 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             };
         }
 
-        /// <summary>
-        /// Gets the color of a visual effect based on its type and hazard type.
-        /// </summary>
-        /// <param name="effectType">The visual effect type.</param>
-        /// <param name="hazardType">The hazard type.</param>
-        /// <returns>The color of the effect.</returns>
+        ///<summary>
+        ///Gets the color of a visual effect based on its type and hazard type.
+        ///</summary>
+        ///<param name="effectType">The visual effect type.</param>
+        ///<param name="hazardType">The hazard type.</param>
+        ///<returns>The color of the effect.</returns>
         private string GetEffectColor(HazardVisualEffectType effectType, string hazardType)
         {
             return effectType switch
@@ -234,9 +236,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             };
         }
 
-        /// <summary>
-        /// Cleans up the hazard visuals system.
-        /// </summary>
+        ///<summary>
+        ///Cleans up the hazard visuals system.
+        ///</summary>
         public void Cleanup()
         {
             _hazardVisualStates?.Clear();
@@ -244,25 +246,25 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             _isInitialized = false;
         }
 
-        /// <summary>
-        /// Event triggered when a visual effect is triggered.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when a visual effect is triggered.
+        ///</summary>
         public event Action<Hazard, HazardVisualEffectType> OnVisualEffectTriggered;
 
-        /// <summary>
-        /// Event triggered when hazard visual state changes.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when hazard visual state changes.
+        ///</summary>
         public event Action<Hazard, HazardVisualState> OnHazardVisualStateChanged;
 
-        /// <summary>
-        /// Event triggered when a visual effect is processed.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when a visual effect is processed.
+        ///</summary>
         public event Action<VisualEffectRequest> OnVisualEffectProcessed;
     }
 
-    /// <summary>
-    /// Request for a visual effect.
-    /// </summary>
+    ///<summary>
+    ///Request for a visual effect.
+    ///</summary>
     public class VisualEffectRequest
     {
         public int HazardId { get; set; }
@@ -275,9 +277,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         public DateTime StartTime { get; set; }
     }
 
-    /// <summary>
-    /// Visual state for a hazard.
-    /// </summary>
+    ///<summary>
+    ///Visual state for a hazard.
+    ///</summary>
     public class HazardVisualStateData
     {
         public int HazardId { get; set; }
@@ -287,9 +289,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         public DateTime LastEffectTime { get; set; }
     }
 
-    /// <summary>
-    /// Statistics for visual operations.
-    /// </summary>
+    ///<summary>
+    ///Statistics for visual operations.
+    ///</summary>
     public class VisualStatistics
     {
         public int TotalHazardsTracked { get; set; }
@@ -298,9 +300,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         public HazardVisualState MostCommonState { get; set; }
     }
 
-    /// <summary>
-    /// Hazard visual states.
-    /// </summary>
+    ///<summary>
+    ///Hazard visual states.
+    ///</summary>
     public enum HazardVisualState
     {
         Inactive,
@@ -314,9 +316,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         Expired
     }
 
-    /// <summary>
-    /// Types of visual effects.
-    /// </summary>
+    ///<summary>
+    ///Types of visual effects.
+    ///</summary>
     public enum HazardVisualEffectType
     {
         None,

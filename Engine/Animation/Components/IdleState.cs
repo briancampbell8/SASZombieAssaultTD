@@ -7,12 +7,14 @@ using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.Animation.Core;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Animation.Components
+//
 {
-    /// <summary>
-    /// P11-17-03: Idle state implementation with deterministic transitions.
-    /// Implements IAnimationState with explicit transition conditions and no placeholder logic.
-    /// </summary>
+    ///<summary>
+    ///P11-17-03: Idle state implementation with deterministic transitions.
+    ///Implements IAnimationState with explicit transition conditions and no placeholder logic.
+    ///</summary>
     public class IdleState : IAnimationState
     {
         public string Name => "Idle";
@@ -36,12 +38,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         public void Enter()
         {
             IdleTime = 0f;
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "IdleState: Entering idle state");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, "IdleState: Entering idle state");
         }
 
         public void Exit()
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"IdleState: Exiting idle state after {IdleTime:F2}s");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"IdleState: Exiting idle state after {IdleTime:F2}s");
         }
 
         public void Update(float deltaTime, float timeInState)
@@ -53,19 +55,19 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             if (IsJumping)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "IdleState: Transition condition met for JumpState");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, "IdleState: Transition condition met for JumpState");
                 return _jumpState;
             }
 
             if (IsAttacking)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "IdleState: Transition condition met for AttackState");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, "IdleState: Transition condition met for AttackState");
                 return _attackState;
             }
 
             if (IsMoving)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "IdleState: Transition condition met for MoveState");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, "IdleState: Transition condition met for MoveState");
                 return _moveState;
             }
 

@@ -5,6 +5,8 @@ Purpose: Internal batching list; Flush() inside End(); texture draw batching.
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.VectorMath;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Rendering
 {
     public class SpriteBatchRenderer

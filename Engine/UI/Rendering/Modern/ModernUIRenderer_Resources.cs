@@ -4,14 +4,15 @@ Folder:  Engine/UI/Rendering/Modern/
 Purpose:  Core UI rendering component for SAS Zombie Assault TD.
 */
 
-// ============================================================================
-// ModernUIRenderer_Resources.cs (Modernized)
-// ============================================================================
+//============================================================================
+//ModernUIRenderer_Resources.cs (Modernized)
+//============================================================================
 
 using System;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.UI.Rendering;
+
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
 {
@@ -21,9 +22,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
         private UIShaderSystem _shaderSystem;
         private RenderResourcePool _resourcePool;
 
-        // --------------------------------------------------------------------
-        // INITIALIZATION
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //INITIALIZATION
+        //--------------------------------------------------------------------
 
         internal void InitializeResources(
             UITextureAtlasManager atlasManager,
@@ -40,13 +41,13 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
                 ?? throw new ArgumentNullException(nameof(resourcePool));
         }
 
-        // --------------------------------------------------------------------
-        // GET ATLAS TEXTURE (Modern Pipeline)
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //GET ATLAS TEXTURE (Modern Pipeline)
+        //--------------------------------------------------------------------
 
-        /// <summary>
-        /// Retrieves a texture from the UI atlas.
-        /// </summary>
+        ///<summary>
+        ///Retrieves a texture from the UI atlas.
+        ///</summary>
         public Texture GetAtlasTexture(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -55,20 +56,20 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
             var texture = _atlasManager.GetTexture(name);
 
             if (texture == null)
-                // TODO: RenderDiagnostics.Record doesn't exist
-                // RenderDiagnostics.Record("ModernUIRenderer", $"Atlas texture '{name}' not found.");
+                //TODO: RenderDiagnostics.Record doesn't exist
+                //RenderDiagnostics.Record("ModernUIRenderer", $"Atlas texture '{name}' not found.");
 
             return texture;
             return null;
         }
 
-        // --------------------------------------------------------------------
-        // GET MATERIAL (Modern Pipeline)
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //GET MATERIAL (Modern Pipeline)
+        //--------------------------------------------------------------------
 
-        /// <summary>
-        /// Retrieves a material from the shader system.
-        /// </summary>
+        ///<summary>
+        ///Retrieves a material from the shader system.
+        ///</summary>
         public UIMaterial GetMaterial(string materialName)
         {
             if (string.IsNullOrWhiteSpace(materialName))
@@ -77,20 +78,20 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
             var material = _shaderSystem.GetMaterial(materialName);
 
             if (material == null)
-                // TODO: RenderDiagnostics.Record doesn't exist
-                // RenderDiagnostics.Record("ModernUIRenderer", $"Material '{materialName}' not found.");
+                //TODO: RenderDiagnostics.Record doesn't exist
+                //RenderDiagnostics.Record("ModernUIRenderer", $"Material '{materialName}' not found.");
 
             return material;
             return null;
         }
 
-        // --------------------------------------------------------------------
-        // GET RENDER TARGET (Modern Pipeline)
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //GET RENDER TARGET (Modern Pipeline)
+        //--------------------------------------------------------------------
 
-        /// <summary>
-        /// Retrieves a render target from the render resource pool.
-        /// </summary>
+        ///<summary>
+        ///Retrieves a render target from the render resource pool.
+        ///</summary>
         public IRenderTarget GetRenderTarget(string targetName)
         {
             if (string.IsNullOrWhiteSpace(targetName))
@@ -99,16 +100,16 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
             var target = _resourcePool.GetRenderTarget(targetName);
 
             if (target == null)
-                // TODO: RenderDiagnostics.Record doesn't exist
-                // RenderDiagnostics.Record("ModernUIRenderer", $"RenderTarget '{targetName}' not found.");
+                //TODO: RenderDiagnostics.Record doesn't exist
+                //RenderDiagnostics.Record("ModernUIRenderer", $"RenderTarget '{targetName}' not found.");
 
             return target;
             return null;
         }
 
-        // --------------------------------------------------------------------
-        // RELEASE RESOURCE (Modern Pipeline)
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //RELEASE RESOURCE (Modern Pipeline)
+        //--------------------------------------------------------------------
 
         public void ReleaseResource(string name)
         {

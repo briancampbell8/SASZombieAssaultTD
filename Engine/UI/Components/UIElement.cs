@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
-    /// <summary>
-    /// Base UI element class with position, size, visibility, parent, and children fields
-    /// P80-01-02: UIElement defining base UI element with position, size, visibility, parent, and children
-    /// </summary>
+    ///<summary>
+    ///Base UI element class with position, size, visibility, parent, and children fields
+    ///P80-01-02: UIElement defining base UI element with position, size, visibility, parent, and children
+    ///</summary>
     public class UIElement
     {
         private string _id;
@@ -17,18 +19,18 @@ namespace SASZombieAssaultTD.Engine.UI
         private UIElement _parent;
         private readonly List<UIElement> _children;
 
-        /// <summary>
-        /// Gets or sets the unique identifier for this element.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the unique identifier for this element.
+        ///</summary>
         public string Id
         {
             get => _id;
             set => _id = value;
         }
 
-        /// <summary>
-        /// Gets or sets the position of the element relative to its parent
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the position of the element relative to its parent
+        ///</summary>
         public System.Drawing.PointF Position
         {
             get => _position;
@@ -42,9 +44,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Gets or sets the size of the element
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the size of the element
+        ///</summary>
         public System.Drawing.SizeF Size
         {
             get => _size;
@@ -58,9 +60,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Gets or sets whether the element is visible
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether the element is visible
+        ///</summary>
         public bool IsVisible
         {
             get => _isVisible;
@@ -74,9 +76,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Gets or sets the parent element
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the parent element
+        ///</summary>
         public UIElement Parent
         {
             get => _parent;
@@ -84,7 +86,7 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 if (_parent != value)
                 {
-                    // Remove from old parent if exists
+                    //Remove from old parent if exists
                     if (_parent != null)
                     {
                         _parent.RemoveChild(this);
@@ -92,7 +94,7 @@ namespace SASZombieAssaultTD.Engine.UI
 
                     _parent = value;
 
-                    // Add to new parent if exists
+                    //Add to new parent if exists
                     if (_parent != null)
                     {
                         _parent.AddChild(this);
@@ -103,19 +105,19 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Gets the collection of child elements
-        /// </summary>
+        ///<summary>
+        ///Gets the collection of child elements
+        ///</summary>
         public IReadOnlyList<UIElement> Children => _children.AsReadOnly();
 
-        /// <summary>
-        /// Gets whether the element needs a layout update
-        /// </summary>
+        ///<summary>
+        ///Gets whether the element needs a layout update
+        ///</summary>
         public bool NeedsLayoutUpdate => _needsLayoutUpdate;
 
-        /// <summary>
-        /// Gets the absolute position of the element
-        /// </summary>
+        ///<summary>
+        ///Gets the absolute position of the element
+        ///</summary>
         public System.Drawing.PointF AbsolutePosition
         {
             get
@@ -130,24 +132,24 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Initializes a new UI element
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UI element
+        ///</summary>
         public UIElement()
         {
             _children = new List<UIElement>();
             System.Diagnostics.Debug.WriteLine("UIElement: Created new UI element");
         }
 
-        /// <summary>
-        /// Updates the element
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds</param>
+        ///<summary>
+        ///Updates the element
+        ///</summary>
+        ///<param name="deltaTime">Time since last update in seconds</param>
         public virtual void Update(float deltaTime)
         {
             try
             {
-                // Update all children
+                //Update all children
                 for (int i = 0; i < _children.Count; i++)
                 {
                     _children[i].Update(deltaTime);
@@ -159,9 +161,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Renders the element
-        /// </summary>
+        ///<summary>
+        ///Renders the element
+        ///</summary>
         public virtual void Render()
         {
             try
@@ -169,7 +171,7 @@ namespace SASZombieAssaultTD.Engine.UI
                 if (!_isVisible)
                     return;
 
-                // Render all children
+                //Render all children
                 for (int i = 0; i < _children.Count; i++)
                 {
                     _children[i].Render();
@@ -181,14 +183,14 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Updates the element's layout
-        /// </summary>
+        ///<summary>
+        ///Updates the element's layout
+        ///</summary>
         public virtual void UpdateLayout()
         {
             try
             {
-                // Update layouts for all children
+                //Update layouts for all children
                 foreach (var child in _children)
                 {
                     if (child.NeedsLayoutUpdate)
@@ -205,10 +207,10 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// P80-01-03: Adds a child element to this element
-        /// </summary>
-        /// <param name="child">Child element to add</param>
+        ///<summary>
+        ///P80-01-03: Adds a child element to this element
+        ///</summary>
+        ///<param name="child">Child element to add</param>
         public virtual void AddChild(UIElement child)
         {
             try
@@ -242,10 +244,10 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// P80-01-03: Removes a child element from this element
-        /// </summary>
-        /// <param name="child">Child element to remove</param>
+        ///<summary>
+        ///P80-01-03: Removes a child element from this element
+        ///</summary>
+        ///<param name="child">Child element to remove</param>
         public virtual void RemoveChild(UIElement child)
         {
             try
@@ -273,10 +275,10 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// P80-01-03: Gets all child elements
-        /// </summary>
-        /// <returns>List of child elements</returns>
+        ///<summary>
+        ///P80-01-03: Gets all child elements
+        ///</summary>
+        ///<returns>List of child elements</returns>
         public virtual List<UIElement> GetChildren()
         {
             try
@@ -290,16 +292,16 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// P80-01-03: Invalidates the layout of this element and its children
-        /// </summary>
+        ///<summary>
+        ///P80-01-03: Invalidates the layout of this element and its children
+        ///</summary>
         public virtual void InvalidateLayout()
         {
             try
             {
                 _needsLayoutUpdate = true;
 
-                // Invalidate layout for all children
+                //Invalidate layout for all children
                 foreach (var child in _children)
                 {
                     child.InvalidateLayout();
@@ -311,9 +313,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Called when the element receives focus
-        /// </summary>
+        ///<summary>
+        ///Called when the element receives focus
+        ///</summary>
         public virtual void OnFocused()
         {
             try
@@ -326,9 +328,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Called when the element loses focus
-        /// </summary>
+        ///<summary>
+        ///Called when the element loses focus
+        ///</summary>
         public virtual void OnFocusLost()
         {
             try
@@ -341,9 +343,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Called when mouse enters the element
-        /// </summary>
+        ///<summary>
+        ///Called when mouse enters the element
+        ///</summary>
         public virtual void OnMouseEnter()
         {
             try
@@ -356,9 +358,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Called when mouse exits the element
-        /// </summary>
+        ///<summary>
+        ///Called when mouse exits the element
+        ///</summary>
         public virtual void OnMouseExit()
         {
             try
@@ -371,9 +373,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Called when mouse button is pressed on the element
-        /// </summary>
+        ///<summary>
+        ///Called when mouse button is pressed on the element
+        ///</summary>
         public virtual void OnMousePress()
         {
             try
@@ -386,9 +388,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Called when mouse button is released on the element
-        /// </summary>
+        ///<summary>
+        ///Called when mouse button is released on the element
+        ///</summary>
         public virtual void OnMouseRelease()
         {
             try
@@ -401,11 +403,11 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Checks if a point is inside this element
-        /// </summary>
-        /// <param name="point">Point to check</param>
-        /// <returns>True if point is inside element</returns>
+        ///<summary>
+        ///Checks if a point is inside this element
+        ///</summary>
+        ///<param name="point">Point to check</param>
+        ///<returns>True if point is inside element</returns>
         public virtual bool ContainsPoint(System.Drawing.PointF point)
         {
             try
@@ -423,11 +425,11 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Gets the element at the specified point
-        /// </summary>
-        /// <param name="point">Point to check</param>
-        /// <returns>Element at point, or null if none</returns>
+        ///<summary>
+        ///Gets the element at the specified point
+        ///</summary>
+        ///<param name="point">Point to check</param>
+        ///<returns>Element at point, or null if none</returns>
         public virtual UIElement GetElementAt(System.Drawing.PointF point)
         {
             try
@@ -435,7 +437,7 @@ namespace SASZombieAssaultTD.Engine.UI
                 if (!_isVisible || !ContainsPoint(point))
                     return null;
 
-                // Check children first (top-to-bottom)
+                //Check children first (top-to-bottom)
                 for (int i = _children.Count - 1; i >= 0; i--)
                 {
                     var child = _children[i].GetElementAt(point);
@@ -452,12 +454,12 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Handles input for this UI element.
-        /// </summary>
+        ///<summary>
+        ///Handles input for this UI element.
+        ///</summary>
         public virtual void HandleInput()
         {
-            // Stub implementation
+            //Stub implementation
         }
     }
 }

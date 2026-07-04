@@ -1,6 +1,8 @@
 using SASZombieAssaultTD.Engine.Animation.Events;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Animation.Integration
 {
     public interface IAnimationEventECSHandler

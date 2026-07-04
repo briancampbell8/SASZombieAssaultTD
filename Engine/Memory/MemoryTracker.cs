@@ -1,19 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SASZombieAssaultTD.Engine.Core;
+﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Memory
+
 {
-    /// <summary>
-    /// Memory tracking and leak detection system.
-    /// P30-02-08: Add memory usage tracking.
-    /// P30-02-09: Add memory leak detection hooks.
-    /// </summary>
+    ///<summary>
+    ///Memory tracking and leak detection system.
+    ///P30-02-08: Add memory usage tracking.
+    ///P30-02-09: Add memory leak detection hooks.
+    ///</summary>
     public class MemoryTracker
     {
         private readonly ConcurrentDictionary<string, MemoryAllocation> _allocations;
@@ -29,63 +29,63 @@ namespace SASZombieAssaultTD.Engine.Memory
         private List<MemorySnapshot> _snapshots;
         private int _maxSnapshots;
 
-        /// <summary>
-        /// Gets or sets whether memory tracking is enabled.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether memory tracking is enabled.
+        ///</summary>
         public bool Enabled
         {
             get => _enabled;
             set => _enabled = value;
         }
 
-        /// <summary>
-        /// Gets the total allocated memory in bytes.
-        /// </summary>
+        ///<summary>
+        ///Gets the total allocated memory in bytes.
+        ///</summary>
         public long TotalAllocated => _totalAllocated;
 
-        /// <summary>
-        /// Gets the total freed memory in bytes.
-        /// </summary>
+        ///<summary>
+        ///Gets the total freed memory in bytes.
+        ///</summary>
         public long TotalFreed => _totalFreed;
 
-        /// <summary>
-        /// Gets the current memory usage in bytes.
-        /// </summary>
+        ///<summary>
+        ///Gets the current memory usage in bytes.
+        ///</summary>
         public long CurrentMemoryUsage => _totalAllocated - _totalFreed;
 
-        /// <summary>
-        /// Gets the peak memory usage in bytes.
-        /// </summary>
+        ///<summary>
+        ///Gets the peak memory usage in bytes.
+        ///</summary>
         public long PeakMemoryUsage => _peakMemoryUsage;
 
-        /// <summary>
-        /// Gets the number of active allocations.
-        /// </summary>
+        ///<summary>
+        ///Gets the number of active allocations.
+        ///</summary>
         public int ActiveAllocationCount => _allocationCount - _freeCount;
 
-        /// <summary>
-        /// Gets the last GC time in milliseconds.
-        /// </summary>
+        ///<summary>
+        ///Gets the last GC time in milliseconds.
+        ///</summary>
         public float LastGCTime => _lastGCTime;
 
-        /// <summary>
-        /// Event fired when memory usage exceeds a threshold.
-        /// </summary>
+        ///<summary>
+        ///Event fired when memory usage exceeds a threshold.
+        ///</summary>
         public event EventHandler<long>? MemoryThresholdExceeded;
 
-        /// <summary>
-        /// Event fired when a potential memory leak is detected.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a potential memory leak is detected.
+        ///</summary>
         public event EventHandler<MemoryAllocation>? MemoryLeakDetected;
 
-        /// <summary>
-        /// Event fired when a memory snapshot is taken.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a memory snapshot is taken.
+        ///</summary>
         public event EventHandler<MemorySnapshot>? SnapshotTaken;
 
-        /// <summary>
-        /// Initializes a new memory tracker.
-        /// </summary>
+        ///<summary>
+        ///Initializes a new memory tracker.
+        ///</summary>
         public MemoryTracker()
         {
             _allocations = new ConcurrentDictionary<string, MemoryAllocation>();
@@ -100,12 +100,12 @@ namespace SASZombieAssaultTD.Engine.Memory
             _snapshots = new List<MemorySnapshot>();
             _maxSnapshots = 100;
 
-            Engine.Diagnostics.DebugLogger.Log("INFO", "MemoryTracker: Initialized");
+            DLogger.Log(LogSubsystems.Memory,LogLevel.Info, "MemoryTracker: Initialized");
         }
 
-        /// <summary>
-        /// Tracks a memory allocation.
-        /// </summary>
+        ///<summary>
+        ///Tracks a memory allocation.
+        ///</summary>
         public void TrackAllocation(string id, long size, Type type, string? stackTrace = null)
         {
             if (!_enabled || string.IsNullOrEmpty(id))
@@ -128,7 +128,7 @@ namespace SASZombieAssaultTD.Engine.Memory
 
                 var typeInfo = _typeInfo.GetOrAdd(type, _ => new TypeMemoryInfo { Type = type });
 
-                // Fixes CS0206 on Lines 130 & 131: Use lock for thread-safe property modification
+                //Fixes CS0206 on Lines 130 & 131: Use lock for thread-safe property modification
                 lock (typeInfo)
                 {
                     typeInfo.TotalAllocated += size;
@@ -137,13 +137,13 @@ namespace SASZombieAssaultTD.Engine.Memory
 
                 UpdatePeakMemoryUsage();
 
-                Engine.Diagnostics.DebugLogger.Log("TRACE", $"MemoryTracker: Tracked allocation {id} ({size} bytes, {type.Name})");
+               DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", $"MemoryTracker: Tracked allocation {id} ({size} bytes, {type.Name})");
             }
         }
 
-        /// <summary>
-        /// Tracks a memory deallocation.
-        /// </summary>
+        ///<summary>
+        ///Tracks a memory deallocation.
+        ///</summary>
         public void TrackDeallocation(string id)
         {
             if (!_enabled || string.IsNullOrEmpty(id))
@@ -160,7 +160,7 @@ namespace SASZombieAssaultTD.Engine.Memory
 
                 if (_typeInfo.TryGetValue(allocation.Type, out var typeInfo))
                 {
-                    // Fixes CS0206 on Lines 158 & 159: Use lock for thread-safe property modification
+                    //Fixes CS0206 on Lines 158 & 159: Use lock for thread-safe property modification
                     lock (typeInfo)
                     {
                         typeInfo.TotalFreed += allocation.Size;
@@ -169,17 +169,17 @@ namespace SASZombieAssaultTD.Engine.Memory
                 }
 
 
-                Engine.Diagnostics.DebugLogger.Log("TRACE", $"MemoryTracker: Tracked deallocation {id} ({allocation.Size} bytes)");
+               DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", $"MemoryTracker: Tracked deallocation {id} ({allocation.Size} bytes)");
             }
             else
             {
-                Engine.Diagnostics.DebugLogger.Log("WARNING", $"MemoryTracker: Deallocation tracked for unknown allocation {id}");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"MemoryTracker: Deallocation tracked for unknown allocation {id}");
             }
         }
 
-        /// <summary>
-        /// Takes a memory snapshot asynchronously.
-        /// </summary>
+        ///<summary>
+        ///Takes a memory snapshot asynchronously.
+        ///</summary>
         public async Task TakeSnapshotAsync(string? label = null)
         {
             if (!_enabled)
@@ -210,14 +210,14 @@ namespace SASZombieAssaultTD.Engine.Memory
                     }
 
                     SnapshotTaken?.Invoke(this, snapshot);
-                    Engine.Diagnostics.DebugLogger.Log("INFO", $"MemoryTracker: Took snapshot '{snapshot.Label}' (usage: {snapshot.CurrentUsage:N0} bytes)");
+                    DLogger.Log(LogSubsystems.Memory,LogLevel.Info, $"MemoryTracker: Took snapshot '{snapshot.Label}' (usage: {snapshot.CurrentUsage:N0} bytes)");
                 }
             });
         }
 
-        /// <summary>
-        /// Forces garbage collection asynchronously.
-        /// </summary>
+        ///<summary>
+        ///Forces garbage collection asynchronously.
+        ///</summary>
         public async Task ForceGCAsync()
         {
             if (!_enabled)
@@ -232,13 +232,13 @@ namespace SASZombieAssaultTD.Engine.Memory
                 stopwatch.Stop();
 
                 _lastGCTime = (float)stopwatch.Elapsed.TotalMilliseconds;
-                Engine.Diagnostics.DebugLogger.Log("INFO", $"MemoryTracker: Forced GC in {_lastGCTime:F2}ms");
+                DLogger.Log(LogSubsystems.Memory,LogLevel.Info, $"MemoryTracker: Forced GC in {_lastGCTime:F2}ms");
             });
         }
 
-        /// <summary>
-        /// Updates the peak memory usage if the current usage exceeds the previous peak.
-        /// </summary>
+        ///<summary>
+        ///Updates the peak memory usage if the current usage exceeds the previous peak.
+        ///</summary>
         private void UpdatePeakMemoryUsage()
         {
             var currentUsage = CurrentMemoryUsage;
@@ -248,11 +248,11 @@ namespace SASZombieAssaultTD.Engine.Memory
             }
         }
 
-        /// <summary>
-        /// Detects potential memory leaks.
-        /// </summary>
-        /// <param name="maxAgeMinutes">Maximum age in minutes before considering an allocation a leak.</param>
-        /// <returns>List of potential memory leaks.</returns>
+        ///<summary>
+        ///Detects potential memory leaks.
+        ///</summary>
+        ///<param name="maxAgeMinutes">Maximum age in minutes before considering an allocation a leak.</param>
+        ///<returns>List of potential memory leaks.</returns>
         public List<MemoryAllocation> DetectMemoryLeaks(int maxAgeMinutes = 10)
         {
             if (!_enabled)
@@ -272,15 +272,15 @@ namespace SASZombieAssaultTD.Engine.Memory
                     }
                 }
 
-                Engine.Diagnostics.DebugLogger.Log("INFO", $"MemoryTracker: Detected {leaks.Count} potential memory leaks");
+                DLogger.Log(LogSubsystems.Memory,LogLevel.Info, $"MemoryTracker: Detected {leaks.Count} potential memory leaks");
                 return leaks;
             }
         }
 
-        /// <summary>
-        /// Gets memory statistics by type.
-        /// </summary>
-        /// <returns>Dictionary of type memory information.</returns>
+        ///<summary>
+        ///Gets memory statistics by type.
+        ///</summary>
+        ///<returns>Dictionary of type memory information.</returns>
         public Dictionary<Type, TypeMemoryInfo> GetTypeStatistics()
         {
             lock (_snapshotLock)
@@ -289,10 +289,10 @@ namespace SASZombieAssaultTD.Engine.Memory
             }
         }
 
-        /// <summary>
-        /// Gets all memory snapshots.
-        /// </summary>
-        /// <returns>List of memory snapshots.</returns>
+        ///<summary>
+        ///Gets all memory snapshots.
+        ///</summary>
+        ///<returns>List of memory snapshots.</returns>
         public List<MemorySnapshot> GetSnapshots()
         {
             lock (_snapshotLock)
@@ -301,9 +301,9 @@ namespace SASZombieAssaultTD.Engine.Memory
             }
         }
 
-        /// <summary>
-        /// Resets all tracking data.
-        /// </summary>
+        ///<summary>
+        ///Resets all tracking data.
+        ///</summary>
         public void Reset()
         {
             lock (_snapshotLock)
@@ -318,14 +318,14 @@ namespace SASZombieAssaultTD.Engine.Memory
                 _freeCount = 0;
                 _lastGCTime = 0f;
 
-                Engine.Diagnostics.DebugLogger.Log("INFO", "MemoryTracker: Reset all tracking data");
+                DLogger.Log(LogSubsystems.Memory,LogLevel.Info, "MemoryTracker: Reset all tracking data");
             }
         }
 
-        /// <summary>
-        /// Gets memory usage summary.
-        /// </summary>
-        /// <returns>Memory usage summary as a string.</returns>
+        ///<summary>
+        ///Gets memory usage summary.
+        ///</summary>
+        ///<returns>Memory usage summary as a string.</returns>
         public string GetMemorySummary()
         {
             lock (_snapshotLock)
@@ -342,7 +342,7 @@ namespace SASZombieAssaultTD.Engine.Memory
                     ""
                 };
 
-                // Add top 5 types by memory usage
+                //Add top 5 types by memory usage
                 var topTypes = _typeInfo.Values
                 .OrderByDescending(t => t.CurrentUsage)
                 .Take(5);
@@ -357,9 +357,9 @@ namespace SASZombieAssaultTD.Engine.Memory
             }
         }
 
-        /// <summary>
-        /// Gets memory tracker information as a string.
-        /// </summary>
+        ///<summary>
+        ///Gets memory tracker information as a string.
+        ///</summary>
         public override string ToString()
         {
             return $"MemoryTracker: Enabled={_enabled}, Usage={CurrentMemoryUsage:N0}, " +
@@ -368,9 +368,9 @@ namespace SASZombieAssaultTD.Engine.Memory
         }
     }
 
-    /// <summary>
-    /// Memory allocation information.
-    /// </summary>
+    ///<summary>
+    ///Memory allocation information.
+    ///</summary>
     public class MemoryAllocation
     {
         public string Id { get; set; }
@@ -388,9 +388,9 @@ namespace SASZombieAssaultTD.Engine.Memory
         }
     }
 
-    /// <summary>
-    /// Type-specific memory information.
-    /// </summary>
+    ///<summary>
+    ///Type-specific memory information.
+    ///</summary>
     public class TypeMemoryInfo
     {
         public Type Type { get; set; }
@@ -408,9 +408,9 @@ namespace SASZombieAssaultTD.Engine.Memory
         }
     }
 
-    /// <summary>
-    /// Memory snapshot.
-    /// </summary>
+    ///<summary>
+    ///Memory snapshot.
+    ///</summary>
     public class MemorySnapshot
     {
         public string Label { get; set; }

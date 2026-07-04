@@ -12,28 +12,34 @@ using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Dictionary;
 using System.Linq;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.ECS
+//
 {
-    /// <summary>
-    /// P11-13-09: Entity management system that replaces EnemyManager and ProjectileManager.
-    /// Provides query methods and entity lifecycle management using ECS queries.
-    /// </summary>
+    ///<summary>
+    ///P11-13-09: Entity management system that replaces EnemyManager and ProjectileManager.
+    ///Provides query methods and entity lifecycle management using ECS queries.
+    ///</summary>
     public sealed class EntityManager
     {
         private readonly ECSWorld _ecsWorld;
         internal IEnumerable<object> Entities;
 
-        /// <summary>
-        /// Initializes a new EntityManager.
-        /// </summary>
-        /// <param name="ecsWorld">The ECS world to manage entities in.</param>
+        ///<summary>
+        ///Initializes a new EntityManager.
+        ///</summary>
+        ///<param name="ecsWorld">The ECS world to manage entities in.</param>
         public EntityManager(ECSWorld ecsWorld)
         {
             _ecsWorld = ecsWorld ?? throw new ArgumentNullException(nameof(ecsWorld));
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "EntityManager: Initialized");
+            DLogger.Log(LogSubsystems.ECS, LogLevel.Info, "EntityManager: Initialized");
         }
 
-        ///  Query Methods
+        public EntityManager()
+        {
+        }
+
+        /// Query Methods
 
         public IEnumerable<Entity> GetEnemies() => _ecsWorld.GetEntitiesWith<SASZombieAssaultTD.Engine.Components.EnemyTypeComponent>();
 
@@ -96,45 +102,45 @@ namespace SASZombieAssaultTD.Engine.ECS
                 .OrderBy(entity => Vector3.Distance(entity.TryGetComponent<SASZombieAssaultTD.Engine.Components.TransformComponent>(out var transform) ? transform.Position : Vector3.Zero, position))
                 .FirstOrDefault();
 
-        /// <summary>
-        /// Gets all entities that have both PhysicsComponent and TransformComponent.
-        /// </summary>
-        /// <returns>Entities with physics and transform components.</returns>
+        ///<summary>
+        ///Gets all entities that have both PhysicsComponent and TransformComponent.
+        ///</summary>
+        ///<returns>Entities with physics and transform components.</returns>
         public IEnumerable<Entity> GetEntitiesWithPhysicsAndTransform() =>
             _ecsWorld.GetEntitiesWith<SASZombieAssaultTD.Engine.ECS.BaseComponent, SASZombieAssaultTD.Engine.Components.TransformComponent>();
 
-        /// <summary>
-        /// Gets all entities that have collision components and TransformComponent.
-        /// </summary>
-        /// <returns>Entities with collision and transform components.</returns>
+        ///<summary>
+        ///Gets all entities that have collision components and TransformComponent.
+        ///</summary>
+        ///<returns>Entities with collision and transform components.</returns>
         public IEnumerable<Entity> GetEntitiesWithCollisionAndTransform() =>
             _ecsWorld.Entities
                 .Where(entity => entity.IsEnabled && !entity.IsDestroyed)
                 .Where(entity => entity.HasComponent<TransformComponent>() && 
                                 (entity.HasComponent<CollisionComponent>() || entity.HasComponent<PhysicsComponent>()));
 
-        /// 
+        ///
 
-        ///  Entity Lifecycle Management
+        /// Entity Lifecycle Management
 
-        /// <summary>
-        /// Adds an entity to the manager.
-        /// </summary>
-        /// <param name="entity">The entity to add.</param>
+        ///<summary>
+        ///Adds an entity to the manager.
+        ///</summary>
+        ///<param name="entity">The entity to add.</param>
         public void AddEntity(Entity entity)
         {
-            // Entity is already managed by ECSWorld, no additional tracking needed
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"EntityManager: Entity {entity.Id} added");
+            //Entity is already managed by ECSWorld, no additional tracking needed
+            DLogger.Log(LogSubsystems.ECS, LogLevel.Debug, $"EntityManager: Entity {entity.Id} added");
         }
 
-        /// <summary>
-        /// Removes an entity from the manager.
-        /// </summary>
-        /// <param name="entity">The entity to remove.</param>
+        ///<summary>
+        ///Removes an entity from the manager.
+        ///</summary>
+        ///<param name="entity">The entity to remove.</param>
         public void RemoveEntity(Entity entity)
         {
             _ecsWorld.DestroyEntity(entity);
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"EntityManager: Entity {entity.Id} removed");
+            DLogger.Log(LogSubsystems.ECS, LogLevel.Debug, $"EntityManager: Entity {entity.Id} removed");
         }
 
         public int DestroyDeadEntities() => DestroyEntities(GetDeadEntities(), "dead");
@@ -163,7 +169,7 @@ namespace SASZombieAssaultTD.Engine.ECS
 
             if (respawnedCount > 0)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EntityManager: Respawned {respawnedCount} dead enemies");
+                DLogger.Log(LogSubsystems.ECS, LogLevel.Info, $"EntityManager: Respawned {respawnedCount} dead enemies");
             }
 
             return respawnedCount;
@@ -182,15 +188,15 @@ namespace SASZombieAssaultTD.Engine.ECS
 
             if (destroyedCount > 0)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"EntityManager: Destroyed {destroyedCount} {entityType} entities");
+                DLogger.Log(LogSubsystems.ECS, LogLevel.Info, $"EntityManager: Destroyed {destroyedCount} {entityType} entities");
             }
 
             return destroyedCount;
         }
 
-        /// 
+        ///
 
-        ///  Statistics and Debugging
+        /// Statistics and Debugging
 
         public EntityStats GetEntityStats()
         {
@@ -231,13 +237,13 @@ namespace SASZombieAssaultTD.Engine.ECS
             return info;
         }
 
-        /// 
+        ///
 
-        ///  Entity and Component Access
+        /// Entity and Component Access
 
         public Entity GetEntity(uint entityId) => _ecsWorld.GetEntity(entityId) ?? new Entity();
 
-        // Compatibility query helpers used by other subsystems
+        //Compatibility query helpers used by other subsystems
         public IEnumerable<Entity> GetEntitiesWith<T>() where T : BaseComponent
         {
             return _ecsWorld.GetEntitiesWith<T>();
@@ -268,12 +274,12 @@ namespace SASZombieAssaultTD.Engine.ECS
             if (entity.IsValid) entity.AddComponent(component);
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// Statistics about entities in the world.
-    /// </summary>
+    ///<summary>
+    ///Statistics about entities in the world.
+    ///</summary>
     public sealed class EntityStats
     {
         public int TotalEntities { get; set; }

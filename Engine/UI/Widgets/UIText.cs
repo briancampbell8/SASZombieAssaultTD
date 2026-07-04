@@ -1,11 +1,48 @@
+//============================================================================
+// File Path: Engine/UI/Widgets/UIText.cs
+// File: UIText.cs
+// Program: UIText
+// Subsystem: UI / Legacy Widget System
+//
+// Purpose:
+//     Represents a text widget with string content, font reference, color
+//     fields, alignment, and basic layout behavior. Provides placeholder
+//     rendering and layout estimation until integrated with the modern
+//     text‑rendering pipeline.
+//
+// Architectural Role:
+//     - Acts as a legacy UI widget pending migration to the unified UIState
+//       + UIRenderable pipeline
+//     - Stores text, font, color, alignment, and layout metadata
+//     - Emits layout invalidation events when properties change
+//     - Provides placeholder rendering hooks for derived classes
+//
+// Diagnostics:
+//     - Uses System.Diagnostics.Debug.WriteLine for legacy forensic output
+//     - No silent failures; all property changes and render actions are logged
+//     - All exceptions during update/render are surfaced deterministically
+//
+// Modernization Notes:
+//     - Color pipeline will be upgraded to Engine.Core.Color
+//     - Alignment will be migrated to Engine.Core.TextAlignment
+//     - SizeF will be replaced with Engine.Core.Size
+//     - Rendering will be replaced with unified text‑rendering commands
+//     - Widget system scheduled for deprecation in favor of UIStateBuilder
+//
+// Notes:
+//     - Current rendering is placeholder only (rectangle + text indicator)
+//     - Text measurement is approximate and not font‑accurate
+//     - Intended for removal once modern UI pipeline is fully deployed
+//============================================================================
+
 using System;
 
 namespace SASZombieAssaultTD.Engine.UI.Widgets
 {
-    /// <summary>
-    /// A UI text element with string content, font reference, and color fields
-    /// P80-04-01: UIText providing a UI text element with string content, font reference, and color fields
-    /// </summary>
+    ///<summary>
+    ///A UI text element with string content, font reference, and color fields
+    ///P80-04-01: UIText providing a UI text element with string content, font reference, and color fields
+    ///</summary>
     public class UIText : UIWidgetBase
     {
         private string _text = string.Empty;
@@ -15,9 +52,6 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         private bool _wordWrap = false;
         private System.Drawing.ContentAlignment _alignment = System.Drawing.ContentAlignment.TopLeft;
 
-        /// <summary>
-        /// Gets or sets the text content
-        /// </summary>
         public string Text
         {
             get => _text;
@@ -32,9 +66,6 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Gets or sets the font reference
-        /// </summary>
         public string Font
         {
             get => _font;
@@ -49,9 +80,6 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Gets or sets the text color
-        /// </summary>
         public System.Drawing.Color Color
         {
             get => _color;
@@ -65,9 +93,6 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Gets or sets the font size
-        /// </summary>
         public float FontSize
         {
             get => _fontSize;
@@ -82,9 +107,6 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Gets or sets whether text should wrap
-        /// </summary>
         public bool WordWrap
         {
             get => _wordWrap;
@@ -99,9 +121,6 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Gets or sets the text alignment
-        /// </summary>
         public System.Drawing.ContentAlignment Alignment
         {
             get => _alignment;
@@ -116,58 +135,39 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Initializes a new UIText
-        /// </summary>
         public UIText() : base()
         {
             System.Diagnostics.Debug.WriteLine("UIText: Created new text element");
         }
 
-        /// <summary>
-        /// Initializes a new UIText with text
-        /// </summary>
-        /// <param name="text">Initial text content</param>
         public UIText(string text) : this()
         {
             Text = text;
             System.Diagnostics.Debug.WriteLine($"UIText: Created text element with '{text}'");
         }
 
-        /// <summary>
-        /// Calculates the text size for layout
-        /// </summary>
-        /// <returns>Calculated text size</returns>
         private System.Drawing.SizeF CalculateTextSize()
         {
             try
             {
-                // This would use the actual font rendering system
-                // For now, estimate based on character count and font size
                 var charCount = _text?.Length ?? 0;
-                var width = charCount * _fontSize * 0.6f; // Rough estimate
-                var height = _fontSize * 1.2f; // Rough estimate
+                var width = charCount * _fontSize * 0.6f;
+                var height = _fontSize * 1.2f;
 
                 return new System.Drawing.SizeF(width, height);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"UIText: Error calculating text size - {ex.Message}");
-                return new System.Drawing.SizeF(100, 20); // Default size
+                return new System.Drawing.SizeF(100, 20);
             }
         }
 
-        /// <summary>
-        /// Updates the text element
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds</param>
         public override void Update(float deltaTime)
         {
             try
             {
                 base.Update(deltaTime);
-
-                // Update text animations or effects here
                 UpdateTextAnimation(deltaTime);
             }
             catch (Exception ex)
@@ -176,9 +176,6 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Renders the text element
-        /// </summary>
         public override void Render()
         {
             try
@@ -186,23 +183,16 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 if (string.IsNullOrEmpty(_text) || !IsVisible)
                     return;
 
-                // This would use the actual text rendering system
-                // For now, render as a simple rectangle with text indicator
                 var textSize = CalculateTextSize();
 
-                // Update size to match text size
                 if (Size != textSize)
                 {
                     Size = textSize;
                 }
 
-                // Render background
                 RenderBackground();
-
-                // Render text (placeholder - would use actual text rendering)
                 RenderTextContent();
 
-                // Render border if hovered
                 if (IsHovered)
                 {
                     RenderBorder();
@@ -214,47 +204,18 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Updates text animations (placeholder implementation)
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds</param>
-        protected virtual void UpdateTextAnimation(float deltaTime)
-        {
-            // Override in derived classes for text animations
-            // Examples: typewriter effect, fade in/out, color cycling
-        }
+        protected virtual void UpdateTextAnimation(float deltaTime) { }
 
-        /// <summary>
-        /// Renders the text background (placeholder implementation)
-        /// </summary>
-        protected virtual void RenderBackground()
-        {
-            // Override in derived classes for custom background rendering
-            // For now, render a simple colored rectangle
-        }
+        protected virtual void RenderBackground() { }
 
-        /// <summary>
-        /// Renders the text content (placeholder implementation)
-        /// </summary>
         protected virtual void RenderTextContent()
         {
-            // Override in derived classes for actual text rendering
-            // For now, just log the text
             System.Diagnostics.Debug.WriteLine($"UIText: Rendering text '{_text}' at {AbsolutePosition}");
         }
 
-        /// <summary>
-        /// Renders the text border (placeholder implementation)
-        /// </summary>
         protected virtual void RenderBorder()
         {
-            // Override in derived classes for custom border rendering
-            // For now, just log the border
             System.Diagnostics.Debug.WriteLine($"UIText: Rendering border for text at {AbsolutePosition}");
         }
     }
 }
-
-
-
-

@@ -4,11 +4,13 @@ using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
-    /// <summary>
-    /// Displays the player's current score on screen with optional smooth animations.
-    /// </summary>
+    ///<summary>
+    ///Displays the player's current score on screen with optional smooth animations.
+    ///</summary>
     public class ScoreDisplaySystem
     {
         private readonly EntityManager _entityManager;
@@ -19,56 +21,56 @@ namespace SASZombieAssaultTD.Engine.UI
         private int _displayedScore;
         private bool _isAnimating;
 
-        /// <summary>
-        /// Gets or sets the position of the score display on screen.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the position of the score display on screen.
+        ///</summary>
         public Vector3 Position { get; set; } = new(10, 10, 0);
 
-        /// <summary>
-        /// Gets or sets the font name for score display.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the font name for score display.
+        ///</summary>
         public string FontName { get; set; } = "Arial";
 
-        /// <summary>
-        /// Gets or sets the font size for score display.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the font size for score display.
+        ///</summary>
         public int FontSize { get; set; } = 24;
 
-        /// <summary>
-        /// Gets or sets the color for score text.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the color for score text.
+        ///</summary>
         public Color TextColor { get; set; } = Color.White;
 
-        /// <summary>
-        /// Gets or sets the format string for score display.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the format string for score display.
+        ///</summary>
         public string ScoreFormat { get; set; } = "Score: {0}";
 
-        /// <summary>
-        /// Gets or sets whether to enable smooth score animations.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether to enable smooth score animations.
+        ///</summary>
         public bool EnableAnimations { get; set; } = true;
 
-        /// <summary>
-        /// Gets or sets the animation speed for score changes (points per second).
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the animation speed for score changes (points per second).
+        ///</summary>
         public float AnimationSpeed { get; set; } = 1000f;
 
-        /// <summary>
-        /// Gets or sets the duration for score popup animations in seconds.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the duration for score popup animations in seconds.
+        ///</summary>
         public float PopupDuration { get; set; } = 2.0f;
 
-        /// <summary>
-        /// Gets or sets the upward movement speed for score popups.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the upward movement speed for score popups.
+        ///</summary>
         public float PopupSpeed { get; set; } = 50f;
 
-        /// <summary>
-        /// Initializes a new instance of the ScoreDisplaySystem class.
-        /// </summary>
-        /// <param name="entityManager">Entity manager for component access</param>
-        /// <param name="eventBus">Event router for score change notifications</param>
+        ///<summary>
+        ///Initializes a new instance of the ScoreDisplaySystem class.
+        ///</summary>
+        ///<param name="entityManager">Entity manager for component access</param>
+        ///<param name="eventBus">Event router for score change notifications</param>
         public ScoreDisplaySystem(EntityManager entityManager, EventRouter eventBus)
         {
             _entityManager = entityManager ?? throw new ArgumentNullException(nameof(entityManager));
@@ -107,10 +109,10 @@ namespace SASZombieAssaultTD.Engine.UI
             });
         }
 
-        /// <summary>
-        /// Updates the score display system state and animations.
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since last update in seconds</param>
+        ///<summary>
+        ///Updates the score display system state and animations.
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since last update in seconds</param>
         public void Update(float deltaTime)
         {
             if (EnableAnimations)
@@ -141,10 +143,10 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Renders the score display and active popups.
-        /// </summary>
-        /// <param name="context">Render context for drawing operations</param>
+        ///<summary>
+        ///Renders the score display and active popups.
+        ///</summary>
+        ///<param name="context">Render context for drawing operations</param>
         public void Render(IRenderContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
@@ -163,14 +165,14 @@ namespace SASZombieAssaultTD.Engine.UI
             foreach (var popup in _activePopups)
             {
                 var popupColor = Color.FromArgb((int)(popup.Alpha * 255), (byte)TextColor.R, (byte)TextColor.G, (byte)TextColor.B);
-                // TODO: Fix DrawText method signature
-                // context.DrawText($"+{popup.Score}", popup.Position.X, popup.Position.Y, popupColor, FontSize - 4);
+                //TODO: Fix DrawText method signature
+                //context.DrawText($"+{popup.Score}", popup.Position.X, popup.Position.Y, popupColor, FontSize - 4);
             }
         }
 
-        /// <summary>
-        /// Shuts down the score display system and unsubscribes from events.
-        /// </summary>
+        ///<summary>
+        ///Shuts down the score display system and unsubscribes from events.
+        ///</summary>
         public void Shutdown()
         {
             _eventBus.Unsubscribe<KillAttributedEvent>(OnKillAttributed);
@@ -178,9 +180,9 @@ namespace SASZombieAssaultTD.Engine.UI
         }
     }
 
-    /// <summary>
-    /// Represents a score popup animation.
-    /// </summary>
+    ///<summary>
+    ///Represents a score popup animation.
+    ///</summary>
     internal class ScorePopup
     {
         public int Score { get; set; }

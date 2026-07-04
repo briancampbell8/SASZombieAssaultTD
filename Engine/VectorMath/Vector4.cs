@@ -8,11 +8,13 @@ P11-04-07-B: 4D vector type for color and other 4D data.
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.VectorMath
 {
-    /// <summary>
-    /// 4D vector type for color values and other 4D data.
-    /// </summary>
+    ///<summary>
+    ///4D vector type for color values and other 4D data.
+    ///</summary>
     public readonly struct Vector4 : IEquatable<Vector4>
     {
         public float X { get; }

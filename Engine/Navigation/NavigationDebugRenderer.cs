@@ -1,85 +1,87 @@
-/*
+﻿/*
 File:    NavigationDebugRenderer.cs
 Purpose: P11-15-08 - Debug visualization for navigation systems.
 */
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.VectorMath;
 
 namespace SASZombieAssaultTD.Engine.Navigation
+////using SASZombieAssaultTD.Engine.Diagnostics;
 {
-    /// <summary>
-    /// Optimized debug visualization system for navigation components.
-    /// Renders navigation grids, paths, agent targets, and flow fields.
-    /// </summary>
+    ///<summary>
+    ///Optimized debug visualization system for navigation components.
+    ///Renders navigation grids, paths, agent targets, and flow fields.
+    ///</summary>
     public sealed class NavigationDebugRenderer
     {
         private readonly ECSWorld _ecsWorld;
         private readonly object? _navigationSystem;
 
-        /// <summary>
-        /// Gets or sets whether debug rendering is enabled.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether debug rendering is enabled.
+        ///</summary>
         public bool Enabled { get; set; }
 
-        /// <summary>
-        /// Gets or sets whether to render navigation grid.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether to render navigation grid.
+        ///</summary>
         public bool ShowGrid { get; set; }
 
-        /// <summary>
-        /// Gets or sets whether to render agent paths.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether to render agent paths.
+        ///</summary>
         public bool ShowPaths { get; set; }
 
-        /// <summary>
-        /// Gets or sets whether to render agent targets.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether to render agent targets.
+        ///</summary>
         public bool ShowAgentTargets { get; set; }
 
-        /// <summary>
-        /// Gets or sets whether to render flow fields.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether to render flow fields.
+        ///</summary>
         public bool ShowFlowFields { get; set; }
 
-        /// <summary>
-        /// Gets or sets whether to render debug statistics.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether to render debug statistics.
+        ///</summary>
         public bool ShowStats { get; set; }
 
-        /// <summary>
-        /// Gets or sets color for grid cell rendering.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets color for grid cell rendering.
+        ///</summary>
         public uint GridColor { get; set; } = 0x40404040;
 
-        /// <summary>
-        /// Gets or sets color for blocked grid cells.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets color for blocked grid cells.
+        ///</summary>
         public uint BlockedColor { get; set; } = 0x40FF4040;
 
-        /// <summary>
-        /// Gets or sets color for path rendering.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets color for path rendering.
+        ///</summary>
         public uint PathColor { get; set; } = 0x4040FF40;
 
-        /// <summary>
-        /// Gets or sets color for agent target rendering.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets color for agent target rendering.
+        ///</summary>
         public uint TargetColor { get; set; } = 0x40FF4040;
 
-        /// <summary>
-        /// Gets or sets color for flow field rendering.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets color for flow field rendering.
+        ///</summary>
         public uint FlowFieldColor { get; set; } = 0x40FFFF40;
 
-        /// <summary>
-        /// Initializes a new NavigationDebugRenderer.
-        /// </summary>
-        /// <param name="ecsWorld">The ECS world to render.</param>
-        /// <param name="navigationSystem">The navigation system to visualize (optional).</param>
+        ///<summary>
+        ///Initializes a new NavigationDebugRenderer.
+        ///</summary>
+        ///<param name="ecsWorld">The ECS world to render.</param>
+        ///<param name="navigationSystem">The navigation system to visualize (optional).</param>
         public NavigationDebugRenderer(ECSWorld ecsWorld, object? navigationSystem = null)
         {
             _ecsWorld = ecsWorld ?? throw new ArgumentNullException(nameof(ecsWorld));
@@ -91,13 +93,13 @@ namespace SASZombieAssaultTD.Engine.Navigation
             ShowFlowFields = true;
             ShowStats = true;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "NavigationDebugRenderer: Initialized");
+            DLogger.Log(LogSubsystems.Navigation,LogLevel.Info, "NavigationDebugRenderer: Initialized");
         }
 
-        /// <summary>
-        /// P11-15-08: Renders debug navigation information.
-        /// </summary>
-        /// <param name="context">The render context.</param>
+        ///<summary>
+        ///P11-15-08: Renders debug navigation information.
+        ///</summary>
+        ///<param name="context">The render context.</param>
         public async Task RenderAsync(IRenderContext context)
         {
             if (!Enabled || context == null)
@@ -107,23 +109,23 @@ namespace SASZombieAssaultTD.Engine.Navigation
             {
                 var renderTasks = new List<Task>();
 
-                // Render navigation grid
+                //Render navigation grid
                 if (ShowGrid)
                     renderTasks.Add(Task.Run(() => RenderNavigationGrid(context)));
 
-                // Render agent paths
+                //Render agent paths
                 if (ShowPaths)
                     renderTasks.Add(Task.Run(() => RenderAgentPaths(context)));
 
-                // Render agent targets
+                //Render agent targets
                 if (ShowAgentTargets)
                     renderTasks.Add(Task.Run(() => RenderAgentTargets(context)));
 
-                // Render flow fields
+                //Render flow fields
                 if (ShowFlowFields)
                     renderTasks.Add(Task.Run(() => RenderFlowFields(context)));
 
-                // Render debug statistics
+                //Render debug statistics
                 if (ShowStats)
                     renderTasks.Add(Task.Run(() => RenderDebugStats(context)));
 
@@ -131,14 +133,14 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"NavigationDebugRenderer: Error during rendering: {ex.Message}");
+DLogger.Log(LogSubsystems.Navigation,LogLevel.Info,"ERROR",$"NavigationDebugRenderer: Error during rendering: {ex.Message}");
             }
         }
 
-        /// <summary>
-        /// Renders the navigation grid.
-        /// </summary>
-        /// <param name="context">The render context.</param>
+        ///<summary>
+        ///Renders the navigation grid.
+        ///</summary>
+        ///<param name="context">The render context.</param>
         private void RenderNavigationGrid(IRenderContext context)
         {
             if (_navigationSystem is not { } navSystem) return;
@@ -157,7 +159,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
 
                     var color = isWalkable ? Color.FromUint(GridColor) : Color.FromUint(BlockedColor);
 
-                    // Draw cell outline
+                    //Draw cell outline
                     context.DrawRectangle(
                     (int)worldPos.X,
                     (int)worldPos.Y,
@@ -168,23 +170,23 @@ namespace SASZombieAssaultTD.Engine.Navigation
                 }
             }
 
-            // Draw grid border
+            //Draw grid border
             var origin = grid.WorldOrigin;
             var width = grid.Width * cellSize;
             var height = grid.Height * cellSize;
             context.DrawRectangle(origin.X, origin.Y, (int)width, (int)height, Color.White);
-            
+
         }
 
-        /// <summary>
-        /// Renders agent paths.
-        /// </summary>
-        /// <param name="context">The render context.</param>
+        ///<summary>
+        ///Renders agent paths.
+        ///</summary>
+        ///<param name="context">The render context.</param>
         private void RenderAgentPaths(IRenderContext context)
         {
-            // TODO: Fix GetEntitiesWith method call - ECSWorld may not have this method signature
-            // var agents = _ecsWorld.GetEntitiesWith<NavAgentComponent, TransformComponent>();
-            var agents = Array.Empty<Entity>(); // Placeholder to prevent compilation error
+            //TODO: Fix GetEntitiesWith method call - ECSWorld may not have this method signature
+            //var agents = _ecsWorld.GetEntitiesWith<NavAgentComponent, TransformComponent>();
+            var agents = Array.Empty<Entity>(); //Placeholder to prevent compilation error
 
             foreach (var entity in agents)
             {
@@ -197,7 +199,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
                     if (path.Count < 2)
                         continue;
 
-                    // Draw path lines
+                    //Draw path lines
                     for (int i = 0; i < path.Count - 1; i++)
                     {
                         var start = path[i];
@@ -210,7 +212,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
                         );
                     }
 
-                    // Draw waypoints
+                    //Draw waypoints
                     foreach (var waypoint in path)
                     {
                         context.DrawCircle((int)waypoint.X, (int)waypoint.Y, 3, PathColor);
@@ -219,15 +221,15 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
         }
 
-        /// <summary>
-        /// Renders agent targets.
-        /// </summary>
-        /// <param name="context">The render context.</param>
+        ///<summary>
+        ///Renders agent targets.
+        ///</summary>
+        ///<param name="context">The render context.</param>
         private void RenderAgentTargets(IRenderContext context)
         {
-            // TODO: Fix GetEntitiesWith method call - ECSWorld may not have this method signature
-            // var agents = _ecsWorld.GetEntitiesWith<NavAgentComponent, TransformComponent>();
-            var agents = Array.Empty<Entity>(); // Placeholder to prevent compilation error
+            //TODO: Fix GetEntitiesWith method call - ECSWorld may not have this method signature
+            //var agents = _ecsWorld.GetEntitiesWith<NavAgentComponent, TransformComponent>();
+            var agents = Array.Empty<Entity>(); //Placeholder to prevent compilation error
 
             foreach (var entity in agents)
             {
@@ -236,7 +238,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
 
                 if (navAgent != null && transform != null)
                 {
-                    // Draw target position
+                    //Draw target position
                     context.DrawCircle(
                     (int)navAgent.TargetPosition.X,
                     (int)navAgent.TargetPosition.Y,
@@ -244,7 +246,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
                     TargetColor
                     );
 
-                    // Draw line from agent to target
+                    //Draw line from agent to target
                     context.DrawLine(
                     (int)transform.Position.X,
                     (int)transform.Position.Y,
@@ -253,44 +255,44 @@ namespace SASZombieAssaultTD.Engine.Navigation
                     TargetColor
                     );
 
-                    // Draw agent state
+                    //Draw agent state
                     var stateText = navAgent.GetStateSummary();
                     context.DrawText(stateText, (int)transform.Position.X + 20, (int)transform.Position.Y - 20);
                 }
             }
         }
 
-        /// <summary>
-        /// Renders flow fields.
-        /// </summary>
-        /// <param name="context">The render context.</param>
+        ///<summary>
+        ///Renders flow fields.
+        ///</summary>
+        ///<param name="context">The render context.</param>
         private void RenderFlowFields(IRenderContext context)
         {
-            // This would render flow field directions
-            // For now, render a placeholder since flow fields are optional
+            //This would render flow field directions
+            //For now, render a placeholder since flow fields are optional
             if (_navigationSystem == null) return;
-            
-            // Cast to dynamic or check for NavigationSystem interface
+
+            //Cast to dynamic or check for NavigationSystem interface
             dynamic navSystem = _navigationSystem;
             var grid = navSystem.NavigationGrid;
             var cellSize = grid.CellSize;
 
-            for (int y = 0; y < grid.Height; y += 2) // Sample every other cell for performance
+            for (int y = 0; y < grid.Height; y += 2) //Sample every other cell for performance
             {
                 for (int x = 0; x < grid.Width; x += 2)
                 {
                     var gridPos = new Vector3Int(x, y);
                     var worldPos = grid.GridToWorld(gridPos);
 
-                    // Draw flow direction arrow (placeholder)
+                    //Draw flow direction arrow (placeholder)
                     context.DrawCircle(worldPos, 2.0f, Color.FromUint(FlowFieldColor));
                 }
             }
         }
 
-        /// <summary>
-        /// Gets the grid size display string.
-        /// </summary>
+        ///<summary>
+        ///Gets the grid size display string.
+        ///</summary>
         private string GetGridSize()
         {
             if (_navigationSystem == null) return "0x0";
@@ -306,9 +308,9 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
         }
 
-        /// <summary>
-        /// Gets the agents processed count.
-        /// </summary>
+        ///<summary>
+        ///Gets the agents processed count.
+        ///</summary>
         private int GetAgentsProcessed()
         {
             if (_navigationSystem == null) return 0;
@@ -322,9 +324,9 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
         }
 
-        /// <summary>
-        /// Gets the paths requested count.
-        /// </summary>
+        ///<summary>
+        ///Gets the paths requested count.
+        ///</summary>
         private int GetPathsRequested()
         {
             if (_navigationSystem == null) return 0;
@@ -338,9 +340,9 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
         }
 
-        /// <summary>
-        /// Gets the paths completed count.
-        /// </summary>
+        ///<summary>
+        ///Gets the paths completed count.
+        ///</summary>
         private int GetPathsCompleted()
         {
             if (_navigationSystem == null) return 0;
@@ -354,10 +356,10 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
         }
 
-        /// <summary>
-        /// Renders debug statistics.
-        /// </summary>
-        /// <param name="context">The render context.</param>
+        ///<summary>
+        ///Renders debug statistics.
+        ///</summary>
+        ///<param name="context">The render context.</param>
         private void RenderDebugStats(IRenderContext context)
         {
             var stats = new List<string>
@@ -381,10 +383,10 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
         }
 
-        /// <summary>
-        /// Gets debug information about the debug renderer.
-        /// </summary>
-        /// <returns>Debug information string.</returns>
+        ///<summary>
+        ///Gets debug information about the debug renderer.
+        ///</summary>
+        ///<returns>Debug information string.</returns>
         public string GetDebugInfo()
         {
             var info = $"NavigationDebugRenderer Debug Info:\n";
@@ -398,9 +400,9 @@ namespace SASZombieAssaultTD.Engine.Navigation
             return info;
         }
 
-        /// <summary>
-        /// Toggles all debug rendering options.
-        /// </summary>
+        ///<summary>
+        ///Toggles all debug rendering options.
+        ///</summary>
         public void ToggleAll()
         {
             ShowGrid = !ShowGrid;
@@ -410,9 +412,9 @@ namespace SASZombieAssaultTD.Engine.Navigation
             ShowStats = !ShowStats;
         }
 
-        /// <summary>
-        /// Resets all debug rendering options to defaults.
-        /// </summary>
+        ///<summary>
+        ///Resets all debug rendering options to defaults.
+        ///</summary>
         public void ResetToDefaults()
         {
             ShowGrid = true;

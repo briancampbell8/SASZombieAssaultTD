@@ -1,13 +1,15 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Save
+//
 {
-    /// <summary>
-    /// Save data structure for player progress and settings.
-    /// P20-10-01: Implements SaveData for player progress and settings.
-    /// </summary>
+    ///<summary>
+    ///Save data structure for player progress and settings.
+    ///P20-10-01: Implements SaveData for player progress and settings.
+    ///</summary>
     public class SaveData
     {
         private string _playerName;
@@ -21,101 +23,101 @@ namespace SASZombieAssaultTD.Engine.Save
         private List<LevelProgress> _levelProgress;
         private Dictionary<string, object> _customData;
 
-        /// <summary>
-        /// Gets or sets the player name.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the player name.
+        ///</summary>
         public string PlayerName
         {
             get => _playerName;
             set => _playerName = value ?? "Player";
         }
 
-        /// <summary>
-        /// Gets or sets the high score.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the high score.
+        ///</summary>
         public int HighScore
         {
             get => _highScore;
             set => _highScore = System.Math.Max(0, value);
         }
 
-        /// <summary>
-        /// Gets or sets the current level.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the current level.
+        ///</summary>
         public int CurrentLevel
         {
             get => _currentLevel;
             set => _currentLevel = System.Math.Max(1, value);
         }
 
-        /// <summary>
-        /// Gets or sets the total kills.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the total kills.
+        ///</summary>
         public int TotalKills
         {
             get => _totalKills;
             set => _totalKills = System.Math.Max(0, value);
         }
 
-        /// <summary>
-        /// Gets or sets the total waves completed.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the total waves completed.
+        ///</summary>
         public int TotalWavesCompleted
         {
             get => _totalWavesCompleted;
             set => _totalWavesCompleted = System.Math.Max(0, value);
         }
 
-        /// <summary>
-        /// Gets or sets the total play time in seconds.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the total play time in seconds.
+        ///</summary>
         public float TotalPlayTime
         {
             get => _totalPlayTime;
             set => _totalPlayTime = System.Math.Max(0f, value);
         }
 
-        /// <summary>
-        /// Gets or sets the last save time.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the last save time.
+        ///</summary>
         public DateTime LastSaveTime
         {
             get => _lastSaveTime;
             set => _lastSaveTime = value;
         }
 
-        /// <summary>
-        /// Gets or sets the game settings.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the game settings.
+        ///</summary>
         public GameSettings Settings
         {
             get => _settings ?? (_settings = new GameSettings());
             set => _settings = value ?? new GameSettings();
         }
 
-        /// <summary>
-        /// Gets the list of level progress.
-        /// </summary>
+        ///<summary>
+        ///Gets the list of level progress.
+        ///</summary>
         public List<LevelProgress> LevelProgress => _levelProgress ?? (_levelProgress = new List<LevelProgress>());
 
-        /// <summary>
-        /// Gets the custom data dictionary.
-        /// </summary>
+        ///<summary>
+        ///Gets the custom data dictionary.
+        ///</summary>
         public Dictionary<string, object> CustomData => _customData ?? (_customData = new Dictionary<string, object>());
 
-        /// <summary>
-        /// Gets the save data version.
-        /// </summary>
+        ///<summary>
+        ///Gets the save data version.
+        ///</summary>
         public int Version { get; private set; }
 
-        /// <summary>
-        /// Event fired when save data is modified.
-        /// </summary>
+        ///<summary>
+        ///Event fired when save data is modified.
+        ///</summary>
         public event Action<SaveData> OnDataModified;
 
-        /// <summary>
-        /// Initializes a new save data instance.
-        /// </summary>
+        ///<summary>
+        ///Initializes a new save data instance.
+        ///</summary>
         public SaveData()
         {
             _playerName = "Player";
@@ -130,73 +132,73 @@ namespace SASZombieAssaultTD.Engine.Save
             _customData = new Dictionary<string, object>();
             Version = 1;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "SaveData: Created new save data instance");
+            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", "SaveData: Created new save data instance");
         }
 
-        /// <summary>
-        /// Updates the high score if the new score is higher.
-        /// </summary>
-        /// <param name="score">The new score to check.</param>
-        /// <returns>True if high score was updated.</returns>
+        ///<summary>
+        ///Updates the high score if the new score is higher.
+        ///</summary>
+        ///<param name="score">The new score to check.</param>
+        ///<returns>True if high score was updated.</returns>
         public bool UpdateHighScore(int score)
         {
             if (score > _highScore)
             {
                 _highScore = score;
                 MarkAsModified();
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SaveData: New high score: {score}");
+                DLogger.Log(LogSubsystems.Save,LogLevel.Info, $"SaveData: New high score: {score}");
                 return true;
             }
             return false;
         }
 
-        /// <summary>
-        /// Adds play time to the total.
-        /// </summary>
-        /// <param name="playTime">Play time to add in seconds.</param>
+        ///<summary>
+        ///Adds play time to the total.
+        ///</summary>
+        ///<param name="playTime">Play time to add in seconds.</param>
         public void AddPlayTime(float playTime)
         {
             _totalPlayTime += System.Math.Max(0f, playTime);
             MarkAsModified();
         }
 
-        /// <summary>
-        /// Adds kills to the total.
-        /// </summary>
-        /// <param name="kills">Number of kills to add.</param>
+        ///<summary>
+        ///Adds kills to the total.
+        ///</summary>
+        ///<param name="kills">Number of kills to add.</param>
         public void AddKills(int kills)
         {
             _totalKills += System.Math.Max(0, kills);
             MarkAsModified();
         }
 
-        /// <summary>
-        /// Adds waves completed to the total.
-        /// </summary>
-        /// <param name="waves">Number of waves to add.</param>
+        ///<summary>
+        ///Adds waves completed to the total.
+        ///</summary>
+        ///<param name="waves">Number of waves to add.</param>
         public void AddWavesCompleted(int waves)
         {
             _totalWavesCompleted += System.Math.Max(0, waves);
             MarkAsModified();
         }
 
-        /// <summary>
-        /// Gets progress for a specific level.
-        /// </summary>
-        /// <param name="levelId">The level ID.</param>
-        /// <returns>The level progress, or null if not found.</returns>
+        ///<summary>
+        ///Gets progress for a specific level.
+        ///</summary>
+        ///<param name="levelId">The level ID.</param>
+        ///<returns>The level progress, or null if not found.</returns>
         public LevelProgress GetLevelProgress(string levelId)
         {
             return _levelProgress?.Find(p => p.LevelId == levelId);
         }
 
-        /// <summary>
-        /// Updates progress for a specific level.
-        /// </summary>
-        /// <param name="levelId">The level ID.</param>
-        /// <param name="completed">Whether the level was completed.</param>
-        /// <param name="score">The score achieved.</param>
-        /// <param name="stars">The number of stars earned.</param>
+        ///<summary>
+        ///Updates progress for a specific level.
+        ///</summary>
+        ///<param name="levelId">The level ID.</param>
+        ///<param name="completed">Whether the level was completed.</param>
+        ///<param name="score">The score achieved.</param>
+        ///<param name="stars">The number of stars earned.</param>
         public void UpdateLevelProgress(string levelId, bool completed, int score, int stars)
         {
             var progress = GetLevelProgress(levelId);
@@ -210,11 +212,11 @@ namespace SASZombieAssaultTD.Engine.Save
             MarkAsModified();
         }
 
-        /// <summary>
-        /// Sets custom data.
-        /// </summary>
-        /// <param name="key">The data key.</param>
-        /// <param name="value">The data value.</param>
+        ///<summary>
+        ///Sets custom data.
+        ///</summary>
+        ///<param name="key">The data key.</param>
+        ///<param name="value">The data value.</param>
         public void SetCustomData(string key, object value)
         {
             if (string.IsNullOrEmpty(key))
@@ -224,12 +226,12 @@ namespace SASZombieAssaultTD.Engine.Save
             MarkAsModified();
         }
 
-        /// <summary>
-        /// Gets custom data.
-        /// </summary>
-        /// <typeparam name="T">The data type.</typeparam>
-        /// <param name="key">The data key.</param>
-        /// <returns>The data value, or default if not found.</returns>
+        ///<summary>
+        ///Gets custom data.
+        ///</summary>
+        ///<typeparam name="T">The data type.</typeparam>
+        ///<param name="key">The data key.</param>
+        ///<returns>The data value, or default if not found.</returns>
         public T GetCustomData<T>(string key)
         {
             if (string.IsNullOrEmpty(key) || !_customData.TryGetValue(key, out var value))
@@ -241,9 +243,9 @@ namespace SASZombieAssaultTD.Engine.Save
             return default;
         }
 
-        /// <summary>
-        /// Resets all progress to default values.
-        /// </summary>
+        ///<summary>
+        ///Resets all progress to default values.
+        ///</summary>
         public void ResetProgress()
         {
             _highScore = 0;
@@ -255,13 +257,13 @@ namespace SASZombieAssaultTD.Engine.Save
             _customData.Clear();
             MarkAsModified();
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SaveData: Reset all progress to defaults");
+            DLogger.Log(LogSubsystems.Save,LogLevel.Info, "SaveData: Reset all progress to defaults");
         }
 
-        /// <summary>
-        /// Validates the save data.
-        /// </summary>
-        /// <returns>List of validation issues.</returns>
+        ///<summary>
+        ///Validates the save data.
+        ///</summary>
+        ///<returns>List of validation issues.</returns>
         public List<string> Validate()
         {
             var issues = new List<string>();
@@ -284,17 +286,17 @@ namespace SASZombieAssaultTD.Engine.Save
             if (_totalPlayTime < 0)
                 issues.Add("Total play time is negative");
 
-            // Validate settings
+            //Validate settings
             var settingsIssues = _settings.Validate();
             issues.AddRange(settingsIssues);
 
             return issues;
         }
 
-        /// <summary>
-        /// Creates a copy of this save data.
-        /// </summary>
-        /// <returns>A new SaveData instance with the same values.</returns>
+        ///<summary>
+        ///Creates a copy of this save data.
+        ///</summary>
+        ///<returns>A new SaveData instance with the same values.</returns>
         public SaveData Clone()
         {
             var clone = new SaveData
@@ -310,13 +312,13 @@ namespace SASZombieAssaultTD.Engine.Save
                 Version = Version
             };
 
-            // Clone level progress
+            //Clone level progress
             foreach (var progress in _levelProgress)
             {
                 clone._levelProgress.Add(progress.Clone());
             }
 
-            // Clone custom data
+            //Clone custom data
             foreach (var kvp in _customData)
             {
                 clone._customData[kvp.Key] = kvp.Value;
@@ -325,18 +327,18 @@ namespace SASZombieAssaultTD.Engine.Save
             return clone;
         }
 
-        /// <summary>
-        /// Marks the save data as modified.
-        /// </summary>
+        ///<summary>
+        ///Marks the save data as modified.
+        ///</summary>
         private void MarkAsModified()
         {
             _lastSaveTime = DateTime.UtcNow;
             OnDataModified?.Invoke(this);
         }
 
-        /// <summary>
-        /// Gets save data information as a string.
-        /// </summary>
+        ///<summary>
+        ///Gets save data information as a string.
+        ///</summary>
         public override string ToString()
         {
             return $"SaveData: Player={_playerName}, HighScore={_highScore}, " +
@@ -346,10 +348,10 @@ namespace SASZombieAssaultTD.Engine.Save
         }
     }
 
-    /// <summary>
-    /// Game settings structure.
-    /// P20-10-03: Add settings persistence.
-    /// </summary>
+    ///<summary>
+    ///Game settings structure.
+    ///P20-10-03: Add settings persistence.
+    ///</summary>
     public class GameSettings
     {
         private float _masterVolume;
@@ -363,99 +365,99 @@ namespace SASZombieAssaultTD.Engine.Save
         private bool _showFPS;
         private bool _autoPause;
 
-        /// <summary>
-        /// Gets or sets the master volume (0.0 to 1.0).
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the master volume (0.0 to 1.0).
+        ///</summary>
         public float MasterVolume
         {
             get => _masterVolume;
             set => _masterVolume = System.Math.Clamp(value, 0f, 1f);
         }
 
-        /// <summary>
-        /// Gets or sets the music volume (0.0 to 1.0).
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the music volume (0.0 to 1.0).
+        ///</summary>
         public float MusicVolume
         {
             get => _musicVolume;
             set => _musicVolume = System.Math.Clamp(value, 0f, 1f);
         }
 
-        /// <summary>
-        /// Gets or sets the sound effects volume (0.0 to 1.0).
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the sound effects volume (0.0 to 1.0).
+        ///</summary>
         public float SfxVolume
         {
             get => _sfxVolume;
             set => _sfxVolume = System.Math.Clamp(value, 0f, 1f);
         }
 
-        /// <summary>
-        /// Gets or sets the screen width.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the screen width.
+        ///</summary>
         public int ScreenWidth
         {
             get => _screenWidth;
             set => _screenWidth = System.Math.Max(640, value);
         }
 
-        /// <summary>
-        /// Gets or sets the screen height.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the screen height.
+        ///</summary>
         public int ScreenHeight
         {
             get => _screenHeight;
             set => _screenHeight = System.Math.Max(480, value);
         }
 
-        /// <summary>
-        /// Gets or sets whether fullscreen is enabled.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether fullscreen is enabled.
+        ///</summary>
         public bool Fullscreen
         {
             get => _fullscreen;
             set => _fullscreen = value;
         }
 
-        /// <summary>
-        /// Gets or sets whether VSync is enabled.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether VSync is enabled.
+        ///</summary>
         public bool VSync
         {
             get => _vsync;
             set => _vsync = value;
         }
 
-        /// <summary>
-        /// Gets or sets the graphics quality level (0-3).
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the graphics quality level (0-3).
+        ///</summary>
         public int QualityLevel
         {
             get => _qualityLevel;
             set => _qualityLevel = System.Math.Clamp(value, 0, 3);
         }
 
-        /// <summary>
-        /// Gets or sets whether to show FPS counter.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether to show FPS counter.
+        ///</summary>
         public bool ShowFPS
         {
             get => _showFPS;
             set => _showFPS = value;
         }
 
-        /// <summary>
-        /// Gets or sets whether to auto-pause on focus loss.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether to auto-pause on focus loss.
+        ///</summary>
         public bool AutoPause
         {
             get => _autoPause;
             set => _autoPause = value;
         }
 
-        /// <summary>
-        /// Initializes a new game settings instance.
-        /// </summary>
+        ///<summary>
+        ///Initializes a new game settings instance.
+        ///</summary>
         public GameSettings()
         {
             _masterVolume = 1f;
@@ -469,12 +471,12 @@ namespace SASZombieAssaultTD.Engine.Save
             _showFPS = false;
             _autoPause = true;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "GameSettings: Created with default values");
+            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", "GameSettings: Created with default values");
         }
 
-        /// <summary>
-        /// Resets settings to default values.
-        /// </summary>
+        ///<summary>
+        ///Resets settings to default values.
+        ///</summary>
         public void ResetToDefaults()
         {
             _masterVolume = 1f;
@@ -488,13 +490,13 @@ namespace SASZombieAssaultTD.Engine.Save
             _showFPS = false;
             _autoPause = true;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "GameSettings: Reset to default values");
+            DLogger.Log(LogSubsystems.Save,LogLevel.Info, "GameSettings: Reset to default values");
         }
 
-        /// <summary>
-        /// Validates the settings.
-        /// </summary>
-        /// <returns>List of validation issues.</returns>
+        ///<summary>
+        ///Validates the settings.
+        ///</summary>
+        ///<returns>List of validation issues.</returns>
         public List<string> Validate()
         {
             var issues = new List<string>();
@@ -520,10 +522,10 @@ namespace SASZombieAssaultTD.Engine.Save
             return issues;
         }
 
-        /// <summary>
-        /// Creates a copy of these settings.
-        /// </summary>
-        /// <returns>A new GameSettings instance with the same values.</returns>
+        ///<summary>
+        ///Creates a copy of these settings.
+        ///</summary>
+        ///<returns>A new GameSettings instance with the same values.</returns>
         public GameSettings Clone()
         {
             return new GameSettings
@@ -541,9 +543,9 @@ namespace SASZombieAssaultTD.Engine.Save
             };
         }
 
-        /// <summary>
-        /// Gets settings information as a string.
-        /// </summary>
+        ///<summary>
+        ///Gets settings information as a string.
+        ///</summary>
         public override string ToString()
         {
             return $"GameSettings: Resolution={_screenWidth}x{_screenHeight}, " +
@@ -552,9 +554,9 @@ namespace SASZombieAssaultTD.Engine.Save
         }
     }
 
-    /// <summary>
-    /// Level progress information.
-    /// </summary>
+    ///<summary>
+    ///Level progress information.
+    ///</summary>
     public class LevelProgress
     {
         public string LevelId { get; set; }

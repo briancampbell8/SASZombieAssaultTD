@@ -4,6 +4,8 @@ Purpose: NextInt, NextFloat; seeded constructor; NextBool.
 */
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Utility
 {
     public static class Randomizer

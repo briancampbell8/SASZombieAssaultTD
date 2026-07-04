@@ -2,46 +2,48 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Animation.BlendTree
 {
-    /// <summary>
-    /// Linear blend node that blends two child nodes based on a single float parameter.
-    /// </summary>
+    ///<summary>
+    ///Linear blend node that blends two child nodes based on a single float parameter.
+    ///</summary>
     public class LinearBlendNode : IBlendNode
     {
-        /// <summary>
-        /// Unique identifier for this node.
-        /// </summary>
+        ///<summary>
+        ///Unique identifier for this node.
+        ///</summary>
         public string NodeId { get; }
 
-        /// <summary>
-        /// Human-readable name for debugging.
-        /// </summary>
+        ///<summary>
+        ///Human-readable name for debugging.
+        ///</summary>
         public string DisplayName { get; }
 
-        /// <summary>
-        /// Parameter name used for blending (0.0 to 1.0 range).
-        /// </summary>
+        ///<summary>
+        ///Parameter name used for blending (0.0 to 1.0 range).
+        ///</summary>
         public string BlendParameter { get; }
 
-        /// <summary>
-        /// Child node for the minimum value (blend parameter = 0.0).
-        /// </summary>
+        ///<summary>
+        ///Child node for the minimum value (blend parameter = 0.0).
+        ///</summary>
         public IBlendNode ChildA { get; }
 
-        /// <summary>
-        /// Child node for the maximum value (blend parameter = 1.0).
-        /// </summary>
+        ///<summary>
+        ///Child node for the maximum value (blend parameter = 1.0).
+        ///</summary>
         public IBlendNode ChildB { get; }
 
-        /// <summary>
-        /// Node weight approximated from children (safe default).
-        /// </summary>
+        ///<summary>
+        ///Node weight approximated from children (safe default).
+        ///</summary>
         public float Weight => System.MathF.Max(ChildA?.Weight ?? 0f, ChildB?.Weight ?? 0f);
 
-        /// <summary>
-        /// List of parameters required by this node.
-        /// </summary>
+        ///<summary>
+        ///List of parameters required by this node.
+        ///</summary>
         public IReadOnlyList<string> RequiredParameters
         {
             get
@@ -53,14 +55,14 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             }
         }
 
-        /// <summary>
-        /// Initializes a new linear blend node.
-        /// </summary>
-        /// <param name="nodeId">Unique node identifier.</param>
-        /// <param name="displayName">Human-readable name.</param>
-        /// <param name="blendParameter">Parameter name for blending.</param>
-        /// <param name="childA">Child node for minimum value.</param>
-        /// <param name="childB">Child node for maximum value.</param>
+        ///<summary>
+        ///Initializes a new linear blend node.
+        ///</summary>
+        ///<param name="nodeId">Unique node identifier.</param>
+        ///<param name="displayName">Human-readable name.</param>
+        ///<param name="blendParameter">Parameter name for blending.</param>
+        ///<param name="childA">Child node for minimum value.</param>
+        ///<param name="childB">Child node for maximum value.</param>
         public LinearBlendNode(string nodeId, string displayName, string blendParameter, IBlendNode childA, IBlendNode childB)
         {
             NodeId = nodeId ?? throw new ArgumentNullException(nameof(nodeId));
@@ -70,12 +72,12 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             ChildB = childB ?? throw new ArgumentNullException(nameof(childB));
         }
 
-        /// <summary>
-        /// Evaluates the node by blending two child nodes based on the blend parameter.
-        /// </summary>
-        /// <param name="parameters">Parameter set for evaluation.</param>
-        /// <param name="context">Evaluation context.</param>
-        /// <returns>Deterministic animation clip result.</returns>
+        ///<summary>
+        ///Evaluates the node by blending two child nodes based on the blend parameter.
+        ///</summary>
+        ///<param name="parameters">Parameter set for evaluation.</param>
+        ///<param name="context">Evaluation context.</param>
+        ///<returns>Deterministic animation clip result.</returns>
         public BlendNodeResult Evaluate(BlendParameters parameters, BlendContext context)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -99,11 +101,11 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             };
         }
 
-        /// <summary>
-        /// Gets debug information about this node's state.
-        /// </summary>
-        /// <param name="parameters">Current parameter set.</param>
-        /// <returns>Debug information string.</returns>
+        ///<summary>
+        ///Gets debug information about this node's state.
+        ///</summary>
+        ///<param name="parameters">Current parameter set.</param>
+        ///<returns>Debug information string.</returns>
         public string GetDebugInfo(BlendParameters parameters)
         {
             float blendValue = parameters?.TryGetFloat(BlendParameter, out float value) == true ? value : 0.0f;
@@ -120,10 +122,10 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             return info.ToString();
         }
 
-        /// <summary>
-        /// Validates that this node is properly configured.
-        /// </summary>
-        /// <returns>Validation result with any issues.</returns>
+        ///<summary>
+        ///Validates that this node is properly configured.
+        ///</summary>
+        ///<returns>Validation result with any issues.</returns>
         public BlendNodeValidationResult Validate()
         {
             var errors = new List<string>();
@@ -152,14 +154,14 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             return new BlendNodeValidationResult(errors.Count == 0, errors, warnings);
         }
 
-        /// <summary>
-        /// Creates a linear blend node with auto-generated ID.
-        /// </summary>
-        /// <param name="displayName">Human-readable name.</param>
-        /// <param name="blendParameter">Parameter name for blending.</param>
-        /// <param name="childA">Child node for minimum value.</param>
-        /// <param name="childB">Child node for maximum value.</param>
-        /// <returns>New linear blend node.</returns>
+        ///<summary>
+        ///Creates a linear blend node with auto-generated ID.
+        ///</summary>
+        ///<param name="displayName">Human-readable name.</param>
+        ///<param name="blendParameter">Parameter name for blending.</param>
+        ///<param name="childA">Child node for minimum value.</param>
+        ///<param name="childB">Child node for maximum value.</param>
+        ///<returns>New linear blend node.</returns>
         public static LinearBlendNode CreateAuto(string displayName, string blendParameter, IBlendNode childA, IBlendNode childB)
         {
             string nodeId = $"linear_blend_{Guid.NewGuid():N}";

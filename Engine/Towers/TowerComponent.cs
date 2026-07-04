@@ -8,23 +8,25 @@ P11-04-07-B: ECS component for tower entities following established component pa
 
 using SASZombieAssaultTD.Engine.ECS;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Towers
 {
-    /// <summary>
-    /// ECS component that represents a tower entity.
-    /// Links tower data with the ECS system.
-    /// </summary>
+    ///<summary>
+    ///ECS component that represents a tower entity.
+    ///Links tower data with the ECS system.
+    ///</summary>
     public class TowerComponent : BaseComponent
     {
-        /// <summary>
-        /// The tower instance this component represents.
-        /// </summary>
+        ///<summary>
+        ///The tower instance this component represents.
+        ///</summary>
         public Tower Tower { get; set; }
 
-        /// <summary>
-        /// Initializes a new tower component.
-        /// </summary>
-        /// <param name="tower">The tower instance.</param>
+        ///<summary>
+        ///Initializes a new tower component.
+        ///</summary>
+        ///<param name="tower">The tower instance.</param>
         public TowerComponent(Tower tower)
         {
             Tower = tower ?? throw new System.ArgumentNullException(nameof(tower));

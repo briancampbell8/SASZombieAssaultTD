@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Rendering;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Managers
 {
-    /// <summary>
-    /// Level manager for SAS Zombie Assault TD.
-    /// Manages level loading, progression, and state.
-    /// </summary>
+    ///<summary>
+    ///Level manager for SAS Zombie Assault TD.
+    ///Manages level loading, progression, and state.
+    ///</summary>
     public class LevelManager
     {
         private readonly Dictionary<string, LevelData> _levels = new Dictionary<string, LevelData>();
@@ -32,7 +34,7 @@ namespace SASZombieAssaultTD.Engine.Managers
 
         private void InitializeDefaultLevels()
         {
-            // Create some default levels
+            //Create some default levels
             _levels["level_1"] = new LevelData
             {
                 Id = "level_1",
@@ -74,7 +76,7 @@ namespace SASZombieAssaultTD.Engine.Managers
                 return false;
             }
 
-            // Unload current level if any
+            //Unload current level if any
             if (!string.IsNullOrEmpty(_currentLevelId))
             {
                 UnloadLevel();

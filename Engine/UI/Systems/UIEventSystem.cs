@@ -6,19 +6,21 @@ Purpose: UI event system for handling UI events.
 using System;
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.UI.Systems
+//
 {
-    /// <summary>
-    /// UI event system for handling UI events.
-    /// </summary>
+    ///<summary>
+    ///UI event system for handling UI events.
+    ///</summary>
     public static class UIEventSystem
     {
-        /// <summary>
-        /// Initializes the UI event system.
-        /// </summary>
+        ///<summary>
+        ///Initializes the UI event system.
+        ///</summary>
         public static void Initialize()
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "UIEventSystem: Initialized");
+            DLogger.Log(LogSubsystems.UI, LogLevel.Info, "UIEventSystem: Initialized");
         }
     }
 }

@@ -1,49 +1,50 @@
-// ============================================================================
-// File: SnapshotData.cs
-// Path: E:\BDC\Projects\SASZombieAssaultTD\Engine\Snapshot\SnapshotData.cs
-// Program: SnapshotData
-// Subsystem: Snapshot System / Data Model
+//============================================================================
+//File: SnapshotData.cs
+//Path: E:\BDC\Projects\SASZombieAssaultTD\Engine\Snapshot\SnapshotData.cs
+//Program: SnapshotData
+//Subsystem: Snapshot System / Data Model
 //
-// Purpose:
-//     Immutable, deterministic snapshot of complete game state.
-//     Used by SnapshotManager, SnapshotCapture, and SnapshotCommands.
+//Purpose:
+//    Immutable, deterministic snapshot of complete game state.
+//    Used by SnapshotManager, SnapshotCapture, and SnapshotCommands.
 //
-// Doctrine:
-//     - Pure data container (no Engine.Diagnostics.DebugLogger.Trace())
-//     - Immutable after construction
-//     - Deterministic, grep‑friendly field names
-//     - DeepClone() allowed for safe duplication
-// ============================================================================
+//Doctrine:
+//    - Pure data container (no DLogger.Log())
+//    - Immutable after construction
+//    - Deterministic, grep‑friendly field names
+//    - DeepClone() allowed for safe duplication
+//============================================================================
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Gameplay;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Player;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using System;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Snapshot
 {
     public sealed class SnapshotData
     {
-        // Identity
+        //Identity
         public string Id { get; }
         public DateTime Timestamp { get; }
         public string GameVersion { get; }
 
-        // Player State
+        //Player State
         public PlayerState PlayerState { get; }
 
-        // Game State
+        //Game State
         public int WaveNumber { get; }
         public float GameTime { get; }
 
-        // Custom Data
+        //Custom Data
         public Dictionary<string, object> CustomData { get; }
 
-        // Metadata
+        //Metadata
         public SnapshotMetadata Metadata { get; }
 
         public SnapshotData(
@@ -117,17 +118,17 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
     //public class PlayerState already defined in Engine.Player.PlayerState
     //{
-    //    internal int Level;
-    //    internal int Experience;
-    //    internal int Cash;
-    //    internal int Lives;
-    //    internal int Score;
-    //    internal int WaveNumber;
+    //   internal int Level;
+    //   internal int Experience;
+    //   internal int Cash;
+    //   internal int Lives;
+    //   internal int Score;
+    //   internal int WaveNumber;
 
-    //    internal PlayerState DeepClone()
-    //    {
-    //        NI.Hit();
-    //    }
+    //   internal PlayerState DeepClone()
+    //   {
+    //       NI.Hit();
+    //   }
     //}
 
     public sealed class SnapshotMetadata

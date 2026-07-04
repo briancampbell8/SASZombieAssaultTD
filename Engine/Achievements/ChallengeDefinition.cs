@@ -1,12 +1,14 @@
 using System;
 using System.Runtime.Serialization;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Achievements
 {
-    /// <summary>
-    /// Defines daily/weekly challenge metadata including objectives and rewards.
-    /// Supports rotating challenges with time-based expiration and serialization.
-    /// </summary>
+    ///<summary>
+    ///Defines daily/weekly challenge metadata including objectives and rewards.
+    ///Supports rotating challenges with time-based expiration and serialization.
+    ///</summary>
     [Serializable]
     [DataContract]
     public class ChallengeDefinition
@@ -28,10 +30,10 @@ namespace SASZombieAssaultTD.Engine.Achievements
         [DataMember] public int MinimumLevel { get; private set; } = 1;
         [DataMember] public string CustomData { get; private set; } = string.Empty;
 
-        /// <summary>
-        /// Validates that the challenge definition has all required fields populated.
-        /// </summary>
-        /// <returns>True if the definition is valid, false otherwise.</returns>
+        ///<summary>
+        ///Validates that the challenge definition has all required fields populated.
+        ///</summary>
+        ///<returns>True if the definition is valid, false otherwise.</returns>
         public bool IsValid() =>
             !string.IsNullOrEmpty(Id) &&
             !string.IsNullOrEmpty(Name) &&
@@ -39,13 +41,13 @@ namespace SASZombieAssaultTD.Engine.Achievements
             XPReward >= 0 &&
             CurrencyReward >= 0;
 
-        /// <summary>
-        /// Checks if this challenge matches the given criteria for progress evaluation.
-        /// </summary>
-        /// <param name="requirementType">Type of requirement to check.</param>
-        /// <param name="entityType">Optional entity type filter.</param>
-        /// <param name="deathType">Optional death type filter.</param>
-        /// <returns>True if this challenge matches the criteria.</returns>
+        ///<summary>
+        ///Checks if this challenge matches the given criteria for progress evaluation.
+        ///</summary>
+        ///<param name="requirementType">Type of requirement to check.</param>
+        ///<param name="entityType">Optional entity type filter.</param>
+        ///<param name="deathType">Optional death type filter.</param>
+        ///<returns>True if this challenge matches the criteria.</returns>
         public bool MatchesCriteria(ChallengeRequirementType requirementType, string entityType = "", string deathType = "")
         {
             if (RequirementType != requirementType) return false;
@@ -55,16 +57,16 @@ namespace SASZombieAssaultTD.Engine.Achievements
             return true;
         }
 
-        /// <summary>
-        /// Gets the total reward value for this challenge.
-        /// </summary>
-        /// <returns>Total reward value (XP + currency).</returns>
+        ///<summary>
+        ///Gets the total reward value for this challenge.
+        ///</summary>
+        ///<returns>Total reward value (XP + currency).</returns>
         public int GetTotalRewardValue() => XPReward + CurrencyReward;
     }
 
-    /// <summary>
-    /// Types of challenges based on rotation schedule.
-    /// </summary>
+    ///<summary>
+    ///Types of challenges based on rotation schedule.
+    ///</summary>
     public enum ChallengeType
     {
         Daily,
@@ -72,9 +74,9 @@ namespace SASZombieAssaultTD.Engine.Achievements
         Special
     }
 
-    /// <summary>
-    /// Categories for grouping challenges in the UI.
-    /// </summary>
+    ///<summary>
+    ///Categories for grouping challenges in the UI.
+    ///</summary>
     public enum ChallengeCategory
     {
         General,
@@ -85,9 +87,9 @@ namespace SASZombieAssaultTD.Engine.Achievements
         Special
     }
 
-    /// <summary>
-    /// Types of requirements that can trigger challenge progress.
-    /// </summary>
+    ///<summary>
+    ///Types of requirements that can trigger challenge progress.
+    ///</summary>
     public enum ChallengeRequirementType
     {
         KillCount,
@@ -102,9 +104,9 @@ namespace SASZombieAssaultTD.Engine.Achievements
         Custom
     }
 
-    /// <summary>
-    /// Difficulty tiers affecting challenge rewards and requirements.
-    /// </summary>
+    ///<summary>
+    ///Difficulty tiers affecting challenge rewards and requirements.
+    ///</summary>
     public enum ChallengeDifficulty
     {
         Easy,

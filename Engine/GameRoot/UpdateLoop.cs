@@ -24,39 +24,39 @@ using SASZombieAssaultTD.Engine.Core;
 
 namespace SASZombieAssaultTD.Engine
 {
-    /// <summary>
-    /// Partial class containing update loop logic for GameRoot.
-    /// </summary>
+    ///<summary>
+    ///Partial class containing update loop logic for GameRoot.
+    ///</summary>
     public partial class GameRoot
     {
-        /// <summary>
-        /// Performs the update sequence for the current frame.
-        /// </summary>
-        /// <param name="deltaTime">Time since last frame in seconds.</param>
+        ///<summary>
+        ///Performs the update sequence for the current frame.
+        ///</summary>
+        ///<param name="deltaTime">Time since last frame in seconds.</param>
         private void PerformUpdate(float deltaTime)
         {
-            // Update game state machine first
+            //Update game state machine first
             _stateMachine.Update(deltaTime);
 
-            // Update all updatable systems
+            //Update all updatable systems
             _updateManager.UpdateAll(deltaTime);
 
-            // Input is handled by UIInputRouter automatically
-            Engine.Diagnostics.DebugLogger.LogDebug($"Frame update completed in {deltaTime:F4}s");
+            //Input is handled by UIInputRouter automatically
+            DLogger.Log($"Frame update completed in {deltaTime:F4}s");
         }
 
-        /// <summary>
-        /// Performs the render sequence for the current frame.
-        /// </summary>
+        ///<summary>
+        ///Performs the render sequence for the current frame.
+        ///</summary>
         private void PerformRender()
         {
-            // Render game state
+            //Render game state
             _stateMachine.Render(_renderContext);
 
-            // Render all renderable systems
+            //Render all renderable systems
             _renderManager.RenderAll();
 
-            Engine.Diagnostics.DebugLogger.LogDebug("Frame render completed");
+            DLogger.Log("Frame render completed");
         }
     }
 }

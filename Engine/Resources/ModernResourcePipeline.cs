@@ -1,4 +1,4 @@
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Rendering;
 using System;
@@ -9,12 +9,14 @@ using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Resources
 {
-    /// <summary>
-    /// Modern resource management system with async loading, caching, and lifecycle management.
-    /// Replaces legacy SpriteCache and FontCache with complete modern implementation.
-    /// </summary>
+    ///<summary>
+    ///Modern resource management system with async loading, caching, and lifecycle management.
+    ///Replaces legacy SpriteCache and FontCache with complete modern implementation.
+    ///</summary>
     public sealed class ModernResourcePipeline : IDisposable
     {
         private readonly ConcurrentDictionary<string, WeakReference<object>> _cache = new();
@@ -30,83 +32,83 @@ namespace SASZombieAssaultTD.Engine.Resources
 
         public ModernResourcePipeline()
         {
-            // Register built-in loaders
+            //Register built-in loaders
             RegisterLoader(new SpriteLoader());
             RegisterLoader(new FontLoader());
             RegisterLoader(new TextureLoader());
         }
 
-        /// <summary>
-        /// Register a custom resource loader.
-        /// </summary>
+        ///<summary>
+        ///Register a custom resource loader.
+        ///</summary>
         public void RegisterLoader(IResourceLoader loader)
         {
             _loaders[loader.GetType()] = loader;
         }
 
-        /// <summary>
-        /// Load a sprite asynchronously.
-        /// </summary>
+        ///<summary>
+        ///Load a sprite asynchronously.
+        ///</summary>
         public async Task<Sprite> LoadSpriteAsync(string assetPath)
         {
             return await LoadResourceAsync<Sprite>(assetPath);
         }
 
-        /// <summary>
-        /// Load a font asynchronously.
-        /// </summary>
+        ///<summary>
+        ///Load a font asynchronously.
+        ///</summary>
         public async Task<Font> LoadFontAsync(string fontPath, int size)
         {
             var cacheKey = $"font:{fontPath}:{size}";
             return await LoadResourceAsync<Font>(cacheKey);
         }
 
-        /// <summary>
-        /// Load a texture asynchronously.
-        /// </summary>
+        ///<summary>
+        ///Load a texture asynchronously.
+        ///</summary>
         public async Task<Texture2D> LoadTextureAsync(string texturePath)
         {
             return await LoadResourceAsync<Texture2D>(texturePath);
         }
 
-        /// <summary>
-        /// Generic resource loading with caching.
-        /// </summary>
+        ///<summary>
+        ///Generic resource loading with caching.
+        ///</summary>
         public async Task<T> LoadResourceAsync<T>(string resourceKey) where T : class
         {
             if (_disposed) throw new ObjectDisposedException(nameof(ModernResourcePipeline));
 
-            // Check cache first
+            //Check cache first
             if (_cache.TryGetValue(resourceKey, out var weakRef) && weakRef.TryGetTarget(out var cached))
             {
                 return cached as T;
             }
 
-            // Load asynchronously
+            //Load asynchronously
             await _loadingSemaphore.WaitAsync();
             try
             {
-                // Double-check cache after acquiring semaphore
+                //Double-check cache after acquiring semaphore
                 if (_cache.TryGetValue(resourceKey, out weakRef) && weakRef.TryGetTarget(out cached))
                 {
                     return cached as T;
                 }
 
-                // Find appropriate loader
+                //Find appropriate loader
                 var loader = FindLoader<T>();
                 if (loader == null)
                 {
                     throw new InvalidOperationException($"No loader found for type {typeof(T).Name}");
                 }
 
-                // Load resource
+                //Load resource
                 var resource = await loader.LoadAsync(resourceKey) as T;
                 if (resource == null)
                 {
                     throw new InvalidOperationException($"Failed to load resource: {resourceKey}");
                 }
 
-                // Cache the resource
+                //Cache the resource
                 _cache[resourceKey] = new WeakReference<object>(resource);
                 return resource;
             }
@@ -116,9 +118,9 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
         }
 
-        /// <summary>
-        /// Get a cached resource without loading.
-        /// </summary>
+        ///<summary>
+        ///Get a cached resource without loading.
+        ///</summary>
         public T GetResource<T>(string resourceKey) where T : class
         {
             if (_cache.TryGetValue(resourceKey, out var weakRef) && weakRef.TryGetTarget(out var cached))
@@ -128,9 +130,9 @@ namespace SASZombieAssaultTD.Engine.Resources
             return null;
         }
 
-        /// <summary>
-        /// Preload multiple assets asynchronously.
-        /// </summary>
+        ///<summary>
+        ///Preload multiple assets asynchronously.
+        ///</summary>
         public async Task PreloadAssetsAsync(IEnumerable<string> assetPaths)
         {
             var tasks = new List<Task>();
@@ -150,9 +152,9 @@ namespace SASZombieAssaultTD.Engine.Resources
             await Task.WhenAll(tasks);
         }
 
-        /// <summary>
-        /// Unload unused resources to free memory.
-        /// </summary>
+        ///<summary>
+        ///Unload unused resources to free memory.
+        ///</summary>
         public void UnloadUnusedAssets()
         {
             var keysToRemove = new List<string>();
@@ -170,9 +172,9 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
         }
 
-        /// <summary>
-        /// Get cache statistics.
-        /// </summary>
+        ///<summary>
+        ///Get cache statistics.
+        ///</summary>
         public ResourceCacheStats GetCacheStats()
         {
             var stats = new ResourceCacheStats
@@ -215,9 +217,9 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 
-    /// <summary>
-    /// Resource cache statistics.
-    /// </summary>
+    ///<summary>
+    ///Resource cache statistics.
+    ///</summary>
     public class ResourceCacheStats
     {
         public int TotalEntries { get; set; }
@@ -225,14 +227,14 @@ namespace SASZombieAssaultTD.Engine.Resources
         public long TotalMemoryUsage { get; set; }
     }
 
-    // Built-in resource loaders
+    //Built-in resource loaders
     internal class SpriteLoader : ModernResourcePipeline.IResourceLoader
     {
         public async Task<object> LoadAsync(string path)
         {
-            // Implementation would load sprite from disk
-            await Task.Delay(1); // Simulate async operation
-            return new Sprite(); // Return actual sprite
+            //Implementation would load sprite from disk
+            await Task.Delay(1); //Simulate async operation
+            return new Sprite(); //Return actual sprite
         }
 
         public bool CanLoad(Type type) => type == typeof(Sprite);
@@ -242,9 +244,9 @@ namespace SASZombieAssaultTD.Engine.Resources
     {
         public async Task<object> LoadAsync(string path)
         {
-            // Implementation would load font from disk
-            await Task.Delay(1); // Simulate async operation
-            return new Font(); // Return actual font
+            //Implementation would load font from disk
+            await Task.Delay(1); //Simulate async operation
+            return new Font(); //Return actual font
         }
 
         public bool CanLoad(Type type) => type == typeof(Font);
@@ -254,16 +256,16 @@ namespace SASZombieAssaultTD.Engine.Resources
     {
         public async Task<object> LoadAsync(string path)
         {
-            // Implementation would load texture from disk
-            await Task.Delay(1); // Simulate async operation
-            return Texture2D.LoadFromFile(path, null); // Return actual texture
-            //return new Texture2D(new Rendering.Texture2D(1, 1, new byte[0], new byte[0])); // Return actual texture
+            //Implementation would load texture from disk
+            await Task.Delay(1); //Simulate async operation
+            return Texture2D.LoadFromFile(path, null); //Return actual texture
+            //return new Texture2D(new Rendering.Texture2D(1, 1, new byte[0], new byte[0])); //Return actual texture
         }
 
         public bool CanLoad(Type type) => type == typeof(Texture2D);
     }
 
-    // Placeholder types (would be defined elsewhere in the engine)
+    //Placeholder types (would be defined elsewhere in the engine)
     public class Font { }
     public class Texture2D
     {

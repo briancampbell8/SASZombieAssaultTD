@@ -1,396 +1,289 @@
+﻿// =========================================================
+//  FILE: SceneManager.cs
+//  PATH: Engine/Platform/BaseScene.cs
+//  SUBSYSTEM: Platform Abstraction Layer
+//  ROLE: Defines the deterministic lifecycle contract
+//  =========================================================
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Core; // Add this namespace for ModernLoggingSystem
 
 namespace SASZombieAssaultTD.Engine.Scenes
 {
-    /// <summary>
-    /// Scene manager for handling scene transitions and lifecycle.
-    /// P20-02-05: Manages scene loading, unloading, and transitions.
-    /// </summary>
     public class SceneManager
     {
         private BaseScene? _currentScene;
         private BaseScene? _nextScene;
-        private Dictionary<string, BaseScene> _loadedScenes;
+        private readonly Dictionary<string, BaseScene> _loadedScenes;
+
         private bool _isTransitioning;
         private float _transitionTimer;
-        private float _transitionDuration;
+        private float _transitionDuration = 1.0f;
+
+        private GameRoot? _gameRoot;
         internal string GameStateType;
 
-        /// <summary>
-        /// Gets currently active scene.
-        /// </summary>
         public BaseScene? CurrentScene => _currentScene;
-
-        /// <summary>
-        /// Gets the active scene (alias for CurrentScene).
-        /// </summary>
         public BaseScene? ActiveScene => _currentScene;
-
-        /// <summary>
-        /// Gets the current game state.
-        /// </summary>
-        public string GameState => _currentScene?.GetType().Name.Replace("Scene", "") ?? "Unknown";
-
-        /// <summary>
-        /// Gets whether a scene transition is in progress.
-        /// </summary>
         public bool IsTransitioning => _isTransitioning;
-
-        /// <summary>
-        /// Gets the transition duration in seconds.
-        /// </summary>
         public float TransitionDuration => _transitionDuration;
 
-        /// <summary>
-        /// Event fired when a scene transition begins.
-        /// </summary>
-        public event Action<string, string>? OnSceneTransitionStarted;
+        public string GameState =>
+            _currentScene?.GetType().Name.Replace("Scene", "") ?? "Unknown";
 
-        /// <summary>
-        /// Event fired when a scene transition completes.
-        /// </summary>
+        public event Action<string, string>? OnSceneTransitionStarted;
         public event Action<string, string>? OnSceneTransitionCompleted;
 
         public SceneManager()
         {
             _loadedScenes = new Dictionary<string, BaseScene>();
-            _isTransitioning = false;
-            _transitionTimer = 0f;
-            _transitionDuration = 1.0f;
         }
 
-        /// <summary>
-        /// Sets the transition duration.
-        /// </summary>
-        /// <param name="duration">Duration in seconds.</param>
+        // ---------------------------------------------------------------------
+        // GameRoot Wiring
+        // ---------------------------------------------------------------------
+        public void SetGameRoot(GameRoot root)
+        {
+            _gameRoot = root;
+        }
+
+        // ---------------------------------------------------------------------
+        // Transition Configuration
+        // ---------------------------------------------------------------------
         public void SetTransitionDuration(float duration)
         {
             _transitionDuration = System.Math.Max(0.1f, duration);
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneManager: Transition duration set to {_transitionDuration:F2}s");
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                $"SceneManager: Transition duration set to {_transitionDuration:F2}s");
         }
 
-        /// <summary>
-        /// Loads a scene by name.
-        /// </summary>
-        /// <param name="sceneName">The name of the scene to load.</param>
-        /// <returns>The loaded scene, or null if loading failed.</returns>
+        // ---------------------------------------------------------------------
+        // Scene Loading (Deterministic Lifecycle: OnLoad)
+        // ---------------------------------------------------------------------
         public BaseScene? LoadScene(string sceneName)
         {
-            if (string.IsNullOrEmpty(sceneName))
+            if (string.IsNullOrWhiteSpace(sceneName))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "SceneManager: Cannot load scene with null or empty name");
+                DLogger.Log(LogSubsystems.Scenes, LogLevel.Error,
+                    "SceneManager: Cannot load scene with null or empty name");
                 return null;
             }
 
-            if (_loadedScenes.ContainsKey(sceneName))
-            {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"SceneManager: Scene '{sceneName}' is already loaded");
-                return _loadedScenes[sceneName];
-            }
+            if (_loadedScenes.TryGetValue(sceneName, out var existing))
+                return existing;
 
             BaseScene? scene = CreateScene(sceneName);
             if (scene == null)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Failed to create scene '{sceneName}'");
+                DLogger.Log(LogSubsystems.Scenes, LogLevel.Error,
+                    $"SceneManager: Unknown scene '{sceneName}'");
                 return null;
             }
 
             try
             {
-                scene.Initialize();
-                scene.LoadContent();
+                if (_gameRoot != null)
+                    scene.SetGameRoot(_gameRoot);
+
+                scene.SetSceneManager(this);
+
+                // Deterministic preload lifecycle
+                scene.OnLoad();
 
                 _loadedScenes[sceneName] = scene;
 
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneManager: Successfully loaded scene '{sceneName}'");
+                DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                    $"SceneManager: Scene '{sceneName}' loaded (OnLoad completed)");
+
                 return scene;
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Exception loading scene '{sceneName}': {ex.Message}");
+                DLogger.Log(LogSubsystems.Scenes, LogLevel.Error,
+                    $"SceneManager: Exception loading scene '{sceneName}': {ex.Message}");
                 return null;
             }
         }
 
-        /// <summary>
-        /// Unloads a scene by name.
-        /// </summary>
-        /// <param name="sceneName">The name of the scene to unload.</param>
-        /// <returns>True if the scene was unloaded successfully.</returns>
+        // ---------------------------------------------------------------------
+        // Scene Unloading (Deterministic Lifecycle: OnUnload)
+        // ---------------------------------------------------------------------
         public bool UnloadScene(string sceneName)
         {
-            if (string.IsNullOrEmpty(sceneName))
-            {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "SceneManager: Cannot unload scene with null or empty name");
-                return false;
-            }
-
             if (!_loadedScenes.ContainsKey(sceneName))
+                return false;
+
+            if (_currentScene != null &&
+                GetSceneName(_currentScene) == sceneName)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"SceneManager: Scene '{sceneName}' is not loaded");
+                DLogger.Log(LogSubsystems.Scenes, LogLevel.Error,
+                    $"SceneManager: Cannot unload active scene '{sceneName}'");
                 return false;
             }
 
-            if (_currentScene != null && GetSceneName(_currentScene) == sceneName)
-            {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Cannot unload active scene '{sceneName}'");
-                return false;
-            }
+            var scene = _loadedScenes[sceneName];
+            scene.OnUnload();
+            _loadedScenes.Remove(sceneName);
 
-            try
-            {
-                var scene = _loadedScenes[sceneName];
-                scene.Cleanup();
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                $"SceneManager: Scene '{sceneName}' unloaded (OnUnload completed)");
 
-                _loadedScenes.Remove(sceneName);
-
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneManager: Successfully unloaded scene '{sceneName}'");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Exception unloading scene '{sceneName}': {ex.Message}");
-                return false;
-            }
+            return true;
         }
 
-        /// <summary>
-        /// Switches to a new scene.
-        /// </summary>
-        /// <param name="sceneName">The name of the scene to switch to.</param>
-        /// <returns>True if the scene switch was initiated successfully.</returns>
-        public bool SwitchToScene(string sceneName)
-        {
-            if (_isTransitioning)
-            {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "SceneManager: Cannot switch scenes during transition");
-                return false;
-            }
-
-            var nextScene = LoadScene(sceneName);
-            if (nextScene == null)
-            {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Failed to load scene '{sceneName}' for transition");
-                return false;
-            }
-
-            return StartTransition(_currentScene, nextScene);
-        }
-
-        /// <summary>
-        /// Sets a scene immediately (no transition).
-        /// </summary>
-        /// <param name="sceneName">The name of the scene to set.</param>
-        /// <returns>True if scene was set successfully.</returns>
+        // ---------------------------------------------------------------------
+        // Scene Switching (Immediate)
+        // ---------------------------------------------------------------------
         public bool SetScene(string sceneName)
         {
             var scene = LoadScene(sceneName);
             if (scene == null)
-            {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Failed to load scene '{sceneName}'");
                 return false;
-            }
 
-            // Clean up current scene
-            if (_currentScene != null)
-            {
-                _currentScene.Cleanup();
-            }
+            string fromName = _currentScene != null ? GetSceneName(_currentScene) : "None";
+            string toName = GetSceneName(scene);
 
-            // Set new current scene
+            _currentScene?.OnUnload();
+
             _currentScene = scene;
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneManager: Set scene to '{sceneName}'");
+            _currentScene.OnStart();
+
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                $"SceneManager: Immediate switch from '{fromName}' to '{toName}'");
+
+            OnSceneTransitionStarted?.Invoke(fromName, toName);
+            OnSceneTransitionCompleted?.Invoke(fromName, toName);
+
             return true;
         }
 
-        /// <summary>
-        /// Queues a scene for loading and switching.
-        /// </summary>
-        /// <param name="sceneName">The name of the scene to queue.</param>
-        /// <returns>True if scene was queued successfully.</returns>
-        public bool QueueScene(string sceneName)
+        // ---------------------------------------------------------------------
+        // Scene Switching (Timed Transition)
+        // ---------------------------------------------------------------------
+        public bool SwitchToScene(string sceneName)
         {
-            return SwitchToScene(sceneName);
+            if (_isTransitioning)
+                return false;
+
+            var next = LoadScene(sceneName);
+            if (next == null)
+                return false;
+
+            return StartTransition(_currentScene, next);
         }
 
-        /// <summary>
-        /// Starts a transition between scenes.
-        /// </summary>
-        /// <param name="fromScene">The scene to transition from.</param>
-        /// <param name="toScene">The scene to transition to.</param>
-        /// <returns>True if the transition was started successfully.</returns>
         public bool StartTransition(BaseScene? fromScene, BaseScene toScene)
         {
             if (_isTransitioning)
-            {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "SceneManager: Cannot start transition - already in progress");
                 return false;
-            }
 
             _nextScene = toScene;
             _isTransitioning = true;
             _transitionTimer = 0f;
 
-            var fromSceneName = fromScene != null ? GetSceneName(fromScene) : "None";
-            var toSceneName = GetSceneName(toScene);
+            string fromName = fromScene != null ? GetSceneName(fromScene) : "None";
+            string toName = GetSceneName(toScene);
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneManager: Starting transition from '{fromSceneName}' to '{toSceneName}'");
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                $"SceneManager: Transition started from '{fromName}' to '{toName}' " +
+                $"(duration {_transitionDuration:F2}s)");
 
-            // Fire transition started event
-            OnSceneTransitionStarted?.Invoke(fromSceneName, toSceneName);
+            OnSceneTransitionStarted?.Invoke(fromName, toName);
 
             return true;
         }
 
-        /// <summary>
-        /// Updates the scene manager and current scene.
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since last update in seconds.</param>
-        public void Update(float deltaTime)
-        {
-            // Update current scene
-            _currentScene?.Update(deltaTime);
-
-            // Handle scene transitions
-            if (_isTransitioning && _nextScene != null)
-            {
-                _transitionTimer += deltaTime;
-
-                if (_transitionTimer >= _transitionDuration)
-                {
-                    CompleteTransition();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Renders the current scene.
-        /// </summary>
-        /// <param name="renderContext">The render context.</param>
-        public void Render(IRenderContext renderContext)
-        {
-            _currentScene?.Render(renderContext);
-        }
-
-        /// <summary>
-        /// Completes the current scene transition.
-        /// </summary>
         private void CompleteTransition()
         {
             if (!_isTransitioning || _nextScene == null)
                 return;
 
-            var fromSceneName = _currentScene != null ? GetSceneName(_currentScene) : "None";
-            var toSceneName = GetSceneName(_nextScene);
+            string fromName = _currentScene != null ? GetSceneName(_currentScene) : "None";
+            string toName = GetSceneName(_nextScene);
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"SceneManager: Completing transition from '{fromSceneName}' to '{toSceneName}'");
+            _currentScene?.OnUnload();
 
-            // Clean up current scene
-            if (_currentScene != null)
-            {
-                // _currentScene.Cleanup(); 
-            }
-
-            // Set new current scene
             _currentScene = _nextScene;
             _nextScene = null;
+
+            _currentScene.OnStart();
+
             _isTransitioning = false;
             _transitionTimer = 0f;
 
-            // Fire transition completed event
-            OnSceneTransitionCompleted?.Invoke(fromSceneName, toSceneName);
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                $"SceneManager: Transition completed from '{fromName}' to '{toName}'");
+
+            OnSceneTransitionCompleted?.Invoke(fromName, toName);
         }
 
-        /// <summary>
-        /// Creates a scene instance by name.
-        /// </summary>
-        /// <param name="sceneName">The name of the scene to create.</param>
-        /// <returns>The created scene instance, or null if creation failed.</returns>
-        private BaseScene? CreateScene(string sceneName)
+        // ---------------------------------------------------------------------
+        // Update & Render (Deterministic Lifecycle)
+        // ---------------------------------------------------------------------
+        public void Update(float deltaTime)
         {
-            switch (sceneName)
+            if (_isTransitioning && _nextScene != null)
             {
-                case "MainMenu":
-                    return new MainMenuScene();
-
-                case "Gameplay":
-                    return new GameScene();
-
-                case "Loading":
-                    return new LoadingScene();
-
-                case "Pause":
-                    return new PauseScene();
-
-                default:
-                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"SceneManager: Unknown scene type '{sceneName}'");
-                    return null;
+                _transitionTimer += deltaTime;
+                if (_transitionTimer >= _transitionDuration)
+                    CompleteTransition();
+            }
+            else
+            {
+                _currentScene?.OnUpdate(deltaTime);
             }
         }
 
-        /// <summary>
-        /// Gets the name of a scene.
-        /// </summary>
-        /// <param name="scene">The scene to get the name for.</param>
-        /// <returns>The scene name, or "Unknown" if the scene type is not recognized.</returns>
+        public void Render(IRenderContext context)
+        {
+            _currentScene?.OnRender(context);
+        }
+
+        // ---------------------------------------------------------------------
+        // Helpers
+        // ---------------------------------------------------------------------
+        private BaseScene? CreateScene(string sceneName)
+        {
+            return sceneName switch
+            {
+                "MainMenu" => new MainMenuScene(),
+                "Gameplay" => new GameScene(),
+                "Loading" => new LoadingScene(),
+                "Pause" => new PauseScene(),
+                _ => null
+            };
+        }
+
         private string GetSceneName(BaseScene scene)
         {
-            if (scene == null)
-                return "None";
-
             return scene.GetType().Name.Replace("Scene", "");
         }
 
-        /// <summary>
-        /// Gets all loaded scene names.
-        /// </summary>
-        /// <returns>Array of loaded scene names.</returns>
-        public string[] GetLoadedSceneNames()
-        {
-            return _loadedScenes.Keys.ToArray();
-        }
+        public string[] GetLoadedSceneNames() => _loadedScenes.Keys.ToArray();
+        public int GetLoadedSceneCount() => _loadedScenes.Count;
+        public bool IsSceneLoaded(string name) => _loadedScenes.ContainsKey(name);
 
-        /// <summary>
-        /// Gets the number of loaded scenes.
-        /// </summary>
-        /// <returns>The count of loaded scenes.</returns>
-        public int GetLoadedSceneCount()
-        {
-            return _loadedScenes.Count;
-        }
-
-        /// <summary>
-        /// Checks if a scene is loaded.
-        /// </summary>
-        /// <param name="sceneName">The name of the scene to check.</param>
-        /// <returns>True if the scene is loaded.</returns>
-        public bool IsSceneLoaded(string sceneName)
-        {
-            return _loadedScenes.ContainsKey(sceneName);
-        }
-
-        /// <summary>
-        /// Cleans up all loaded scenes.
-        /// </summary>
         public void Cleanup()
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "SceneManager: Cleaning up all scenes");
-
-            // Cleanup all loaded scenes
-            foreach (var kvp in _loadedScenes)
-            {
-                // kvp.Value.Cleanup(); // TODO: implement BaseScene.Cleanup
-            }
+            foreach (var scene in _loadedScenes.Values)
+                scene.OnUnload();
 
             _loadedScenes.Clear();
             _currentScene = null;
             _nextScene = null;
             _isTransitioning = false;
             _transitionTimer = 0f;
+
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                "SceneManager: Cleanup completed, all scenes unloaded");
+        }
+
+        internal void QueueScene(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

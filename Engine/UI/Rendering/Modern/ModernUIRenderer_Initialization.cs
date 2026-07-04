@@ -4,45 +4,46 @@ Folder:  Engine/UI/Rendering/Modern/
 Purpose:  Core UI rendering component for SAS Zombie Assault TD.
 */
 
-// ============================================================================
-// File: ModernUIRenderer_Initialization.cs
-// Path: Engine/UI/Rendering/Modern/ModernUIRenderer_Initialization.cs
-// Namespace: SASZombieAssaultTD.Engine.UI.Rendering.Modern
-// Program: ModernUIRenderer (Partial) — Initialization Subsystem
+//============================================================================
+//File: ModernUIRenderer_Initialization.cs
+//Path: Engine/UI/Rendering/Modern/ModernUIRenderer_Initialization.cs
+//Namespace: SASZombieAssaultTD.Engine.UI.Rendering.Modern
+//Program: ModernUIRenderer (Partial) — Initialization Subsystem
 //
-// PURPOSE:
-//     Handles creation of default render targets, loading of default effects,
-//     and validation of renderer resources during initialization.
+//PURPOSE:
+//    Handles creation of default render targets, loading of default effects,
+//    and validation of renderer resources during initialization.
 //
-// RESPONSIBILITIES:
-//     - Create default render targets
-//     - Load default shader effects
-//     - Validate GPU resources
-//     - Emit pass‑thru diagnostics for every initialization step
+//RESPONSIBILITIES:
+//    - Create default render targets
+//    - Load default shader effects
+//    - Validate GPU resources
+//    - Emit pass‑thru diagnostics for every initialization step
 //
-// EXECUTION TRIGGERS:
-//     - Called exclusively by InitializeAsync() in the _Core partial
+//EXECUTION TRIGGERS:
+//    - Called exclusively by InitializeAsync() in the _Core partial
 //
-// DEPENDENCIES:
-//     - IGraphicsDevice
-//     - IRenderTarget
-//     - IRenderEffect
-//     - UIShaderSystem
-//     - UITextureAtlasManager
+//DEPENDENCIES:
+//    - IGraphicsDevice
+//    - IRenderTarget
+//    - IRenderEffect
+//    - UIShaderSystem
+//    - UITextureAtlasManager
 //
-// CONTENTS:
-//     - CreateDefaultRenderTargetsAsync()
-//     - LoadDefaultEffectsAsync()
-//     - ValidateInitializationState()
-// ============================================================================
+//CONTENTS:
+//    - CreateDefaultRenderTargetsAsync()
+//    - LoadDefaultEffectsAsync()
+//    - ValidateInitializationState()
+//============================================================================
 
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
+//
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
 {
     public partial class ModernUIRenderer
@@ -50,19 +51,19 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
         private Dictionary<string, UIShaderEffect> _defaultEffects = new Dictionary<string, UIShaderEffect>();
         private object _fontRenderer;
 
-        // private readonly object _effects;
+        //private readonly object _effects;
 
-        // --------------------------------------------------------------------
-        // CREATE DEFAULT RENDER TARGETS
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //CREATE DEFAULT RENDER TARGETS
+        //--------------------------------------------------------------------
         private async Task CreateDefaultRenderTargetsAsync(CancellationToken cancellationToken)
         {
-            Engine.Diagnostics.DebugLogger.Log("PassThru",
+            DLogger.Log("PassThru",
                 "ModernUIRenderer: CreateDefaultRenderTargetsAsync invoked.");
 
             try
             {
-                // Example: UI main render target
+                //Example: UI main render target
                 var uiTarget = _graphicsDevice.CreateRenderTarget(
                     _viewportSize.Width,
                     _viewportSize.Height,
@@ -70,65 +71,65 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
 
                 _renderTargets["UI_Main"] = uiTarget;
 
-                DebugLogger.Log("PassThru",
+                DLogger.Log("PassThru",
                     $"ModernUIRenderer: RenderTarget 'UI_Main' created ({_viewportSize.Width}x{_viewportSize.Height}).");
 
                 await Task.CompletedTask;
             }
             catch (Exception ex)
             {
-                DebugLogger.Log("Error",
+                DLogger.Log("Error",
                     $"ModernUIRenderer: CreateDefaultRenderTargetsAsync failed: {ex.Message}");
                 throw;
             }
         }
 
-        // --------------------------------------------------------------------
-        // LOAD DEFAULT EFFECTS
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //LOAD DEFAULT EFFECTS
+        //--------------------------------------------------------------------
         private async Task LoadDefaultEffectsAsync(CancellationToken cancellationToken)
         {
-            DebugLogger.Log("PassThru",
+            DLogger.Log("PassThru",
                 "ModernUIRenderer: LoadDefaultEffectsAsync invoked.");
 
             try
             {
-                // Example: Basic UI shader effect
+                //Example: Basic UI shader effect
                 var uiEffect = _shaderSystem.CreateEffect("UI_Default");
 
                 _effects["UI_Default"] = (IRenderEffect)uiEffect;
 
-                DebugLogger.Log("PassThru",
+                DLogger.Log("PassThru",
                     "ModernUIRenderer: Effect 'UI_Default' created.");
 
                 await Task.CompletedTask;
             }
             catch (Exception ex)
             {
-                DebugLogger.Log("Error",
+                DLogger.Log("Error",
                     $"ModernUIRenderer: LoadDefaultEffectsAsync failed: {ex.Message}");
                 throw;
             }
         }
 
-        // --------------------------------------------------------------------
-        // VALIDATE INITIALIZATION STATE
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //VALIDATE INITIALIZATION STATE
+        //--------------------------------------------------------------------
         private void ValidateInitializationState()
         {
-            DebugLogger.Log("PassThru",
+            DLogger.Log("PassThru",
                 "ModernUIRenderer: ValidateInitializationState invoked.");
 
             if (_graphicsDevice == null)
             {
-                DebugLogger.Log("Error",
+                DLogger.Log("Error",
                     "ModernUIRenderer: GraphicsDevice is NULL during validation.");
                 throw new InvalidOperationException("GraphicsDevice cannot be NULL.");
             }
 
             if (!_graphicsDevice.IsInitialized)
             {
-                DebugLogger.Log("Error",
+                DLogger.Log("Error",
                     "ModernUIRenderer: GraphicsDevice is not initialized.");
                 throw new InvalidOperationException("GraphicsDevice must be initialized.");
             }
@@ -137,12 +138,12 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
                 _atlasManager == null ||
                 _fontRenderer == null)
             {
-                DebugLogger.Log("Error",
+                DLogger.Log("Error",
                     "ModernUIRenderer: One or more core subsystems are NULL.");
                 throw new InvalidOperationException("Renderer subsystems must be constructed.");
             }
 
-            DebugLogger.Log("PassThru",
+            DLogger.Log("PassThru",
                 "ModernUIRenderer: Initialization state validated successfully.");
         }
     }

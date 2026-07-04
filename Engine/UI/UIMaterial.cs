@@ -1,109 +1,104 @@
-/*
-// File: UIMaterial.cs
-// Purpose: UI material definition for SAS Zombie Assault TD UI system.
-// Features: Material properties for UI rendering including color, texture, shader, and blend mode.
-// Created: Engine UI Implementation
-//
-// NOTE: Diagnostic CS0101 ("The namespace 'SASZombieAssaultTD.Engine.UI' already contains a definition for 'UIMaterial'")
-// indicates there is at least one other file in the same namespace that defines a type named UIMaterial.
-// This file below is the primary/valid definition. To resolve the CS0101 error, do one of the following:
-// 
-// 1) Preferred — Remove duplicate definitions:
-//    - Find other files that declare `public class UIMaterial` in namespace SASZombieAssaultTD.Engine.UI
-//      and remove or consolidate those duplicate full-class definitions so only this file defines the class.
-//    - If the other files contain unique members, move those members into this file (or make the other files partial
-//      and move only the additional members into them — see option 2).)
-// 
-// 2) Merge via partial classes:
-//    - Convert duplicate full-class declarations into `partial class UIMaterial` and ensure only one file contains
-//      the complete set of members, or split members across partial declarations so there are no two
-//      conflicting complete definitions. Example for a duplicate file:
-//        // In OtherFile.cs
-//        namespace SASZombieAssaultTD.Engine.UI
-//        {
-//            public partial class UIMaterial
-//            {
-//                // move only additional members here (no duplicate property definitions)
-//            }
-//        }
-// 
-// 3) Rename one of the definitions:
-//    - If there really are two different concepts, rename one of the classes to a distinct name
-//      (e.g., UIMaterialV2 or UIMaterialSettings) and update usages accordingly.
-// 
-// 4) If you cannot find duplicates, search the project for "class UIMaterial" or a file that might be included twice
-//    by linked files, accidental file copies, or conflicting generated code. Check for Generated files, partial classes,
-//    and linked files included in multiple projects in a solution.
-// 
-// Recommended immediate code change (safe first step):
-// - Make this declaration `partial` so other files that are meant to augment this class can be converted to `partial` as well.
-// - If other files are full, duplicate definitions, convert them to `partial` and move unique members here, or delete duplicates.
-// 
-// If you want, provide the paths or contents of the other files that define UIMaterial and I will produce exact edits to merge them.
-// 
-// End of guidance.
+/*==============================================================================
+    File: UIMaterial.cs
+    Project: SASZombieAssaultTD Engine
+    Module: UI
+    Author: Brian D. Campbell (BDC)
+    Created: 2026-07-04
+    Updated: 2026-07-04
+    Purpose:
+        Defines the modern UI material data container used by the HUDPanel and
+        Finalizer rendering pipelines. This class provides deterministic color,
+        shader, and flag metadata consumed by HUDManager, UIStateBuilder,
+        HUDPanelFinalizer, and IDrawingContext.
+
+    Notes:
+        - Replaces legacy UI/Rendering version.
+        - Must remain a pure data container (no rendering logic).
+        - Fully synchronized with the HUDPanelFinalizer pipeline.
+        - Uses Engine.Core.Color (NOT System.Drawing.Color).
+        - Supports diagnostics via DLogger.Log().
+==============================================================================*/
+
 using SASZombieAssaultTD.Engine.Diagnostics;
-
-*/
-
-using SASZombieAssaultTD.Engine.Core;
-using System;
-using System.Collections.Generic;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
     /// <summary>
-    /// Blend mode enumeration for UI rendering.
+    /// Represents a fully modernized UI material used by the HUDPanel + Finalizer pipeline.
+    /// This class is a pure data container consumed by HUDManager, UIStateBuilder,
+    /// HUDPanelFinalizer, and IDrawingContext.
     /// </summary>
-    public enum BlendMode
+    public class UIMaterial
     {
-        Opaque,
-        AlphaBlend,
-        Additive,
-        Multiply
+        /// <summary>
+        /// Primary fill color for UI elements (panels, bars, backgrounds).
+        /// </summary>
+        public Color FillColor { get; set; }
+
+        /// <summary>
+        /// Primary text color for labels, numbers, and HUD text.
+        /// </summary>
+        public Color TextColor { get; set; }
+
+        /// <summary>
+        /// Optional highlight or flash color (used by HUDPanel_CashUpdate and similar).
+        /// </summary>
+        public Color FlashColor { get; set; }
+
+        /// <summary>
+        /// Optional material flags used by the Finalizer pipeline (blend modes, flash modes, etc).
+        /// </summary>
+        public UIMaterialFlags Flags { get; set; }
+
+        /// <summary>
+        /// Optional shader/material ID for advanced rendering paths.
+        /// </summary>
+        public int ShaderId { get; set; }
+
+        /// <summary>
+        /// Optional name for diagnostics and DebugOverlay.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Optional numeric value (HUDPanel_CashUpdate uses this for cash delta).
+        /// </summary>
+        public int Value { get; set; }
+
+        /// <summary>
+        /// Creates a new UIMaterial with safe defaults.
+        /// </summary>
+        public UIMaterial()
+        {
+            FillColor = Color.White;
+            TextColor = Color.White;
+            FlashColor = Color.Transparent;
+
+            Flags = UIMaterialFlags.None;
+            ShaderId = 0;
+            Name = string.Empty;
+            Value = 0;
+        }
+
+        /// <summary>
+        /// Logs material state for debugging.
+        /// </summary>
+        public void LogState(string tag = "UIMaterial")
+        {
+            DLogger.Log(tag,
+                $"Material '{Name}' | Fill={FillColor} Text={TextColor} Flash={FlashColor} Flags={Flags} Shader={ShaderId} Value={Value}");
+        }
     }
 
     /// <summary>
-    /// UI material for element rendering.
-    /// Provides material properties for UI elements including color, texture, shader, and blend mode.
+    /// Flags used by UIMaterial for Finalizer rendering modes.
     /// </summary>
-    // Converted to partial to allow merging with other partial declarations that may exist in the project.
-    // DUPLICATE UIMaterial — DISABLED
-    // REASON: Canonical definition exists in Engine/UI/UIMaterial.cs
-    // STATUS: Commented out to resolve CS0101 namespace collision.
-
-    // public class UIMaterial
-    // {
-    //     // DUPLICATE — DO NOT USE
-    // }
-
-    // public partial class UIMaterial // DUPLICATE — DO NOT USE
-    // {
-    //public Color BaseColor { get; set; }
-      //  public object Texture { get; set; }
-     //   public object Shader { get; set; }
-     //   public BlendMode BlendMode { get; set; }
-
-    //    public UIMaterial()
-    //    {
-    //        InitializeMaterial();
-    //    }
-
-    //    private void InitializeMaterial()
-    //    {
-    //        BaseColor = Color.White;
-    //        Texture = null;
-    //        Shader = null;
-    //        BlendMode = BlendMode.AlphaBlend;
-    //        ValidateProperties();
-    //    }
-
-   //     private void ValidateProperties()
-     //   {
-       //     if (BaseColor == null)
-         //   {
-           //     throw new ArgumentNullException(nameof(BaseColor));
-        //    }
-      //  }
-    // }
+    public enum UIMaterialFlags
+    {
+        None = 0,
+        Flash = 1 << 0,
+        Highlight = 1 << 1,
+        Pulsate = 1 << 2,
+        Disabled = 1 << 3
+    }
 }

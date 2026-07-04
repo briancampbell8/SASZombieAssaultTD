@@ -12,11 +12,13 @@ using System.Collections.Generic;
 using System.Linq;
 using SASZombieAssaultTD.Engine.Extensions;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Resources
+//
 {
-    /// <summary>
-    /// Asset key for identifying assets in the resource system.
-    /// </summary>
+    ///<summary>
+    ///Asset key for identifying assets in the resource system.
+    ///</summary>
     public class AssetKey
     {
         public string Name { get; set; }
@@ -36,28 +38,28 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 
-    /// <summary>
-    /// Provides validation helpers for asset loading and metadata.
-    /// </summary>
+    ///<summary>
+    ///Provides validation helpers for asset loading and metadata.
+    ///</summary>
     public static class AssetValidation
     {
-        /// <summary>
-        /// Validates that the loaded instance matches the expected asset type.
-        /// </summary>
+        ///<summary>
+        ///Validates that the loaded instance matches the expected asset type.
+        ///</summary>
         public static bool ValidateInstanceType(AssetKey key, object instance)
         {
             try
             {
                 if (instance is null)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("Error", $"[Assets] Validation failed for '{key}': instance is null.");
+                    DLogger.Log("Error", $"[Assets] Validation failed for '{key}': instance is null.");
                     return false;
                 }
 
                 bool isValid = instance != null;
                 if (!isValid)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
+                    DLogger.Log("Error",
                     $"[Assets] Validation failed for '{key}': instance type mismatch.");
                 }
 
@@ -65,75 +67,75 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("Error", $"[Assets] Validation failed for '{key}': {ex.Message}");
+                DLogger.Log("Error", $"[Assets] Validation failed for '{key}': {ex.Message}");
                 return false;
             }
         }
 
-        /// <summary>
-        /// Validates that metadata is consistent with the asset type.
-        /// </summary>
+        ///<summary>
+        ///Validates that metadata is consistent with the asset type.
+        ///</summary>
         public static bool ValidateMetadata(SASZombieAssaultTD.Engine.Resources.AssetMetadata metadata)
         {
             try
             {
                 if (metadata is null)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("Error", "[Assets] Validation failed: metadata is null.");
+                    DLogger.Log("Error", "[Assets] Validation failed: metadata is null.");
                     return false;
                 }
 
-                // Key must be non-null and non-whitespace
+                //Key must be non-null and non-whitespace
                 if (string.IsNullOrWhiteSpace(metadata.Key))
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("Error", "[Assets] Validation failed: metadata key is null or empty.");
+                    DLogger.Log("Error", "[Assets] Validation failed: metadata key is null or empty.");
                     return false;
                 }
 
-                // Path must be non-null and non-whitespace
+                //Path must be non-null and non-whitespace
                 if (string.IsNullOrWhiteSpace(metadata.Path))
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
+                    DLogger.Log("Error",
                     $"[Assets] Validation failed for '{metadata.Key}': path is null or empty.");
                     return false;
                 }
 
-                // Basic rule: metadata.Type must not be Unknown
+                //Basic rule: metadata.Type must not be Unknown
                 if (metadata.Type == AssetType.Unknown)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
+                    DLogger.Log("Error",
                     $"[Assets] Validation failed for '{metadata.Key}': asset type is Unknown.");
                     return false;
                 }
 
-                // Type must be a defined enum value
+                //Type must be a defined enum value
                 if (!Enum.IsDefined(metadata.Type))
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
+                    DLogger.Log("Error",
                     $"[Assets] Validation failed for '{metadata.Key}': asset type '{(int)metadata.Type}' is not a defined AssetType.");
                     return false;
                 }
 
-                // If a format is provided, it must be non-empty
+                //If a format is provided, it must be non-empty
                 if (metadata.Format != null && metadata.Format.Trim().Length == 0)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
+                    DLogger.Log("Error",
                     $"[Assets] Validation failed for '{metadata.Key}': format is empty or whitespace.");
                     return false;
                 }
 
-                // If a format is provided, it must be compatible with the asset type
+                //If a format is provided, it must be compatible with the asset type
                 if (metadata.Format != null && !ValidateExtension(metadata.Type, metadata.Format))
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
+                    DLogger.Log("Error",
                     $"[Assets] Validation failed for '{metadata.Key}': format '{metadata.Format}' is not supported for asset type '{metadata.Type}'.");
                     return false;
                 }
 
-                // SizeBytes must be non-negative
+                //SizeBytes must be non-negative
                 if (metadata.SizeBytes < 0)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("Error",
+                    DLogger.Log("Error",
                     $" [Assets] Validation failed for '{metadata.Key}': size is negative ({metadata.SizeBytes} bytes).");
                     return false;
                 }
@@ -142,15 +144,15 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("Error",
+                DLogger.Log("Error",
                 $"[Assets] Validation failed for '{metadata?.Key ?? "unknown"}': {ex.Message}");
                 return false;
             }
         }
 
-        /// <summary>
-        /// Validates that a file extension matches the expected asset type.
-        /// </summary>
+        ///<summary>
+        ///Validates that a file extension matches the expected asset type.
+        ///</summary>
         public static bool ValidateExtension(AssetType type, string? extension)
         {
             try
@@ -167,7 +169,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                     AssetType.Sound => extension is "wav" or "ogg",
                     AssetType.Music => extension is "mp3" or "ogg",
                     AssetType.Json => extension is "json",
-                    AssetType.Binary => true, // any extension allowed
+                    AssetType.Binary => true, //any extension allowed
                     AssetType.Font => extension is "ttf" or "otf",
                     AssetType.Shader => extension is "glsl" or "hlsl",
                     _ => false
@@ -175,7 +177,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("Error",
+                DLogger.Log("Error",
                 $"[Assets] Extension validation failed for type '{type}', extension '{extension}': {ex.Message}");
                 return false;
             }

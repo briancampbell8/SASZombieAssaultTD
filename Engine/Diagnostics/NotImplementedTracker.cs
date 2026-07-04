@@ -25,7 +25,6 @@ Usage:
 
 using System;
 using System.Runtime.CompilerServices;
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
@@ -40,12 +39,12 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         /// Logs full context and throws a descriptive exception.
         /// </summary>
         public static void Hit(
-            [CallerFilePath]   string file   = "",
+            [CallerFilePath] string file = "",
             [CallerMemberName] string member = "",
-            [CallerLineNumber] int    line   = 0)
+            [CallerLineNumber] int line = 0)
         {
             // Log to engine diagnostics
-            DebugLogger.Log(
+            DLogger.Log(
                 "NOT_IMPLEMENTED",
                 $"❌ NOT IMPLEMENTED → {file}:{line} → {member}"
             );
@@ -59,12 +58,12 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         /// Logs full context and throws a descriptive exception.
         /// </summary>
         public static T Hit<T>(
-            [CallerFilePath]   string file   = "",
+            [CallerFilePath] string file = "",
             [CallerMemberName] string member = "",
-            [CallerLineNumber] int    line   = 0)
+            [CallerLineNumber] int line = 0)
         {
             // Log to engine diagnostics
-            DebugLogger.Log(
+            DLogger.Log(
                 "NOT_IMPLEMENTED",
                 $"❌ NOT IMPLEMENTED → {file}:{line} → {member}"
             );

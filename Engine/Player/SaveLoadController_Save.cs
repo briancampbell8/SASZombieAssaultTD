@@ -1,26 +1,28 @@
-/// File:    E:\BDC\Projects\SASZombieAssaultTD\Engine\Player\SaveLoadController_Save.cs
-/// Purpose: Player action validation and execution system for SAS Zombie Assault TD.
-/// Features: Tower placement validation, upgrade processing, damage handling, and game state management.
-/// Validation: Comprehensive action validation with game state checking and affordability validation.
-/// Performance: Optimized for frequent action processing with minimal overhead.
-/// Threading: Thread-safe operations with proper locking for concurrent access.
-/// Integration: Designed for use with PlayerSystem, TowerManager, and WaveManager.
-/// Persistence: Action logging for debugging and player feedback.
-/// ****************************************************************************************************
-using SASZombieAssaultTD.Engine.Diagnostics;
+///File:    E:\BDC\Projects\SASZombieAssaultTD\Engine\Player\SaveLoadController_Save.cs
+///Purpose: Player action validation and execution system for SAS Zombie Assault TD.
+///Features: Tower placement validation, upgrade processing, damage handling, and game state management.
+///Validation: Comprehensive action validation with game state checking and affordability validation.
+///Performance: Optimized for frequent action processing with minimal overhead.
+///Threading: Thread-safe operations with proper locking for concurrent access.
+///Integration: Designed for use with PlayerSystem, TowerManager, and WaveManager.
+///Persistence: Action logging for debugging and player feedback.
+///****************************************************************************************************
+//
 
 using System;
 using System.Collections.Generic;
+
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Player
 {
     public partial class SaveLoadController
     {
-        /// <summary>
-        /// Saves the current player game state to file.
-        /// </summary>
-        /// <param name="playerSystem">The PlayerSystem instance containing the current game state to save.</param>
-        /// <returns>True if the save was successful, false otherwise.</returns>
+        ///<summary>
+        ///Saves the current player game state to file.
+        ///</summary>
+        ///<param name="playerSystem">The PlayerSystem instance containing the current game state to save.</param>
+        ///<returns>True if the save was successful, false otherwise.</returns>
         public bool SaveGame(PlayerSystem playerSystem)
         {
             if (playerSystem == null)
@@ -32,33 +34,33 @@ namespace SASZombieAssaultTD.Engine.Player
                 {
                     System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: Starting save operation");
 
-                    // Validate player system state
+                    //Validate player system state
                     if (!SaveLoadCore.ValidatePlayerSystemForSave(playerSystem))
                     {
                         System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Player system validation failed");
                         return false;
                     }
 
-                    // Create player data structure
+                    //Create player data structure
                     var playerData = CreatePlayerDataFromSystem(playerSystem);
 
-                    // Validate player data
+                    //Validate player data
                     if (!SaveLoadCore.ValidatePlayerData(playerData))
                     {
                         System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Player data validation failed");
                         return false;
                     }
 
-                    // Serialize to JSON using SaveLoadCore
+                    //Serialize to JSON using SaveLoadCore
                     string json = SaveLoadCore.Serialize(playerData);
 
-                    // Create backup of existing save file
+                    //Create backup of existing save file
                     CreateBackup();
 
-                    // Write save file
+                    //Write save file
                     WriteSaveFile(json);
 
-                    // Verify file integrity
+                    //Verify file integrity
                     if (!VerifySaveFile())
                     {
                         System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Save file verification failed");
@@ -76,7 +78,7 @@ namespace SASZombieAssaultTD.Engine.Player
                 {
                     System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: Save failed - Error: {ex.Message}");
 
-                    // Attempt to restore backup on failure
+                    //Attempt to restore backup on failure
                     try
                     {
                         RestoreBackup();
@@ -98,12 +100,12 @@ namespace SASZombieAssaultTD.Engine.Player
             return default(PlayerData);
         }
 
-        /// <summary>
-        /// Creates player data structure from player system.
-        /// </summary>
+        ///<summary>
+        ///Creates player data structure from player system.
+        ///</summary>
         internal void RestoreExperience(int experience)
         {
-            // Access Progression directly on the system, not via State
+            //Access Progression directly on the system, not via State
             if (this.Progression != null)
             {
                 this.Progression.CurrentExperience = experience;
@@ -122,7 +124,7 @@ namespace SASZombieAssaultTD.Engine.Player
         {
             if (this.Progression != null)
             {
-                // Reconstruct the HashSet container from the incoming list
+                //Reconstruct the HashSet container from the incoming list
                 this.Progression.UnlockedTowers = new HashSet<string>(list);
             }
         }

@@ -1,11 +1,13 @@
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Assets
 {
-    /// <summary>
-    /// Font metadata used by UI elements
-    /// P80-07-02: UIFont defining font metadata used by UIText
-    /// </summary>
+    ///<summary>
+    ///Font metadata used by UI elements
+    ///P80-07-02: UIFont defining font metadata used by UIText
+    ///</summary>
     public class UIFont
     {
         private string _name;
@@ -15,51 +17,51 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
         private System.Drawing.FontStyle _style;
         private bool _isPreloaded;
 
-        /// <summary>
-        /// Gets the font name
-        /// </summary>
+        ///<summary>
+        ///Gets the font name
+        ///</summary>
         public string Name => _name;
 
-        /// <summary>
-        /// Gets the font size
-        /// </summary>
+        ///<summary>
+        ///Gets the font size
+        ///</summary>
         public float Size => _size;
 
-        /// <summary>
-        /// Gets the font path
-        /// </summary>
+        ///<summary>
+        ///Gets the font path
+        ///</summary>
         public string Path => _path;
 
-        /// <summary>
-        /// Gets the font style
-        /// </summary>
+        ///<summary>
+        ///Gets the font style
+        ///</summary>
         public System.Drawing.FontStyle Style => _style;
 
-        /// <summary>
-        /// Gets whether the font is loaded
-        /// </summary>
+        ///<summary>
+        ///Gets whether the font is loaded
+        ///</summary>
         public bool IsLoaded => _isLoaded;
 
-        /// <summary>
-        /// Gets whether the font is preloaded
-        /// </summary>
+        ///<summary>
+        ///Gets whether the font is preloaded
+        ///</summary>
         public bool IsPreloaded => _isPreloaded;
 
-        /// <summary>
-        /// Initializes a new UIFont
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UIFont
+        ///</summary>
         public UIFont()
         {
             System.Diagnostics.Debug.WriteLine("UIFont: Created new font");
         }
 
-        /// <summary>
-        /// Initializes a new UIFont with parameters
-        /// </summary>
-        /// <param name="name">Font name</param>
-        /// <param name="size">Font size</param>
-        /// <param name="path">Font file path</param>
-        /// <param name="style">Font style</param>
+        ///<summary>
+        ///Initializes a new UIFont with parameters
+        ///</summary>
+        ///<param name="name">Font name</param>
+        ///<param name="size">Font size</param>
+        ///<param name="path">Font file path</param>
+        ///<param name="style">Font style</param>
         public UIFont(string name, float size, string path, System.Drawing.FontStyle style)
         {
             try
@@ -77,9 +79,9 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Marks the font as loaded
-        /// </summary>
+        ///<summary>
+        ///Marks the font as loaded
+        ///</summary>
         public void MarkAsLoaded()
         {
             try
@@ -93,9 +95,9 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Marks the font as preloaded
-        /// </summary>
+        ///<summary>
+        ///Marks the font as preloaded
+        ///</summary>
         public void MarkAsPreloaded()
         {
             try
@@ -109,9 +111,9 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Unloads the font
-        /// </summary>
+        ///<summary>
+        ///Unloads the font
+        ///</summary>
         public void Unload()
         {
             try
@@ -127,10 +129,10 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Gets a string representation of the font
-        /// </summary>
-        /// <returns>String representation</returns>
+        ///<summary>
+        ///Gets a string representation of the font
+        ///</summary>
+        ///<returns>String representation</returns>
         public override string ToString()
         {
             try

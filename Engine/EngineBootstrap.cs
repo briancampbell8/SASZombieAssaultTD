@@ -11,7 +11,7 @@ Notes:    This bootstrap system handles all engine component creation
 using System;
 using SASZombieAssaultTD.Engine.Timing;
 using SASZombieAssaultTD.Engine.UI.Input;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.Scenes;
 using SASZombieAssaultTD.Engine.Systems;
@@ -20,11 +20,13 @@ using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.Interfaces;
 using SASZombieAssaultTD.Engine.UI.Rendering;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine
 {
-    /// <summary>
-    /// Advanced engine bootstrap system for clean component initialization.
-    /// </summary>
+    ///<summary>
+    ///Advanced engine bootstrap system for clean component initialization.
+    ///</summary>
     public class EngineBootstrap
     {
         private readonly ISystemRegistry _systemRegistry;
@@ -34,9 +36,9 @@ namespace SASZombieAssaultTD.Engine
         private readonly Systems.RenderManager _renderManager;
         private readonly Interfaces.IRenderContext _renderContext;
 
-        /// <summary>
-        /// Initializes a new instance of EngineBootstrap.
-        /// </summary>
+        ///<summary>
+        ///Initializes a new instance of EngineBootstrap.
+        ///</summary>
         public EngineBootstrap()
         {
             _systemRegistry = new SystemRegistry();
@@ -47,43 +49,43 @@ namespace SASZombieAssaultTD.Engine
             _renderContext = (Interfaces.IRenderContext)new UIRenderContext();
         }
 
-        /// <summary>
-        /// Creates and initializes the game root with all required systems.
-        /// </summary>
+        ///<summary>
+        ///Creates and initializes the game root with all required systems.
+        ///</summary>
         public void CreateAndInitializeGameRoot()
         {
-            // Initialize all systems directly
-            // TODO: Verify if these systems need explicit initialization or if constructors handle it
-            // _systemRegistry?.Initialize();
-            // _systemManager?.Initialize();
-            // _updateManager?.Initialize();
-            // _renderManager?.Initialize();
+            //Initialize all systems directly
+            //TODO: Verify if these systems need explicit initialization or if constructors handle it
+            //_systemRegistry?.Initialize();
+            //_systemManager?.Initialize();
+            //_updateManager?.Initialize();
+            //_renderManager?.Initialize();
         }
 
-        /// <summary>
-        /// Creates a game loop instance.
-        /// </summary>
-        /// <returns>Game loop instance.</returns>
+        ///<summary>
+        ///Creates a game loop instance.
+        ///</summary>
+        ///<returns>Game loop instance.</returns>
         public GameLoop CreateGameLoop()
         {
-            // Create a simple game loop implementation
+            //Create a simple game loop implementation
             return new GameLoop();
         }
     }
 
-    /// <summary>
-    /// Simple game loop implementation
-    /// </summary>
+    ///<summary>
+    ///Simple game loop implementation
+    ///</summary>
     public class GameLoop
     {
         public void Initialize()
         {
-            // Initialize game loop
+            //Initialize game loop
         }
 
         public void Run()
         {
-            // Run game loop
+            //Run game loop
         }
     }
 }

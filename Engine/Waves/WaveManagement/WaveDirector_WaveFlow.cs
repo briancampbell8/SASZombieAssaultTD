@@ -27,17 +27,19 @@ using System.Threading.Tasks;
 using SASZombieAssaultTD.Engine.Audio;
 using SASZombieAssaultTD.Engine.Enemies;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
 {
     public partial class WaveDirector
     {
-        // ===============================================================================================
-        //  PUBLIC API DELEGATES (CALLED BY FAÇADE)
-        // ===============================================================================================
+        //===============================================================================================
+        // PUBLIC API DELEGATES (CALLED BY FAÇADE)
+        //===============================================================================================
 
-        /// <summary>
-        /// Internal implementation for StartGame().
-        /// </summary>
+        ///<summary>
+        ///Internal implementation for StartGame().
+        ///</summary>
         internal void StartGame_Internal()
         {
             if (!_isInitialized)
@@ -50,9 +52,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             StartNextWave_Internal();
         }
 
-        /// <summary>
-        /// Internal implementation for StartWave(int).
-        /// </summary>
+        ///<summary>
+        ///Internal implementation for StartWave(int).
+        ///</summary>
         internal async Task<bool> StartWave_Internal(int waveNumber)
         {
             if (!_isInitialized || waveNumber <= 0 || waveNumber > _totalWaves)
@@ -93,9 +95,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        /// <summary>
-        /// Internal implementation for StartNextWave().
-        /// </summary>
+        ///<summary>
+        ///Internal implementation for StartNextWave().
+        ///</summary>
         internal void StartNextWave_Internal()
         {
             if (_currentState == WaveState.InProgress)
@@ -116,9 +118,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             _ = StartWave_Internal(nextWaveNumber);
         }
 
-        /// <summary>
-        /// Internal implementation for StartNextWaveEarly().
-        /// </summary>
+        ///<summary>
+        ///Internal implementation for StartNextWaveEarly().
+        ///</summary>
         internal void StartNextWaveEarly_Internal()
         {
             if (_currentState != WaveState.InProgress)
@@ -138,9 +140,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        /// <summary>
-        /// Internal implementation for Update(float).
-        /// </summary>
+        ///<summary>
+        ///Internal implementation for Update(float).
+        ///</summary>
         internal void Update_Internal(float deltaTime)
         {
             if (!_isInitialized || _isPaused)
@@ -159,7 +161,7 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
                         break;
 
                     case WaveState.WaitingToStart:
-                        // Waiting for manual or automatic start.
+                        //Waiting for manual or automatic start.
                         break;
                 }
 
@@ -171,27 +173,27 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        /// <summary>
-        /// Internal implementation for Pause().
-        /// </summary>
+        ///<summary>
+        ///Internal implementation for Pause().
+        ///</summary>
         internal void Pause_Internal()
         {
             _isPaused = true;
             System.Diagnostics.Debug.WriteLine("Wave Director paused");
         }
 
-        /// <summary>
-        /// Internal implementation for Resume().
-        /// </summary>
+        ///<summary>
+        ///Internal implementation for Resume().
+        ///</summary>
         internal void Resume_Internal()
         {
             _isPaused = false;
             System.Diagnostics.Debug.WriteLine("Wave Director resumed");
         }
 
-        /// <summary>
-        /// Internal implementation for Stop().
-        /// </summary>
+        ///<summary>
+        ///Internal implementation for Stop().
+        ///</summary>
         internal void Stop_Internal()
         {
             _isPaused = true;
@@ -199,9 +201,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             System.Diagnostics.Debug.WriteLine("Wave Director stopped");
         }
 
-        /// <summary>
-        /// Internal implementation for Reset().
-        /// </summary>
+        ///<summary>
+        ///Internal implementation for Reset().
+        ///</summary>
         internal void Reset_Internal()
         {
             System.Diagnostics.Debug.WriteLine("Resetting Wave Director");
@@ -216,17 +218,17 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             _upcomingWaves.Clear();
             InitializeWaveQueue_Internal();
 
-            // TODO: Integrate with EnemyManager when available.
-            // EnemyManager.Instance?.ClearAllEnemies();
+            //TODO: Integrate with EnemyManager when available.
+            //EnemyManager.Instance?.ClearAllEnemies();
         }
 
-        // ===============================================================================================
-        //  WAVE PROGRESSION
-        // ===============================================================================================
+        //===============================================================================================
+        // WAVE PROGRESSION
+        //===============================================================================================
 
-        /// <summary>
-        /// Updates the current wave while it is in progress.
-        /// </summary>
+        ///<summary>
+        ///Updates the current wave while it is in progress.
+        ///</summary>
         internal void UpdateWaveInProgress_Internal(float deltaTime)
         {
             _waveTimer += deltaTime;
@@ -237,9 +239,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        /// <summary>
-        /// Updates the inter-wave period.
-        /// </summary>
+        ///<summary>
+        ///Updates the inter-wave period.
+        ///</summary>
         internal void UpdateInterWave_Internal(float deltaTime)
         {
             _interWaveTimer += deltaTime;
@@ -252,9 +254,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        /// <summary>
-        /// Completes the current wave and transitions to inter-wave state.
-        /// </summary>
+        ///<summary>
+        ///Completes the current wave and transitions to inter-wave state.
+        ///</summary>
         internal void CompleteCurrentWave_Internal()
         {
             if (_currentState != WaveState.InProgress)
@@ -278,9 +280,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        /// <summary>
-        /// Completes the entire game and fires completion events.
-        /// </summary>
+        ///<summary>
+        ///Completes the entire game and fires completion events.
+        ///</summary>
         internal void CompleteGame_Internal()
         {
             System.Diagnostics.Debug.WriteLine("All waves completed - Game complete!");
@@ -294,20 +296,20 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             ModernPlaySound.Play("victory");
         }
 
-        // ===============================================================================================
-        //  ENEMY STATE CHECKS
-        // ===============================================================================================
+        //===============================================================================================
+        // ENEMY STATE CHECKS
+        //===============================================================================================
 
-        /// <summary>
-        /// Determines whether all enemies from the current wave are defeated.
-        /// </summary>
+        ///<summary>
+        ///Determines whether all enemies from the current wave are defeated.
+        ///</summary>
         internal bool AreAllWaveEnemiesDefeated_Internal()
         {
             if (_currentState != WaveState.InProgress)
                 return true;
 
-            // TODO: Wire to EnemyManager when available.
-            EnemyManager enemyManager = null; // EnemyManager.Instance;
+            //TODO: Wire to EnemyManager when available.
+            EnemyManager enemyManager = null; //EnemyManager.Instance;
 
             if (enemyManager == null)
                 return true;

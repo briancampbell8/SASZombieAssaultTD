@@ -1,8 +1,10 @@
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.ECS
 {
-    // Lightweight game event payload used by animation and other systems.
+    //Lightweight game event payload used by animation and other systems.
     public sealed class GameEventData
     {
         public uint EntityId { get; set; }

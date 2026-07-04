@@ -1,16 +1,17 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.State
 {
-    /// <summary>
-    /// Performance profiler for state machine operations.
-    /// P20-02-Enhancement: Real-time performance monitoring and analysis.
-    /// </summary>
+    ///<summary>
+    ///Performance profiler for state machine operations.
+    ///P20-02-Enhancement: Real-time performance monitoring and analysis.
+    ///</summary>
     public class StateMachineProfiler
     {
         private readonly Dictionary<GameStateType, StatePerformanceMetrics> _stateMetrics;
@@ -18,30 +19,30 @@ namespace SASZombieAssaultTD.Engine.State
         private readonly object _profilerLock = new object();
         private bool _profilingEnabled = true;
         
-        /// <summary>
-        /// Enables or disables profiling.
-        /// </summary>
+        ///<summary>
+        ///Enables or disables profiling.
+        ///</summary>
         public bool ProfilingEnabled
         {
             get => _profilingEnabled;
             set => _profilingEnabled = value;
         }
         
-        /// <summary>
-        /// Initializes a new state machine profiler.
-        /// </summary>
+        ///<summary>
+        ///Initializes a new state machine profiler.
+        ///</summary>
         public StateMachineProfiler()
         {
             _stateMetrics = new Dictionary<GameStateType, StatePerformanceMetrics>();
             _operationMetrics = new Dictionary<string, OperationMetrics>();
         }
         
-        /// <summary>
-        /// Starts profiling a state operation.
-        /// </summary>
-        /// <param name="stateType">The state type.</param>
-        /// <param name="operation">The operation being performed.</param>
-        /// <returns>A profiling session that must be disposed when the operation completes.</returns>
+        ///<summary>
+        ///Starts profiling a state operation.
+        ///</summary>
+        ///<param name="stateType">The state type.</param>
+        ///<param name="operation">The operation being performed.</param>
+        ///<returns>A profiling session that must be disposed when the operation completes.</returns>
         public StateProfilingSession StartProfiling(GameStateType stateType, string operation)
         {
             if (!_profilingEnabled)
@@ -50,12 +51,12 @@ namespace SASZombieAssaultTD.Engine.State
             return new StateProfilingSession(this, stateType, operation);
         }
         
-        /// <summary>
-        /// Records a completed operation.
-        /// </summary>
-        /// <param name="stateType">The state type.</param>
-        /// <param name="operation">The operation name.</param>
-        /// <param name="duration">The operation duration.</param>
+        ///<summary>
+        ///Records a completed operation.
+        ///</summary>
+        ///<param name="stateType">The state type.</param>
+        ///<param name="operation">The operation name.</param>
+        ///<param name="duration">The operation duration.</param>
         internal void RecordOperation(GameStateType stateType, string operation, TimeSpan duration)
         {
             if (!_profilingEnabled)
@@ -63,7 +64,7 @@ namespace SASZombieAssaultTD.Engine.State
             
             lock (_profilerLock)
             {
-                // Update state-specific metrics
+                //Update state-specific metrics
                 if (!_stateMetrics.ContainsKey(stateType))
                 {
                     _stateMetrics[stateType] = new StatePerformanceMetrics { StateType = stateType };
@@ -72,7 +73,7 @@ namespace SASZombieAssaultTD.Engine.State
                 var stateMetric = _stateMetrics[stateType];
                 stateMetric.RecordOperation(operation, duration);
                 
-                // Update operation-specific metrics
+                //Update operation-specific metrics
                 var operationKey = $"{stateType}_{operation}";
                 if (!_operationMetrics.ContainsKey(operationKey))
                 {
@@ -88,11 +89,11 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Gets performance metrics for a specific state.
-        /// </summary>
-        /// <param name="stateType">The state type.</param>
-        /// <returns>Performance metrics for the state.</returns>
+        ///<summary>
+        ///Gets performance metrics for a specific state.
+        ///</summary>
+        ///<param name="stateType">The state type.</param>
+        ///<returns>Performance metrics for the state.</returns>
         public StatePerformanceMetrics GetStateMetrics(GameStateType stateType)
         {
             lock (_profilerLock)
@@ -101,12 +102,12 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Gets performance metrics for a specific operation.
-        /// </summary>
-        /// <param name="stateType">The state type.</param>
-        /// <param name="operation">The operation name.</param>
-        /// <returns>Performance metrics for the operation.</returns>
+        ///<summary>
+        ///Gets performance metrics for a specific operation.
+        ///</summary>
+        ///<param name="stateType">The state type.</param>
+        ///<param name="operation">The operation name.</param>
+        ///<returns>Performance metrics for the operation.</returns>
         public OperationMetrics GetOperationMetrics(GameStateType stateType, string operation)
         {
             lock (_profilerLock)
@@ -116,10 +117,10 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Gets all state performance metrics.
-        /// </summary>
-        /// <returns>Dictionary of state types and their metrics.</returns>
+        ///<summary>
+        ///Gets all state performance metrics.
+        ///</summary>
+        ///<returns>Dictionary of state types and their metrics.</returns>
         public Dictionary<GameStateType, StatePerformanceMetrics> GetAllStateMetrics()
         {
             lock (_profilerLock)
@@ -128,10 +129,10 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Gets all operation performance metrics.
-        /// </summary>
-        /// <returns>Dictionary of operation keys and their metrics.</returns>
+        ///<summary>
+        ///Gets all operation performance metrics.
+        ///</summary>
+        ///<returns>Dictionary of operation keys and their metrics.</returns>
         public Dictionary<string, OperationMetrics> GetAllOperationMetrics()
         {
             lock (_profilerLock)
@@ -140,10 +141,10 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Generates a performance report.
-        /// </summary>
-        /// <returns>Performance report as a string.</returns>
+        ///<summary>
+        ///Generates a performance report.
+        ///</summary>
+        ///<returns>Performance report as a string.</returns>
         public string GeneratePerformanceReport()
         {
             lock (_profilerLock)
@@ -156,7 +157,7 @@ namespace SASZombieAssaultTD.Engine.State
                     ""
                 };
                 
-                // State performance summary
+                //State performance summary
                 report.Add("=== State Performance Summary ===");
                 foreach (var kvp in _stateMetrics.OrderByDescending(x => x.Value.TotalExecutionTime))
                 {
@@ -169,7 +170,7 @@ namespace SASZombieAssaultTD.Engine.State
                     report.Add("");
                 }
                 
-                // Slowest operations
+                //Slowest operations
                 report.Add("=== Slowest Operations ===");
                 var slowestOps = _operationMetrics.OrderByDescending(x => x.Value.AverageExecutionTime).Take(10);
                 foreach (var kvp in slowestOps)
@@ -179,7 +180,7 @@ namespace SASZombieAssaultTD.Engine.State
                 }
                 report.Add("");
                 
-                // Most frequent operations
+                //Most frequent operations
                 report.Add("=== Most Frequent Operations ===");
                 var frequentOps = _operationMetrics.OrderByDescending(x => x.Value.ExecutionCount).Take(10);
                 foreach (var kvp in frequentOps)
@@ -192,32 +193,32 @@ namespace SASZombieAssaultTD.Engine.State
             }
         }
         
-        /// <summary>
-        /// Clears all performance metrics.
-        /// </summary>
+        ///<summary>
+        ///Clears all performance metrics.
+        ///</summary>
         public void ClearMetrics()
         {
             lock (_profilerLock)
             {
                 _stateMetrics.Clear();
                 _operationMetrics.Clear();
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "StateMachineProfiler: All performance metrics cleared");
+                DLogger.Log(LogSubsystems.State,LogLevel.Info, "StateMachineProfiler: All performance metrics cleared");
             }
         }
         
-        /// <summary>
-        /// Identifies performance issues based on thresholds.
-        /// </summary>
-        /// <param name="slowOperationThresholdMs">Threshold for slow operations in milliseconds.</param>
-        /// <param name="frequentOperationThreshold">Threshold for frequent operations.</param>
-        /// <returns>List of performance issues.</returns>
+        ///<summary>
+        ///Identifies performance issues based on thresholds.
+        ///</summary>
+        ///<param name="slowOperationThresholdMs">Threshold for slow operations in milliseconds.</param>
+        ///<param name="frequentOperationThreshold">Threshold for frequent operations.</param>
+        ///<returns>List of performance issues.</returns>
         public List<string> IdentifyPerformanceIssues(double slowOperationThresholdMs = 16.0, int frequentOperationThreshold = 1000)
         {
             lock (_profilerLock)
             {
                 var issues = new List<string>();
                 
-                // Check for slow operations
+                //Check for slow operations
                 var slowOps = _operationMetrics.Where(x => x.Value.AverageExecutionTime.TotalMilliseconds > slowOperationThresholdMs);
                 foreach (var kvp in slowOps)
                 {
@@ -225,7 +226,7 @@ namespace SASZombieAssaultTD.Engine.State
                     issues.Add($"Slow operation: {metrics.StateType}.{metrics.Operation} averages {metrics.AverageExecutionTime.TotalMilliseconds:F2}ms (threshold: {slowOperationThresholdMs}ms)");
                 }
                 
-                // Check for very frequent operations
+                //Check for very frequent operations
                 var frequentOps = _operationMetrics.Where(x => x.Value.ExecutionCount > frequentOperationThreshold);
                 foreach (var kvp in frequentOps)
                 {
@@ -233,7 +234,7 @@ namespace SASZombieAssaultTD.Engine.State
                     issues.Add($"Frequent operation: {metrics.StateType}.{metrics.Operation} called {metrics.ExecutionCount} times (threshold: {frequentOperationThreshold})");
                 }
                 
-                // Check for states with high total execution time
+                //Check for states with high total execution time
                 var heavyStates = _stateMetrics.Where(x => x.Value.TotalExecutionTime.TotalMilliseconds > 1000.0);
                 foreach (var kvp in heavyStates)
                 {
@@ -246,9 +247,9 @@ namespace SASZombieAssaultTD.Engine.State
         }
     }
     
-    /// <summary>
-    /// Represents a profiling session for a state operation.
-    /// </summary>
+    ///<summary>
+    ///Represents a profiling session for a state operation.
+    ///</summary>
     public sealed class StateProfilingSession : IDisposable
     {
         private readonly StateMachineProfiler _profiler;
@@ -256,23 +257,23 @@ namespace SASZombieAssaultTD.Engine.State
         private readonly string _operation;
         private readonly Stopwatch _stopwatch;
         
-        /// <summary>
-        /// Initializes a new profiling session.
-        /// </summary>
-        /// <param name="profiler">The profiler.</param>
-        /// <param name="stateType">The state type.</param>
-        /// <param name="operation">The operation name.</param>
+        ///<summary>
+        ///Initializes a new profiling session.
+        ///</summary>
+        ///<param name="profiler">The profiler.</param>
+        ///<param name="stateType">The state type.</param>
+        ///<param name="operation">The operation name.</param>
         internal StateProfilingSession(StateMachineProfiler profiler, GameStateType? stateType, string operation)
         {
             _profiler = profiler;
-            _stateType = stateType ?? GameStateType.Boot; // Default value
+            _stateType = stateType ?? GameStateType.Boot; //Default value
             _operation = operation ?? "Unknown";
             _stopwatch = Stopwatch.StartNew();
         }
         
-        /// <summary>
-        /// Ends the profiling session and records the metrics.
-        /// </summary>
+        ///<summary>
+        ///Ends the profiling session and records the metrics.
+        ///</summary>
         public void Dispose()
         {
             _stopwatch.Stop();
@@ -280,46 +281,46 @@ namespace SASZombieAssaultTD.Engine.State
         }
     }
     
-    /// <summary>
-    /// Performance metrics for a specific state.
-    /// </summary>
+    ///<summary>
+    ///Performance metrics for a specific state.
+    ///</summary>
     public class StatePerformanceMetrics
     {
-        /// <summary>
-        /// The state type.
-        /// </summary>
+        ///<summary>
+        ///The state type.
+        ///</summary>
         public GameStateType StateType { get; set; }
         
-        /// <summary>
-        /// Total execution time for all operations.
-        /// </summary>
+        ///<summary>
+        ///Total execution time for all operations.
+        ///</summary>
         public TimeSpan TotalExecutionTime { get; private set; }
         
-        /// <summary>
-        /// Total number of operation calls.
-        /// </summary>
+        ///<summary>
+        ///Total number of operation calls.
+        ///</summary>
         public int CallCount { get; private set; }
         
-        /// <summary>
-        /// Average execution time per operation.
-        /// </summary>
+        ///<summary>
+        ///Average execution time per operation.
+        ///</summary>
         public TimeSpan AverageExecutionTime => CallCount > 0 ? TimeSpan.FromTicks(TotalExecutionTime.Ticks / CallCount) : TimeSpan.Zero;
         
-        /// <summary>
-        /// Maximum execution time recorded.
-        /// </summary>
+        ///<summary>
+        ///Maximum execution time recorded.
+        ///</summary>
         public TimeSpan MaxExecutionTime { get; private set; }
         
-        /// <summary>
-        /// Minimum execution time recorded.
-        /// </summary>
+        ///<summary>
+        ///Minimum execution time recorded.
+        ///</summary>
         public TimeSpan MinExecutionTime { get; private set; } = TimeSpan.MaxValue;
         
-        /// <summary>
-        /// Records an operation execution.
-        /// </summary>
-        /// <param name="operation">The operation name.</param>
-        /// <param name="duration">The operation duration.</param>
+        ///<summary>
+        ///Records an operation execution.
+        ///</summary>
+        ///<param name="operation">The operation name.</param>
+        ///<param name="duration">The operation duration.</param>
         public void RecordOperation(string operation, TimeSpan duration)
         {
             TotalExecutionTime = TotalExecutionTime.Add(duration);
@@ -332,10 +333,10 @@ namespace SASZombieAssaultTD.Engine.State
             MinExecutionTime = duration;
         }
         
-        /// <summary>
-        /// Creates a clone of this metrics object.
-        /// </summary>
-        /// <returns>A cloned copy of the metrics.</returns>
+        ///<summary>
+        ///Creates a clone of this metrics object.
+        ///</summary>
+        ///<returns>A cloned copy of the metrics.</returns>
         public StatePerformanceMetrics Clone()
         {
             return new StatePerformanceMetrics
@@ -349,50 +350,50 @@ namespace SASZombieAssaultTD.Engine.State
         }
     }
     
-    /// <summary>
-    /// Performance metrics for a specific operation.
-    /// </summary>
+    ///<summary>
+    ///Performance metrics for a specific operation.
+    ///</summary>
     public class OperationMetrics
     {
-        /// <summary>
-        /// The state type.
-        /// </summary>
+        ///<summary>
+        ///The state type.
+        ///</summary>
         public GameStateType StateType { get; set; }
         
-        /// <summary>
-        /// The operation name.
-        /// </summary>
+        ///<summary>
+        ///The operation name.
+        ///</summary>
         public string Operation { get; set; }
         
-        /// <summary>
-        /// Total execution time.
-        /// </summary>
+        ///<summary>
+        ///Total execution time.
+        ///</summary>
         public TimeSpan TotalExecutionTime { get; private set; }
         
-        /// <summary>
-        /// Number of executions.
-        /// </summary>
+        ///<summary>
+        ///Number of executions.
+        ///</summary>
         public int ExecutionCount { get; private set; }
         
-        /// <summary>
-        /// Average execution time.
-        /// </summary>
+        ///<summary>
+        ///Average execution time.
+        ///</summary>
         public TimeSpan AverageExecutionTime => ExecutionCount > 0 ? TimeSpan.FromTicks(TotalExecutionTime.Ticks / ExecutionCount) : TimeSpan.Zero;
         
-        /// <summary>
-        /// Maximum execution time.
-        /// </summary>
+        ///<summary>
+        ///Maximum execution time.
+        ///</summary>
         public TimeSpan MaxExecutionTime { get; private set; }
         
-        /// <summary>
-        /// Minimum execution time.
-        /// </summary>
+        ///<summary>
+        ///Minimum execution time.
+        ///</summary>
         public TimeSpan MinExecutionTime { get; private set; } = TimeSpan.MaxValue;
         
-        /// <summary>
-        /// Records an execution.
-        /// </summary>
-        /// <param name="duration">The execution duration.</param>
+        ///<summary>
+        ///Records an execution.
+        ///</summary>
+        ///<param name="duration">The execution duration.</param>
         public void RecordExecution(TimeSpan duration)
         {
             TotalExecutionTime = TotalExecutionTime.Add(duration);
@@ -405,10 +406,10 @@ namespace SASZombieAssaultTD.Engine.State
             MinExecutionTime = duration;
         }
         
-        /// <summary>
-        /// Creates a clone of this metrics object.
-        /// </summary>
-        /// <returns>A cloned copy of the metrics.</returns>
+        ///<summary>
+        ///Creates a clone of this metrics object.
+        ///</summary>
+        ///<returns>A cloned copy of the metrics.</returns>
         public OperationMetrics Clone()
         {
             return new OperationMetrics

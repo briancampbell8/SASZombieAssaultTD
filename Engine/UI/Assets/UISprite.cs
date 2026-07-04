@@ -1,11 +1,13 @@
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Assets
 {
-    /// <summary>
-    /// Sprite metadata used by UI elements
-    /// P80-07-03: UISprite defining sprite metadata used by UI elements
-    /// </summary>
+    ///<summary>
+    ///Sprite metadata used by UI elements
+    ///P80-07-03: UISprite defining sprite metadata used by UI elements
+    ///</summary>
     public class UISprite
     {
         private string _name;
@@ -15,51 +17,51 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
         private bool _isLoaded;
         private bool _isPreloaded;
 
-        /// <summary>
-        /// Gets the sprite name
-        /// </summary>
+        ///<summary>
+        ///Gets the sprite name
+        ///</summary>
         public string Name => _name;
 
-        /// <summary>
-        /// Gets the sprite path
-        /// </summary>
+        ///<summary>
+        ///Gets the sprite path
+        ///</summary>
         public string Path => _path;
 
-        /// <summary>
-        /// Gets the sprite size
-        /// </summary>
+        ///<summary>
+        ///Gets the sprite size
+        ///</summary>
         public System.Drawing.SizeF Size => _size;
 
-        /// <summary>
-        /// Gets the source rectangle
-        /// </summary>
+        ///<summary>
+        ///Gets the source rectangle
+        ///</summary>
         public System.Drawing.RectangleF SourceRect => _sourceRect;
 
-        /// <summary>
-        /// Gets whether the sprite is loaded
-        /// </summary>
+        ///<summary>
+        ///Gets whether the sprite is loaded
+        ///</summary>
         public bool IsLoaded => _isLoaded;
 
-        /// <summary>
-        /// Gets whether the sprite is preloaded
-        /// </summary>
+        ///<summary>
+        ///Gets whether the sprite is preloaded
+        ///</summary>
         public bool IsPreloaded => _isPreloaded;
 
-        /// <summary>
-        /// Initializes a new UISprite
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UISprite
+        ///</summary>
         public UISprite()
         {
             System.Diagnostics.Debug.WriteLine("UISprite: Created new sprite");
         }
 
-        /// <summary>
-        /// Initializes a new UISprite with parameters
-        /// </summary>
-        /// <param name="name">Sprite name</param>
-        /// <param name="path">Sprite file path</param>
-        /// <param name="size">Sprite size</param>
-        /// <param name="sourceRect">Source rectangle in texture</param>
+        ///<summary>
+        ///Initializes a new UISprite with parameters
+        ///</summary>
+        ///<param name="name">Sprite name</param>
+        ///<param name="path">Sprite file path</param>
+        ///<param name="size">Sprite size</param>
+        ///<param name="sourceRect">Source rectangle in texture</param>
         public UISprite(string name, string path, System.Drawing.SizeF size, System.Drawing.RectangleF sourceRect)
         {
             try
@@ -77,9 +79,9 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Marks the sprite as loaded
-        /// </summary>
+        ///<summary>
+        ///Marks the sprite as loaded
+        ///</summary>
         public void MarkAsLoaded()
         {
             try
@@ -93,9 +95,9 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Marks the sprite as preloaded
-        /// </summary>
+        ///<summary>
+        ///Marks the sprite as preloaded
+        ///</summary>
         public void MarkAsPreloaded()
         {
             try
@@ -109,9 +111,9 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Unloads the sprite
-        /// </summary>
+        ///<summary>
+        ///Unloads the sprite
+        ///</summary>
         public void Unload()
         {
             try
@@ -127,10 +129,10 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Gets a string representation of the sprite
-        /// </summary>
-        /// <returns>String representation</returns>
+        ///<summary>
+        ///Gets a string representation of the sprite
+        ///</summary>
+        ///<returns>String representation</returns>
         public override string ToString()
         {
             try

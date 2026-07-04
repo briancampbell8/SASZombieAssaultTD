@@ -1,33 +1,33 @@
-// ============================================================================
-// FILE: Engine/ECS/EntityFactory.cs
-// AUTHOR: BDC
-// PURPOSE: Centralized factory for creating ECS entities with correct component
-//          composition, type-safe construction, and legacy migration support.
-// ============================================================================
+//============================================================================
+//FILE: Engine/ECS/EntityFactory.cs
+//AUTHOR: BDC
+//PURPOSE: Centralized factory for creating ECS entities with correct component
+//         composition, type-safe construction, and legacy migration support.
+//============================================================================
 
-using SASZombieAssaultTD.Engine.Components;
-using SASZombieAssaultTD.Engine.Core;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-
+using SASZombieAssaultTD.Engine.Components;
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.ECS
+//
 {
-    /// <summary>
-    /// Provides a centralized, deterministic factory for creating ECS entities.
-    /// Ensures correct component composition, type safety, and consistent
-    /// initialization for enemies, projectiles, players, and towers.
-    /// Also provides migration utilities for converting legacy entities.
-    /// </summary>
-    
+    ///<summary>
+    ///Provides a centralized, deterministic factory for creating ECS entities.
+    ///Ensures correct component composition, type safety, and consistent
+    ///initialization for enemies, projectiles, players, and towers.
+    ///Also provides migration utilities for converting legacy entities.
+    ///</summary>
+
     public static class EntityFactory
     {
-        ///  Public Creation Methods
+        /// Public Creation Methods
 
-        /// <summary>
-        /// Creates a fully configured enemy entity with all required components.
-        /// </summary>
-        /// 
+        ///<summary>
+        ///Creates a fully configured enemy entity with all required components.
+        ///</summary>
+        ///
 
         public static Entity CreateEnemy(ECSWorld world, EnemyType type, Vector3 position)
         {
@@ -38,21 +38,21 @@ namespace SASZombieAssaultTD.Engine.ECS
             AddCoreComponents(entity, position, $"enemy_{type.ToString().ToLower()}");
 
             var stats = EnemyStats.Get(type);
-            
+
             entity.AddComponent(new EnemyTypeComponent { Type = (SASZombieAssaultTD.Engine.ECS.EnemyType)(SASZombieAssaultTD.Engine.Enemies.ZombieType)type });
             entity.AddComponent(component: new HealthComponent { CurrentHealth = stats.Health, MaxHealth = stats.Health });
             entity.AddComponent(new MovementComponent { Speed = (float)stats.Speed });
             entity.AddComponent(new ScoreComponent { ScoreValue = stats.Score });
             entity.AddComponent(new ActiveComponent { IsActive = true });
 
-            Engine.Diagnostics.DebugLogger.LogDebug("FACTORY", $"Created enemy '{type}' at {position}");
+            DLogger.Log("FACTORY", $"Created enemy '{type}' at {position}");
             return entity;
         }
 
-        /// <summary>
-        /// Creates a projectile entity with damage, movement, and lifetime.
-        /// </summary>
-        // Numeric standardization: All continuous values use double for precision
+        ///<summary>
+        ///Creates a projectile entity with damage, movement, and lifetime.
+        ///</summary>
+        //Numeric standardization: All continuous values use double for precision
         public static Entity CreateProjectile(ECSWorld world, Vector3 position, Vector3 velocity, double damage, double lifetimeSeconds = 5.0)
         {
             ValidateWorld(world);
@@ -63,13 +63,13 @@ namespace SASZombieAssaultTD.Engine.ECS
             entity.AddComponent(new SASZombieAssaultTD.Engine.Components.MovementComponent { Speed = (float)velocity.Length() });
             entity.AddComponent(new SASZombieAssaultTD.Engine.Components.LifetimeComponent { RemainingSeconds = (float)lifetimeSeconds });
             entity.AddComponent(new SASZombieAssaultTD.Engine.Components.ActiveComponent { IsActive = true });
-            Engine.Diagnostics.DebugLogger.LogDebug("FACTORY", $"Created projectile at {position} with velocity {velocity}");
+            DLogger.Log("FACTORY", $"Created projectile at {position} with velocity {velocity}");
             return entity;
         }
 
-        /// <summary>
-        /// Creates a player entity with fixed stats and active state.
-        /// </summary>
+        ///<summary>
+        ///Creates a player entity with fixed stats and active state.
+        ///</summary>
         public static Entity CreatePlayer(ECSWorld world, Vector3 position)
         {
             ValidateWorld(world);
@@ -82,13 +82,13 @@ namespace SASZombieAssaultTD.Engine.ECS
             entity.AddComponent(new MovementComponent { Speed = 2.0f });
             entity.AddComponent(new ActiveComponent { IsActive = true });
 
-            Engine.Diagnostics.DebugLogger.LogDebug("FACTORY", $"Created player at {position}");
+            DLogger.Log("FACTORY", $"Created player at {position}");
             return entity;
         }
 
-        /// <summary>
-        /// Creates a tower entity with configurable type and health.
-        /// </summary>
+        ///<summary>
+        ///Creates a tower entity with configurable type and health.
+        ///</summary>
         public static Entity CreateTower(ECSWorld world, Vector3 position, string towerType = "Basic")
         {
             ValidateWorld(world);
@@ -100,18 +100,18 @@ namespace SASZombieAssaultTD.Engine.ECS
             entity.AddComponent(new HealthComponent { CurrentHealth = 200, MaxHealth = 200 });
             entity.AddComponent(new ActiveComponent { IsActive = true });
 
-            Engine.Diagnostics.DebugLogger.LogDebug("FACTORY", $"Created tower '{towerType}' at {position}");
+            DLogger.Log("FACTORY", $"Created tower '{towerType}' at {position}");
             return entity;
         }
 
-        /// 
+        ///
 
-        ///  Legacy Migration Methods
+        /// Legacy Migration Methods
 
-        /// <summary>
-        /// Migrates a legacy Enemy object into a modern ECS entity.
-        /// Preserves position, health, speed, type, and active state.
-        /// </summary>
+        ///<summary>
+        ///Migrates a legacy Enemy object into a modern ECS entity.
+        ///Preserves position, health, speed, type, and active state.
+        ///</summary>
         public static Entity MigrateLegacyEnemy(ECSWorld world, LegacyEnemy legacy)
         {
             ValidateWorld(world);
@@ -132,14 +132,14 @@ namespace SASZombieAssaultTD.Engine.ECS
             if (entity.TryGetComponent<ActiveComponent>(out var activeComp))
                 activeComp.IsActive = legacy.IsActive;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", $"Migrated legacy enemy '{legacy.Type}'");
+            DLogger.Log("MIGRATION", $"Migrated legacy enemy '{legacy.Type}'");
             return entity;
         }
 
-        /// <summary>
-        /// Migrates a legacy Projectile object into a modern ECS entity.
-        /// Preserves position, velocity, damage, and active state.
-        /// </summary>
+        ///<summary>
+        ///Migrates a legacy Projectile object into a modern ECS entity.
+        ///Preserves position, velocity, damage, and active state.
+        ///</summary>
         public static Entity MigrateLegacyProjectile(ECSWorld world, LegacyProjectile legacy)
         {
             ValidateWorld(world);
@@ -150,13 +150,13 @@ namespace SASZombieAssaultTD.Engine.ECS
             if (entity.TryGetComponent<ActiveComponent>(out var activeComp))
                 activeComp.IsActive = legacy.IsActive;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", "Migrated legacy projectile");
+            DLogger.Log("MIGRATION", "Migrated legacy projectile");
             return entity;
         }
 
-        /// 
+        ///
 
-        ///  Private Helper Methods
+        /// Private Helper Methods
 
         static void AddCoreComponents(Entity entity, Vector3 position, string spriteId)
         {
@@ -176,14 +176,14 @@ namespace SASZombieAssaultTD.Engine.ECS
                 throw new ArgumentNullException(nameof(legacy));
         }
 
-        /// 
+        ///
     }
 
-    ///  Supporting Types
+    /// Supporting Types
 
-    /// <summary>
-    /// Defines enemy types used by the ECS.
-    /// </summary>
+    ///<summary>
+    ///Defines enemy types used by the ECS.
+    ///</summary>
     public enum EnemyType
     {
         Zombie,
@@ -193,12 +193,12 @@ namespace SASZombieAssaultTD.Engine.ECS
         Boss
     }
 
-    /// <summary>
-    /// Stores default stats for each enemy type.
-    /// </summary>
+    ///<summary>
+    ///Stores default stats for each enemy type.
+    ///</summary>
     public static class EnemyStats
     {
-        // Numeric standardization: All continuous values use double for precision
+        //Numeric standardization: All continuous values use double for precision
         static readonly Dictionary<EnemyType, (double Health, double Speed, int Score)> _stats = new()
             {
                 { EnemyType.Zombie, (100.0, 1.0, 10) },
@@ -211,9 +211,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         public static (double Health, double Speed, int Score) Get(EnemyType type) => _stats[type];
     }
 
-    /// <summary>
-    /// Legacy enemy type enumeration for migration support.
-    /// </summary>
+    ///<summary>
+    ///Legacy enemy type enumeration for migration support.
+    ///</summary>
     public enum LegacyEnemyType
     {
         Basic,
@@ -223,9 +223,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         Boss
     }
 
-    /// <summary>
-    /// Legacy enemy class for migration support.
-    /// </summary>
+    ///<summary>
+    ///Legacy enemy class for migration support.
+    ///</summary>
     public class LegacyEnemy
     {
         public LegacyEnemyType Type { get; set; }
@@ -236,9 +236,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         public bool IsActive { get; set; }
     }
 
-    /// <summary>
-    /// Legacy projectile class for migration support.
-    /// </summary>
+    ///<summary>
+    ///Legacy projectile class for migration support.
+    ///</summary>
     public class LegacyProjectile
     {
         public Vector3 Position { get; set; }
@@ -247,9 +247,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         public bool IsActive { get; set; }
     }
 
-    /// <summary>
-    /// Maps legacy enemy types to ECS enemy types.
-    /// </summary>
+    ///<summary>
+    ///Maps legacy enemy types to ECS enemy types.
+    ///</summary>
     public static class LegacyEnemyTypeMapper
     {
         public static EnemyType Map(LegacyEnemyType legacyType) =>
@@ -264,5 +264,5 @@ namespace SASZombieAssaultTD.Engine.ECS
             };
     }
 
-    /// 
+    ///
 }

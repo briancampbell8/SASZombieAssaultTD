@@ -2,6 +2,8 @@ using SASZombieAssaultTD.Engine.Rendering;
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
     public class LayoutSystem
@@ -30,7 +32,7 @@ namespace SASZombieAssaultTD.Engine.UI
                 e.Render(context);
         }
 
-        // Compatibility overloads for old scene code
+        //Compatibility overloads for old scene code
         public void Update(UIElementBase _, TimeSpan deltaTime)
         {
             Update((float)deltaTime.TotalSeconds);

@@ -9,13 +9,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Animation.Components
+//
 {
-    /// <summary>
-    /// P11-17-01: Deterministic animation state machine with explicit state tracking.
-    /// Provides deterministic state management with explicit CurrentState, PreviousState, and UpdateState method.
-    /// P11-17-06: Enhanced with deterministic transition registration logic and state dictionary.
-    /// </summary>
+    ///<summary>
+    ///P11-17-01: Deterministic animation state machine with explicit state tracking.
+    ///Provides deterministic state management with explicit CurrentState, PreviousState, and UpdateState method.
+    ///P11-17-06: Enhanced with deterministic transition registration logic and state dictionary.
+    ///</summary>
     public class AnimationStateMachine
     {
         private readonly Dictionary<string, IAnimationState> _states = new();
@@ -48,13 +50,13 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             if (newState == null)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "AnimationStateMachine: Cannot transition to null state");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, "AnimationStateMachine: Cannot transition to null state");
                 return;
             }
 
             if (CurrentState != null && !IsTransitionAllowed(CurrentState.Name, newState.Name))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationStateMachine: Transition '{CurrentState.Name}' -> '{newState.Name}' is not registered");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"AnimationStateMachine: Transition '{CurrentState.Name}' -> '{newState.Name}' is not registered");
                 return;
             }
 
@@ -64,14 +66,14 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             TimeInCurrentState = 0f;
             CurrentState.Enter();
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationStateMachine: Transitioned to state '{CurrentState.Name}'");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationStateMachine: Transitioned to state '{CurrentState.Name}'");
         }
 
         public void SetInitialState(IAnimationState initialState)
         {
             if (initialState == null || !initialState.IsValid())
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "AnimationStateMachine: Invalid initial state, applying fallback");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Warning, "AnimationStateMachine: Invalid initial state, applying fallback");
                 SetFallbackState();
                 return;
             }
@@ -81,7 +83,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             TimeInCurrentState = 0f;
             CurrentState.Enter();
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationStateMachine: Set initial state '{CurrentState.Name}'");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationStateMachine: Set initial state '{CurrentState.Name}'");
         }
 
         private void SetFallbackState()
@@ -93,26 +95,26 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             }
 
             TransitionToState(fallbackState);
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "AnimationStateMachine: Transitioned to fallback state");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, "AnimationStateMachine: Transitioned to fallback state");
         }
 
         public void RegisterState(IAnimationState state)
         {
             if (state == null || string.IsNullOrEmpty(state.Name))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "AnimationStateMachine: Cannot register null or unnamed state");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, "AnimationStateMachine: Cannot register null or unnamed state");
                 return;
             }
 
             _states[state.Name] = state;
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationStateMachine: Registered state '{state.Name}'");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationStateMachine: Registered state '{state.Name}'");
         }
 
         public void RegisterTransition(string fromState, string toState)
         {
             if (string.IsNullOrEmpty(fromState) || string.IsNullOrEmpty(toState) || fromState == toState)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "AnimationStateMachine: Invalid transition registration");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Warning, "AnimationStateMachine: Invalid transition registration");
                 return;
             }
 
@@ -122,7 +124,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             }
 
             _allowedTransitions[fromState].Add(toState);
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationStateMachine: Registered transition '{fromState}' -> '{toState}'");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationStateMachine: Registered transition '{fromState}' -> '{toState}'");
         }
 
         public bool IsTransitionAllowed(string fromState, string toState) =>
@@ -133,15 +135,15 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         public string[] GetAllowedTransitions(string stateName) =>
             _allowedTransitions.TryGetValue(stateName, out var transitions) ? transitions.ToArray() : Array.Empty<string>();
 
-        /// <summary>
-        /// Forces a transition to a specific state.
-        /// </summary>
-        /// <param name="stateName">Name of the state to transition to.</param>
+        ///<summary>
+        ///Forces a transition to a specific state.
+        ///</summary>
+        ///<param name="stateName">Name of the state to transition to.</param>
         public void ForceTransitionTo(string stateName)
         {
             if (!_states.TryGetValue(stateName, out var newState))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationStateMachine: Cannot transition to unknown state '{stateName}'");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"AnimationStateMachine: Cannot transition to unknown state '{stateName}'");
                 return;
             }
 
@@ -153,13 +155,13 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             oldState?.Exit();
             newState.Enter();
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationStateMachine: Forced transition '{oldState?.Name}' -> '{stateName}'");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationStateMachine: Forced transition '{oldState?.Name}' -> '{stateName}'");
         }
 
-        /// <summary>
-        /// Forces a transition to a specific state (alias for ForceTransitionTo).
-        /// </summary>
-        /// <param name="stateName">Name of the state to transition to.</param>
+        ///<summary>
+        ///Forces a transition to a specific state (alias for ForceTransitionTo).
+        ///</summary>
+        ///<param name="stateName">Name of the state to transition to.</param>
         public void ForceTransition(string stateName) => ForceTransitionTo(stateName);
 
         public void SetParameter(string name, object value)
@@ -167,7 +169,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             if (string.IsNullOrEmpty(name)) return;
 
             _globalParameters[name] = value;
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationStateMachine: Set parameter '{name}' = {value}");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationStateMachine: Set parameter '{name}' = {value}");
         }
 
         public T GetGlobalParameter<T>(string name, T defaultValue = default!) =>

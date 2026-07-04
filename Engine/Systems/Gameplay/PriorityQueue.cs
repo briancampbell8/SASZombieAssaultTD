@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace Engine.Systems.Gameplay
 {
     public class PriorityQueue<T>
     {
         private readonly List<(T Item, float Priority)> _elements = new();
-        private readonly HashSet<T> _set = new(); // For efficient Contains checks
+        private readonly HashSet<T> _set = new(); //For efficient Contains checks
 
         public int Count => _elements.Count;
 

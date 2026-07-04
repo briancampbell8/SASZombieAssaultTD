@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves
 {
-    /// <summary>
-    /// Event data for wave completion.
-    /// Triggered when a wave ends, either through victory or defeat.
-    /// Phase 6: Final Pass - Add missing WaveEndEvent to fix CS1061 errors
-    /// </summary>
+    ///<summary>
+    ///Event data for wave completion.
+    ///Triggered when a wave ends, either through victory or defeat.
+    ///Phase 6: Final Pass - Add missing WaveEndEvent to fix CS1061 errors
+    ///</summary>
     public class WaveEndEvent
     {
         public int WaveNumber { get; set; }
@@ -24,9 +26,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         public bool WasPerfectWave { get; set; }
         public float PerformanceRating { get; set; }
 
-        /// <summary>
-        /// Initializes a new WaveEndEvent instance.
-        /// </summary>
+        ///<summary>
+        ///Initializes a new WaveEndEvent instance.
+        ///</summary>
         public WaveEndEvent()
         {
             EndTime = DateTime.Now;
@@ -34,12 +36,12 @@ namespace SASZombieAssaultTD.Engine.Waves
             AchievementsUnlocked = new List<string>();
         }
 
-        /// <summary>
-        /// Initializes a new WaveEndEvent with specified parameters.
-        /// </summary>
-        /// <param name="waveNumber">The wave number that ended</param>
-        /// <param name="victory">Whether the wave was won</param>
-        /// <param name="duration">Duration of the wave</param>
+        ///<summary>
+        ///Initializes a new WaveEndEvent with specified parameters.
+        ///</summary>
+        ///<param name="waveNumber">The wave number that ended</param>
+        ///<param name="victory">Whether the wave was won</param>
+        ///<param name="duration">Duration of the wave</param>
         public WaveEndEvent(int waveNumber, bool victory, TimeSpan duration)
         {
             WaveNumber = waveNumber;
@@ -50,19 +52,19 @@ namespace SASZombieAssaultTD.Engine.Waves
             AchievementsUnlocked = new List<string>();
         }
 
-        /// <summary>
-        /// Gets the kill rate as a percentage.
-        /// </summary>
+        ///<summary>
+        ///Gets the kill rate as a percentage.
+        ///</summary>
         public float KillRate => EnemiesSpawned > 0 ? (float)EnemiesKilled / EnemiesSpawned * 100f : 0f;
 
-        /// <summary>
-        /// Gets the escape rate as a percentage.
-        /// </summary>
+        ///<summary>
+        ///Gets the escape rate as a percentage.
+        ///</summary>
         public float EscapeRate => EnemiesSpawned > 0 ? (float)EnemiesEscaped / EnemiesSpawned * 100f : 0f;
 
-        /// <summary>
-        /// Gets the efficiency rating based on performance.
-        /// </summary>
+        ///<summary>
+        ///Gets the efficiency rating based on performance.
+        ///</summary>
         public float EfficiencyRating
         {
             get
@@ -78,23 +80,23 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
         }
 
-        /// <summary>
-        /// Adds a statistic to the wave data.
-        /// </summary>
-        /// <param name="key">Statistic key</param>
-        /// <param name="value">Statistic value</param>
+        ///<summary>
+        ///Adds a statistic to the wave data.
+        ///</summary>
+        ///<param name="key">Statistic key</param>
+        ///<param name="value">Statistic value</param>
         public void AddStatistic(string key, object value)
         {
             WaveStatistics[key] = value;
         }
 
-        /// <summary>
-        /// Gets a statistic from the wave data.
-        /// </summary>
-        /// <typeparam name="T">Type of the statistic</typeparam>
-        /// <param name="key">Statistic key</param>
-        /// <param name="defaultValue">Default value if not found</param>
-        /// <returns>Statistic value or default</returns>
+        ///<summary>
+        ///Gets a statistic from the wave data.
+        ///</summary>
+        ///<typeparam name="T">Type of the statistic</typeparam>
+        ///<param name="key">Statistic key</param>
+        ///<param name="defaultValue">Default value if not found</param>
+        ///<returns>Statistic value or default</returns>
         public T GetStatistic<T>(string key, T defaultValue = default)
         {
             if (WaveStatistics.TryGetValue(key, out var value) && value is T typedValue)
@@ -104,10 +106,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             return defaultValue;
         }
 
-        /// <summary>
-        /// Adds an achievement to the unlocked achievements list.
-        /// </summary>
-        /// <param name="achievement">Achievement name</param>
+        ///<summary>
+        ///Adds an achievement to the unlocked achievements list.
+        ///</summary>
+        ///<param name="achievement">Achievement name</param>
         public void AddAchievement(string achievement)
         {
             if (!string.IsNullOrEmpty(achievement) && !AchievementsUnlocked.Contains(achievement))
@@ -116,10 +118,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
         }
 
-        /// <summary>
-        /// Creates a summary string of the wave end event.
-        /// </summary>
-        /// <returns>Formatted summary string</returns>
+        ///<summary>
+        ///Creates a summary string of the wave end event.
+        ///</summary>
+        ///<returns>Formatted summary string</returns>
         public override string ToString()
         {
             return $"Wave {WaveNumber}: {(Victory ? "Victory" : "Defeat")} - " +
@@ -127,17 +129,17 @@ namespace SASZombieAssaultTD.Engine.Waves
                    $"Score: {ScoreEarned:F0} - Rating: {PerformanceRating:F2}";
         }
 
-        /// <summary>
-        /// Creates a detailed report of the wave end event.
-        /// </summary>
-        /// <returns>Detailed report string</returns>
+        ///<summary>
+        ///Creates a detailed report of the wave end event.
+        ///</summary>
+        ///<returns>Detailed report string</returns>
         public string GetDetailedReport()
         {
             var report = new List<string>
             {
                 $"=== Wave {WaveNumber} Report ===",
                 $"Result: {(Victory ? "VICTORY" : "DEFEAT")}",
-                $"Duration: {Duration:mm\\:ss}",
+                $"Duration: {Duration:mm//:ss}",
                 $"Performance: {PerformanceRating:F2}/1.00",
                 "",
                 "Combat Statistics:",
@@ -177,10 +179,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             return string.Join(Environment.NewLine, report);
         }
 
-        /// <summary>
-        /// Clones this WaveEndEvent.
-        /// </summary>
-        /// <returns>A new WaveEndEvent with the same data</returns>
+        ///<summary>
+        ///Clones this WaveEndEvent.
+        ///</summary>
+        ///<returns>A new WaveEndEvent with the same data</returns>
         public WaveEndEvent Clone()
         {
             return new WaveEndEvent

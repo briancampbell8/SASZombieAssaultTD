@@ -16,17 +16,15 @@ Notes: This is the main partial class that external systems interact with.
 All complex logic is delegated to specialized partial files.
 */
 
-using SASZombieAssaultTD.Engine.Core;
+//
+using System;
+using System.Threading;
 using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Interfaces;
-using SASZombieAssaultTD.Engine.Managers;
 using SASZombieAssaultTD.Engine.Platform;
 using SASZombieAssaultTD.Engine.Systems;
 using SASZombieAssaultTD.Engine.UI.Input;
-using System;
-using System.Threading;
 using IRenderContext = SASZombieAssaultTD.Engine.Interfaces.IRenderContext;
-
 namespace SASZombieAssaultTD.Engine
 {
     public partial class GameRoot : IProgram
@@ -71,7 +69,10 @@ namespace SASZombieAssaultTD.Engine
             _stateMachine = stateMachine ?? throw new ArgumentNullException(nameof(stateMachine));
             _renderContext = renderContext ?? throw new ArgumentNullException(nameof(renderContext));
 
-            DebugLogger.LogInfo("GameRoot initialized with all managers");
+            DLogger.Log(
+                LogSubsystems.GameRoot,
+                LogLevel.Debug,
+                "GameRoot initialized with all managers");
         }
 
         public bool IsInitialized => _isInitialized;
@@ -91,20 +92,33 @@ namespace SASZombieAssaultTD.Engine
 
                 try
                 {
-                    DebugLogger.LogInfo("Starting GameRoot initialization...");
-                    DebugLogger.LogDebug("TRACE", "GameRoot.Initialize: Enter");
+                    DLogger.Log(
+                        LogSubsystems.GameRoot,
+                        "Starting GameRoot initialization...");
+                    DLogger.Log(LogSubsystems.GameRoot, LogLevel.Trace, "TRACE", "GameRoot.Initialize: Enter");
 
+                    //Implementation lives in Initialization.cs
                     PerformInitialization();
 
                     _isInitialized = true;
 
-                    DebugLogger.LogDebug("TRACE", "GameRoot.Initialize: Exit OK");
-                    DebugLogger.LogInfo("GameRoot initialization completed successfully");
+                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", "GameRoot.Initialize: Exit OK");
+                    DLogger.Log(
+                        LogSubsystems.GameRoot,
+                        LogLevel.Debug,
+                        "GameRoot initialization completed successfully");
                 }
                 catch (Exception ex)
                 {
-                    DebugLogger.LogError("GameRoot.Initialize: EXCEPTION");
-                    DebugLogger.Exception(ex, "GameRoot.Initialize");
+                    DLogger.Log(
+                        LogSubsystems.GameRoot,
+                        LogLevel.Error,
+                        "GameRoot.Initialize: EXCEPTION");
+                    DLogger.Log(
+                        LogSubsystems.GameRoot,
+                        LogLevel.Debug,
+                        ex.Message,
+                        "GameRoot.Initialize");
 
                     Shutdown();
                     throw;
@@ -123,20 +137,35 @@ namespace SASZombieAssaultTD.Engine
 
                 try
                 {
-                    DebugLogger.LogInfo("Starting GameRoot shutdown...");
-                    DebugLogger.LogDebug("TRACE", "GameRoot.Shutdown: Enter");
+                    DLogger.Log(
+                        LogSubsystems.GameRoot,
+                        LogLevel.Info,
+                        "Starting GameRoot shutdown...");
+                    DLogger.Log(LogSubsystems.GameRoot, LogLevel.Trace, "TRACE", "GameRoot.Shutdown: Enter");
 
+                    //Implementation lives in Initialization.cs
                     PerformShutdown();
 
                     _isInitialized = false;
 
-                    DebugLogger.LogDebug("TRACE", "GameRoot.Shutdown: Exit OK");
-                    DebugLogger.LogInfo("GameRoot shutdown completed successfully");
+                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", "GameRoot.Shutdown: Exit OK");
+                    DLogger.Log(
+                        LogSubsystems.GameRoot,
+                        LogLevel.Info,
+                        "GameRoot shutdown completed successfully");
                 }
                 catch (Exception ex)
                 {
-                    DebugLogger.LogError("GameRoot.Shutdown: EXCEPTION");
-                    DebugLogger.Exception(ex, "GameRoot.Shutdown");
+                    DLogger.Log(
+                        LogSubsystems.GameRoot,
+                        LogLevel.Error,
+                        ex.Message,
+                        "GameRoot.Shutdown: EXCEPTION");
+                    DLogger.Log(
+                        LogSubsystems.GameRoot,
+                        LogLevel.Debug,
+                        ex.Message,
+                         "GameRoot.Shutdown");
                 }
             }
         }
@@ -168,12 +197,12 @@ namespace SASZombieAssaultTD.Engine
 
                     while (_frameAccumulator >= TargetFrameTime)
                     {
-                        DebugLogger.LogDebug("TRACE", $"GameRoot.Run: Update({TargetFrameTime})");
+                        DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", $"GameRoot.Run: Update({TargetFrameTime})");
                         Update(TargetFrameTime);
                         _frameAccumulator -= TargetFrameTime;
                     }
 
-                    DebugLogger.LogDebug("TRACE", "GameRoot.Run: Render()");
+                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", "GameRoot.Run: Render()");
                     Render();
 
                     var frameTime = (float)(DateTime.Now - currentTime).TotalSeconds;
@@ -197,16 +226,23 @@ namespace SASZombieAssaultTD.Engine
 
             try
             {
-                DebugLogger.LogDebug("TRACE", $"GameRoot.Update: Enter (delta={deltaTime:F4})");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", $"GameRoot.Update: Enter (delta={deltaTime:F4})");
 
+                //Implementation lives in UpdateLoop.cs
                 PerformUpdate(deltaTime);
 
-                DebugLogger.LogDebug("TRACE", "GameRoot.Update: Exit OK");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", "GameRoot.Update: Exit OK");
             }
             catch (Exception ex)
             {
-                DebugLogger.LogError("GameRoot.Update: EXCEPTION");
-                DebugLogger.Exception(ex, "GameRoot.Update");
+                DLogger.Log(
+                    LogSubsystems.Unknown,
+                    LogLevel.Error,
+                    "GameRoot.Update: EXCEPTION");
+                DLogger.Log(
+                    LogSubsystems.GameRoot, LogLevel.Error,
+                    $"Failed to update game: {ex.Message}");
+
 
                 Shutdown();
             }
@@ -219,16 +255,24 @@ namespace SASZombieAssaultTD.Engine
 
             try
             {
-                DebugLogger.LogDebug("TRACE", "GameRoot.Render: Enter");
+                DLogger.Log(LogSubsystems.GameRoot, LogLevel.Trace, "TRACE", "GameRoot.Render: Enter");
 
+                //Implementation lives in UpdateLoop.cs
                 PerformRender();
 
-                DebugLogger.LogDebug("TRACE", "GameRoot.Render: Exit OK");
+                DLogger.Log(LogSubsystems.GameRoot, LogLevel.Trace, "TRACE", "GameRoot.Render: Exit OK");
             }
             catch (Exception ex)
             {
-                DebugLogger.LogError("GameRoot.Render: EXCEPTION");
-                DebugLogger.Exception(ex, "GameRoot.Render");
+                DLogger.Log(
+                    LogSubsystems.GameRoot,
+                    LogLevel.Error,
+                    "GameRoot.Render: EXCEPTION");
+                DLogger.Log(
+                    LogSubsystems.GameRoot,
+                    LogLevel.Error,
+                    ex.Message,
+                    "GameRoot.Render");
             }
         }
 
@@ -242,22 +286,22 @@ namespace SASZombieAssaultTD.Engine
 
         private EngineDiagnostics GetEngineDiagnostics()
         {
-            // Intentionally still guarded until diagnostics pipeline is implemented
-            DebugLogger.LogError("GameRoot.GetEngineDiagnostics: NOT IMPLEMENTED");
+            //Intentionally still guarded until diagnostics pipeline is implemented
+            DLogger.Log(
+                LogSubsystems.GameRoot,
+                LogLevel.Debug,
+                "GameRoot.GetEngineDiagnostics: NOT IMPLEMENTED");
             NotImplementedGuard.Hit("NOT_IMPLEMENTED");
             throw new NotImplementedException();
         }
 
-        // ======================================================================================
-        // IProgram IMPLEMENTATION — public API is the single source of truth
-        // ======================================================================================
+        //======================================================================================
+        //IProgram IMPLEMENTATION — public API is the single source of truth
+        //======================================================================================
 
         void IProgram.Initialize()
         {
-            // No guardrail here anymore: Initialize is now implemented.
-            // This ensures the first pass succeeds and the system can move on
-            // to the next NOT_IMPLEMENTED litmus point.
-            DebugLogger.LogDebug("TRACE", "IProgram.Initialize: delegating to GameRoot.Initialize");
+            DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", "IProgram.Initialize: delegating to GameRoot.Initialize");
             Initialize();
         }
 
@@ -311,11 +355,22 @@ namespace SASZombieAssaultTD.Engine
             try
             {
                 var message = $"EngineDiagnostics.Trace: {eventName} | {details}";
-                DebugLogger.LogDebug(message);
+                DLogger.Log(
+                    LogSubsystems.GameRoot,
+                    LogLevel.Trace,
+                    "TRACE",
+                    message);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(
+                DLogger.Log(
+                    LogSubsystems.GameRoot,
+                    LogLevel.Error,
+                    "EngineDiagnostics.Trace: EXCEPTION");
+                DLogger.Log(
+                    LogSubsystems.GameRoot,
+                    LogLevel.Error,
+
                     $"EngineDiagnostics.Trace: Diagnostics failure suppressed | {ex.Message}"
                 );
             }

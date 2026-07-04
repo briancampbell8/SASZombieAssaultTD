@@ -6,21 +6,23 @@ Purpose: Represents the result of a batch asset loading operation.
 Notes:   Contains success and failure counts for pipeline operations.
 */
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Assets
 {
-    /// <summary>
-    /// Represents the outcome of loading multiple assets in a batch.
-    /// </summary>
+    ///<summary>
+    ///Represents the outcome of loading multiple assets in a batch.
+    ///</summary>
     public sealed class AssetBatchLoadResult
     {
-        /// <summary>
-        /// Number of assets successfully loaded.
-        /// </summary>
+        ///<summary>
+        ///Number of assets successfully loaded.
+        ///</summary>
         public int SuccessCount { get; }
 
-        /// <summary>
-        /// Number of assets that failed to load.
-        /// </summary>
+        ///<summary>
+        ///Number of assets that failed to load.
+        ///</summary>
         public int FailureCount { get; }
 
         public AssetBatchLoadResult(int successCount, int failureCount)

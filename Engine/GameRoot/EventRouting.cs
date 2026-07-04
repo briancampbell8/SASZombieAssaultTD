@@ -17,24 +17,25 @@ Notes:    Contains all event routing logic extracted from GameRoot.
 */
 
 using System;
-using SASZombieAssaultTD.Engine.Core;
 using System.Collections.Generic;
 using System.Linq;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine
+//
 {
-    /// <summary>
-    /// Simple event router for managing event subscriptions and dispatching.
-    /// </summary>
+    ///<summary>
+    ///Simple event router for managing event subscriptions and dispatching.
+    ///</summary>
     public class EventRouter
     {
         private readonly Dictionary<Type, List<Delegate>> _subscriptions = new();
 
-        /// <summary>
-        /// Subscribes to an event.
-        /// </summary>
-        /// <typeparam name="T">The event type.</typeparam>
-        /// <param name="handler">The event handler.</param>
+        ///<summary>
+        ///Subscribes to an event.
+        ///</summary>
+        ///<typeparam name="T">The event type.</typeparam>
+        ///<param name="handler">The event handler.</param>
         public void Subscribe<T>(Action<T> handler) where T : class
         {
             var eventType = typeof(T);
@@ -44,11 +45,11 @@ namespace SASZombieAssaultTD.Engine
             _subscriptions[eventType].Add(handler);
         }
 
-        /// <summary>
-        /// Unsubscribes from an event.
-        /// </summary>
-        /// <typeparam name="T">The event type.</typeparam>
-        /// <param name="handler">The event handler.</param>
+        ///<summary>
+        ///Unsubscribes from an event.
+        ///</summary>
+        ///<typeparam name="T">The event type.</typeparam>
+        ///<param name="handler">The event handler.</param>
         public void Unsubscribe<T>(Action<T> handler) where T : class
         {
             var eventType = typeof(T);
@@ -56,11 +57,11 @@ namespace SASZombieAssaultTD.Engine
                 _subscriptions[eventType].Remove(handler);
         }
 
-        /// <summary>
-        /// Publishes an event.
-        /// </summary>
-        /// <typeparam name="T">The event type.</typeparam>
-        /// <param name="eventData">The event data.</param>
+        ///<summary>
+        ///Publishes an event.
+        ///</summary>
+        ///<typeparam name="T">The event type.</typeparam>
+        ///<param name="eventData">The event data.</param>
         public void Publish<T>(T eventData) where T : class
         {
             var eventType = typeof(T);
@@ -74,77 +75,83 @@ namespace SASZombieAssaultTD.Engine
             }
         }
 
-        /// <summary>
-        /// Processes event queue (placeholder).
-        /// </summary>
+        ///<summary>
+        ///Processes event queue (placeholder).
+        ///</summary>
         public void ProcessQueue()
         {
-            // Event queue processing logic would go here
+            //Event queue processing logic would go here
         }
 
-        /// <summary>
-        /// Clears all subscriptions.
-        /// </summary>
+        ///<summary>
+        ///Clears all subscriptions.
+        ///</summary>
         public void ClearSubscriptions()
         {
             _subscriptions.Clear();
         }
 
-        /// <summary>
-        /// Gets subscription count.
-        /// </summary>
-        /// <returns>The number of active subscriptions.</returns>
+        ///<summary>
+        ///Gets subscription count.
+        ///</summary>
+        ///<returns>The number of active subscriptions.</returns>
         public int GetSubscriptionCount()
         {
             return _subscriptions.Values.Sum(list => list.Count);
         }
     }
 
-    /// <summary>
-    /// Partial class containing event routing logic for GameRoot.
-    /// </summary>
+    ///<summary>
+    ///Partial class containing event routing logic for GameRoot.
+    ///</summary>
     public partial class GameRoot
     {
         private readonly EventRouter _eventRouter = new();
 
-        /// <summary>
-        /// Gets the event router for event operations.
-        /// </summary>
+        ///<summary>
+        ///Gets the event router for event operations.
+        ///</summary>
         public EventRouter EventRouter => _eventRouter;
 
-        /// <summary>
-        /// Subscribes to an event with the specified handler.
-        /// </summary>
-        /// <typeparam name="T">The event type.</typeparam>
-        /// <param name="handler">The event handler.</param>
+        ///<summary>
+        ///Subscribes to an event with the specified handler.
+        ///</summary>
+        ///<typeparam name="T">The event type.</typeparam>
+        ///<param name="handler">The event handler.</param>
         public void SubscribeToEvent<T>(Action<T> handler) where T : class
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
             _eventRouter.Subscribe(handler);
-            Engine.Diagnostics.DebugLogger.LogInfo($"Subscribed to event of type {typeof(T).Name}");
+            DLogger.Log(
+                LogSubsystems.GameRoot,
+                LogLevel.Debug,
+                $"Subscribed to event of type {typeof(T).Name}");
         }
 
-        /// <summary>
-        /// Unsubscribes from an event.
-        /// </summary>
-        /// <typeparam name="T">The event type.</typeparam>
-        /// <param name="handler">The event handler.</param>
+        ///<summary>
+        ///Unsubscribes from an event.
+        ///</summary>
+        ///<typeparam name="T">The event type.</typeparam>
+        ///<param name="handler">The event handler.</param>
         public void UnsubscribeFromEvent<T>(Action<T> handler) where T : class
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
             _eventRouter.Unsubscribe(handler);
-            Engine.Diagnostics.DebugLogger.LogInfo($"Unsubscribed from event of type {typeof(T).Name}");
+            DLogger.Log(
+                LogSubsystems.GameRoot,
+                LogLevel.Debug,
+                $"Unsubscribed from event of type {typeof(T).Name}");
         }
 
-        /// <summary>
-        /// Publishes an event to all subscribers.
-        /// </summary>
-        /// <typeparam name="T">The event type.</typeparam>
-        /// <param name="eventData">The event data.</param>
+        ///<summary>
+        ///Publishes an event to all subscribers.
+        ///</summary>
+        ///<typeparam name="T">The event type.</typeparam>
+        ///<param name="eventData">The event data.</param>
         public void PublishEvent<T>(T eventData) where T : class
         {
             if (eventData == null)
@@ -153,45 +160,62 @@ namespace SASZombieAssaultTD.Engine
             try
             {
                 _eventRouter.Publish(eventData);
-                Engine.Diagnostics.DebugLogger.LogDebug($"Published event of type {typeof(T).Name}");
+                DLogger.Log(
+                    LogSubsystems.GameRoot,
+                    LogLevel.Debug,
+                    $"Published event of type {typeof(T).Name}");
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to publish event of type {typeof(T).Name}: {ex.Message}");
-                Engine.Diagnostics.DebugLogger.Exception(ex, "Event publish");
+                DLogger.Log(LogSubsystems.GameRoot, LogLevel.Error, $"Failed to publish event of type {typeof(T).Name}: {ex.Message}");
+                DLogger.Log(
+                    LogSubsystems.GameRoot,
+                    LogLevel.Error,
+                    ex.ToString());
             }
         }
 
-        /// <summary>
-        /// Processes all pending events in the event queue.
-        /// </summary>
+        ///<summary>
+        ///Processes all pending events in the event queue.
+        ///</summary>
         public void ProcessEventQueue()
         {
             try
             {
                 _eventRouter.ProcessQueue();
-                Engine.Diagnostics.DebugLogger.LogDebug("Event queue processed successfully");
+                DLogger.Log(
+                    LogSubsystems.GameRoot,
+                    LogLevel.Debug,
+                    "Event queue processed successfully");
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to process event queue: {ex.Message}");
-                Engine.Diagnostics.DebugLogger.Exception(ex, "Event queue processing");
+                DLogger.Log(LogSubsystems.GameRoot, LogLevel.Error,
+                    $"Failed to process event queue: {ex.Message}");
+                DLogger.Log(
+                    LogSubsystems.GameRoot,
+                    LogLevel.Error,
+                    ex.ToString(), "Event queue processing");
+
             }
         }
 
-        /// <summary>
-        /// Clears all event subscriptions.
-        /// </summary>
+        ///<summary>
+        ///Clears all event subscriptions.
+        ///</summary>
         public void ClearEventSubscriptions()
         {
             _eventRouter.ClearSubscriptions();
-            Engine.Diagnostics.DebugLogger.LogInfo("All event subscriptions cleared");
+            DLogger.Log(
+                LogSubsystems.GameRoot,
+                LogLevel.Debug,
+                "All event subscriptions cleared");
         }
 
-        /// <summary>
-        /// Gets the number of active event subscriptions.
-        /// </summary>
-        /// <returns>The number of active subscriptions.</returns>
+        ///<summary>
+        ///Gets the number of active event subscriptions.
+        ///</summary>
+        ///<returns>The number of active subscriptions.</returns>
         public int GetEventSubscriptionCount()
         {
             return _eventRouter.GetSubscriptionCount();

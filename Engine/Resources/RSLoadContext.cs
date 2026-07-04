@@ -9,33 +9,35 @@ Notes:   Passed to loaders to supply environment, root paths, and configuration.
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Assets
 {
-    /// <summary>
-    /// Represents contextual information used during asset loading.
-    /// </summary>
+    ///<summary>
+    ///Represents contextual information used during asset loading.
+    ///</summary>
     public sealed class AssetLoadContext
     {
-        /// <summary>
-        /// The root directory where assets are located.
-        /// Example: "Content/" or "Assets/".
-        /// </summary>
+        ///<summary>
+        ///The root directory where assets are located.
+        ///Example: "Content/" or "Assets/".
+        ///</summary>
         public string RootDirectory { get; }
 
-        /// <summary>
-        /// Optional base path for resolving relative asset paths.
-        /// </summary>
+        ///<summary>
+        ///Optional base path for resolving relative asset paths.
+        ///</summary>
         public string? BasePath { get; }
 
-        /// <summary>
-        /// Optional service provider for dependency injection.
-        /// Useful for loaders that need access to engine services.
-        /// </summary>
+        ///<summary>
+        ///Optional service provider for dependency injection.
+        ///Useful for loaders that need access to engine services.
+        ///</summary>
         public IServiceProvider? Services { get; }
 
-        /// <summary>
-        /// List of asset metadata to be loaded.
-        /// </summary>
+        ///<summary>
+        ///List of asset metadata to be loaded.
+        ///</summary>
         public List<AssetMetadata> Assets { get; set; }
 
         public AssetLoadContext(
@@ -51,9 +53,9 @@ namespace SASZombieAssaultTD.Engine.Assets
             Assets = new List<AssetMetadata>();
         }
 
-        /// <summary>
-        /// Resolves a relative path using the root directory and optional base path.
-        /// </summary>
+        ///<summary>
+        ///Resolves a relative path using the root directory and optional base path.
+        ///</summary>
         public string ResolvePath(string relativePath)
         {
             if (relativePath is null)

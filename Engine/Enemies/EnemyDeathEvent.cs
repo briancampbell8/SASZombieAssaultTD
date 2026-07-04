@@ -2,17 +2,19 @@ using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.VectorMath;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Enemies
 {
-    /// <summary>
-    /// Event data for enemy death.
-    /// Triggered when an enemy is killed, containing comprehensive death information.
-    /// Phase 6: Final Pass - Add missing EnemyDeathEvent to fix CS1061 errors
-    /// </summary>
+    ///<summary>
+    ///Event data for enemy death.
+    ///Triggered when an enemy is killed, containing comprehensive death information.
+    ///Phase 6: Final Pass - Add missing EnemyDeathEvent to fix CS1061 errors
+    ///</summary>
     public class EnemyDeathEvent
     {
         public int EnemyId { get; set; }
-        // Numeric standardization: All continuous values use double for precision
+        //Numeric standardization: All continuous values use double for precision
         public ZombieType EnemyType { get; set; }
         public Vector3 DeathPosition { get; set; }
         public DateTime DeathTime { get; set; }
@@ -30,7 +32,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
         public List<string> DamageSources { get; set; } = new();
         public Dictionary<string, double> DamageBreakdown { get; set; } = new();
         
-        // Missing properties
+        //Missing properties
         public object Enemy { get; set; }
         public string SourceOfDamage { get; set; }
         public float DistanceFromPlayer { get; set; }
@@ -41,9 +43,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
         public List<string> AchievementsTriggered { get; set; } = new();
         public Dictionary<string, object> KillStatistics { get; set; } = new();
 
-        /// <summary>
-        /// Parameterless constructor for cloning and serializers.
-        /// </summary>
+        ///<summary>
+        ///Parameterless constructor for cloning and serializers.
+        ///</summary>
         public EnemyDeathEvent()
         {
             DamageSources = new List<string>();
@@ -52,9 +54,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             KillStatistics = new Dictionary<string, object>();
         }
 
-        /// <summary>
-        /// Initializes a new EnemyDeathEvent instance.
-        /// </summary>
+        ///<summary>
+        ///Initializes a new EnemyDeathEvent instance.
+        ///</summary>
         public EnemyDeathEvent(uint id, string type, Vector3 position)
         {
             DeathTime = DateTime.Now;
@@ -64,12 +66,12 @@ namespace SASZombieAssaultTD.Engine.Enemies
             KillStatistics = new Dictionary<string, object>();
         }
 
-        /// <summary>
-        /// Initializes a new EnemyDeathEvent with basic parameters.
-        /// </summary>
-        /// <param name="enemyId">ID of the enemy that died</param>
-        /// <param name="enemyType">Type of the enemy</param>
-        /// <param name="deathPosition">Position where the enemy died</param>
+        ///<summary>
+        ///Initializes a new EnemyDeathEvent with basic parameters.
+        ///</summary>
+        ///<param name="enemyId">ID of the enemy that died</param>
+        ///<param name="enemyType">Type of the enemy</param>
+        ///<param name="deathPosition">Position where the enemy died</param>
         public EnemyDeathEvent(int enemyId, ZombieType enemyType, Vector3 deathPosition)
         {
             EnemyId = enemyId;
@@ -82,24 +84,24 @@ namespace SASZombieAssaultTD.Engine.Enemies
             KillStatistics = new Dictionary<string, object>();
         }
 
-        /// <summary>
-        /// Gets the total score value including multipliers.
-        /// </summary>
+        ///<summary>
+        ///Gets the total score value including multipliers.
+        ///</summary>
         public int TotalScoreValue => (int)(ScoreValue * ComboMultiplier * (WasCriticalKill ? 1.5f : 1.0f));
 
-        /// <summary>
-        /// Gets the total cash value including multipliers.
-        /// </summary>
+        ///<summary>
+        ///Gets the total cash value including multipliers.
+        ///</summary>
         public double TotalCashValue => CashValue * ComboMultiplier * (WasCriticalKill ? 1.5 : 1.0);
 
-        /// <summary>
-        /// Gets the damage per second rate.
-        /// </summary>
+        ///<summary>
+        ///Gets the damage per second rate.
+        ///</summary>
         public double DamagePerSecond => TimeAlive > 0 ? DamageDealt / TimeAlive : 0.0;
 
-        /// <summary>
-        /// Gets the efficiency rating based on kill method.
-        /// </summary>
+        ///<summary>
+        ///Gets the efficiency rating based on kill method.
+        ///</summary>
         public float EfficiencyRating
         {
             get
@@ -116,11 +118,11 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
         }
 
-        /// <summary>
-        /// Adds a damage source to the death event.
-        /// </summary>
-        /// <param name="source">Name of the damage source</param>
-        /// <param name="damage">Amount of damage dealt</param>
+        ///<summary>
+        ///Adds a damage source to the death event.
+        ///</summary>
+        ///<param name="source">Name of the damage source</param>
+        ///<param name="damage">Amount of damage dealt</param>
         public void AddDamageSource(string source, double damage)
         {
             if (!string.IsNullOrEmpty(source))
@@ -140,23 +142,23 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
         }
 
-        /// <summary>
-        /// Adds a statistic to the kill data.
-        /// </summary>
-        /// <param name="key">Statistic key</param>
-        /// <param name="value">Statistic value</param>
+        ///<summary>
+        ///Adds a statistic to the kill data.
+        ///</summary>
+        ///<param name="key">Statistic key</param>
+        ///<param name="value">Statistic value</param>
         public void AddStatistic(string key, object value)
         {
             KillStatistics[key] = value;
         }
 
-        /// <summary>
-        /// Gets a statistic from the kill data.
-        /// </summary>
-        /// <typeparam name="T">Type of the statistic</typeparam>
-        /// <param name="key">Statistic key</param>
-        /// <param name="defaultValue">Default value if not found</param>
-        /// <returns>Statistic value or default</returns>
+        ///<summary>
+        ///Gets a statistic from the kill data.
+        ///</summary>
+        ///<typeparam name="T">Type of the statistic</typeparam>
+        ///<param name="key">Statistic key</param>
+        ///<param name="defaultValue">Default value if not found</param>
+        ///<returns>Statistic value or default</returns>
         public T GetStatistic<T>(string key, T defaultValue = default)
         {
             if (KillStatistics.TryGetValue(key, out var value) && value is T typedValue)
@@ -166,10 +168,10 @@ namespace SASZombieAssaultTD.Engine.Enemies
             return defaultValue;
         }
 
-        /// <summary>
-        /// Adds an achievement to the triggered achievements list.
-        /// </summary>
-        /// <param name="achievement">Achievement name</param>
+        ///<summary>
+        ///Adds an achievement to the triggered achievements list.
+        ///</summary>
+        ///<param name="achievement">Achievement name</param>
         public void AddAchievement(string achievement)
         {
             if (!string.IsNullOrEmpty(achievement) && !AchievementsTriggered.Contains(achievement))
@@ -178,10 +180,10 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
         }
 
-        /// <summary>
-        /// Gets the primary damage source.
-        /// </summary>
-        /// <returns>The damage source that dealt the most damage</returns>
+        ///<summary>
+        ///Gets the primary damage source.
+        ///</summary>
+        ///<returns>The damage source that dealt the most damage</returns>
         public string GetPrimaryDamageSource()
         {
             if (DamageBreakdown.Count == 0) return "Unknown";
@@ -201,10 +203,10 @@ namespace SASZombieAssaultTD.Engine.Enemies
             return primarySource;
         }
 
-        /// <summary>
-        /// Creates a summary string of the enemy death event.
-        /// </summary>
-        /// <returns>Formatted summary string</returns>
+        ///<summary>
+        ///Creates a summary string of the enemy death event.
+        ///</summary>
+        ///<returns>Formatted summary string</returns>
         public override string ToString()
         {
             return $"{EnemyType} killed by {KillerName} - " +
@@ -213,10 +215,10 @@ namespace SASZombieAssaultTD.Engine.Enemies
                    $"Time: {TimeAlive:F1}s";
         }
 
-        /// <summary>
-        /// Creates a detailed report of the enemy death event.
-        /// </summary>
-        /// <returns>Detailed report string</returns>
+        ///<summary>
+        ///Creates a detailed report of the enemy death event.
+        ///</summary>
+        ///<returns>Detailed report string</returns>
         public string GetDetailedReport()
         {
             var report = new List<string>
@@ -281,10 +283,10 @@ namespace SASZombieAssaultTD.Engine.Enemies
             return string.Join(Environment.NewLine, report);
         }
 
-        /// <summary>
-        /// Clones this EnemyDeathEvent.
-        /// </summary>
-        /// <returns>A new EnemyDeathEvent with the same data</returns>
+        ///<summary>
+        ///Clones this EnemyDeathEvent.
+        ///</summary>
+        ///<returns>A new EnemyDeathEvent with the same data</returns>
         public EnemyDeathEvent Clone()
         {
             return new EnemyDeathEvent

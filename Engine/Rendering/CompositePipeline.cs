@@ -1,18 +1,18 @@
-//// Program Name: CompositePipeline.cs
+////Program Name: CompositePipeline.cs
 
-//// File Path: Engine/Rendering/CompositePipeline.cs
+////File Path: Engine/Rendering/CompositePipeline.cs
 
-//// Program Purpose: The program provides a factory method for creating composite pipeline builders.
+////Program Purpose: The program provides a factory method for creating composite pipeline builders.
 
-//// Program Features:
+////Program Features:
 
-//// - Creates CompositeBuilder with loader, creator, and merger components
+////- Creates CompositeBuilder with loader, creator, and merger components
 
-//// - Provides centralized wiring for composite pipeline
+////- Provides centralized wiring for composite pipeline
 
 ///
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 
 using Engine.Rendering;
 using SASZombieAssaultTD.Engine.Rendering;

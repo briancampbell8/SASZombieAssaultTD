@@ -5,48 +5,50 @@ Purpose: Background rendering system for SAS Zombie Assault TD.
 Features: Animated backgrounds, parallax effects, and transitions.
 */
 
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.VectorMath;
 using System;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.VectorMath;
+
 
 namespace SASZombieAssaultTD.Engine.Rendering
+
 {
-    /// <summary>
-    /// Background renderer for main menu and game states.
-    /// Handles animated backgrounds with parallax scrolling and transitions.
-    /// </summary>
+    ///<summary>
+    ///Background renderer for main menu and game states.
+    ///Handles animated backgrounds with parallax scrolling and transitions.
+    ///</summary>
     public class BackgroundRenderer
     {
-        ///  Properties
+        /// Properties
 
-        /// <summary>
-        /// Gets or sets whether the background renderer is active.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether the background renderer is active.
+        ///</summary>
         public bool IsActive { get; private set; }
 
-        /// <summary>
-        /// Gets or sets the background name/identifier.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the background name/identifier.
+        ///</summary>
         public string BackgroundName { get; private set; } = string.Empty;
 
-        /// <summary>
-        /// Gets or sets the animation time.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the animation time.
+        ///</summary>
         public float AnimationTime { get; private set; }
 
-        /// <summary>
-        /// Gets or sets the background color.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the background color.
+        ///</summary>
         public Color BackgroundColor { get; set; } = new Color(20, 20, 40);
 
-        /// <summary>
-        /// Gets or sets the parallax speed.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the parallax speed.
+        ///</summary>
         public Vector3 ParallaxSpeed { get; set; } = new Vector3(10.0f, 5.0f, 0f);
 
-        /// 
+        ///
 
-        ///  Fields
+        /// Fields
 
         private bool _isInitialized = false;
         private float _transitionTime = 0f;
@@ -54,19 +56,19 @@ namespace SASZombieAssaultTD.Engine.Rendering
         private Color _startColor;
         private Color _targetColor;
 
-        /// 
+        ///
 
-        ///  Initialization
+        /// Initialization
 
-        /// <summary>
-        /// Initializes the background renderer with the specified background.
-        /// </summary>
-        /// <param name="backgroundName">The name of the background to load.</param>
+        ///<summary>
+        ///Initializes the background renderer with the specified background.
+        ///</summary>
+        ///<param name="backgroundName">The name of the background to load.</param>
         public void Initialize(string backgroundName)
         {
             if (string.IsNullOrEmpty(backgroundName))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "BackgroundRenderer: Background name cannot be null or empty");
+                DLogger.Log(LogSubsystems.Rendering, LogLevel.Error, "BackgroundRenderer: Background name cannot be null or empty");
                 return;
             }
 
@@ -75,7 +77,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
             IsActive = false;
             AnimationTime = 0f;
 
-            // Set default colors based on background name
+            //Set default colors based on background name
             switch (backgroundName.ToLower())
             {
                 case "main_menu_background":
@@ -92,33 +94,33 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _startColor = BackgroundColor;
             _targetColor = BackgroundColor;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BackgroundRenderer: Initialized background '{backgroundName}'");
+            DLogger.Log(LogSubsystems.Rendering, LogLevel.Debug, $"BackgroundRenderer: Initialized background '{backgroundName}'");
         }
 
-        /// 
+        ///
 
-        ///  Control Methods
+        /// Control Methods
 
-        /// <summary>
-        /// Starts the background animation.
-        /// </summary>
+        ///<summary>
+        ///Starts the background animation.
+        ///</summary>
         public void Start()
         {
             if (!_isInitialized)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "BackgroundRenderer: Cannot start - not initialized");
+                DLogger.Log(LogSubsystems.Rendering, LogLevel.Warning, "BackgroundRenderer: Cannot start - not initialized");
                 return;
             }
 
             IsActive = true;
             AnimationTime = 0f;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BackgroundRenderer: Started background '{BackgroundName}'");
+            DLogger.Log(LogSubsystems.Rendering, LogLevel.Debug, $"BackgroundRenderer: Started background '{BackgroundName}'");
         }
 
-        /// <summary>
-        /// Stops the background animation.
-        /// </summary>
+        ///<summary>
+        ///Stops the background animation.
+        ///</summary>
         public void Stop()
         {
             if (!_isInitialized)
@@ -127,17 +129,17 @@ namespace SASZombieAssaultTD.Engine.Rendering
             IsActive = false;
             AnimationTime = 0f;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BackgroundRenderer: Stopped background '{BackgroundName}'");
+            DLogger.Log(LogSubsystems.Rendering, LogLevel.Debug, $"BackgroundRenderer: Stopped background '{BackgroundName}'");
         }
 
-        /// 
+        ///
 
-        ///  Update Methods
+        /// Update Methods
 
-        /// <summary>
-        /// Updates the background animation.
-        /// </summary>
-        /// <param name="deltaTime">Time since last update.</param>
+        ///<summary>
+        ///Updates the background animation.
+        ///</summary>
+        ///<param name="deltaTime">Time since last update.</param>
         public void Update(float deltaTime)
         {
             if (!_isInitialized || !IsActive)
@@ -145,7 +147,7 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
             AnimationTime += deltaTime;
 
-            // Update color transition if active
+            //Update color transition if active
             if (_transitionTime < _transitionDuration)
             {
                 _transitionTime += deltaTime;
@@ -153,20 +155,20 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 BackgroundColor = Color.Lerp(_startColor, _targetColor, progress);
             }
 
-            // Add subtle animation effects
+            //Add subtle animation effects
             UpdateBackgroundAnimation(deltaTime);
         }
 
-        /// <summary>
-        /// Updates background animation effects.
-        /// </summary>
-        /// <param name="deltaTime">Time since last update.</param>
+        ///<summary>
+        ///Updates background animation effects.
+        ///</summary>
+        ///<param name="deltaTime">Time since last update.</param>
         private void UpdateBackgroundAnimation(float deltaTime)
         {
-            // Add subtle pulsing effect
+            //Add subtle pulsing effect
             float pulse = (float)System.Math.Sin(AnimationTime * 0.5f) * 0.1f + 1.0f;
-            
-            // Modulate background color slightly
+
+            //Modulate background color slightly
             var baseColor = _targetColor;
             BackgroundColor = new Color(
                 (int)(baseColor.R * pulse),
@@ -175,13 +177,13 @@ namespace SASZombieAssaultTD.Engine.Rendering
             );
         }
 
-        /// 
+        ///
 
-        ///  Rendering
+        /// Rendering
 
-        /// <summary>
-        /// Renders the background.
-        /// </summary>
+        ///<summary>
+        ///Renders the background.
+        ///</summary>
         public void Render()
         {
             if (!_isInitialized)
@@ -189,35 +191,35 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
             try
             {
-                // Clear the screen with background color
-                // This would integrate with the actual rendering system
+                //Clear the screen with background color
+                //This would integrate with the actual rendering system
                 RenderBackground();
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"BackgroundRenderer: Failed to render background '{BackgroundName}': {ex.Message}");
+                DLogger.Log(LogSubsystems.Rendering, LogLevel.Error, $"BackgroundRenderer: Failed to render background '{BackgroundName}': {ex.Message}");
             }
         }
 
-        /// <summary>
-        /// Performs the actual background rendering.
-        /// </summary>
+        ///<summary>
+        ///Performs the actual background rendering.
+        ///</summary>
         private void RenderBackground()
         {
-            // This would integrate with the actual rendering context
-            // For now, we'll just log the rendering attempt
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BackgroundRenderer: Rendering background '{BackgroundName}' with color {BackgroundColor}");
+            //This would integrate with the actual rendering context
+            //For now, we'll just log the rendering attempt
+            DLogger.Log(LogSubsystems.Rendering, LogLevel.Debug, $"BackgroundRenderer: Rendering background '{BackgroundName}' with color {BackgroundColor}");
         }
 
-        /// 
+        ///
 
-        ///  Utility Methods
+        /// Utility Methods
 
-        /// <summary>
-        /// Transitions the background color to a new color.
-        /// </summary>
-        /// <param name="targetColor">The target color.</param>
-        /// <param name="duration">Transition duration in seconds.</param>
+        ///<summary>
+        ///Transitions the background color to a new color.
+        ///</summary>
+        ///<param name="targetColor">The target color.</param>
+        ///<param name="duration">Transition duration in seconds.</param>
         public void TransitionToColor(Color targetColor, float duration = 1.0f)
         {
             if (!_isInitialized)
@@ -228,13 +230,13 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _transitionDuration = duration;
             _transitionTime = 0f;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"BackgroundRenderer: Starting color transition to {targetColor} over {duration}s");
+            DLogger.Log(LogSubsystems.Rendering, LogLevel.Debug, $"BackgroundRenderer: Starting color transition to {targetColor} over {duration}s");
         }
 
-        /// <summary>
-        /// Gets debug information about the background renderer.
-        /// </summary>
-        /// <returns>Debug information string.</returns>
+        ///<summary>
+        ///Gets debug information about the background renderer.
+        ///</summary>
+        ///<returns>Debug information string.</returns>
         public string GetDebugInfo()
         {
             var info = $"BackgroundRenderer Debug Info:\n";
@@ -248,6 +250,6 @@ namespace SASZombieAssaultTD.Engine.Rendering
             return info;
         }
 
-        /// 
+        ///
     }
 }

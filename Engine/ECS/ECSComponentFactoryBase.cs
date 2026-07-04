@@ -13,17 +13,19 @@ Notes:    This replaces all fragmented component implementations across the engi
             All engine code must use this unified Component type.
 */
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.ECS
 {
     public static class ECSComponentFactoryBase
     {
 
-        /// <summary>
-        /// Creates a new instance of a typed component.
-        /// </summary>
-        /// <typeparam name="T">The type of the component.</typeparam>
-        /// <param name="owner">The owner entity.</param>
-        /// <returns>A new instance of the component.</returns>
+        ///<summary>
+        ///Creates a new instance of a typed component.
+        ///</summary>
+        ///<typeparam name="T">The type of the component.</typeparam>
+        ///<param name="owner">The owner entity.</param>
+        ///<returns>A new instance of the component.</returns>
         public static T Create<T>(Entity owner) where T : ECSComponent<T>, new()
         {
             if (owner == null) throw new ArgumentNullException(nameof(owner));

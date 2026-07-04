@@ -21,7 +21,6 @@
  * ==================================================================================================== */
 
 using System;
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
@@ -53,7 +52,9 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             string fullContext =
                 $"{context} | Program={programName} | Class={className} | Member={member} | Line={line}";
 
-            DebugLogger.Critical("NOT_IMPLEMENTED", fullContext);
+            DLogger.Log(
+                LogSubsystems.Diagnostics, LogLevel.Critical,
+                "NOT_IMPLEMENTED", fullContext);
 
             throw new NotImplementedException(fullContext);
         }

@@ -1,31 +1,33 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Rendering
 {
-    /// <summary>
-    /// Batching logic for UI draw calls to optimize rendering performance
-    /// P80-03-02: UIBatcher providing batching logic for UI draw calls
-    /// </summary>
+    ///<summary>
+    ///Batching logic for UI draw calls to optimize rendering performance
+    ///P80-03-02: UIBatcher providing batching logic for UI draw calls
+    ///</summary>
     public class UIBatcher
     {
         private readonly List<UIDrawCall> _drawCalls;
         private readonly Dictionary<string, UIBatch> _batches;
         private bool _needsSorting = true;
 
-        /// <summary>
-        /// Gets the number of draw calls in the batcher
-        /// </summary>
+        ///<summary>
+        ///Gets the number of draw calls in the batcher
+        ///</summary>
         public int DrawCallCount => _drawCalls.Count;
 
-        /// <summary>
-        /// Gets the number of batches
-        /// </summary>
+        ///<summary>
+        ///Gets the number of batches
+        ///</summary>
         public int BatchCount => _batches.Count;
 
-        /// <summary>
-        /// Initializes a new UIBatcher
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UIBatcher
+        ///</summary>
         public UIBatcher()
         {
             _drawCalls = new List<UIDrawCall>();
@@ -33,10 +35,10 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             System.Diagnostics.Debug.WriteLine("UIBatcher: Initialized");
         }
 
-        /// <summary>
-        /// Adds a draw call to the batcher
-        /// </summary>
-        /// <param name="drawCall">Draw call to add</param>
+        ///<summary>
+        ///Adds a draw call to the batcher
+        ///</summary>
+        ///<param name="drawCall">Draw call to add</param>
         public void AddDrawCall(UIDrawCall drawCall)
         {
             try
@@ -58,12 +60,12 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Adds a rectangle draw call
-        /// </summary>
-        /// <param name="rect">Rectangle to draw</param>
-        /// <param name="color">Color to use</param>
-        /// <param name="texture">Texture to use (optional)</param>
+        ///<summary>
+        ///Adds a rectangle draw call
+        ///</summary>
+        ///<param name="rect">Rectangle to draw</param>
+        ///<param name="color">Color to use</param>
+        ///<param name="texture">Texture to use (optional)</param>
         public void DrawRectangle(System.Drawing.RectangleF rect, System.Drawing.Color color, string? texture = null)
         {
             try
@@ -85,13 +87,13 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Adds a text draw call
-        /// </summary>
-        /// <param name="text">Text to draw</param>
-        /// <param name="position">Position to draw at</param>
-        /// <param name="font">Font to use</param>
-        /// <param name="color">Color to use</param>
+        ///<summary>
+        ///Adds a text draw call
+        ///</summary>
+        ///<param name="text">Text to draw</param>
+        ///<param name="position">Position to draw at</param>
+        ///<param name="font">Font to use</param>
+        ///<param name="color">Color to use</param>
         public void DrawText(string text, System.Drawing.PointF position, string font, System.Drawing.Color color)
         {
             try
@@ -114,13 +116,13 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Adds a line draw call
-        /// </summary>
-        /// <param name="start">Start point</param>
-        /// <param name="end">End point</param>
-        /// <param name="color">Color to use</param>
-        /// <param name="thickness">Line thickness</param>
+        ///<summary>
+        ///Adds a line draw call
+        ///</summary>
+        ///<param name="start">Start point</param>
+        ///<param name="end">End point</param>
+        ///<param name="color">Color to use</param>
+        ///<param name="thickness">Line thickness</param>
         public void DrawLine(System.Drawing.PointF start, System.Drawing.PointF end, System.Drawing.Color color, float thickness = 1.0f)
         {
             try
@@ -143,26 +145,26 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Batches all draw calls for efficient rendering
-        /// </summary>
+        ///<summary>
+        ///Batches all draw calls for efficient rendering
+        ///</summary>
         public void Batch()
         {
             try
             {
                 System.Diagnostics.Debug.WriteLine($"UIBatcher: Batching {_drawCalls.Count} draw calls");
 
-                // Clear existing batches
+                //Clear existing batches
                 _batches.Clear();
 
-                // Sort draw calls by depth if needed
+                //Sort draw calls by depth if needed
                 if (_needsSorting)
                 {
                     _drawCalls.Sort((a, b) => a.Depth.CompareTo(b.Depth));
                     _needsSorting = false;
                 }
 
-                // Group draw calls by batch key
+                //Group draw calls by batch key
                 foreach (var drawCall in _drawCalls)
                 {
                     var batchKey = GetBatchKey(drawCall);
@@ -190,10 +192,10 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Gets all batches for rendering
-        /// </summary>
-        /// <returns>Collection of batches</returns>
+        ///<summary>
+        ///Gets all batches for rendering
+        ///</summary>
+        ///<returns>Collection of batches</returns>
         public IEnumerable<UIBatch> GetBatches()
         {
             try
@@ -207,9 +209,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Clears all draw calls and batches
-        /// </summary>
+        ///<summary>
+        ///Clears all draw calls and batches
+        ///</summary>
         public void Clear()
         {
             try
@@ -226,26 +228,26 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        /// <summary>
-        /// Gets the next depth value for draw calls
-        /// </summary>
-        /// <returns>Next depth value</returns>
+        ///<summary>
+        ///Gets the next depth value for draw calls
+        ///</summary>
+        ///<returns>Next depth value</returns>
         private float GetNextDepth()
         {
-            // Simple depth increment - in a real implementation this would be more sophisticated
+            //Simple depth increment - in a real implementation this would be more sophisticated
             return _drawCalls.Count * 0.001f;
         }
 
-        /// <summary>
-        /// Gets the batch key for a draw call
-        /// </summary>
-        /// <param name="drawCall">Draw call to get key for</param>
-        /// <returns>Batch key</returns>
+        ///<summary>
+        ///Gets the batch key for a draw call
+        ///</summary>
+        ///<param name="drawCall">Draw call to get key for</param>
+        ///<returns>Batch key</returns>
         private string GetBatchKey(UIDrawCall drawCall)
         {
             try
             {
-                // Create a batch key based on draw call properties
+                //Create a batch key based on draw call properties
                 var key = $"{drawCall.Type}_{drawCall.Texture}_{drawCall.Font}";
                 return key;
             }
@@ -257,9 +259,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         }
     }
 
-    /// <summary>
-    /// Represents a single UI draw call
-    /// </summary>
+    ///<summary>
+    ///Represents a single UI draw call
+    ///</summary>
     public class UIDrawCall
     {
         public UIDrawCallType Type { get; set; }
@@ -275,9 +277,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public float Depth { get; set; }
     }
 
-    /// <summary>
-    /// Types of UI draw calls
-    /// </summary>
+    ///<summary>
+    ///Types of UI draw calls
+    ///</summary>
     public enum UIDrawCallType
     {
         Rectangle,
@@ -287,9 +289,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         Triangle
     }
 
-    /// <summary>
-    /// Represents a batch of UI draw calls
-    /// </summary>
+    ///<summary>
+    ///Represents a batch of UI draw calls
+    ///</summary>
     public class UIBatch
     {
         public UIDrawCallType Type { get; set; }
@@ -297,9 +299,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public string Font { get; set; }
         public List<UIDrawCall> DrawCalls { get; set; }
 
-        /// <summary>
-        /// Gets the number of draw calls in this batch
-        /// </summary>
+        ///<summary>
+        ///Gets the number of draw calls in this batch
+        ///</summary>
         public int Count => DrawCalls?.Count ?? 0;
     }
 }

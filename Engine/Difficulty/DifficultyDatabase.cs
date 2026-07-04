@@ -7,16 +7,18 @@ using System;
 using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.Difficulty;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Difficulty
 {
-    /// <summary>
-    /// Database for difficulty-related data.
-    /// </summary>
+    ///<summary>
+    ///Database for difficulty-related data.
+    ///</summary>
     public static class DifficultyDatabase
     {
-        /// <summary>
-        /// Gets the difficulty multiplier for the specified difficulty mode.
-        /// </summary>
+        ///<summary>
+        ///Gets the difficulty multiplier for the specified difficulty mode.
+        ///</summary>
         public static float GetMultiplier(DifficultyMode difficulty)
         {
             return difficulty switch

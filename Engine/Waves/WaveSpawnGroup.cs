@@ -7,17 +7,19 @@ using SASZombieAssaultTD.Engine.Dictionary;
 using SASZombieAssaultTD.Engine.State;
 using SASZombieAssaultTD.Engine.Navigation;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves
 {
-    /// <summary>
-    /// Enhanced wave spawn group with advanced configuration options.
-    /// Provides detailed control over enemy spawning behavior.
-    /// </summary>
+    ///<summary>
+    ///Enhanced wave spawn group with advanced configuration options.
+    ///Provides detailed control over enemy spawning behavior.
+    ///</summary>
     public class WaveSpawnGroup : IWaveSpawnGroup
     {
-        /// <summary>
-        /// Color for visual effects.
-        /// </summary>
+        ///<summary>
+        ///Color for visual effects.
+        ///</summary>
         public struct Color
         {
             public byte R { get; set; }
@@ -34,9 +36,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
         }
 
-        /// <summary>
-        /// Zombie type enumeration.
-        /// </summary>
+        ///<summary>
+        ///Zombie type enumeration.
+        ///</summary>
         public enum ZombieType
         {
             Basic,
@@ -52,7 +54,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
         private static readonly System.Random _random = new System.Random();
 
-        // Basic spawn properties
+        //Basic spawn properties
         public WaveSpawnGroup.ZombieType EnemyType { get; set; }
         public int Count { get; set; }
         public float SpawnDelay { get; set; }
@@ -60,47 +62,47 @@ namespace SASZombieAssaultTD.Engine.Waves
         public float DelayAfterGroup { get; set; }
         public bool IsBoss { get; set; }
 
-        // Timing variations
+        //Timing variations
         public float SpawnDelayVariation { get; set; } = 0f;
         public bool RandomizeDelay { get; set; } = false;
         public float InitialDelay { get; set; } = 0f;
 
-        // Spawn position control
+        //Spawn position control
         public SpawnPositionType PositionType { get; set; } = SpawnPositionType.Random;
         public List<int> SpecificSpawnPoints { get; set; }
         public Vector3 CustomSpawnPosition { get; set; }
         public float SpawnRadius { get; set; } = 2f;
 
-        // Enemy modifications
+        //Enemy modifications
         public float? HealthMultiplier { get; set; }
         public float? SpeedMultiplier { get; set; }
         public float? DamageMultiplier { get; set; }
         public float? SizeMultiplier { get; set; }
         public float? ArmorMultiplier { get; set; }
 
-        // Behavioral modifications
+        //Behavioral modifications
         public List<EnemyBehaviorModifier> BehaviorModifiers { get; set; }
         public AIType OverrideAI { get; set; }
         public AggressionLevel Aggression { get; set; } = AggressionLevel.Normal;
 
-        // Visual modifications
+        //Visual modifications
         public string EnemySkin { get; set; }
         public WaveSpawnGroup.Color? TintColor { get; set; }
         public float? Scale { get; set; }
         public List<VisualEffect> VisualEffects { get; set; }
 
-        // Spawn conditions
+        //Spawn conditions
         public SpawnConditions Conditions { get; set; }
         public SpawnTrigger Trigger { get; set; }
         public bool ConditionalSpawn { get; set; }
 
-        // Special properties
+        //Special properties
         public bool IsChampion { get; set; }
         public int ChampionLevel { get; set; } = 1;
         public List<string> SpecialAbilities { get; set; }
         public Dictionary<string, float> CustomProperties { get; set; }
 
-        // Events and callbacks
+        //Events and callbacks
         public Action<Enemy> OnEnemySpawned { get; set; }
         public Action<WaveSpawnGroup> OnGroupCompleted { get; set; }
         public Func<Enemy, bool> SpawnFilter { get; set; }
@@ -122,44 +124,44 @@ namespace SASZombieAssaultTD.Engine.Waves
             CustomProperties = new Dictionary<string, float>();
         }
 
-        /// <summary>
-        /// Get effective spawn delay with variations.
-        /// </summary>
-        /// <param name="enemyIndex">Index of enemy in spawn sequence.</param>
-        /// <returns>Effective spawn delay.</returns>
+        ///<summary>
+        ///Get effective spawn delay with variations.
+        ///</summary>
+        ///<param name="enemyIndex">Index of enemy in spawn sequence.</param>
+        ///<returns>Effective spawn delay.</returns>
         public float GetEffectiveSpawnDelay(int enemyIndex = 0)
         {
             var baseDelay = SpawnDelay;
 
-            // Add initial delay for first enemy
+            //Add initial delay for first enemy
             if (enemyIndex == 0)
             {
                 baseDelay += InitialDelay;
             }
 
-            // Apply random variation if enabled
+            //Apply random variation if enabled
             if (RandomizeDelay && SpawnDelayVariation > 0)
             {
                 var variation = ((float)_random.NextDouble() - 0.5f) * 2f * SpawnDelayVariation;
                 baseDelay += variation;
             }
 
-            // Apply pattern-specific delays
+            //Apply pattern-specific delays
             baseDelay = ApplyPatternDelay(baseDelay, enemyIndex);
 
-            return System.Math.Max(0.1f, baseDelay); // Minimum delay
+            return System.Math.Max(0.1f, baseDelay); //Minimum delay
         }
 
-        /// <summary>
-        /// Get effective enemy count with modifiers.
-        /// </summary>
-        /// <returns>Effective enemy count.</returns>
+        ///<summary>
+        ///Get effective enemy count with modifiers.
+        ///</summary>
+        ///<returns>Effective enemy count.</returns>
         public int GetEffectiveCount()
         {
             var count = Count;
 
-            // Apply difficulty-based count increase
-            var difficulty = "Normal"; // TODO: Implement proper difficulty system
+            //Apply difficulty-based count increase
+            var difficulty = "Normal"; //TODO: Implement proper difficulty system
             var multiplier = difficulty switch
             {
                 "Hard" => 1.2f,
@@ -167,7 +169,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 _ => 1.0f
             };
 
-            // Apply champion modifier
+            //Apply champion modifier
             if (IsChampion)
             {
                 multiplier *= (1f + (ChampionLevel * 0.1f));
@@ -176,12 +178,12 @@ namespace SASZombieAssaultTD.Engine.Waves
             return (int)(count * multiplier);
         }
 
-        /// <summary>
-        /// Get spawn position for specific enemy.
-        /// </summary>
-        /// <param name="enemyIndex">Index of enemy in spawn sequence.</param>
-        /// <param name="totalEnemies">Total enemies in this group.</param>
-        /// <returns>Spawn position.</returns>
+        ///<summary>
+        ///Get spawn position for specific enemy.
+        ///</summary>
+        ///<param name="enemyIndex">Index of enemy in spawn sequence.</param>
+        ///<param name="totalEnemies">Total enemies in this group.</param>
+        ///<returns>Spawn position.</returns>
         public Vector3 GetSpawnPosition(int enemyIndex, int totalEnemies)
         {
             return PositionType switch
@@ -197,16 +199,16 @@ namespace SASZombieAssaultTD.Engine.Waves
             };
         }
 
-        /// <summary>
-        /// Apply modifications to spawned enemy.
-        /// </summary>
-        /// <param name="enemy">Enemy to modify.</param>
-        /// <param name="enemyIndex">Index of enemy in spawn sequence.</param>
+        ///<summary>
+        ///Apply modifications to spawned enemy.
+        ///</summary>
+        ///<param name="enemy">Enemy to modify.</param>
+        ///<param name="enemyIndex">Index of enemy in spawn sequence.</param>
         public void ApplyEnemyModifications(Enemy enemy, int enemyIndex = 0)
         {
             if (enemy == null) return;
 
-            // Apply stat multipliers
+            //Apply stat multipliers
             if (HealthMultiplier.HasValue)
                 enemy.MaxHealth = (int)(enemy.MaxHealth * HealthMultiplier.Value);
 
@@ -222,53 +224,53 @@ namespace SASZombieAssaultTD.Engine.Waves
             if (ArmorMultiplier.HasValue)
                 enemy.Armor *= ArmorMultiplier.Value;
 
-            // Apply behavior modifications
+            //Apply behavior modifications
             foreach (var modifier in BehaviorModifiers)
             {
                 modifier.Apply(enemy);
             }
 
-            // Override AI if specified
+            //Override AI if specified
             if (OverrideAI != AIType.Default)
             {
                 enemy.SetAIType(OverrideAI.ToString());
             }
 
-            // Set aggression level
+            //Set aggression level
             enemy.SetAggressionLevel((float)Aggression);
 
-            // Apply visual modifications
+            //Apply visual modifications
             ApplyVisualModifications(enemy);
 
-            // Apply champion properties
+            //Apply champion properties
             if (IsChampion)
             {
                 ApplyChampionProperties(enemy);
             }
 
-            // Apply special abilities
+            //Apply special abilities
             foreach (var ability in SpecialAbilities)
             {
                 enemy.AddSpecialAbility(ability);
             }
 
-            // Apply custom properties
+            //Apply custom properties
             foreach (var property in CustomProperties)
             {
                 enemy.SetCustomProperty(property.Key, property.Value);
             }
 
-            // Set spawn group reference
+            //Set spawn group reference
             enemy.SourceSpawnGroup = this;
             enemy.SpawnIndex = enemyIndex;
         }
 
-        /// <summary>
-        /// Check if spawn conditions are met.
-        /// </summary>
-        /// <param name="currentWave">Current wave number.</param>
-        /// <param name="gameState">Current game state.</param>
-        /// <returns>True if conditions are met.</returns>
+        ///<summary>
+        ///Check if spawn conditions are met.
+        ///</summary>
+        ///<param name="currentWave">Current wave number.</param>
+        ///<param name="gameState">Current game state.</param>
+        ///<returns>True if conditions are met.</returns>
         public bool AreSpawnConditionsMet(int currentWave, VisualEffect.GameState gameState)
         {
             if (!ConditionalSpawn)
@@ -280,11 +282,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             return Conditions.AreConditionsMet(currentWave, gameState.PlayerLevel, new List<string>());
         }
 
-        /// <summary>
-        /// Check if enemy should be spawned based on filter.
-        /// </summary>
-        /// <param name="enemy">Enemy to check.</param>
-        /// <returns>True if enemy should be spawned.</returns>
+        ///<summary>
+        ///Check if enemy should be spawned based on filter.
+        ///</summary>
+        ///<param name="enemy">Enemy to check.</param>
+        ///<returns>True if enemy should be spawned.</returns>
         public bool ShouldSpawnEnemy(Enemy enemy)
         {
             if (SpawnFilter == null)
@@ -293,27 +295,27 @@ namespace SASZombieAssaultTD.Engine.Waves
             return SpawnFilter(enemy);
         }
 
-        /// <summary>
-        /// Trigger spawn completion callback.
-        /// </summary>
+        ///<summary>
+        ///Trigger spawn completion callback.
+        ///</summary>
         public void OnGroupCompletedCallback()
         {
             OnGroupCompleted?.Invoke(this);
         }
 
-        /// <summary>
-        /// Trigger enemy spawned callback.
-        /// </summary>
-        /// <param name="enemy">Spawned enemy.</param>
+        ///<summary>
+        ///Trigger enemy spawned callback.
+        ///</summary>
+        ///<param name="enemy">Spawned enemy.</param>
         public void OnEnemySpawnedCallback(Enemy enemy)
         {
             OnEnemySpawned?.Invoke(enemy);
         }
 
-        /// <summary>
-        /// Get spawn group description.
-        /// </summary>
-        /// <returns>Description string.</returns>
+        ///<summary>
+        ///Get spawn group description.
+        ///</summary>
+        ///<returns>Description string.</returns>
         public string GetDescription()
         {
             var description = $"{EnemyType} x{Count}";
@@ -344,10 +346,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             return description;
         }
 
-        /// <summary>
-        /// Validate spawn group configuration.
-        /// </summary>
-        /// <returns>Validation result.</returns>
+        ///<summary>
+        ///Validate spawn group configuration.
+        ///</summary>
+        ///<returns>Validation result.</returns>
         public ValidationResult Validate()
         {
             var result = new ValidationResult { IsValid = true };
@@ -385,10 +387,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             return result;
         }
 
-        /// <summary>
-        /// Clone this spawn group.
-        /// </summary>
-        /// <returns>Cloned spawn group.</returns>
+        ///<summary>
+        ///Clone this spawn group.
+        ///</summary>
+        ///<returns>Cloned spawn group.</returns>
         public WaveSpawnGroup Clone()
         {
             var clone = new WaveSpawnGroup
@@ -430,7 +432,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             return clone;
         }
 
-        ///  Private Helper Methods
+        /// Private Helper Methods
 
         private float ApplyPatternDelay(float baseDelay, int enemyIndex)
         {
@@ -556,24 +558,24 @@ namespace SASZombieAssaultTD.Engine.Waves
         private void ApplyChampionProperties(Enemy enemy)
         {
             enemy.IsChampion = true;
-            // TODO: Add ChampionLevel property to Enemy class
-            // enemy.ChampionLevel = ChampionLevel;
+            //TODO: Add ChampionLevel property to Enemy class
+            //enemy.ChampionLevel = ChampionLevel;
 
-            // Champion bonuses
+            //Champion bonuses
             var championBonus = 1f + (ChampionLevel * 0.2f);
             enemy.MaxHealth = (int)(enemy.MaxHealth * championBonus);
             enemy.Damage = (int)(enemy.Damage * championBonus);
 
-            // Visual champion effects
-            // enemy.SetChampionVisuals(); // TODO: implement champion visuals
+            //Visual champion effects
+            //enemy.SetChampionVisuals(); //TODO: implement champion visuals
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// Spawn position types.
-    /// </summary>
+    ///<summary>
+    ///Spawn position types.
+    ///</summary>
     public enum SpawnPositionType
     {
         Random,
@@ -585,9 +587,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         Cluster
     }
 
-    /// <summary>
-    /// Aggression levels for enemies.
-    /// </summary>
+    ///<summary>
+    ///Aggression levels for enemies.
+    ///</summary>
     public enum AggressionLevel
     {
         Passive,
@@ -596,9 +598,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         Berserk
     }
 
-    /// <summary>
-    /// AI types for enemy behavior override.
-    /// </summary>
+    ///<summary>
+    ///AI types for enemy behavior override.
+    ///</summary>
     public enum AIType
     {
         Default,
@@ -609,9 +611,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         Guardian
     }
 
-    /// <summary>
-    /// Spawn trigger types.
-    /// </summary>
+    ///<summary>
+    ///Spawn trigger types.
+    ///</summary>
     public enum SpawnTrigger
     {
         Automatic,
@@ -622,9 +624,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         Custom
     }
 
-    /// <summary>
-    /// Enemy behavior modifier.
-    /// </summary>
+    ///<summary>
+    ///Enemy behavior modifier.
+    ///</summary>
     public class EnemyBehaviorModifier
     {
         public string ModifierType { get; set; }
@@ -661,9 +663,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 
-    /// <summary>
-    /// Visual effect for enemies.
-    /// </summary>
+    ///<summary>
+    ///Visual effect for enemies.
+    ///</summary>
     public class VisualEffect
     {
         public string EffectType { get; set; }
@@ -689,9 +691,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             };
         }
 
-        /// <summary>
-        /// Game state for wave system.
-        /// </summary>
+        ///<summary>
+        ///Game state for wave system.
+        ///</summary>
         public class GameState
         {
             public int PlayerLevel { get; set; }

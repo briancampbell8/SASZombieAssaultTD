@@ -5,12 +5,14 @@ using System.Linq;
 using System.Text.Json;
 using SASZombieAssaultTD.Engine.Enemies;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves
 {
-    /// <summary>
-    /// Wave loader for SAS Zombie Assault TD.
-    /// Loads wave scripts from JSON files and provides wave management.
-    /// </summary>
+    ///<summary>
+    ///Wave loader for SAS Zombie Assault TD.
+    ///Loads wave scripts from JSON files and provides wave management.
+    ///</summary>
     public class WaveLoader
     {
         private readonly Dictionary<int, WaveScript> _waveScripts;
@@ -18,9 +20,9 @@ namespace SASZombieAssaultTD.Engine.Waves
         private bool _isInitialized;
         private static WaveLoader _instance;
 
-        /// <summary>
-        /// Singleton instance.
-        /// </summary>
+        ///<summary>
+        ///Singleton instance.
+        ///</summary>
         public static WaveLoader Instance => _instance ??= new WaveLoader();
 
         private WaveLoader()
@@ -29,9 +31,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             _waveDataPath = Path.Combine("Data", "Waves");
         }
 
-        /// <summary>
-        /// Initialize the wave loader.
-        /// </summary>
+        ///<summary>
+        ///Initialize the wave loader.
+        ///</summary>
         public void Initialize()
         {
             if (_isInitialized) return;
@@ -40,10 +42,10 @@ namespace SASZombieAssaultTD.Engine.Waves
 
             try
             {
-                // Create wave data directory if it doesn't exist
+                //Create wave data directory if it doesn't exist
                 Directory.CreateDirectory(_waveDataPath);
 
-                // Load all wave scripts
+                //Load all wave scripts
                 LoadAllWaveScripts();
 
                 _isInitialized = true;
@@ -56,17 +58,17 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
         }
 
-        /// <summary>
-        /// Load all wave scripts from files.
-        /// </summary>
-        /// <returns>List of loaded wave scripts.</returns>
+        ///<summary>
+        ///Load all wave scripts from files.
+        ///</summary>
+        ///<returns>List of loaded wave scripts.</returns>
         public List<WaveScript> LoadAllWaveScripts()
         {
             _waveScripts.Clear();
 
             try
             {
-                // Try to load from JSON files first
+                //Try to load from JSON files first
                 var loadedFromFiles = LoadFromJsonFiles();
 
                 if (loadedFromFiles.Count > 0)
@@ -75,7 +77,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                     return loadedFromFiles;
                 }
 
-                // Fallback to default wave scripts
+                //Fallback to default wave scripts
                 System.Diagnostics.Debug.WriteLine("No JSON files found, creating default wave scripts");
                 var defaultWaves = CreateDefaultWaveScripts();
 
@@ -84,7 +86,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                     _waveScripts[wave.WaveNumber] = wave;
                 }
 
-                // Save default waves to JSON files
+                //Save default waves to JSON files
                 SaveAllWaveScripts();
 
                 return defaultWaves;
@@ -96,11 +98,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
         }
 
-        /// <summary>
-        /// Load a specific wave script.
-        /// </summary>
-        /// <param name="waveNumber">Wave number to load.</param>
-        /// <returns>Loaded wave script, or null if not found.</returns>
+        ///<summary>
+        ///Load a specific wave script.
+        ///</summary>
+        ///<param name="waveNumber">Wave number to load.</param>
+        ///<returns>Loaded wave script, or null if not found.</returns>
         public WaveScript LoadWaveScript(int waveNumber)
         {
             if (_waveScripts.TryGetValue(waveNumber, out var waveScript))
@@ -108,7 +110,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 return waveScript;
             }
 
-            // Try to load from file
+            //Try to load from file
             var filePath = GetWaveFilePath(waveNumber);
             if (File.Exists(filePath))
             {
@@ -137,11 +139,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             return null;
         }
 
-        /// <summary>
-        /// Save a wave script to file.
-        /// </summary>
-        /// <param name="waveScript">Wave script to save.</param>
-        /// <returns>True if saved successfully.</returns>
+        ///<summary>
+        ///Save a wave script to file.
+        ///</summary>
+        ///<param name="waveScript">Wave script to save.</param>
+        ///<returns>True if saved successfully.</returns>
         public bool SaveWaveScript(WaveScript waveScript)
         {
             if (waveScript == null) return false;
@@ -158,7 +160,7 @@ namespace SASZombieAssaultTD.Engine.Waves
 
                 File.WriteAllText(filePath, json);
 
-                // Update cache
+                //Update cache
                 _waveScripts[waveScript.WaveNumber] = waveScript;
 
                 System.Diagnostics.Debug.WriteLine($"Saved wave {waveScript.WaveNumber} to file");
@@ -171,10 +173,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
         }
 
-        /// <summary>
-        /// Save all wave scripts to files.
-        /// </summary>
-        /// <returns>True if all saved successfully.</returns>
+        ///<summary>
+        ///Save all wave scripts to files.
+        ///</summary>
+        ///<returns>True if all saved successfully.</returns>
         public bool SaveAllWaveScripts()
         {
             var success = true;
@@ -191,11 +193,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             return success;
         }
 
-        /// <summary>
-        /// Delete a wave script file.
-        /// </summary>
-        /// <param name="waveNumber">Wave number to delete.</param>
-        /// <returns>True if deleted successfully.</returns>
+        ///<summary>
+        ///Delete a wave script file.
+        ///</summary>
+        ///<param name="waveNumber">Wave number to delete.</param>
+        ///<returns>True if deleted successfully.</returns>
         public bool DeleteWaveScript(int waveNumber)
         {
             try
@@ -220,10 +222,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
         }
 
-        /// <summary>
-        /// Validate all wave scripts.
-        /// </summary>
-        /// <returns>Validation result.</returns>
+        ///<summary>
+        ///Validate all wave scripts.
+        ///</summary>
+        ///<returns>Validation result.</returns>
         public ValidationResult ValidateAllWaveScripts()
         {
             var result = new ValidationResult { IsValid = true };
@@ -240,14 +242,14 @@ namespace SASZombieAssaultTD.Engine.Waves
                     result.AddError($"Wave {waveNumber}: {string.Join("; ", waveResult.Errors)}");
                 }
 
-                // Add warnings
+                //Add warnings
                 foreach (var warning in waveResult.Warnings)
                 {
                     result.AddWarning($"Wave {waveNumber}: {warning}");
                 }
             }
 
-            // Check for missing wave numbers
+            //Check for missing wave numbers
             var maxWaveNumber = _waveScripts.Keys.Count > 0 ? _waveScripts.Keys.Max() : 0;
             for (int i = 1; i <= maxWaveNumber; i++)
             {
@@ -260,38 +262,38 @@ namespace SASZombieAssaultTD.Engine.Waves
             return result;
         }
 
-        /// <summary>
-        /// Get wave script by number.
-        /// </summary>
-        /// <param name="waveNumber">Wave number.</param>
-        /// <returns>Wave script, or null if not found.</returns>
+        ///<summary>
+        ///Get wave script by number.
+        ///</summary>
+        ///<param name="waveNumber">Wave number.</param>
+        ///<returns>Wave script, or null if not found.</returns>
         public WaveScript GetWaveScript(int waveNumber)
         {
             return _waveScripts.TryGetValue(waveNumber, out var waveScript) ? waveScript : null;
         }
 
-        /// <summary>
-        /// Get all wave scripts.
-        /// </summary>
-        /// <returns>All loaded wave scripts.</returns>
+        ///<summary>
+        ///Get all wave scripts.
+        ///</summary>
+        ///<returns>All loaded wave scripts.</returns>
         public IReadOnlyDictionary<int, WaveScript> GetAllWaveScripts()
         {
             return _waveScripts;
         }
 
-        /// <summary>
-        /// Get wave script count.
-        /// </summary>
-        /// <returns>Number of loaded wave scripts.</returns>
+        ///<summary>
+        ///Get wave script count.
+        ///</summary>
+        ///<returns>Number of loaded wave scripts.</returns>
         public int GetWaveCount()
         {
             return _waveScripts.Count;
         }
 
-        /// <summary>
-        /// Get total enemy count across all waves.
-        /// </summary>
-        /// <returns>Total enemy count.</returns>
+        ///<summary>
+        ///Get total enemy count across all waves.
+        ///</summary>
+        ///<returns>Total enemy count.</returns>
         public int GetTotalEnemyCount()
         {
             var total = 0;
@@ -302,10 +304,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             return total;
         }
 
-        /// <summary>
-        /// Get wave statistics summary.
-        /// </summary>
-        /// <returns>Wave statistics.</returns>
+        ///<summary>
+        ///Get wave statistics summary.
+        ///</summary>
+        ///<returns>Wave statistics.</returns>
         public WaveStatistics GetWaveStatistics()
         {
             var stats = new WaveStatistics
@@ -322,10 +324,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             return stats;
         }
 
-        /// <summary>
-        /// Export wave scripts to JSON string.
-        /// </summary>
-        /// <returns>JSON string.</returns>
+        ///<summary>
+        ///Export wave scripts to JSON string.
+        ///</summary>
+        ///<returns>JSON string.</returns>
         public string ExportToJson()
         {
             try
@@ -345,11 +347,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
         }
 
-        /// <summary>
-        /// Import wave scripts from JSON string.
-        /// </summary>
-        /// <param name="json">JSON string to import.</param>
-        /// <returns>True if imported successfully.</returns>
+        ///<summary>
+        ///Import wave scripts from JSON string.
+        ///</summary>
+        ///<param name="json">JSON string to import.</param>
+        ///<returns>True if imported successfully.</returns>
         public bool ImportFromJson(string json)
         {
             try
@@ -379,10 +381,10 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
         }
 
-        /// <summary>
-        /// Reload wave scripts from files.
-        /// </summary>
-        /// <returns>True if reloaded successfully.</returns>
+        ///<summary>
+        ///Reload wave scripts from files.
+        ///</summary>
+        ///<returns>True if reloaded successfully.</returns>
         public bool ReloadWaveScripts()
         {
             try
@@ -399,11 +401,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             }
         }
 
-        ///  Private Methods
+        /// Private Methods
 
-        /// <summary>
-        /// Load wave scripts from JSON files.
-        /// </summary>
+        ///<summary>
+        ///Load wave scripts from JSON files.
+        ///</summary>
         private List<WaveScript> LoadFromJsonFiles()
         {
             var waves = new List<WaveScript>();
@@ -429,7 +431,7 @@ namespace SASZombieAssaultTD.Engine.Waves
 
                     if (waveScript != null)
                     {
-                        // Extract wave number from filename if not set
+                        //Extract wave number from filename if not set
                         if (waveScript.WaveNumber == 0)
                         {
                             var fileName = Path.GetFileNameWithoutExtension(file);
@@ -452,23 +454,23 @@ namespace SASZombieAssaultTD.Engine.Waves
             return waves;
         }
 
-        /// <summary>
-        /// Get file path for a wave number.
-        /// </summary>
+        ///<summary>
+        ///Get file path for a wave number.
+        ///</summary>
         private string GetWaveFilePath(int waveNumber)
         {
             return Path.Combine(_waveDataPath, $"wave_{waveNumber:D3}.json");
         }
 
-        /// <summary>
-        /// Create default wave scripts.
-        /// </summary>
-        /// <returns>List of default wave scripts.</returns>
+        ///<summary>
+        ///Create default wave scripts.
+        ///</summary>
+        ///<returns>List of default wave scripts.</returns>
         private List<WaveScript> CreateDefaultWaveScripts()
         {
             var waves = new List<WaveScript>();
 
-            // Create 10 default waves with increasing difficulty
+            //Create 10 default waves with increasing difficulty
             for (int i = 1; i <= 10; i++)
             {
                 var waveScript = CreateDefaultWaveScript(i);
@@ -478,11 +480,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             return waves;
         }
 
-        /// <summary>
-        /// Create a default wave script.
-        /// </summary>
-        /// <param name="waveNumber">Wave number.</param>
-        /// <returns>Default wave script.</returns>
+        ///<summary>
+        ///Create a default wave script.
+        ///</summary>
+        ///<param name="waveNumber">Wave number.</param>
+        ///<returns>Default wave script.</returns>
         private WaveScript CreateDefaultWaveScript(int waveNumber)
         {
             var waveScript = new WaveScript
@@ -497,7 +499,7 @@ namespace SASZombieAssaultTD.Engine.Waves
                 Environment = new WaveEnvironment()
             };
 
-            // Add spawn groups based on wave number
+            //Add spawn groups based on wave number
             var enemyCount = 5 + (waveNumber * 2);
             var spawnGroup = new WaveSpawnGroup
             {
@@ -510,7 +512,7 @@ namespace SASZombieAssaultTD.Engine.Waves
 
             waveScript.SpawnGroups.Add(spawnGroup);
 
-            // Add boss every 5 waves
+            //Add boss every 5 waves
             if (waveNumber % 5 == 0)
             {
                 var bossGroup = new WaveSpawnGroup
@@ -532,9 +534,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return waveScript;
         }
 
-        /// <summary>
-        /// Get default enemy type for wave number.
-        /// </summary>
+        ///<summary>
+        ///Get default enemy type for wave number.
+        ///</summary>
         private ZombieType GetDefaultEnemyType(int waveNumber)
         {
             return waveNumber switch
@@ -548,9 +550,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             };
         }
 
-        /// <summary>
-        /// Get default spawn pattern for wave number.
-        /// </summary>
+        ///<summary>
+        ///Get default spawn pattern for wave number.
+        ///</summary>
         private SpawnPatternType GetDefaultSpawnPattern(int waveNumber)
         {
             var patterns = new[]
@@ -566,9 +568,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return patterns[waveNumber % patterns.Length];
         }
 
-        /// <summary>
-        /// Get most difficult wave.
-        /// </summary>
+        ///<summary>
+        ///Get most difficult wave.
+        ///</summary>
         private int GetMostDifficultWave()
         {
             var mostDifficult = 0;
@@ -587,9 +589,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return mostDifficult;
         }
 
-        /// <summary>
-        /// Get least difficult wave.
-        /// </summary>
+        ///<summary>
+        ///Get least difficult wave.
+        ///</summary>
         private int GetLeastDifficultWave()
         {
             var leastDifficult = 0;
@@ -608,9 +610,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return leastDifficult;
         }
 
-        /// <summary>
-        /// Get count of boss waves.
-        /// </summary>
+        ///<summary>
+        ///Get count of boss waves.
+        ///</summary>
         private int GetBossWavesCount()
         {
             var count = 0;
@@ -624,9 +626,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return count;
         }
 
-        /// <summary>
-        /// Get special enemy types used across all waves.
-        /// </summary>
+        ///<summary>
+        ///Get special enemy types used across all waves.
+        ///</summary>
         private List<ZombieType> GetSpecialEnemyTypes()
         {
             var types = new HashSet<ZombieType>();
@@ -645,12 +647,12 @@ namespace SASZombieAssaultTD.Engine.Waves
             return new List<ZombieType>(types);
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// Wave statistics summary.
-    /// </summary>
+    ///<summary>
+    ///Wave statistics summary.
+    ///</summary>
     public class WaveStatistics
     {
         public int TotalWaves { get; set; }

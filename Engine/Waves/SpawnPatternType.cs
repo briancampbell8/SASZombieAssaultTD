@@ -2,82 +2,84 @@ using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.VectorMath;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves
 {
-    /// <summary>
-    /// Comprehensive spawn pattern types for enemy spawning strategies.
-    /// Defines how enemies are spawned and positioned during waves.
-    /// </summary>
+    ///<summary>
+    ///Comprehensive spawn pattern types for enemy spawning strategies.
+    ///Defines how enemies are spawned and positioned during waves.
+    ///</summary>
     public enum SpawnPatternType
     {
-        /// <summary>
-        /// Enemies spawn in a single line from one spawn point.
-        /// </summary>
+        ///<summary>
+        ///Enemies spawn in a single line from one spawn point.
+        ///</summary>
         Line,
         
-        /// <summary>
-        /// Enemies spawn in a circular formation around a center point.
-        /// </summary>
+        ///<summary>
+        ///Enemies spawn in a circular formation around a center point.
+        ///</summary>
         Circle,
         
-        /// <summary>
-        /// Enemies spawn in a wave pattern with sinusoidal positioning.
-        /// </summary>
+        ///<summary>
+        ///Enemies spawn in a wave pattern with sinusoidal positioning.
+        ///</summary>
         Wave,
         
-        /// <summary>
-        /// Enemies spawn randomly across available spawn points.
-        /// </summary>
+        ///<summary>
+        ///Enemies spawn randomly across available spawn points.
+        ///</summary>
         Random,
         
-        /// <summary>
-        /// Enemies spawn in a cluster formation.
-        /// </summary>
+        ///<summary>
+        ///Enemies spawn in a cluster formation.
+        ///</summary>
         Cluster,
         
-        /// <summary>
-        /// Enemies spawn in a spread formation across multiple points.
-        /// </summary>
+        ///<summary>
+        ///Enemies spawn in a spread formation across multiple points.
+        ///</summary>
         Spread,
         
-        /// <summary>
-        /// Enemies spawn in a V-shaped formation.
-        /// </summary>
+        ///<summary>
+        ///Enemies spawn in a V-shaped formation.
+        ///</summary>
         VFormation,
         
-        /// <summary>
-        /// Enemies spawn in a staggered pattern with time delays.
-        /// </summary>
+        ///<summary>
+        ///Enemies spawn in a staggered pattern with time delays.
+        ///</summary>
         Staggered,
         
-        /// <summary>
-        /// Enemies spawn in a pincer movement from multiple sides.
-        /// </summary>
+        ///<summary>
+        ///Enemies spawn in a pincer movement from multiple sides.
+        ///</summary>
         Pincer,
         
-        /// <summary>
-        /// Enemies spawn in a flanking maneuver from the sides.
-        /// </summary>
+        ///<summary>
+        ///Enemies spawn in a flanking maneuver from the sides.
+        ///</summary>
         Flanking,
         
-        /// <summary>
-        /// Enemies spawn in a spiral pattern.
-        /// </summary>
+        ///<summary>
+        ///Enemies spawn in a spiral pattern.
+        ///</summary>
         Spiral
     }
 
-    /// <summary>
-    /// Spawn pattern configuration and execution system.
-    /// </summary>
+    ///<summary>
+    ///Spawn pattern configuration and execution system.
+    ///</summary>
     public static class SpawnPatternExecutor
     {
-        /// <summary>
-        /// Generate spawn positions based on pattern type.
-        /// </summary>
-        /// <param name="patternType">Type of spawn pattern</param>
-        /// <param name="spawnPoints">Available spawn points</param>
-        /// <param name="count">Number of enemies to spawn</param>
-        /// <returns>List of spawn positions</returns>
+        ///<summary>
+        ///Generate spawn positions based on pattern type.
+        ///</summary>
+        ///<param name="patternType">Type of spawn pattern</param>
+        ///<param name="spawnPoints">Available spawn points</param>
+        ///<param name="count">Number of enemies to spawn</param>
+        ///<returns>List of spawn positions</returns>
         public static List<Vector3> GenerateSpawnPositions(SpawnPatternType patternType, List<Vector3> spawnPoints, int count)
         {
             if (spawnPoints == null || spawnPoints.Count == 0)
@@ -99,9 +101,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             };
         }
 
-        /// <summary>
-        /// Generate line pattern spawn positions.
-        /// </summary>
+        ///<summary>
+        ///Generate line pattern spawn positions.
+        ///</summary>
         private static List<Vector3> GenerateLinePattern(List<Vector3> spawnPoints, int count)
         {
             var positions = new List<Vector3>();
@@ -116,9 +118,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return positions;
         }
 
-        /// <summary>
-        /// Generate circular pattern spawn positions.
-        /// </summary>
+        ///<summary>
+        ///Generate circular pattern spawn positions.
+        ///</summary>
         private static List<Vector3> GenerateCirclePattern(List<Vector3> spawnPoints, int count)
         {
             var positions = new List<Vector3>();
@@ -136,9 +138,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return positions;
         }
 
-        /// <summary>
-        /// Generate wave pattern spawn positions.
-        /// </summary>
+        ///<summary>
+        ///Generate wave pattern spawn positions.
+        ///</summary>
         private static List<Vector3> GenerateWavePattern(List<Vector3> spawnPoints, int count)
         {
             var positions = new List<Vector3>();
@@ -154,9 +156,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return positions;
         }
 
-        /// <summary>
-        /// Generate random pattern spawn positions.
-        /// </summary>
+        ///<summary>
+        ///Generate random pattern spawn positions.
+        ///</summary>
         private static List<Vector3> GenerateRandomPattern(List<Vector3> spawnPoints, int count)
         {
             var positions = new List<Vector3>();
@@ -176,9 +178,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return positions;
         }
 
-        /// <summary>
-        /// Generate cluster pattern spawn positions.
-        /// </summary>
+        ///<summary>
+        ///Generate cluster pattern spawn positions.
+        ///</summary>
         private static List<Vector3> GenerateClusterPattern(List<Vector3> spawnPoints, int count)
         {
             var positions = new List<Vector3>();
@@ -197,9 +199,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return positions;
         }
 
-        /// <summary>
-        /// Generate spread pattern spawn positions.
-        /// </summary>
+        ///<summary>
+        ///Generate spread pattern spawn positions.
+        ///</summary>
         private static List<Vector3> GenerateSpreadPattern(List<Vector3> spawnPoints, int count)
         {
             var positions = new List<Vector3>();
@@ -216,9 +218,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return positions;
         }
 
-        /// <summary>
-        /// Generate V-formation pattern spawn positions.
-        /// </summary>
+        ///<summary>
+        ///Generate V-formation pattern spawn positions.
+        ///</summary>
         private static List<Vector3> GenerateVFormationPattern(List<Vector3> spawnPoints, int count)
         {
             var positions = new List<Vector3>();
@@ -236,9 +238,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return positions;
         }
 
-        /// <summary>
-        /// Generate staggered pattern spawn positions.
-        /// </summary>
+        ///<summary>
+        ///Generate staggered pattern spawn positions.
+        ///</summary>
         private static List<Vector3> GenerateStaggeredPattern(List<Vector3> spawnPoints, int count)
         {
             var positions = new List<Vector3>();
@@ -256,9 +258,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return positions;
         }
 
-        /// <summary>
-        /// Generate pincer movement pattern spawn positions.
-        /// </summary>
+        ///<summary>
+        ///Generate pincer movement pattern spawn positions.
+        ///</summary>
         private static List<Vector3> GeneratePincerPattern(List<Vector3> spawnPoints, int count)
         {
             var positions = new List<Vector3>();
@@ -279,9 +281,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             return positions;
         }
 
-        /// <summary>
-        /// Generate spiral pattern spawn positions.
-        /// </summary>
+        ///<summary>
+        ///Generate spiral pattern spawn positions.
+        ///</summary>
         private static List<Vector3> GenerateSpiralPattern(List<Vector3> spawnPoints, int count)
         {
             var positions = new List<Vector3>();
@@ -299,13 +301,13 @@ namespace SASZombieAssaultTD.Engine.Waves
             return positions;
         }
 
-        /// <summary>
-        /// Get spawn delay pattern for timing between spawns.
-        /// </summary>
-        /// <param name="patternType">Spawn pattern type</param>
-        /// <param name="index">Enemy index in spawn order</param>
-        /// <param name="baseDelay">Base delay between spawns</param>
-        /// <returns>Delay in seconds for this spawn</returns>
+        ///<summary>
+        ///Get spawn delay pattern for timing between spawns.
+        ///</summary>
+        ///<param name="patternType">Spawn pattern type</param>
+        ///<param name="index">Enemy index in spawn order</param>
+        ///<param name="baseDelay">Base delay between spawns</param>
+        ///<returns>Delay in seconds for this spawn</returns>
         public static float GetSpawnDelay(SpawnPatternType patternType, int index, float baseDelay = 1.0f)
         {
             return patternType switch
@@ -324,11 +326,11 @@ namespace SASZombieAssaultTD.Engine.Waves
             };
         }
 
-        /// <summary>
-        /// Get pattern description for UI display.
-        /// </summary>
-        /// <param name="patternType">Spawn pattern type</param>
-        /// <returns>Human-readable description</returns>
+        ///<summary>
+        ///Get pattern description for UI display.
+        ///</summary>
+        ///<param name="patternType">Spawn pattern type</param>
+        ///<returns>Human-readable description</returns>
         public static string GetPatternDescription(SpawnPatternType patternType)
         {
             return patternType switch

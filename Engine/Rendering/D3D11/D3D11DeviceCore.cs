@@ -1,18 +1,37 @@
-// ============================================================================
-// File:    D3D11DeviceCore.cs
-// Author:  BDC
-// Purpose: Clean Direct3D 11 device + swap chain management for
-//          SASZombieAssaultTD using a hybrid CPU-framebuffer → GPU-present model.
-// ============================================================================
+// ====================================================================================================
+//  FILE: D3D11DeviceCore.cs
+//  PATH: Engine/Rendering/ 
+//  PROGRAM: D3D11DeviceCore.cs
+//  MODULE: Resource Management Framework
+//  ROLE:
+//      Defines the structures, loaders, and integration points responsible for discovering, validating, and providing engine resources in a deterministic manner.
+//
+//  RESPONSIBILITIES:
+//      - Provide a unified API for loading, caching, and resolving engine resources.
+//      - Enforce deterministic resource lookup and lifecycle rules.
+//      - Abstract file formats, storage locations, and integration layers behind a stable interface.
+//      - Ensure resource availability for all engine subsystems (Rendering, Audio, Gameplay, UI).
+//
+//  NON-RESPONSIBILITIES:
+//      - Performing rendering or GPU upload operations.
+//      - Managing gameplay logic or scene entities.
+//      - Handling diagnostics, logging, or performance metrics.
+//      - Encoding or authoring resource files.
+//
+//  ARCHITECTURAL NOTES:
+//      - The Resource Management Framework acts as the central authority for all asset retrieval.
+//      - Resource modules must remain pure: no side effects outside resource acquisition and validation.
+//      - All resource types (textures, data files, definitions, metadata) must follow deterministic load rules.
+//  ====================================================================================================
 
+//
+using System;
 using SASZombieAssaultTD.Engine.Diagnostics;
 using SharpGen.Runtime;
-using System;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using Vortice.DXGI;
 using static Vortice.DXGI.DXGI;
-
 namespace SASZombieAssaultTD.Engine.Rendering.D3D11
 {
     public sealed partial class D3D11DeviceCore : IDisposable
@@ -56,12 +75,18 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
             _height = height;
             VSyncEnabled = vsync;
 
-            DebugLogger.LogInfo("D3D11DeviceCore: initialization started.");
+            DLogger.Log(
+                LogSubsystems.D3D11,
+                LogLevel.Debug,
+                "D3D11DeviceCore: initialization started.");
 
             Result factoryResult = CreateDXGIFactory1(out IDXGIFactory2 factory);
             if (factoryResult.Failure || factory is null)
             {
-                DebugLogger.LogError($"DXGI factory creation failed: {factoryResult.Code}");
+                DLogger.Log(
+                    LogSubsystems.D3D11,
+                    LogLevel.Error,
+                    $"DXGI factory creation failed: {factoryResult.Code}");
                 throw new InvalidOperationException("DXGI factory creation failed: " + factoryResult.Code);
             }
 
@@ -75,7 +100,10 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
                     FeatureLevel.Level_10_0
                 };
 
-                DebugLogger.LogDebug("D3D11DeviceCore: creating D3D11 device.");
+                DLogger.Log(
+                    LogSubsystems.D3D11,
+                    LogLevel.Debug,
+                    "D3D11DeviceCore: creating D3D11 device.");
 
                 Result deviceResult = D3D11CreateDevice(
                     DriverType.Hardware,
@@ -87,7 +115,10 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
 
                 if (deviceResult.Failure)
                 {
-                    DebugLogger.LogError($"Failed to create D3D11 device: {deviceResult.Code}");
+                    DLogger.Log(
+                        LogSubsystems.D3D11,
+                        LogLevel.Error,
+                        $"Failed to create D3D11 device: {deviceResult.Code}");
                     throw new InvalidOperationException(
                         $"Failed to create D3D11 device: {deviceResult.Code}"
                     );
@@ -96,7 +127,10 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
                 Device = device;
                 ImmediateContext = context;
 
-                DebugLogger.LogInfo("D3D11DeviceCore: D3D11 device and immediate context created.");
+                DLogger.Log(
+                    LogSubsystems.D3D11,
+                    LogLevel.Info,
+                    "D3D11DeviceCore: D3D11 device and immediate context created.");
 
                 var swapDesc = new SwapChainDescription1
                 {
@@ -119,13 +153,19 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
                     RefreshRate = new Rational(60, 1)
                 };
 
-                DebugLogger.LogDebug("D3D11DeviceCore: creating swap chain for HWND.");
+                DLogger.Log(
+                    LogSubsystems.D3D11,
+                    LogLevel.Debug,
+                    "D3D11DeviceCore: creating swap chain for HWND.");
 
                 SwapChain = factory
                     .CreateSwapChainForHwnd((IUnknown)Device, windowHandle, swapDesc, fullscreenDescription)
                     .As<IDXGISwapChain1>();
 
-                DebugLogger.LogInfo("D3D11DeviceCore: swap chain created successfully.");
+                DLogger.Log(
+                    LogSubsystems.D3D11,
+                    LogLevel.Info,
+                    "D3D11DeviceCore: swap chain created successfully.");
 
                 InitializeRenderTargets(_width, _height);
                 InitializeSampler();
@@ -134,7 +174,10 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
             finally
             {
                 factory.Dispose();
-                DebugLogger.LogDebug("D3D11DeviceCore: DXGI factory disposed.");
+                DLogger.Log(
+                    LogSubsystems.D3D11,
+                    LogLevel.Debug,
+                    "D3D11DeviceCore: DXGI factory disposed.");
             }
         }
 
@@ -146,7 +189,7 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
             out ID3D11DeviceContext context)
         {
             return Vortice.Direct3D11.D3D11.D3D11CreateDevice(
-                null,              // default adapter
+                null,              //default adapter
                 driverType,
                 creationFlags,
                 featureLevels,
@@ -166,7 +209,10 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
             _width = width;
             _height = height;
 
-            DebugLogger.LogDebug($"D3D11DeviceCore: resizing swap chain to {_width}x{_height}.");
+            DLogger.Log(
+                LogSubsystems.D3D11,
+                LogLevel.Debug,
+                $"D3D11DeviceCore: resizing swap chain to {_width}x{_height}.");
 
             SwapChain.ResizeBuffers(
                 2,
@@ -192,7 +238,10 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
 
             _disposed = true;
 
-            DebugLogger.LogDebug("D3D11DeviceCore: disposing resources.");
+            DLogger.Log(
+                LogSubsystems.D3D11,
+                LogLevel.Debug,
+                "D3D11DeviceCore: disposing resources.");
 
             DisposeRtvResources();
             DisposeSampler();
@@ -202,7 +251,10 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
             ImmediateContext?.Dispose();
             Device?.Dispose();
 
-            DebugLogger.LogInfo("D3D11DeviceCore: disposed.");
+            DLogger.Log(
+                LogSubsystems.D3D11,
+                LogLevel.Info,
+                "D3D11DeviceCore: disposed.");
         }
     }
 }

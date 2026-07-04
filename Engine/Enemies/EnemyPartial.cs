@@ -6,21 +6,23 @@ Purpose: Removed redundant partial class declaration to fix CS0101 error.
 using System;
 using SASZombieAssaultTD.Engine.ECS;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Enemies
 {
-    /// <summary>
-    /// Static helper methods for Enemy class.
-    /// </summary>
+    ///<summary>
+    ///Static helper methods for Enemy class.
+    ///</summary>
     public static class EnemyHelper
     {
-        /// <summary>
-        /// Static property to ensure Enemy type is accessible.
-        /// </summary>
+        ///<summary>
+        ///Static property to ensure Enemy type is accessible.
+        ///</summary>
         public static Type EnemyType => typeof(Enemy);
 
-        /// <summary>
-        /// Static method to verify Enemy class is working.
-        /// </summary>
+        ///<summary>
+        ///Static method to verify Enemy class is working.
+        ///</summary>
         public static bool VerifyEnemyClass()
         {
             try

@@ -40,17 +40,18 @@
  * ==================================================================================================== */
 
 using System;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Rendering;
 using Vortice.Direct3D11;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Rendering.D3D11
 {
     public sealed class RenderContextD3D11 : IDisposable
     {
-        // --------------------------------------------------------------------
-        // Fields
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Fields
+        //--------------------------------------------------------------------
 
         private readonly D3D11DeviceCore _deviceCore;
         private readonly FramebufferUploaderD3D11 _uploader;
@@ -62,21 +63,21 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
 
         private bool _disposed;
 
-        // --------------------------------------------------------------------
-        // Construction
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Construction
+        //--------------------------------------------------------------------
 
         public RenderContextD3D11(D3D11DeviceCore deviceCore)
         {
             _deviceCore = deviceCore ?? throw new ArgumentNullException(nameof(deviceCore));
             _uploader = new FramebufferUploaderD3D11(deviceCore);
 
-            DebugLogger.LogInfo("RenderContextD3D11: created and bound to D3D11DeviceCore");
+            DLogger.Log("RenderContextD3D11: created and bound to D3D11DeviceCore");
         }
 
-        // --------------------------------------------------------------------
-        // Configuration
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Configuration
+        //--------------------------------------------------------------------
 
         public void SetClearColor(float r, float g, float b, float a = 1.0f)
         {
@@ -85,19 +86,19 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
             _clearB = b;
             _clearA = a;
 
-            DebugLogger.LogDebug(
+            DLogger.Log(
                 $"RenderContextD3D11.SetClearColor: r={r:F3}, g={g:F3}, b={b:F3}, a={a:F3}");
         }
 
-        // --------------------------------------------------------------------
-        // Frame lifecycle
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Frame lifecycle
+        //--------------------------------------------------------------------
 
         public void BeginFrame()
         {
             ThrowIfDisposed();
 
-            DebugLogger.LogDebug(
+            DLogger.Log(
                 $"RenderContextD3D11.BeginFrame: clearing GPU backbuffer to ({_clearR:F3}, {_clearG:F3}, {_clearB:F3}, {_clearA:F3})");
 
             _deviceCore.ClearRenderTarget(_clearR, _clearG, _clearB, _clearA);
@@ -110,24 +111,24 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
 
             ThrowIfDisposed();
 
-            DebugLogger.LogDebug(
+            DLogger.Log(
                 $"RenderContextD3D11.DrawFrame: uploading framebuffer {framebuffer.Width}x{framebuffer.Height}");
 
-            // Upload CPU framebuffer → GPU texture
+            //Upload CPU framebuffer → GPU texture
             _uploader.Upload(framebuffer);
 
-            // Retrieve shader resource view for fullscreen quad
+            //Retrieve shader resource view for fullscreen quad
             ID3D11ShaderResourceView textureView = _uploader.GetTextureView();
             if (textureView == null)
             {
-                DebugLogger.LogError("RenderContextD3D11.DrawFrame: texture view is null, skipping draw");
+                DLogger.Log("RenderContextD3D11.DrawFrame: texture view is null, skipping draw");
                 return;
             }
 
-            DebugLogger.LogDebug(
+            DLogger.Log(
                 "RenderContextD3D11.DrawFrame: drawing fullscreen quad using framebuffer texture");
 
-            // Issue fullscreen quad draw call
+            //Issue fullscreen quad draw call
             _deviceCore.DrawFullscreenTexturedQuad(textureView);
         }
 
@@ -135,28 +136,28 @@ namespace SASZombieAssaultTD.Engine.Rendering.D3D11
         {
             ThrowIfDisposed();
 
-            DebugLogger.LogDebug("RenderContextD3D11.Present: presenting swap chain");
+            DLogger.Log("RenderContextD3D11.Present: presenting swap chain");
             _deviceCore.Present();
         }
 
-        // --------------------------------------------------------------------
-        // Disposal
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Disposal
+        //--------------------------------------------------------------------
 
         public void Dispose()
         {
             if (_disposed)
                 return;
 
-            DebugLogger.LogInfo("RenderContextD3D11: disposing");
+            DLogger.Log("RenderContextD3D11: disposing");
             _uploader.Dispose();
 
             _disposed = true;
         }
 
-        // --------------------------------------------------------------------
-        // Helpers
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Helpers
+        //--------------------------------------------------------------------
 
         private void ThrowIfDisposed()
         {

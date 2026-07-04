@@ -5,11 +5,13 @@ Purpose: 4x4 matrix type for 3D transformations and camera projections.
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.VectorMath
 {
-    /// <summary>
-    /// 4x4 matrix type for 3D transformations and camera projections.
-    /// </summary>
+    ///<summary>
+    ///4x4 matrix type for 3D transformations and camera projections.
+    ///</summary>
     public readonly struct Matrix4x4 : IEquatable<Matrix4x4>
     {
         public float M11 { get; }
@@ -144,11 +146,11 @@ namespace SASZombieAssaultTD.Engine.VectorMath
         {
             var hash = new HashCode();
 
-            // Add the first 8 elements
+            //Add the first 8 elements
             hash.Add(M11); hash.Add(M12); hash.Add(M13); hash.Add(M14);
             hash.Add(M21); hash.Add(M22); hash.Add(M23); hash.Add(M24);
 
-            // Add the remaining 8 elements
+            //Add the remaining 8 elements
             hash.Add(M31); hash.Add(M32); hash.Add(M33); hash.Add(M34);
             hash.Add(M41); hash.Add(M42); hash.Add(M43); hash.Add(M44);
 

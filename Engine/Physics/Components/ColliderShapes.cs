@@ -8,41 +8,43 @@ P11-04-01-B: Structs include helper methods with pure math and full XML document
 using System;
 using System.Drawing;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Physics.Components
 {
-    /// <summary>
-    /// Represents a box collider shape with width and height.
-    /// P11-04-01-B: Includes Width, Height, and helper methods (AABB, IntersectsBox, IntersectsCircle, ContainsPoint).
-    /// All methods are pure math with no engine dependencies.
-    /// </summary>
+    ///<summary>
+    ///Represents a box collider shape with width and height.
+    ///P11-04-01-B: Includes Width, Height, and helper methods (AABB, IntersectsBox, IntersectsCircle, ContainsPoint).
+    ///All methods are pure math with no engine dependencies.
+    ///</summary>
     public struct BoxColliderShape
     {
-        /// <summary>
-        /// Width of the box collider.
-        /// </summary>
+        ///<summary>
+        ///Width of the box collider.
+        ///</summary>
         public float Width { get; set; }
 
-        /// <summary>
-        /// Height of the box collider.
-        /// </summary>
+        ///<summary>
+        ///Height of the box collider.
+        ///</summary>
         public float Height { get; set; }
 
-        /// <summary>
-        /// Creates a new BoxColliderShape with specified dimensions.
-        /// </summary>
-        /// <param name="width">Width of the box</param>
-        /// <param name="height">Height of the box</param>
+        ///<summary>
+        ///Creates a new BoxColliderShape with specified dimensions.
+        ///</summary>
+        ///<param name="width">Width of the box</param>
+        ///<param name="height">Height of the box</param>
         public BoxColliderShape(float width, float height)
         {
             Width = width;
             Height = height;
         }
 
-        /// <summary>
-        /// Gets the axis-aligned bounding box (AABB) for this box at the specified position.
-        /// </summary>
-        /// <param name="position">Center position of the box</param>
-        /// <returns>Rectangle representing the AABB</returns>
+        ///<summary>
+        ///Gets the axis-aligned bounding box (AABB) for this box at the specified position.
+        ///</summary>
+        ///<param name="position">Center position of the box</param>
+        ///<returns>Rectangle representing the AABB</returns>
         public RectangleF GetAABB(PointF position)
         {
             var halfWidth = Width * 0.5f;
@@ -56,13 +58,13 @@ namespace SASZombieAssaultTD.Engine.Physics.Components
             );
         }
 
-        /// <summary>
-        /// Checks if this box intersects with another box.
-        /// </summary>
-        /// <param name="position1">Center position of this box</param>
-        /// <param name="other">Other box collider shape</param>
-        /// <param name="position2">Center position of the other box</param>
-        /// <returns>True if boxes intersect, false otherwise</returns>
+        ///<summary>
+        ///Checks if this box intersects with another box.
+        ///</summary>
+        ///<param name="position1">Center position of this box</param>
+        ///<param name="other">Other box collider shape</param>
+        ///<param name="position2">Center position of the other box</param>
+        ///<returns>True if boxes intersect, false otherwise</returns>
         public bool IntersectsBox(PointF position1, BoxColliderShape other, PointF position2)
         {
             var aabb1 = GetAABB(position1);
@@ -71,67 +73,67 @@ namespace SASZombieAssaultTD.Engine.Physics.Components
             return aabb1.IntersectsWith(aabb2);
         }
 
-        /// <summary>
-        /// Checks if this box intersects with a circle.
-        /// </summary>
-        /// <param name="position">Center position of this box</param>
-        /// <param name="circle">Circle collider shape</param>
-        /// <param name="circlePosition">Center position of the circle</param>
-        /// <returns>True if box intersects with circle, false otherwise</returns>
+        ///<summary>
+        ///Checks if this box intersects with a circle.
+        ///</summary>
+        ///<param name="position">Center position of this box</param>
+        ///<param name="circle">Circle collider shape</param>
+        ///<param name="circlePosition">Center position of the circle</param>
+        ///<returns>True if box intersects with circle, false otherwise</returns>
         public bool IntersectsCircle(PointF position, CircleColliderShape circle, PointF circlePosition)
         {
             return circle.IntersectsBox(circlePosition, this, position);
         }
 
-        /// <summary>
-        /// Checks if this box contains a point.
-        /// </summary>
-        /// <param name="position">Center position of this box</param>
-        /// <param name="point">Point to test</param>
-        /// <returns>True if box contains the point, false otherwise</returns>
+        ///<summary>
+        ///Checks if this box contains a point.
+        ///</summary>
+        ///<param name="position">Center position of this box</param>
+        ///<param name="point">Point to test</param>
+        ///<returns>True if box contains the point, false otherwise</returns>
         public bool ContainsPoint(PointF position, PointF point)
         {
             var aabb = GetAABB(position);
             return aabb.Contains(point);
         }
 
-        /// <summary>
-        /// Gets a string representation for debugging.
-        /// </summary>
+        ///<summary>
+        ///Gets a string representation for debugging.
+        ///</summary>
         public override string ToString()
         {
             return $"BoxColliderShape({Width}x{Height})";
         }
     }
 
-    /// <summary>
-    /// Represents a circle collider shape with radius.
-    /// P11-04-01-B: Includes Radius and helper methods (IntersectsCircle, IntersectsBox, ContainsPoint).
-    /// All methods are pure math with no engine dependencies.
-    /// </summary>
+    ///<summary>
+    ///Represents a circle collider shape with radius.
+    ///P11-04-01-B: Includes Radius and helper methods (IntersectsCircle, IntersectsBox, ContainsPoint).
+    ///All methods are pure math with no engine dependencies.
+    ///</summary>
     public struct CircleColliderShape
     {
-        /// <summary>
-        /// Radius of the circle collider.
-        /// </summary>
+        ///<summary>
+        ///Radius of the circle collider.
+        ///</summary>
         public float Radius { get; set; }
 
-        /// <summary>
-        /// Creates a new CircleColliderShape with specified radius.
-        /// </summary>
-        /// <param name="radius">Radius of the circle</param>
+        ///<summary>
+        ///Creates a new CircleColliderShape with specified radius.
+        ///</summary>
+        ///<param name="radius">Radius of the circle</param>
         public CircleColliderShape(float radius)
         {
             Radius = radius;
         }
 
-        /// <summary>
-        /// Checks if this circle intersects with another circle.
-        /// </summary>
-        /// <param name="position1">Center position of this circle</param>
-        /// <param name="other">Other circle collider shape</param>
-        /// <param name="position2">Center position of the other circle</param>
-        /// <returns>True if circles intersect, false otherwise</returns>
+        ///<summary>
+        ///Checks if this circle intersects with another circle.
+        ///</summary>
+        ///<param name="position1">Center position of this circle</param>
+        ///<param name="other">Other circle collider shape</param>
+        ///<param name="position2">Center position of the other circle</param>
+        ///<returns>True if circles intersect, false otherwise</returns>
         public bool IntersectsCircle(PointF position1, CircleColliderShape other, PointF position2)
         {
             var dx = position1.X - position2.X;
@@ -143,21 +145,21 @@ namespace SASZombieAssaultTD.Engine.Physics.Components
             return distanceSquared <= radiusSumSquared;
         }
 
-        /// <summary>
-        /// Checks if this circle intersects with a box.
-        /// </summary>
-        /// <param name="position">Center position of this circle</param>
-        /// <param name="box">Box collider shape</param>
-        /// <param name="boxPosition">Center position of the box</param>
-        /// <returns>True if circle intersects with box, false otherwise</returns>
+        ///<summary>
+        ///Checks if this circle intersects with a box.
+        ///</summary>
+        ///<param name="position">Center position of this circle</param>
+        ///<param name="box">Box collider shape</param>
+        ///<param name="boxPosition">Center position of the box</param>
+        ///<returns>True if circle intersects with box, false otherwise</returns>
         public bool IntersectsBox(PointF position, BoxColliderShape box, PointF boxPosition)
         {
-            // Find the closest point on the box to the circle center
+            //Find the closest point on the box to the circle center
             var boxAABB = box.GetAABB(boxPosition);
             var closestX = System.Math.Max(boxAABB.Left, System.Math.Min(position.X, boxAABB.Right));
             var closestY = System.Math.Max(boxAABB.Top, System.Math.Min(position.Y, boxAABB.Bottom));
 
-            // Calculate distance from circle center to closest point
+            //Calculate distance from circle center to closest point
             var dx = position.X - closestX;
             var dy = position.Y - closestY;
             var distanceSquared = dx * dx + dy * dy;
@@ -165,12 +167,12 @@ namespace SASZombieAssaultTD.Engine.Physics.Components
             return distanceSquared <= (Radius * Radius);
         }
 
-        /// <summary>
-        /// Checks if this circle contains a point.
-        /// </summary>
-        /// <param name="position">Center position of this circle</param>
-        /// <param name="point">Point to test</param>
-        /// <returns>True if circle contains the point, false otherwise</returns>
+        ///<summary>
+        ///Checks if this circle contains a point.
+        ///</summary>
+        ///<param name="position">Center position of this circle</param>
+        ///<param name="point">Point to test</param>
+        ///<returns>True if circle contains the point, false otherwise</returns>
         public bool ContainsPoint(PointF position, PointF point)
         {
             var dx = position.X - point.X;
@@ -181,37 +183,37 @@ namespace SASZombieAssaultTD.Engine.Physics.Components
             return distanceSquared <= radiusSquared;
         }
 
-        /// <summary>
-        /// Gets a string representation for debugging.
-        /// </summary>
+        ///<summary>
+        ///Gets a string representation for debugging.
+        ///</summary>
         public override string ToString()
         {
             return $"CircleColliderShape(Radius: {Radius})";
         }
     }
 
-    /// <summary>
-    /// Extension methods for collision detection utilities.
-    /// </summary>
+    ///<summary>
+    ///Extension methods for collision detection utilities.
+    ///</summary>
     public static class CollisionExtensions
     {
-        /// <summary>
-        /// Checks if two layer masks can collide (bitwise AND operation).
-        /// </summary>
-        /// <param name="layerMask1">First layer mask</param>
-        /// <param name="layerMask2">Second layer mask</param>
-        /// <returns>True if layers can collide, false otherwise</returns>
+        ///<summary>
+        ///Checks if two layer masks can collide (bitwise AND operation).
+        ///</summary>
+        ///<param name="layerMask1">First layer mask</param>
+        ///<param name="layerMask2">Second layer mask</param>
+        ///<returns>True if layers can collide, false otherwise</returns>
         public static bool CanCollideWith(int layerMask1, int layerMask2)
         {
             return (layerMask1 & layerMask2) != 0;
         }
 
-        /// <summary>
-        /// Gets the squared distance between two points (avoids square root operation).
-        /// </summary>
-        /// <param name="point1">First point</param>
-        /// <param name="point2">Second point</param>
-        /// <returns>Squared distance between points</returns>
+        ///<summary>
+        ///Gets the squared distance between two points (avoids square root operation).
+        ///</summary>
+        ///<param name="point1">First point</param>
+        ///<param name="point2">Second point</param>
+        ///<returns>Squared distance between points</returns>
         public static float DistanceSquared(PointF point1, PointF point2)
         {
             var dx = point1.X - point2.X;
@@ -219,12 +221,12 @@ namespace SASZombieAssaultTD.Engine.Physics.Components
             return dx * dx + dy * dy;
         }
 
-        /// <summary>
-        /// Gets the distance between two points.
-        /// </summary>
-        /// <param name="point1">First point</param>
-        /// <param name="point2">Second point</param>
-        /// <returns>Distance between points</returns>
+        ///<summary>
+        ///Gets the distance between two points.
+        ///</summary>
+        ///<param name="point1">First point</param>
+        ///<param name="point2">Second point</param>
+        ///<returns>Distance between points</returns>
         public static float Distance(PointF point1, PointF point2)
         {
             return (float)System.Math.Sqrt(DistanceSquared(point1, point2));

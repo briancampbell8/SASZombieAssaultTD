@@ -1,4 +1,4 @@
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Dictionary;
 using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Navigation;
@@ -7,14 +7,16 @@ using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static SASZombieAssaultTD.Engine.Towers.TowerData; // Import TowerData members
+using static SASZombieAssaultTD.Engine.Towers.TowerData; //Import TowerData members
+
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Towers
 {
-    /// <summary>
-    /// Tower placement validation system for SAS Zombie Assault TD.
-    /// Validates tower placement rules and constraints.
-    /// </summary>
+    ///<summary>
+    ///Tower placement validation system for SAS Zombie Assault TD.
+    ///Validates tower placement rules and constraints.
+    ///</summary>
     public class PlacementValidator
     {
         private readonly List<PlacementRule> _rules;
@@ -24,21 +26,21 @@ namespace SASZombieAssaultTD.Engine.Towers
         private object TheType;
         private object TheMember;
 
-        /// <summary>
-        /// Initialize the placement validator.
-        /// </summary>
+        ///<summary>
+        ///Initialize the placement validator.
+        ///</summary>
         public PlacementValidator()
         {
             _rules = new List<PlacementRule>();
             InitializeRules();
         }
 
-        /// <summary>
-        /// Check if a tower can be placed at the specified grid position.
-        /// </summary>
-        /// <param name="gridPosition">Grid position to check.</param>
-        /// <param name="towerData">Tower data for validation.</param>
-        /// <returns>True if placement is valid.</returns>
+        ///<summary>
+        ///Check if a tower can be placed at the specified grid position.
+        ///</summary>
+        ///<param name="gridPosition">Grid position to check.</param>
+        ///<param name="towerData">Tower data for validation.</param>
+        ///<returns>True if placement is valid.</returns>
         public bool CanPlaceTower(Vector3Int gridPosition, TowerData towerData)
         {
             if (!_isInitialized)
@@ -54,7 +56,7 @@ namespace SASZombieAssaultTD.Engine.Towers
 
             try
             {
-                // Check all placement rules
+                //Check all placement rules
                 foreach (var rule in _rules)
                 {
                     if (!rule.IsValid(gridPosition, towerData))
@@ -73,12 +75,12 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Get detailed validation result for a placement attempt.
-        /// </summary>
-        /// <param name="gridPosition">Grid position to check.</param>
-        /// <param name="towerData">Tower data for validation.</param>
-        /// <returns>Validation result with details.</returns>
+        ///<summary>
+        ///Get detailed validation result for a placement attempt.
+        ///</summary>
+        ///<param name="gridPosition">Grid position to check.</param>
+        ///<param name="towerData">Tower data for validation.</param>
+        ///<returns>Validation result with details.</returns>
         public ValidationResult GetValidationResult(Vector3Int gridPosition, TowerData towerData)
         {
             var result = new ValidationResult { IsValid = true };
@@ -97,7 +99,7 @@ namespace SASZombieAssaultTD.Engine.Towers
 
             try
             {
-                // Check all placement rules and collect errors/warnings
+                //Check all placement rules and collect errors/warnings
                 foreach (var rule in _rules)
                 {
                     var ruleResult = rule.Validate(gridPosition, towerData);
@@ -108,7 +110,7 @@ namespace SASZombieAssaultTD.Engine.Towers
                         result.AddError(ruleResult.ErrorMessage());
                     }
 
-                    // Add warnings from rule
+                    //Add warnings from rule
                     foreach (var warning in ruleResult.Warnings)
                     {
                         result.AddWarning(warning);
@@ -124,11 +126,11 @@ namespace SASZombieAssaultTD.Engine.Towers
             return result;
         }
 
-        /// <summary>
-        /// Check if a position is within the playable area.
-        /// </summary>
-        /// <param name="gridPosition">Grid position to check.</param>
-        /// <returns>True if within playable area.</returns>
+        ///<summary>
+        ///Check if a position is within the playable area.
+        ///</summary>
+        ///<param name="gridPosition">Grid position to check.</param>
+        ///<returns>True if within playable area.</returns>
         public bool IsInPlayableArea(Vector3Int gridPosition)
         {
             if (_navigationGrid == null)
@@ -137,12 +139,12 @@ namespace SASZombieAssaultTD.Engine.Towers
             return _navigationGrid.IsInBounds(gridPosition.X, gridPosition.Y);
         }
 
-        /// <summary>
-        /// Check if a position blocks enemy paths.
-        /// </summary>
-        /// <param name="gridPosition">Grid position to check.</param>
-        /// <param name="towerData">Tower data for size calculation.</param>
-        /// <returns>True if placement would block paths.</returns>
+        ///<summary>
+        ///Check if a position blocks enemy paths.
+        ///</summary>
+        ///<param name="gridPosition">Grid position to check.</param>
+        ///<param name="towerData">Tower data for size calculation.</param>
+        ///<returns>True if placement would block paths.</returns>
         public bool WouldBlockPaths(Vector3Int gridPosition, TowerData towerData)
         {
             if (_navigationGrid == null || towerData == null)
@@ -150,14 +152,14 @@ namespace SASZombieAssaultTD.Engine.Towers
 
             try
             {
-                // Temporarily mark area as occupied
+                //Temporarily mark area as occupied
                 var originalOccupancy = GetAreaOccupancy(gridPosition.X, gridPosition.Y, towerData.GridSize);
                 SetAreaOccupancy(gridPosition.X, gridPosition.Y, towerData.GridSize, true);
 
-                // Check if path still exists from start to end
+                //Check if path still exists from start to end
                 var hasPath = _navigationGrid.HasPath;
 
-                // Restore original occupancy
+                //Restore original occupancy
                 SetAreaOccupancy(gridPosition.X, gridPosition.Y, towerData.GridSize, false);
                 RestoreAreaOccupancy(gridPosition.X, gridPosition.Y, towerData.GridSize, originalOccupancy);
 
@@ -166,7 +168,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error checking path blocking: {ex.Message}");
-                return true; // Assume it blocks paths on error
+                return true; //Assume it blocks paths on error
             }
         }
 
@@ -191,14 +193,14 @@ namespace SASZombieAssaultTD.Engine.Towers
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Get the minimum distance required from other towers.
-        /// </summary>
-        /// <param name="towerType">Type of tower being placed.</param>
-        /// <returns>Minimum distance in grid units.</returns>
+        ///<summary>
+        ///Get the minimum distance required from other towers.
+        ///</summary>
+        ///<param name="towerType">Type of tower being placed.</param>
+        ///<returns>Minimum distance in grid units.</returns>
         public float GetMinDistanceFromTowers(TowerType towerType)
         {
-            // Different tower types have different spacing requirements
+            //Different tower types have different spacing requirements
             return towerType switch
             {
                 TowerType.Basic => 1.0f,
@@ -210,25 +212,25 @@ namespace SASZombieAssaultTD.Engine.Towers
             };
         }
 
-        /// <summary>
-        /// Check if placement is too close to other towers.
-        /// </summary>
-        /// <param name="gridPosition">Grid position to check.</param>
-        /// <param name="towerData">Tower data for the tower being placed.</param>
-        /// <returns>True if too close to other towers.</returns>
+        ///<summary>
+        ///Check if placement is too close to other towers.
+        ///</summary>
+        ///<param name="gridPosition">Grid position to check.</param>
+        ///<param name="towerData">Tower data for the tower being placed.</param>
+        ///<returns>True if too close to other towers.</returns>
         public bool IsTooCloseToOtherTowers(Vector3Int gridPosition, TowerData towerData)
         {
-            // TODO: Implement tower registry when available
-            // if (_towerRegistry == null)
-            //     return false;
+            //TODO: Implement tower registry when available
+            //if (_towerRegistry == null)
+            //    return false;
             return false;
 
             var minDistance = GetMinDistanceFromTowers(towerData.Type);
             var worldPosition = _navigationGrid.GridToWorld(gridPosition);
 
-            // TODO: Implement tower registry when available
-            // foreach (var tower in _towerRegistry.GetAllTowers())
-            foreach (var tower in new List<Tower>()) // Empty placeholder
+            //TODO: Implement tower registry when available
+            //foreach (var tower in _towerRegistry.GetAllTowers())
+            foreach (var tower in new List<Tower>()) //Empty placeholder
             {
                 var distance = Vector3.Distance(new Vector3(worldPosition.X, worldPosition.Y, 0), tower.Position);
                 if (distance < minDistance)
@@ -240,18 +242,18 @@ namespace SASZombieAssaultTD.Engine.Towers
             return false;
         }
 
-        /// <summary>
-        /// Check if placement is on valid terrain.
-        /// </summary>
-        /// <param name="gridPosition">Grid position to check.</param>
-        /// <param name="towerData">Tower data for terrain requirements.</param>
-        /// <returns>True if terrain is valid.</returns>
+        ///<summary>
+        ///Check if placement is on valid terrain.
+        ///</summary>
+        ///<param name="gridPosition">Grid position to check.</param>
+        ///<param name="towerData">Tower data for terrain requirements.</param>
+        ///<returns>True if terrain is valid.</returns>
         public bool IsValidTerrain(Vector3Int gridPosition, TowerData towerData)
         {
             if (_navigationGrid == null)
                 return false;
 
-            // Check if the terrain type supports this tower
+            //Check if the terrain type supports this tower
             var terrainType = _navigationGrid.GetTerrainType(gridPosition);
 
             return towerData.RequiredTerrain switch
@@ -264,20 +266,20 @@ namespace SASZombieAssaultTD.Engine.Towers
             };
         }
 
-        /// <summary>
-        /// Add a custom placement rule.
-        /// </summary>
-        /// <param name="rule">Rule to add.</param>
+        ///<summary>
+        ///Add a custom placement rule.
+        ///</summary>
+        ///<param name="rule">Rule to add.</param>
         public void AddRule(PlacementRule rule)
         {
             _rules.Add(rule);
             System.Diagnostics.Debug.WriteLine($"Added placement rule: {rule.GetType().Name}");
         }
 
-        /// <summary>
-        /// Remove a placement rule.
-        /// </summary>
-        /// <param name="rule">Rule to remove.</param>
+        ///<summary>
+        ///Remove a placement rule.
+        ///</summary>
+        ///<param name="rule">Rule to remove.</param>
         public void RemoveRule(PlacementRule rule)
         {
             if (_rules.Remove(rule))
@@ -286,45 +288,45 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Initialize the validator with required systems.
-        /// </summary>
+        ///<summary>
+        ///Initialize the validator with required systems.
+        ///</summary>
         private void Initialize()
         {
             _navigationGrid = NavigationGrid.Instance;
-            TowerRegistry = null; // TODO: Implement TowerRegistry when available
+            TowerRegistry = null; //TODO: Implement TowerRegistry when available
             _isInitialized = true;
         }
 
-        /// <summary>
-        /// Initialize default placement rules.
-        /// </summary>
+        ///<summary>
+        ///Initialize default placement rules.
+        ///</summary>
         private void InitializeRules()
         {
-            // Grid bounds rule
+            //Grid bounds rule
             _rules.Add(new GridBoundsRule());
 
-            // Occupancy rule
+            //Occupancy rule
             _rules.Add(new OccupancyRule());
 
-            // Path blocking rule
+            //Path blocking rule
             _rules.Add(new PathBlockingRule());
 
-            // Tower spacing rule
+            //Tower spacing rule
             _rules.Add(new TowerSpacingRule());
 
-            // Terrain rule
+            //Terrain rule
             _rules.Add(new TerrainRule());
 
-            // Economy rule
+            //Economy rule
             _rules.Add(new EconomyRule());
 
             System.Diagnostics.Debug.WriteLine($"Initialized {_rules.Count} placement rules");
         }
 
-        /// <summary>
-        /// Get occupancy data for an area.
-        /// </summary>
+        ///<summary>
+        ///Get occupancy data for an area.
+        ///</summary>
         public bool[,] GetAreaOccupancy(int x,
                                         Vector3Int position,
                                         int size,
@@ -332,7 +334,7 @@ namespace SASZombieAssaultTD.Engine.Towers
         {
             var occupancy = new bool[size, size];
 
-            ///            for (int x = size - 1; x >= 0; x--)
+            ///           for (int x = size - 1; x >= 0; x--)
             for (int i = 0; i < size; i++)
             {
 
@@ -357,9 +359,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             return position;
         }
 
-        /// <summary>
-        /// Set occupancy for an area.
-        /// </summary>
+        ///<summary>
+        ///Set occupancy for an area.
+        ///</summary>
         private void SetAreaOccupancy(int offsetX, int offsetY, Vector3Int position, int size, bool occupied)
         {
             for (int x = 0; x < size; x++)
@@ -369,16 +371,16 @@ namespace SASZombieAssaultTD.Engine.Towers
                     var checkPos = new Vector3Int(
                         position.x + offsetX + x,
                         position.y + offsetY + y,
-                        position.z  // Preserve original Z
+                        position.z  //Preserve original Z
                     );
                     _navigationGrid.SetOccupied(checkPos.x, checkPos.y, occupied);
                 }
             }
         }
 
-        /// <summary>
-        /// Restore occupancy for an area.
-        /// </summary>
+        ///<summary>
+        ///Restore occupancy for an area.
+        ///</summary>
         private void RestoreAreaOccupancy(Vector3Int areaStart, int width, int height, bool[,] savedOccupancy)
         {
             for (int localX = 0; localX < width; localX++)
@@ -400,9 +402,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Cleanup resources.
-        /// </summary>
+        ///<summary>
+        ///Cleanup resources.
+        ///</summary>
         public void Cleanup()
         {
             _rules.Clear();
@@ -410,25 +412,25 @@ namespace SASZombieAssaultTD.Engine.Towers
         }
     }
 
-    /// <summary>
-    /// Base class for placement rules.
-    /// </summary>
+    ///<summary>
+    ///Base class for placement rules.
+    ///</summary>
     public abstract class PlacementRule
     {
-        /// <summary>
-        /// Check if the rule is satisfied.
-        /// </summary>
-        /// <param name="gridPosition">Grid position.</param>
-        /// <param name="towerData">Tower data.</param>
-        /// <returns>True if rule is satisfied.</returns>
+        ///<summary>
+        ///Check if the rule is satisfied.
+        ///</summary>
+        ///<param name="gridPosition">Grid position.</param>
+        ///<param name="towerData">Tower data.</param>
+        ///<returns>True if rule is satisfied.</returns>
         public abstract bool IsValid(Vector3Int gridPosition, TowerData towerData);
 
-        /// <summary>
-        /// Get detailed validation result.
-        /// </summary>
-        /// <param name="gridPosition">Grid position.</param>
-        /// <param name="towerData">Tower data.</param>
-        /// <returns>Validation result.</returns>
+        ///<summary>
+        ///Get detailed validation result.
+        ///</summary>
+        ///<param name="gridPosition">Grid position.</param>
+        ///<param name="towerData">Tower data.</param>
+        ///<returns>Validation result.</returns>
         public virtual ValidationResult Validate(Vector3Int gridPosition, TowerData towerData)
         {
             var result = new ValidationResult { IsValid = IsValid(gridPosition, towerData) };
@@ -441,18 +443,18 @@ namespace SASZombieAssaultTD.Engine.Towers
             return result;
         }
 
-        /// <summary>
-        /// Get failure message for this rule.
-        /// </summary>
-        /// <param name="gridPosition">Grid position.</param>
-        /// <param name="towerData">Tower data.</param>
-        /// <returns>Failure message.</returns>
+        ///<summary>
+        ///Get failure message for this rule.
+        ///</summary>
+        ///<param name="gridPosition">Grid position.</param>
+        ///<param name="towerData">Tower data.</param>
+        ///<returns>Failure message.</returns>
         public abstract string GetFailureMessage(Vector3Int gridPosition, TowerData towerData);
     }
 
-    /// <summary>
-    /// Validation result with errors and warnings.
-    /// </summary>
+    ///<summary>
+    ///Validation result with errors and warnings.
+    ///</summary>
     public class ValidationResult
     {
         public bool IsValid { get; set; }
@@ -470,9 +472,9 @@ namespace SASZombieAssaultTD.Engine.Towers
         }
     }
 
-    /// <summary>
-    /// Rule: Check if position is within grid bounds.
-    /// </summary>
+    ///<summary>
+    ///Rule: Check if position is within grid bounds.
+    ///</summary>
     public class GridBoundsRule : PlacementRule
     {
         public override bool IsValid(Vector3Int gridPosition, TowerData towerData)
@@ -491,9 +493,9 @@ namespace SASZombieAssaultTD.Engine.Towers
         }
     }
 
-    /// <summary>
-    /// Rule: Check if position is already occupied.
-    /// </summary>
+    ///<summary>
+    ///Rule: Check if position is already occupied.
+    ///</summary>
     public class OccupancyRule : PlacementRule
     {
         public override bool IsValid(Vector3Int gridPosition, TowerData towerData)
@@ -501,7 +503,7 @@ namespace SASZombieAssaultTD.Engine.Towers
             var grid = NavigationGrid.Instance;
             if (grid == null) return false;
 
-            // Check all cells the tower would occupy
+            //Check all cells the tower would occupy
             for (int x = 0; x < towerData.GridSize.X; x++)
             {
                 for (int y = 0; y < towerData.GridSize.Y; y++)
@@ -523,9 +525,9 @@ namespace SASZombieAssaultTD.Engine.Towers
         }
     }
 
-    /// <summary>
-    /// Rule: Check if placement would block enemy paths.
-    /// </summary>
+    ///<summary>
+    ///Rule: Check if placement would block enemy paths.
+    ///</summary>
     public class PathBlockingRule : PlacementRule
     {
         public override bool IsValid(Vector3Int gridPosition, TowerData towerData)
@@ -540,9 +542,9 @@ namespace SASZombieAssaultTD.Engine.Towers
         }
     }
 
-    /// <summary>
-    /// Rule: Check minimum distance from other towers.
-    /// </summary>
+    ///<summary>
+    ///Rule: Check minimum distance from other towers.
+    ///</summary>
     public class TowerSpacingRule : PlacementRule
     {
         public override bool IsValid(Vector3Int gridPosition, TowerData towerData)
@@ -557,9 +559,9 @@ namespace SASZombieAssaultTD.Engine.Towers
         }
     }
 
-    /// <summary>
-    /// Rule: Check if terrain supports the tower.
-    /// </summary>
+    ///<summary>
+    ///Rule: Check if terrain supports the tower.
+    ///</summary>
     public class TerrainRule : PlacementRule
     {
         public override bool IsValid(Vector3Int gridPosition, TowerData towerData)
@@ -574,14 +576,14 @@ namespace SASZombieAssaultTD.Engine.Towers
         }
     }
 
-    /// <summary>
-    /// Rule: Check if player can afford the tower.
-    /// </summary>
+    ///<summary>
+    ///Rule: Check if player can afford the tower.
+    ///</summary>
     public class EconomyRule : PlacementRule
     {
         public override bool IsValid(Vector3Int gridPosition, TowerData towerData)
         {
-            // Economy system not available - always return true
+            //Economy system not available - always return true
             return true;
         }
 

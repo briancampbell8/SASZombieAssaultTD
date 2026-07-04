@@ -1,30 +1,32 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Styles
 {
-    /// <summary>
-    /// A collection of UIStyle objects and lookup utilities
-    /// P80-06-02: UIStyleSheet providing a collection of UIStyle objects and lookup utilities
-    /// </summary>
+    ///<summary>
+    ///A collection of UIStyle objects and lookup utilities
+    ///P80-06-02: UIStyleSheet providing a collection of UIStyle objects and lookup utilities
+    ///</summary>
     public class UIStyleSheet
     {
         private readonly Dictionary<string, UIStyle> _styles;
         private readonly Dictionary<Type, UIStyle> _typeStyles;
 
-        /// <summary>
-        /// Gets the number of styles in the sheet
-        /// </summary>
+        ///<summary>
+        ///Gets the number of styles in the sheet
+        ///</summary>
         public int Count => _styles.Count;
 
-        /// <summary>
-        /// Gets the number of type styles in the sheet
-        /// </summary>
+        ///<summary>
+        ///Gets the number of type styles in the sheet
+        ///</summary>
         public int TypeStyleCount => _typeStyles.Count;
 
-        /// <summary>
-        /// Initializes a new UIStyleSheet
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UIStyleSheet
+        ///</summary>
         public UIStyleSheet()
         {
             _styles = new Dictionary<string, UIStyle>();
@@ -33,11 +35,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             System.Diagnostics.Debug.WriteLine("UIStyleSheet: Created new style sheet");
         }
 
-        /// <summary>
-        /// Adds a style to the sheet
-        /// </summary>
-        /// <param name="name">Style name</param>
-        /// <param name="style">Style to add</param>
+        ///<summary>
+        ///Adds a style to the sheet
+        ///</summary>
+        ///<param name="name">Style name</param>
+        ///<param name="style">Style to add</param>
         public void AddStyle(string name, UIStyle style)
         {
             try
@@ -63,11 +65,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Adds a style for a specific type
-        /// </summary>
-        /// <param name="type">Type to associate with style</param>
-        /// <param name="style">Style to add</param>
+        ///<summary>
+        ///Adds a style for a specific type
+        ///</summary>
+        ///<param name="type">Type to associate with style</param>
+        ///<param name="style">Style to add</param>
         public void AddTypeStyle(Type type, UIStyle style)
         {
             try
@@ -93,11 +95,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets a style by name
-        /// </summary>
-        /// <param name="name">Style name</param>
-        /// <returns>Style, or null if not found</returns>
+        ///<summary>
+        ///Gets a style by name
+        ///</summary>
+        ///<param name="name">Style name</param>
+        ///<returns>Style, or null if not found</returns>
         public UIStyle GetStyle(string name)
         {
             try
@@ -118,11 +120,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets a style by type
-        /// </summary>
-        /// <param name="type">Type to get style for</param>
-        /// <returns>Style, or null if not found</returns>
+        ///<summary>
+        ///Gets a style by type
+        ///</summary>
+        ///<param name="type">Type to get style for</param>
+        ///<returns>Style, or null if not found</returns>
         public UIStyle GetStyle(Type type)
         {
             try
@@ -143,21 +145,21 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets a style by type (generic version)
-        /// </summary>
-        /// <typeparam name="T">Type to get style for</typeparam>
-        /// <returns>Style, or null if not found</returns>
+        ///<summary>
+        ///Gets a style by type (generic version)
+        ///</summary>
+        ///<typeparam name="T">Type to get style for</typeparam>
+        ///<returns>Style, or null if not found</returns>
         public UIStyle GetStyle<T>()
         {
             return GetStyle(typeof(T));
         }
 
-        /// <summary>
-        /// Removes a style by name
-        /// </summary>
-        /// <param name="name">Style name to remove</param>
-        /// <returns>True if style was removed</returns>
+        ///<summary>
+        ///Removes a style by name
+        ///</summary>
+        ///<param name="name">Style name to remove</param>
+        ///<returns>True if style was removed</returns>
         public bool RemoveStyle(string name)
         {
             try
@@ -187,11 +189,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Removes a style by type
-        /// </summary>
-        /// <param name="type">Type to remove style for</param>
-        /// <returns>True if style was removed</returns>
+        ///<summary>
+        ///Removes a style by type
+        ///</summary>
+        ///<param name="type">Type to remove style for</param>
+        ///<returns>True if style was removed</returns>
         public bool RemoveTypeStyle(Type type)
         {
             try
@@ -221,11 +223,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Checks if a style exists by name
-        /// </summary>
-        /// <param name="name">Style name to check</param>
-        /// <returns>True if style exists</returns>
+        ///<summary>
+        ///Checks if a style exists by name
+        ///</summary>
+        ///<param name="name">Style name to check</param>
+        ///<returns>True if style exists</returns>
         public bool HasStyle(string name)
         {
             try
@@ -242,11 +244,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Checks if a style exists by type
-        /// </summary>
-        /// <param name="type">Type to check</param>
-        /// <returns>True if style exists</returns>
+        ///<summary>
+        ///Checks if a style exists by type
+        ///</summary>
+        ///<param name="type">Type to check</param>
+        ///<returns>True if style exists</returns>
         public bool HasStyle(Type type)
         {
             try
@@ -263,10 +265,10 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets all style names
-        /// </summary>
-        /// <returns>Collection of style names</returns>
+        ///<summary>
+        ///Gets all style names
+        ///</summary>
+        ///<returns>Collection of style names</returns>
         public IEnumerable<string> GetStyleNames()
         {
             try
@@ -280,9 +282,9 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Clears all styles
-        /// </summary>
+        ///<summary>
+        ///Clears all styles
+        ///</summary>
         public void Clear()
         {
             try
@@ -298,23 +300,23 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Creates a copy of this style sheet
-        /// </summary>
-        /// <returns>Copy of the style sheet</returns>
+        ///<summary>
+        ///Creates a copy of this style sheet
+        ///</summary>
+        ///<returns>Copy of the style sheet</returns>
         public UIStyleSheet Copy()
         {
             try
             {
                 var copy = new UIStyleSheet();
 
-                // Copy named styles
+                //Copy named styles
                 foreach (var kvp in _styles)
                 {
                     copy.AddStyle(kvp.Key, kvp.Value.Copy());
                 }
 
-                // Copy type styles
+                //Copy type styles
                 foreach (var kvp in _typeStyles)
                 {
                     copy.AddTypeStyle(kvp.Key, kvp.Value.Copy());
@@ -330,10 +332,10 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets a string representation of the style sheet
-        /// </summary>
-        /// <returns>String representation</returns>
+        ///<summary>
+        ///Gets a string representation of the style sheet
+        ///</summary>
+        ///<returns>String representation</returns>
         public override string ToString()
         {
             try

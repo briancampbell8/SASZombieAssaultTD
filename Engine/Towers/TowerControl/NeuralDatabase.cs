@@ -11,12 +11,14 @@ using SASZombieAssaultTD.Engine.Resources;
 using SASZombieAssaultTD.Engine.Towers;
 using SASZombieAssaultTD.Engine.Extensions;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Towers.TowerControl
 {
-    /// <summary>
-    /// Neural database for SAS Zombie Assault TD tower intelligence systems.
-    /// Manages enhancement data, neural pathways, and persistence.
-    /// </summary>
+    ///<summary>
+    ///Neural database for SAS Zombie Assault TD tower intelligence systems.
+    ///Manages enhancement data, neural pathways, and persistence.
+    ///</summary>
     public class NeuralDatabase
     {
         private readonly TowerType _towerType;
@@ -26,7 +28,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
         private readonly string _dataPath;
         private bool _isLoaded;
 
-        // Properties
+        //Properties
         public TowerType TowerType => _towerType;
         public int TotalUpgrades => _upgrades.Count;
         public int MaxLevel => _upgradeLevels.Keys.Count > 0 ? _upgradeLevels.Keys.Max() : 1;
@@ -41,9 +43,9 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             _dataPath = Path.Combine("Data", "Upgrades", $"{towerType}.json");
         }
 
-        /// <summary>
-        /// Initialize the upgrade database.
-        /// </summary>
+        ///<summary>
+        ///Initialize the upgrade database.
+        ///</summary>
         public void Initialize()
         {
             if (_isLoaded) return;
@@ -52,10 +54,10 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
 
             try
             {
-                // Load upgrades from file or create defaults
+                //Load upgrades from file or create defaults
                 LoadUpgrades();
 
-                // Build lookup tables
+                //Build lookup tables
                 BuildLookupTables();
 
                 _isLoaded = true;
@@ -68,90 +70,90 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             }
         }
 
-        /// <summary>
-        /// Get upgrade path for the tower.
-        /// </summary>
-        /// <returns>Upgrade path.</returns>
+        ///<summary>
+        ///Get upgrade path for the tower.
+        ///</summary>
+        ///<returns>Upgrade path.</returns>
         public List<TowerUpgrade> GetUpgradePath()
         {
             return new List<TowerUpgrade>(_upgrades);
         }
 
-        /// <summary>
-        /// Get upgrade by level.
-        /// </summary>
-        /// <param name="level">Upgrade level.</param>
-        /// <returns>Upgrade at specified level.</returns>
+        ///<summary>
+        ///Get upgrade by level.
+        ///</summary>
+        ///<param name="level">Upgrade level.</param>
+        ///<returns>Upgrade at specified level.</returns>
         public TowerUpgrade GetUpgradeByLevel(int level)
         {
             return _upgradeLevels.TryGetValue(level, out var upgrade) ? upgrade : null;
         }
 
-        /// <summary>
-        /// Get upgrades by type.
-        /// </summary>
-        /// <param name="upgradeType">Upgrade type.</param>
-        /// <returns>List of upgrades of specified type.</returns>
+        ///<summary>
+        ///Get upgrades by type.
+        ///</summary>
+        ///<param name="upgradeType">Upgrade type.</param>
+        ///<returns>List of upgrades of specified type.</returns>
         public List<TowerUpgrade> GetUpgradesByType(SASZombieAssaultTD.Engine.Towers.UpgradeType upgradeType)
         {
             return _upgradeTypes.TryGetValue(upgradeType, out var upgrades) ? upgrades : new List<TowerUpgrade>();
         }
 
-        /// <summary>
-        /// Get upgrade by name.
-        /// </summary>
-        /// <param name="name">Upgrade name.</param>
-        /// <returns>Upgrade with specified name.</returns>
+        ///<summary>
+        ///Get upgrade by name.
+        ///</summary>
+        ///<param name="name">Upgrade name.</param>
+        ///<returns>Upgrade with specified name.</returns>
         public TowerUpgrade GetUpgradeByName(string name)
         {
             return _upgrades.FirstOrDefault(u => u.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
-        /// <summary>
-        /// Get available upgrades for a tower level.
-        /// </summary>
-        /// <param name="towerLevel">Current tower level.</param>
-        /// <param name="playerLevel">Current player level.</param>
-        /// <returns>List of available upgrades.</returns>
+        ///<summary>
+        ///Get available upgrades for a tower level.
+        ///</summary>
+        ///<param name="towerLevel">Current tower level.</param>
+        ///<param name="playerLevel">Current player level.</param>
+        ///<returns>List of available upgrades.</returns>
         public List<TowerUpgrade> GetAvailableUpgrades(int towerLevel, int playerLevel)
         {
             return _upgrades.Where(u => u.IsAvailable).ToList();
         }
 
-        /// <summary>
-        /// Get next upgrade in the path.
-        /// </summary>
-        /// <param name="currentLevel">Current upgrade level.</param>
-        /// <returns>Next upgrade or null if at max level.</returns>
+        ///<summary>
+        ///Get next upgrade in the path.
+        ///</summary>
+        ///<param name="currentLevel">Current upgrade level.</param>
+        ///<returns>Next upgrade or null if at max level.</returns>
         public TowerUpgrade GetNextUpgrade(int currentLevel)
         {
             return _upgradeLevels.TryGetValue(currentLevel + 1, out var upgrade) ? upgrade : null;
         }
 
-        /// <summary>
-        /// Get upgrade cost for a level.
-        /// </summary>
-        /// <param name="level">Upgrade level.</param>
-        /// <returns>Upgrade cost.</returns>
+        ///<summary>
+        ///Get upgrade cost for a level.
+        ///</summary>
+        ///<param name="level">Upgrade level.</param>
+        ///<returns>Upgrade cost.</returns>
         public int GetUpgradeCost(int level)
         {
             var upgrade = GetUpgradeByLevel(level);
             return upgrade?.Cost ?? 0;
         }
 
-        /// <summary>
-        /// Get total cost for all upgrades.
-        /// </summary>
-        /// <returns>Total cost of all upgrades.</returns>
+        ///<summary>
+        ///Get total cost for all upgrades.
+        ///</summary>
+        ///<returns>Total cost of all upgrades.</returns>
         public int GetTotalUpgradeCost()
         {
             return _upgrades.Sum(u => u.Cost);
         }
 
-        /// <summary>
-        /// Get upgrade statistics.
-        /// </summary>
-        /// <returns>Upgrade statistics.</returns>
+        ///<summary>
+        ///Get upgrade statistics.
+        ///</summary>
+        ///<returns>Upgrade statistics.</returns>
         public UpgradeDatabaseStatistics GetStatistics()
         {
             return new UpgradeDatabaseStatistics
@@ -168,11 +170,11 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             };
         }
 
-        /// <summary>
-        /// Add an upgrade to the database.
-        /// </summary>
-        /// <param name="upgrade">Upgrade to add.</param>
-        /// <returns>True if upgrade was added.</returns>
+        ///<summary>
+        ///Add an upgrade to the database.
+        ///</summary>
+        ///<param name="upgrade">Upgrade to add.</param>
+        ///<returns>True if upgrade was added.</returns>
         public bool AddUpgrade(TowerUpgrade upgrade)
         {
             if (upgrade == null) return false;
@@ -182,7 +184,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             _upgrades.Add(upgrade);
             _upgradeLevels[upgrade.Level] = upgrade;
 
-            // Add to type lookup
+            //Add to type lookup
             if (!_upgradeTypes.ContainsKey(upgrade.Type))
             {
                 _upgradeTypes[upgrade.Type] = new List<TowerUpgrade>();
@@ -193,11 +195,11 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             return true;
         }
 
-        /// <summary>
-        /// Remove an upgrade from the database.
-        /// </summary>
-        /// <param name="upgrade">Upgrade to remove.</param>
-        /// <returns>True if upgrade was removed.</returns>
+        ///<summary>
+        ///Remove an upgrade from the database.
+        ///</summary>
+        ///<param name="upgrade">Upgrade to remove.</param>
+        ///<returns>True if upgrade was removed.</returns>
         public bool RemoveUpgrade(TowerUpgrade upgrade)
         {
             if (upgrade == null) return false;
@@ -222,11 +224,11 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             return removed;
         }
 
-        /// <summary>
-        /// Update an upgrade in the database.
-        /// </summary>
-        /// <param name="upgrade">Upgrade to update.</param>
-        /// <returns>True if upgrade was updated.</returns>
+        ///<summary>
+        ///Update an upgrade in the database.
+        ///</summary>
+        ///<param name="upgrade">Upgrade to update.</param>
+        ///<returns>True if upgrade was updated.</returns>
         public bool UpdateUpgrade(TowerUpgrade upgrade)
         {
             if (upgrade == null) return false;
@@ -235,22 +237,22 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             var existingUpgrade = GetUpgradeByLevel(upgrade.Level);
             if (existingUpgrade == null) return false;
 
-            // Remove old upgrade
+            //Remove old upgrade
             RemoveUpgrade(existingUpgrade);
 
-            // Add updated upgrade
+            //Add updated upgrade
             return AddUpgrade(upgrade);
         }
 
-        /// <summary>
-        /// Validate upgrade database.
-        /// </summary>
-        /// <returns>Validation result.</returns>
+        ///<summary>
+        ///Validate upgrade database.
+        ///</summary>
+        ///<returns>Validation result.</returns>
         public ValidationResult ValidateDatabase()
         {
             var result = new ValidationResult { IsValid = true };
 
-            // Check for duplicate levels
+            //Check for duplicate levels
             var levelCounts = _upgrades.GroupBy(u => u.Level).ToDictionary(g => g.Key, g => g.Count());
             foreach (var kvp in levelCounts)
             {
@@ -261,7 +263,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 }
             }
 
-            // Check for missing levels
+            //Check for missing levels
             var maxLevel = MaxLevel;
             for (int i = 1; i <= maxLevel; i++)
             {
@@ -271,7 +273,7 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
                 }
             }
 
-            // Validate each upgrade
+            //Validate each upgrade
             foreach (var upgrade in _upgrades)
             {
                 var upgradeResult = ValidateUpgrade(upgrade);
@@ -285,15 +287,15 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             return result;
         }
 
-        /// <summary>
-        /// Save upgrade database to file.
-        /// </summary>
-        /// <returns>True if saved successfully.</returns>
+        ///<summary>
+        ///Save upgrade database to file.
+        ///</summary>
+        ///<returns>True if saved successfully.</returns>
         public bool SaveDatabase()
         {
             try
             {
-                // Create directory if it doesn't exist
+                //Create directory if it doesn't exist
                 Directory.CreateDirectory(Path.GetDirectoryName(_dataPath));
 
                 var options = new JsonSerializerOptions
@@ -315,10 +317,10 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             }
         }
 
-        /// <summary>
-        /// Load upgrade database from file.
-        /// </summary>
-        /// <returns>True if loaded successfully.</returns>
+        ///<summary>
+        ///Load upgrade database from file.
+        ///</summary>
+        ///<returns>True if loaded successfully.</returns>
         public bool LoadDatabase()
         {
             try
@@ -359,10 +361,10 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             }
         }
 
-        /// <summary>
-        /// Export upgrade database to JSON.
-        /// </summary>
-        /// <returns>JSON string.</returns>
+        ///<summary>
+        ///Export upgrade database to JSON.
+        ///</summary>
+        ///<returns>JSON string.</returns>
         public string ExportToJson()
         {
             try
@@ -382,11 +384,11 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             }
         }
 
-        /// <summary>
-        /// Import upgrade database from JSON.
-        /// </summary>
-        /// <param name="json">JSON string to import.</param>
-        /// <returns>True if imported successfully.</returns>
+        ///<summary>
+        ///Import upgrade database from JSON.
+        ///</summary>
+        ///<param name="json">JSON string to import.</param>
+        ///<returns>True if imported successfully.</returns>
         public bool ImportFromJson(string json)
         {
             try
@@ -419,9 +421,9 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             }
         }
 
-        /// <summary>
-        /// Clear all upgrades.
-        /// </summary>
+        ///<summary>
+        ///Clear all upgrades.
+        ///</summary>
         public void ClearUpgrades()
         {
             _upgrades.Clear();
@@ -432,11 +434,11 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             System.Diagnostics.Debug.WriteLine($"Cleared all upgrades for {_towerType}");
         }
 
-        ///  Private Methods
+        /// Private Methods
 
-        /// <summary>
-        /// Load upgrades from file or create defaults.
-        /// </summary>
+        ///<summary>
+        ///Load upgrades from file or create defaults.
+        ///</summary>
         private void LoadUpgrades()
         {
             if (!LoadDatabase())
@@ -445,17 +447,17 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             }
         }
 
-        /// <summary>
-        /// Create default upgrades for the tower type.
-        /// </summary>
+        ///<summary>
+        ///Create default upgrades for the tower type.
+        ///</summary>
         private void CreateDefaultUpgrades()
         {
             CreateGenericUpgrades();
         }
 
-        /// <summary>
-        /// Create generic upgrades for unknown tower types.
-        /// </summary>
+        ///<summary>
+        ///Create generic upgrades for unknown tower types.
+        ///</summary>
         private void CreateGenericUpgrades()
         {
             for (int i = 1; i <= 5; i++)
@@ -466,9 +468,9 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             }
         }
 
-        /// <summary>
-        /// Build lookup tables for faster access.
-        /// </summary>
+        ///<summary>
+        ///Build lookup tables for faster access.
+        ///</summary>
         private void BuildLookupTables()
         {
             _upgradeLevels.Clear();
@@ -486,9 +488,9 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             }
         }
 
-        /// <summary>
-        /// Validate a single upgrade.
-        /// </summary>
+        ///<summary>
+        ///Validate a single upgrade.
+        ///</summary>
         private ValidationResult ValidateUpgrade(TowerUpgrade upgrade)
         {
             var result = new ValidationResult { IsValid = true };
@@ -520,12 +522,12 @@ namespace SASZombieAssaultTD.Engine.Towers.TowerControl
             return result;
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// Upgrade database statistics.
-    /// </summary>
+    ///<summary>
+    ///Upgrade database statistics.
+    ///</summary>
     public class UpgradeDatabaseStatistics
     {
         public TowerType TowerType { get; set; }

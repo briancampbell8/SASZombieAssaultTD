@@ -12,7 +12,7 @@ Notes:    This replaces all fragmented manager implementations across the engine
             All engine code must use this unified Manager type.
 */
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.ECS.Components;
 using SASZombieAssaultTD.Engine.Utility;
 using SASZombieAssaultTD.Engine.VectorMath;
@@ -21,11 +21,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.AccessControl;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.ECS
 {
-    /// <summary>
-    /// Manager statistics for performance monitoring.
-    /// </summary>
+    ///<summary>
+    ///Manager statistics for performance monitoring.
+    ///</summary>
     public struct ManagerStats
     {
         public int TotalEntitiesCreated;
@@ -47,14 +49,14 @@ namespace SASZombieAssaultTD.Engine.ECS
             $"AvgUpdate:{AverageUpdateTime:F3}ms, Max:{MaxUpdateTime:F3}ms, Min:{MinUpdateTime:F3}ms)";
     }
 
-    /// <summary>
-    /// Unified Manager implementation for SASZombieAssaultTD engine.
-    /// Provides comprehensive ECS management with unified math integration.
-    /// This is the single authoritative Manager type across the entire engine.
-    /// </summary>
+    ///<summary>
+    ///Unified Manager implementation for SASZombieAssaultTD engine.
+    ///Provides comprehensive ECS management with unified math integration.
+    ///This is the single authoritative Manager type across the entire engine.
+    ///</summary>
     public class ECSManager
     {
-        ///  Private Fields
+        /// Private Fields
 
         private readonly ECSWorld _world;
         private readonly Dictionary<Type, object> _systemCache = new();
@@ -63,9 +65,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         private object TheType;
         private object TheMember;
 
-        /// 
+        ///
 
-        ///  Public Properties
+        /// Public Properties
 
         public ECSWorld World => _world;
         public ManagerStats Stats => _stats;
@@ -73,9 +75,9 @@ namespace SASZombieAssaultTD.Engine.ECS
         public int EntityCount => _world.EntityCount;
         public int SystemCount => _world.SystemCount;
 
-        /// 
+        ///
 
-        ///  Constructors
+        /// Constructors
 
         public ECSManager()
         {
@@ -87,9 +89,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             _world = world ?? throw new ArgumentNullException(nameof(world));
         }
 
-        /// 
+        ///
 
-        ///  Lifecycle Management
+        /// Lifecycle Management
 
         public void Initialize()
         {
@@ -145,9 +147,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             _stats = ManagerStats.Empty;
         }
 
-        /// 
+        ///
 
-        ///  Entity Management
+        /// Entity Management
 
         public Entity CreateEntity()
         {
@@ -183,9 +185,9 @@ namespace SASZombieAssaultTD.Engine.ECS
 
         public IReadOnlyDictionary<Type, ECSComponent> GetAllComponents(Entity entity) => (IReadOnlyDictionary<Type, ECSComponent>)_world.GetAllComponents(entity);
 
-        /// 
+        ///
 
-        ///  System Management
+        /// System Management
 
         public bool AddSystem(ECSSystem system)
         {
@@ -232,9 +234,9 @@ namespace SASZombieAssaultTD.Engine.ECS
 
         public IReadOnlyCollection<ECSSystem> GetSystemsByPriority() => (IReadOnlyCollection<ECSSystem>)_world.GetSystemsByPriority();
 
-        /// 
+        ///
 
-        ///  Queries
+        /// Queries
 
         public IReadOnlyCollection<Entity> FindEntitiesWithComponent<T>() where T : BaseComponent => (IReadOnlyCollection<Entity>)_world.FindEntitiesWithComponent<T>();
 
@@ -246,9 +248,9 @@ namespace SASZombieAssaultTD.Engine.ECS
 
         public IReadOnlyCollection<ECSSystem> GetActiveSystems() => (IReadOnlyCollection<ECSSystem>)_world.ActiveSystems;
 
-        /// 
+        ///
 
-        ///  Private Methods
+        /// Private Methods
 
         private void CacheSystem(Type systemType, ECSSystem system) => _systemCache[systemType] = system;
 
@@ -261,9 +263,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             _stats.MinUpdateTime = System.Math.Min(_stats.MinUpdateTime, updateTime);
         }
 
-        /// 
+        ///
 
-        ///  Statistics
+        /// Statistics
 
         public ManagerStats GetStats() => _stats;
 
@@ -272,6 +274,6 @@ namespace SASZombieAssaultTD.Engine.ECS
         public override string ToString() =>
             $"ECSManager(World:{_world.EntityCount} entities, {_world.SystemCount} systems, Initialized:{_isInitialized})";
 
-        /// 
+        ///
     }
 }

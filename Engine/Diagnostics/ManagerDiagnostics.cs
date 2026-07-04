@@ -1,80 +1,72 @@
-/*
-File:    ManagerDiagnostics.cs
-Path:    Engine/Diagnostics/ManagerDiagnostics.cs
-Purpose:   P11-09-04 - Core manager diagnostics and performance monitoring.
-           Provides comprehensive diagnostics for all engine managers.
-
-Role:      Essential manager diagnostics system for performance monitoring.
-           - Tracks manager performance metrics and health status
-           - Provides real-time diagnostic information for all managers
-           - Monitors manager lifecycle and state changes
-           - Integrates with GameRoot for comprehensive system visibility
-           - Supports diagnostic reporting and analysis
-
-Features:   Real-time manager performance monitoring with detailed metrics.
-           Manager health tracking with status and error monitoring.
-           Lifecycle monitoring with initialization and shutdown tracking.
-           Thread-safe diagnostic operations for concurrent access.
-           Integration with GameRoot for complete system visibility.
-           Comprehensive diagnostic reporting with analysis capabilities.
-
-Notes:      This system is designed for development and performance monitoring.
-           Diagnostic operations have minimal performance impact.
-           All diagnostic operations are thread-safe and designed for concurrent access.
-           System integrates seamlessly with all engine managers.
-           Diagnostic data can be exported for analysis and optimization.
-
-*/
+// ====================================================================================================
+//  FILE: ManagerDiagnostics.cs
+//  PATH: Engine/Diagnostics/ManagerDiagnostics.cs
+//  SUBSYSTEM: Diagnostics
+//
+//  PURPOSE:
+//      P11-09-04 — Core manager diagnostics and performance monitoring.
+//      Provides comprehensive diagnostics for all engine managers.
+//
+//  ROLE:
+//      - Tracks manager performance metrics and health status
+//      - Provides real-time diagnostic information for all managers
+//      - Monitors manager lifecycle and state changes
+//      - Integrates with GameRoot for comprehensive system visibility
+//      - Supports diagnostic reporting and analysis
+//
+//  FEATURES:
+//      - Real-time manager performance monitoring with detailed metrics
+//      - Manager health tracking with status and error monitoring
+//      - Lifecycle monitoring with initialization and shutdown tracking
+//      - Thread-safe diagnostic operations for concurrent access
+//      - Integration with GameRoot for complete system visibility
+//      - Comprehensive diagnostic reporting with analysis capabilities
+//
+//  NOTES:
+//      - Designed for development and performance monitoring
+//      - Diagnostic operations have minimal performance impact
+//      - All diagnostic operations are thread-safe
+//      - Integrates seamlessly with all engine managers
+//      - Diagnostic data can be exported for analysis and optimization
+// ====================================================================================================
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SASZombieAssaultTD.Engine.Core;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
-    /// <summary>
-    /// Manager diagnostics and performance monitoring system.
-    /// Implements P11-09-04: Manager diagnostics and performance monitoring.
-    /// </summary>
     public class ManagerDiagnostics
     {
-        ///  Private Fields
-
+        // ---------------------------------------------------------------------------------------------
+        // Private Fields
+        // ---------------------------------------------------------------------------------------------
         private readonly object _diagnosticsLock = new();
         private readonly Dictionary<string, ManagerDiagnosticInfo> _managerInfos = new();
         private readonly Dictionary<string, ManagerPerformanceMetrics> _performanceMetrics = new();
         private bool _isEnabled = false;
         private DateTime _startTime = DateTime.Now;
 
-        /// 
-
-        ///  Public Properties
-
-        /// <summary>
-        /// Gets whether manager diagnostics are currently enabled.
-        /// </summary>
+        // ---------------------------------------------------------------------------------------------
+        // Public Properties
+        // ---------------------------------------------------------------------------------------------
         public bool IsEnabled => _isEnabled;
-
-        /// <summary>
-        /// Gets the number of managers being monitored.
-        /// </summary>
         public int ManagerCount => _managerInfos.Count;
 
-        /// 
-
-        ///  Public Methods
-
-        /// <summary>
-        /// Initializes the manager diagnostics system.
-        /// </summary>
+        // ---------------------------------------------------------------------------------------------
+        // Public Methods
+        // ---------------------------------------------------------------------------------------------
         public void Initialize()
         {
             lock (_diagnosticsLock)
             {
                 try
                 {
-                    Engine.Diagnostics.DebugLogger.LogInfo("Initializing ManagerDiagnostics...");
+                    DLogger.Log(
+                        LogSubsystems.Diagnostics,
+                        LogLevel.Info,
+                        "ManagerDiagnostics",
+                        "Initializing ManagerDiagnostics...");
 
                     _managerInfos.Clear();
                     _performanceMetrics.Clear();
@@ -82,26 +74,36 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                     _isEnabled = true;
                     _startTime = DateTime.Now;
 
-                    Engine.Diagnostics.DebugLogger.LogInfo("ManagerDiagnostics initialized successfully");
+                    DLogger.Log(
+                        LogSubsystems.Diagnostics,
+                        LogLevel.Info,
+                        "ManagerDiagnostics",
+                        "ManagerDiagnostics initialized successfully");
                 }
                 catch (Exception ex)
                 {
-                    Engine.Diagnostics.DebugLogger.LogError($"ManagerDiagnostics initialization failed: {ex.Message}");
+                    DLogger.Log(
+                        LogSubsystems.Diagnostics,
+                        LogLevel.Error,
+                        "ManagerDiagnostics",
+                        $"ManagerDiagnostics initialization failed: {ex.Message}");
                     throw;
                 }
             }
         }
 
-        /// <summary>
-        /// Shuts down the manager diagnostics system.
-        /// </summary>
         public void Shutdown()
         {
             lock (_diagnosticsLock)
             {
                 try
                 {
-                    Engine.Diagnostics.DebugLogger.LogInfo("Shutting down ManagerDiagnostics...");
+                    DLogger.Log(
+                        LogSubsystems.Diagnostics,
+                        LogLevel.Info,
+                        "ManagerDiagnostics",
+                        "Shutting down ManagerDiagnostics...");
+
                     GenerateFinalReport();
 
                     _managerInfos.Clear();
@@ -109,20 +111,23 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
 
                     _isEnabled = false;
 
-                    Engine.Diagnostics.DebugLogger.LogInfo("ManagerDiagnostics shutdown completed");
+                    DLogger.Log(
+                        LogSubsystems.Diagnostics,
+                        LogLevel.Info,
+                        "ManagerDiagnostics",
+                        "ManagerDiagnostics shutdown completed");
                 }
                 catch (Exception ex)
                 {
-                    Engine.Diagnostics.DebugLogger.LogError($"ManagerDiagnostics shutdown failed: {ex.Message}");
+                    DLogger.Log(
+                        LogSubsystems.Diagnostics,
+                        LogLevel.Error,
+                        "ManagerDiagnostics",
+                        $"ManagerDiagnostics shutdown failed: {ex.Message}");
                 }
             }
         }
 
-        /// <summary>
-        /// Registers a manager for diagnostics monitoring.
-        /// </summary>
-        /// <param name="managerName">The name of the manager.</param>
-        /// <param name="managerType">The type of the manager.</param>
         public void RegisterManager(string managerName, Type managerType)
         {
             lock (_diagnosticsLock)
@@ -143,15 +148,14 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                     StartTime = DateTime.Now
                 };
 
-                Engine.Diagnostics.DebugLogger.LogInfo($"Manager registered for diagnostics: {managerName}");
+                DLogger.Log(
+                    LogSubsystems.Diagnostics,
+                    LogLevel.Info,
+                    "ManagerDiagnostics",
+                    $"Manager registered for diagnostics: {managerName}");
             }
         }
 
-        /// <summary>
-        /// Updates manager status.
-        /// </summary>
-        /// <param name="managerName">The name of the manager.</param>
-        /// <param name="status">The new status.</param>
         public void UpdateManagerStatus(string managerName, ManagerStatus status)
         {
             lock (_diagnosticsLock)
@@ -163,17 +167,15 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                     info.Status = status;
                     info.LastStatusChange = DateTime.Now;
 
-                    Engine.Diagnostics.DebugLogger.LogDebug($"Manager status updated: {managerName} -> {status}");
+                    DLogger.Log(
+                        LogSubsystems.Diagnostics,
+                        LogLevel.Debug,
+                        "ManagerDiagnostics",
+                        $"Manager status updated: {managerName} -> {status}");
                 }
             }
         }
 
-        /// <summary>
-        /// Records manager operation duration.
-        /// </summary>
-        /// <param name="managerName">The name of the manager.</param>
-        /// <param name="operation">The operation type.</param>
-        /// <param name="duration">The operation duration in seconds.</param>
         public void RecordOperationDuration(string managerName, ManagerOperation operation, float duration)
         {
             lock (_diagnosticsLock)
@@ -187,11 +189,6 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             }
         }
 
-        /// <summary>
-        /// Records manager error.
-        /// </summary>
-        /// <param name="managerName">The name of the manager.</param>
-        /// <param name="error">The error that occurred.</param>
         public void RecordError(string managerName, Exception error)
         {
             lock (_diagnosticsLock)
@@ -204,7 +201,11 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                     info.LastError = error;
                     info.LastErrorTime = DateTime.Now;
 
-                    Engine.Diagnostics.DebugLogger.LogError($"Manager error recorded: {managerName} - {error.Message}");
+                    DLogger.Log(
+                        LogSubsystems.Diagnostics,
+                        LogLevel.Error,
+                        "ManagerDiagnostics",
+                        $"Manager error recorded: {managerName} - {error.Message}");
                 }
 
                 if (_performanceMetrics.TryGetValue(managerName, out var metrics))
@@ -214,11 +215,6 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             }
         }
 
-        /// <summary>
-        /// Gets diagnostic information for a specific manager.
-        /// </summary>
-        /// <param name="managerName">The name of the manager.</param>
-        /// <returns>Manager diagnostic information.</returns>
         public ManagerDiagnosticInfo GetManagerInfo(string managerName)
         {
             lock (_diagnosticsLock)
@@ -227,11 +223,6 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             }
         }
 
-        /// <summary>
-        /// Gets performance metrics for a specific manager.
-        /// </summary>
-        /// <param name="managerName">The name of the manager.</param>
-        /// <returns>Manager performance metrics.</returns>
         public ManagerPerformanceMetrics GetPerformanceMetrics(string managerName)
         {
             lock (_diagnosticsLock)
@@ -240,10 +231,6 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             }
         }
 
-        /// <summary>
-        /// Gets comprehensive diagnostics data.
-        /// </summary>
-        /// <returns>Manager diagnostics data.</returns>
         public ManagerDiagnosticsData GetDiagnostics()
         {
             lock (_diagnosticsLock)
@@ -256,44 +243,77 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                     TotalErrors = _managerInfos.Values.Sum(m => m.ErrorCount),
                     ActiveManagers = _managerInfos.Values.Count(m => m.Status == ManagerStatus.Running),
                     InactiveManagers = _managerInfos.Values.Count(m => m.Status != ManagerStatus.Running),
-                    AverageOperationTime = _performanceMetrics.Values.Average(m => m.AverageOperationTime),
+                    AverageOperationTime = _performanceMetrics.Values.Any()
+                        ? _performanceMetrics.Values.Average(m => m.AverageOperationTime)
+                        : 0f,
                     TotalOperationTime = _performanceMetrics.Values.Sum(m => m.TotalOperationTime),
                     TotalRunTime = (float)(DateTime.Now - _startTime).TotalSeconds
                 };
             }
         }
 
-        /// 
-
-        ///  Private Methods
-
+        // ---------------------------------------------------------------------------------------------
+        // Private Methods
+        // ---------------------------------------------------------------------------------------------
         private void GenerateFinalReport()
         {
             try
             {
                 var diagnostics = GetDiagnostics();
 
-                Engine.Diagnostics.DebugLogger.LogInfo("Manager diagnostics final report:");
-                Engine.Diagnostics.DebugLogger.LogInfo($"  Total run time: {diagnostics.TotalRunTime:F2}s");
-                Engine.Diagnostics.DebugLogger.LogInfo($"  Total managers: {diagnostics.ManagerCount}");
-                Engine.Diagnostics.DebugLogger.LogInfo($"  Active managers: {diagnostics.ActiveManagers}");
-                Engine.Diagnostics.DebugLogger.LogInfo($"  Inactive managers: {diagnostics.InactiveManagers}");
-                Engine.Diagnostics.DebugLogger.LogInfo($"  Total errors: {diagnostics.TotalErrors}");
-                Engine.Diagnostics.DebugLogger.LogInfo($"  Average operation time: {diagnostics.AverageOperationTime * 1000:F2}ms");
-                Engine.Diagnostics.DebugLogger.LogInfo($"  Total operation time: {diagnostics.TotalOperationTime * 1000:F2}ms");
+                DLogger.Log(
+                    LogSubsystems.Diagnostics,
+                    LogLevel.Info,
+                    "ManagerDiagnostics",
+                    "Manager diagnostics final report:");
+
+                DLogger.Log(
+                    LogSubsystems.Diagnostics,
+                    LogLevel.Info,
+                    "ManagerDiagnostics",
+                    $"  Total run time: {diagnostics.TotalRunTime:F2}s");
+                DLogger.Log(
+                    LogSubsystems.Diagnostics,
+                    LogLevel.Info,
+                    "ManagerDiagnostics",
+                    $"  Total managers: {diagnostics.ManagerCount}");
+                DLogger.Log(
+                    LogSubsystems.Diagnostics,
+                    LogLevel.Info,
+                    "ManagerDiagnostics",
+                    $"  Active managers: {diagnostics.ActiveManagers}");
+                DLogger.Log(
+                    LogSubsystems.Diagnostics,
+                    LogLevel.Info,
+                    "ManagerDiagnostics",
+                    $"  Inactive managers: {diagnostics.InactiveManagers}");
+                DLogger.Log(
+                    LogSubsystems.Diagnostics,
+                    LogLevel.Info,
+                    "ManagerDiagnostics",
+                    $"  Total errors: {diagnostics.TotalErrors}");
+                DLogger.Log(
+                    LogSubsystems.Diagnostics,
+                    LogLevel.Info,
+                    "ManagerDiagnostics",
+                    $"  Average operation time: {diagnostics.AverageOperationTime * 1000:F2}ms");
+                DLogger.Log(
+                    LogSubsystems.Diagnostics,
+                    LogLevel.Info,
+                    "ManagerDiagnostics",
+                    $"  Total operation time: {diagnostics.TotalOperationTime * 1000:F2}ms");
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogError($"Failed to generate final report: {ex.Message}");
+                DLogger.Log(
+                    LogSubsystems.Diagnostics,
+                    LogLevel.Error,
+                    "ManagerDiagnostics",
+                    $"Failed to generate final report: {ex.Message}");
             }
         }
-
-        /// 
     }
 
-    /// <summary>
-    /// Manager diagnostic information.
-    /// </summary>
     public class ManagerDiagnosticInfo
     {
         public string ManagerName { get; set; }
@@ -307,9 +327,6 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         public float Uptime => (float)(DateTime.Now - RegistrationTime).TotalSeconds;
     }
 
-    /// <summary>
-    /// Manager performance metrics.
-    /// </summary>
     public class ManagerPerformanceMetrics
     {
         public string ManagerName { get; set; }
@@ -333,13 +350,11 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             {
                 OperationTimes[operation] = 0f;
             }
+
             OperationTimes[operation] += duration;
         }
     }
 
-    /// <summary>
-    /// Manager diagnostics data container.
-    /// </summary>
     public class ManagerDiagnosticsData
     {
         public bool IsEnabled { get; set; }
@@ -353,9 +368,6 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         public float TotalRunTime { get; set; }
     }
 
-    /// <summary>
-    /// Manager status enumeration.
-    /// </summary>
     public enum ManagerStatus
     {
         Registered,
@@ -368,9 +380,6 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         Error
     }
 
-    /// <summary>
-    /// Manager operation enumeration.
-    /// </summary>
     public enum ManagerOperation
     {
         Initialize,
@@ -382,4 +391,3 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         Custom
     }
 }
-

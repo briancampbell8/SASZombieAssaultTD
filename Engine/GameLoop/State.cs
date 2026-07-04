@@ -17,84 +17,100 @@ Notes:    Contains all state logic extracted from GameLoop.
 */
 
 using System;
-using SASZombieAssaultTD.Engine.Core;
-
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Scenes.Battlefields;
 namespace SASZombieAssaultTD.Engine.Systems
+//
 {
-    /// <summary>
-    /// Partial class containing state management logic for GameLoop.
-    /// </summary>
+    ///<summary>
+    ///Partial class containing state management logic for GameLoop.
+    ///</summary>
     public partial class GameLoop
     {
-        /// <summary>
-        /// Stops the game loop gracefully.
-        /// </summary>
+        ///<summary>
+        ///Stops the game loop gracefully.
+        ///</summary>
         public void PerformStop()
         {
             _isRunning = false;
-            Engine.Diagnostics.DebugLogger.LogInfo("Game loop stopped gracefully");
+            Dlogger.Log(
+                LogSubsystems.GameLoop,
+                LogLevel.Info,
+                "Game loop stopped gracefully");
         }
 
-        /// <summary>
-        /// Performs graceful shutdown with state cleanup.
-        /// </summary>
+        ///<summary>
+        ///Performs graceful shutdown with state cleanup.
+        ///</summary>
         private void PerformGracefulShutdown()
         {
             try
             {
-                Engine.Diagnostics.DebugLogger.LogInfo("Starting graceful shutdown...");
+                Dlogger.Log(
+                    LogSubsystems.GameLoop,
+                    LogLevel.Info,
+                    "Starting graceful shutdown...");
 
-                // Stop the game loop first
+                //Stop the game loop first
                 _isRunning = false;
 
-                // Give systems time to cleanup
+                //Give systems time to cleanup
                 System.Threading.Thread.Sleep(100);
 
-                // Log final statistics
+                //Log final statistics
                 LogFinalStatistics();
 
-                Engine.Diagnostics.DebugLogger.LogInfo("Graceful shutdown completed");
+                Dlogger.Log(
+                    LogSubsystems.GameLoop,
+                    LogLevel.Info,
+                    "Graceful shutdown completed");
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Graceful shutdown failed: {ex.Message}");
-                Engine.Diagnostics.DebugLogger.Exception(ex, "Graceful shutdown");
+                Dlogger.Log("ERROR", $"Graceful shutdown failed: {ex.Message}");
+                Dlogger.Log(ex, "Graceful shutdown");
             }
         }
 
-        /// <summary>
-        /// Performs emergency shutdown due to critical error.
-        /// </summary>
-        /// <param name="error">The critical error that triggered shutdown.</param>
+        ///<summary>
+        ///Performs emergency shutdown due to critical error.
+        ///</summary>
+        ///<param name="error">The critical error that triggered shutdown.</param>
         private void PerformEmergencyShutdown(Exception error)
         {
             try
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Emergency shutdown triggered by critical error: {error.Message}");
-                Engine.Diagnostics.DebugLogger.Exception(error, "Emergency shutdown");
+                Dlogger.Log("ERROR", $"Emergency shutdown triggered by critical error: {error.Message}");
+                Dlogger.Log(error, "Emergency shutdown");
 
-                // Force stop immediately
+                //Force stop immediately
                 _isRunning = false;
                 _isInitialized = false;
 
-                // Log emergency shutdown
+                //Log emergency shutdown
                 LogEmergencyShutdown(error);
 
-                Engine.Diagnostics.DebugLogger.LogInfo("Emergency shutdown completed");
+                Dlogger.Log(
+                    LogSubsystems.GameLoop,
+                    LogLevel.Info,
+                    "Emergency shutdown completed");
             }
             catch (Exception shutdownEx)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Emergency shutdown failed: {shutdownEx.Message}");
-                Engine.Diagnostics.DebugLogger.Exception(shutdownEx, "Emergency shutdown");
+                Dlogger.Log(
+                    LogSubsystems.GameLoop,
+                    LogLevel.Error,
+                    $"Emergency shutdown failed: {shutdownEx.Message}");
+                Dlogger.Log(shutdownEx, "Emergency shutdown");
             }
         }
 
-        /// <summary>
-        /// Validates state transitions.
-        /// </summary>
-        /// <param name="fromState">The current state.</param>
-        /// <param name="toState">The desired state.</param>
-        /// <returns>True if the transition is valid.</returns>
+        ///<summary>
+        ///Validates state transitions.
+        ///</summary>
+        ///<param name="fromState">The current state.</param>
+        ///<param name="toState">The desired state.</param>
+        ///<returns>True if the transition is valid.</returns>
         private bool IsValidStateTransition(GameLoopState fromState, GameLoopState toState)
         {
             return fromState switch
@@ -109,28 +125,38 @@ namespace SASZombieAssaultTD.Engine.Systems
             };
         }
 
-        /// <summary>
-        /// Logs final statistics before shutdown.
-        /// </summary>
+        ///<summary>
+        ///Logs final statistics before shutdown.
+        ///</summary>
         private void LogFinalStatistics()
         {
-            Engine.Diagnostics.DebugLogger.LogInfo($"Final statistics - Frames: {_frameCount}, Avg FPS: {FramesPerSecond:F2}, Errors: {_diagnostics.ErrorCount}");
+            Dlogger.Log(
+                LogSubsystems.GameLoop,
+                LogLevel.Debug,
+                $"Final statistics - Frames: {_frameCount}, Avg FPS: {FramesPerSecond:F2}, Errors: {_diagnostics.ErrorCount}");
         }
 
-        /// <summary>
-        /// Logs emergency shutdown information.
-        /// </summary>
-        /// <param name="error">The critical error.</param>
+        ///<summary>
+        ///Logs emergency shutdown information.
+        ///</summary>
+        ///<param name="error">The critical error.</param>
         private void LogEmergencyShutdown(Exception error)
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"Emergency shutdown - Error: {error.GetType().Name}, Message: {error.Message}");
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"Context - Frame: {_frameCount}, FPS: {FramesPerSecond:F2}, Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
+            Dlogger.Log(
+                LogSubsystems.GameLoop,
+                LogLevel.Error,
+                $"Emergency shutdown - Error: {error.GetType().Name}, Message: {error.Message}");
+            Dlogger.Log(
+                LogSubsystems.GameLoop,
+                LogLevel.Error,
+                $"Context - Frame: {_frameCount}, FPS: {FramesPerSecond:F2}, " +
+                $"Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
         }
 
-        /// <summary>
-        /// Gets detailed state information.
-        /// </summary>
-        /// <returns>State information.</returns>
+        ///<summary>
+        ///Gets detailed state information.
+        ///</summary>
+        ///<returns>State information.</returns>
         public StateInfo GetStateInfo()
         {
             return new StateInfo
@@ -140,15 +166,15 @@ namespace SASZombieAssaultTD.Engine.Systems
                 IsRunning = _isRunning,
                 FrameCount = _frameCount,
                 Uptime = DateTime.Now - (_lastFrameTime - TimeSpan.FromMilliseconds(_frameCount * _averageFrameTime * 1000)),
-                LastStateChange = DateTime.Now // Would be tracked in real implementation
+                LastStateChange = DateTime.Now //Would be tracked in real implementation
             };
         }
 
-        /// <summary>
-        /// Forces a state transition (for testing/recovery).
-        /// </summary>
-        /// <param name="newState">The new state to force.</param>
-        /// <returns>True if the transition was successful.</returns>
+        ///<summary>
+        ///Forces a state transition (for testing/recovery).
+        ///</summary>
+        ///<param name="newState">The new state to force.</param>
+        ///<returns>True if the transition was successful.</returns>
         public bool ForceStateTransition(GameLoopState newState)
         {
             lock (_stateLock)
@@ -157,13 +183,18 @@ namespace SASZombieAssaultTD.Engine.Systems
 
                 if (!IsValidStateTransition(oldState, newState))
                 {
-                    Engine.Diagnostics.DebugLogger.LogWarning($"Invalid state transition: {oldState} -> {newState}");
+                    Dlogger.Log(
+                        LogSubsystems.GameLoop, LogLevel.Error,
+                        $"Invalid state transition from '{oldState}' to '{newState}'"
+                        );
                     return false;
                 }
 
-                Engine.Diagnostics.DebugLogger.LogInfo($"Forcing state transition: {oldState} -> {newState}");
+                Dlogger.Log(LogSubsystems.GameLoop, LogLevel.Debug,
+                    $"Forcing state transition from '{oldState}' to '{newState}'"
+                    );
 
-                // Apply state changes
+                //Apply state changes
                 switch (newState)
                 {
                     case GameLoopState.Running:
@@ -186,33 +217,33 @@ namespace SASZombieAssaultTD.Engine.Systems
         }
     }
 
-    /// <summary>
-    /// Enumeration of game loop states.
-    /// </summary>
+    ///<summary>
+    ///Enumeration of game loop states.
+    ///</summary>
     public enum GameLoopState
     {
-        /// <summary>The game loop has not been initialized.</summary>
+        ///<summary>The game loop has not been initialized.</summary>
         Uninitialized,
 
-        /// <summary>The game loop is currently initializing.</summary>
+        ///<summary>The game loop is currently initializing.</summary>
         Initializing,
 
-        /// <summary>The game loop is running and processing frames.</summary>
+        ///<summary>The game loop is running and processing frames.</summary>
         Running,
 
-        /// <summary>The game loop is stopped but can be resumed.</summary>
+        ///<summary>The game loop is stopped but can be resumed.</summary>
         Stopped,
 
-        /// <summary>The game loop is shutting down.</summary>
+        ///<summary>The game loop is shutting down.</summary>
         ShuttingDown,
 
-        /// <summary>The game loop is in an error state.</summary>
+        ///<summary>The game loop is in an error state.</summary>
         Error
     }
 
-    /// <summary>
-    /// State information for the game loop.
-    /// </summary>
+    ///<summary>
+    ///State information for the game loop.
+    ///</summary>
     public class StateInfo
     {
         public GameLoopState CurrentState { get; set; }

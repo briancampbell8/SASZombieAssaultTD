@@ -25,17 +25,19 @@ using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Enemies;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
 {
     public partial class WaveDirector
     {
-        // ===============================================================================================
-        //  WAVE STATS OBJECT
-        // ===============================================================================================
+        //===============================================================================================
+        // WAVE STATS OBJECT
+        //===============================================================================================
 
-        /// <summary>
-        /// Represents statistics for a single wave.
-        /// </summary>
+        ///<summary>
+        ///Represents statistics for a single wave.
+        ///</summary>
         public class WaveStats
         {
             public int WaveNumber { get; set; }
@@ -45,13 +47,13 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             public float Progress => TotalEnemies == 0 ? 1f : (float)DefeatedEnemies / TotalEnemies;
         }
 
-        // ===============================================================================================
-        //  PUBLIC-FACING INTERNAL STATS ACCESSORS
-        // ===============================================================================================
+        //===============================================================================================
+        // PUBLIC-FACING INTERNAL STATS ACCESSORS
+        //===============================================================================================
 
-        /// <summary>
-        /// Returns statistics for the current wave.
-        /// </summary>
+        ///<summary>
+        ///Returns statistics for the current wave.
+        ///</summary>
         internal WaveStats GetWaveStats_Internal()
         {
             if (_currentWave == null)
@@ -75,9 +77,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             };
         }
 
-        /// <summary>
-        /// Returns the number of completed waves.
-        /// </summary>
+        ///<summary>
+        ///Returns the number of completed waves.
+        ///</summary>
         internal int GetCompletedWaves_Internal()
         {
             if (_currentWaveNumber == 0)
@@ -89,18 +91,18 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             return System.Math.Max(0, _currentWaveNumber - (_currentState == WaveState.InProgress ? 1 : 0));
         }
 
-        /// <summary>
-        /// Returns the progress of the current wave (0–1).
-        /// </summary>
+        ///<summary>
+        ///Returns the progress of the current wave (0–1).
+        ///</summary>
         internal float GetWaveProgress_Internal()
         {
             var stats = GetWaveStats_Internal();
             return stats.Progress;
         }
 
-        /// <summary>
-        /// Returns the overall progress across all waves (0–1).
-        /// </summary>
+        ///<summary>
+        ///Returns the overall progress across all waves (0–1).
+        ///</summary>
         internal float GetOverallProgress_Internal()
         {
             if (_totalWaves == 0)
@@ -112,13 +114,13 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             return (completed + currentWaveProgress) / _totalWaves;
         }
 
-        // ===============================================================================================
-        //  ENEMY COUNT HELPERS
-        // ===============================================================================================
+        //===============================================================================================
+        // ENEMY COUNT HELPERS
+        //===============================================================================================
 
-        /// <summary>
-        /// Returns the total number of enemies defined in a wave script.
-        /// </summary>
+        ///<summary>
+        ///Returns the total number of enemies defined in a wave script.
+        ///</summary>
         internal int GetTotalEnemiesForWave_Internal(WaveScript script)
         {
             if (script == null)
@@ -132,13 +134,13 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             return total;
         }
 
-        /// <summary>
-        /// Returns the number of alive enemies belonging to a specific wave.
-        /// </summary>
+        ///<summary>
+        ///Returns the number of alive enemies belonging to a specific wave.
+        ///</summary>
         internal int GetAliveEnemiesForWave_Internal(int waveNumber)
         {
-            // TODO: Wire to EnemyManager when available.
-            EnemyManager enemyManager = null; // EnemyManager.Instance;
+            //TODO: Wire to EnemyManager when available.
+            EnemyManager enemyManager = null; //EnemyManager.Instance;
 
             if (enemyManager == null)
                 return 0;

@@ -14,16 +14,18 @@ using System;
 using System.IO;
 using System.Text.Json;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Assets
 {
     public static partial class DataLoader
     {
-        /// <summary>
-        /// Loads data from the specified file path.
-        /// Returns the parsed object for JSON files or the raw text content.
-        /// </summary>
-        /// <param name="path">The path to the data file.</param>
-        /// <returns>The parsed object or raw text content.</returns>
+        ///<summary>
+        ///Loads data from the specified file path.
+        ///Returns the parsed object for JSON files or the raw text content.
+        ///</summary>
+        ///<param name="path">The path to the data file.</param>
+        ///<returns>The parsed object or raw text content.</returns>
         public static object Load(string path)
         {
             if (!File.Exists(path))
@@ -31,7 +33,7 @@ namespace SASZombieAssaultTD.Engine.Assets
 
             string content = File.ReadAllText(path);
 
-            // Try to deserialize as JSON if it's a .json file
+            //Try to deserialize as JSON if it's a .json file
             if (path.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
             {
                 try
@@ -41,7 +43,7 @@ namespace SASZombieAssaultTD.Engine.Assets
                 }
                 catch
                 {
-                    // If JSON parsing fails, return raw content
+                    //If JSON parsing fails, return raw content
                     return content;
                 }
             }

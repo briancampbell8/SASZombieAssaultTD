@@ -25,7 +25,6 @@
  *      - This component is read by health-check code but does not initiate shutdown on its own.
  * ==================================================================================================== */
 
-using System;
 using System.Diagnostics;
 using System.Threading;
 
@@ -45,7 +44,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics   // ⭐ FIXED NAMESPACE
         private const int LOG_RATE_THRESHOLD = 2000;
         private const int DUPLICATE_ERROR_THRESHOLD = 10;
 
-        public static void RegisterLogEvent(DiagnosticCategory category, string message)
+        public static void RegisterLogEvent(LogCategory category, string message)
         {
             Interlocked.Increment(ref _intervalLogCount);
 
@@ -58,7 +57,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics   // ⭐ FIXED NAMESPACE
                     TriggerEmergencyStop($"Log rate exceeded threshold: {_logsPerSecond}/sec");
             }
 
-            if (category == DiagnosticCategory.Error || category == DiagnosticCategory.Exception)
+            if (category == LogCategory.Error || category == LogCategory.Exception)
             {
                 if (message == _lastErrorMessage)
                 {
@@ -88,8 +87,12 @@ namespace SASZombieAssaultTD.Engine.Diagnostics   // ⭐ FIXED NAMESPACE
             _emergencyStop = false;
             _duplicateErrorCount = 0;
             _lastErrorRepeatCount = 0;
+            NewMethod();
+        }
 
-            DebugLogger.Info("DiagnosticsMonitor", "Emergency stop reset");
+        private static void NewMethod()
+        {
+            DLogger.Log("DiagnosticsMonitor", "Emergency stop reset");
         }
 
         public static bool IsHealthy() => !_emergencyStop;
@@ -101,7 +104,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics   // ⭐ FIXED NAMESPACE
 
             _emergencyStop = true;
 
-            DebugLogger.Error("DiagnosticsMonitor", $"Emergency stop triggered: {reason}");
+            DLogger.Log("DiagnosticsMonitor", $"Emergency stop triggered: {reason}");
         }
     }
 }

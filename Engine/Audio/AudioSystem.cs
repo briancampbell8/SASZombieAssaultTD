@@ -1,10 +1,12 @@
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Audio
 {
-    /// <summary>
-    /// Audio system for managing game sounds and music.
-    /// </summary>
+    ///<summary>
+    ///Audio system for managing game sounds and music.
+    ///</summary>
     public static class AudioSystem
     {
         public static void SetBackgroundMusicVolume(float volume) { /* Stub implementation */ }

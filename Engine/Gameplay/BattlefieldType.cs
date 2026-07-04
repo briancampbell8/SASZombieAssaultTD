@@ -1,102 +1,116 @@
-/*
-Program Name: SASZombieAssaultTD
-File Path: Engine\Gameplay\BattlefieldType.cs
-Purpose: Enumeration of all battlefield types in the game.
-Features: 8 battlefields with unique characteristics and biomes.
-*/
+// ====================================================================================================
+//  FILE: BattlefieldType.cs
+//  PATH: Engine/Gameplay/
+//  MODULE: Gameplay (Battlefield Definitions)
+//
+//  ROLE:
+//      Defines the BattlefieldType enumeration representing playable battlefield variants.
+//
+//  RESPONSIBILITIES:
+//      - Enumerate named battlefield identifiers used across level-loading and UI.
+//      - Provide inline documentation for each battlefield variant.
+//
+//  NON-RESPONSIBILITIES:
+//      - Contain level-loading logic or scene management (handled by Scene/Level systems).
+//
+//  ARCHITECTURAL NOTES:
+//      - Keep enum stable to avoid serialization/versioning issues in save data.
+// ====================================================================================================
+
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Gameplay
 {
-    /// <summary>
-    /// Enumeration of all battlefield types in SAS Zombie Assault TD.
-    /// P120-07: Defines the 8 battlefields from MapFlow documentation.
-    /// </summary>
+    ///<summary>
+    ///Enumeration of all battlefield types in SAS Zombie Assault TD.
+    ///P120-07: Defines the 8 battlefields from MapFlow documentation.
+    ///</summary>
     public enum BattlefieldType
     {
-        /// <summary>
-        /// Mean Street - Narrow urban street with rooftop positions.
-        /// Biome: Urban street
-        /// Pathing: Linear street path
-        /// Features: Rooftop tiles for SAS soldiers
-        /// Difficulty: Early-game pacing
-        /// </summary>
+        ///<summary>
+        ///Mean Street - Narrow urban street with rooftop positions.
+        ///Biome: Urban street
+        ///Pathing: Linear street path
+        ///Features: Rooftop tiles for SAS soldiers
+        ///Difficulty: Early-game pacing
+        ///</summary>
         MeanStreet,
 
-        /// <summary>
-        /// Sub-Zero - Mountain refuge camp in snow biome.
-        /// Biome: Snow/mountain refuge
-        /// Pathing: Wide early defense, multi-lane later
-        /// Features: Slow-movement tiles (snow)
-        /// Difficulty: Mid-game progression
-        /// </summary>
+        ///<summary>
+        ///Sub-Zero - Mountain refuge camp in snow biome.
+        ///Biome: Snow/mountain refuge
+        ///Pathing: Wide early defense, multi-lane later
+        ///Features: Slow-movement tiles (snow)
+        ///Difficulty: Mid-game progression
+        ///</summary>
         SubZero,
 
-        /// <summary>
-        /// Dead Warehouse - Cramped indoor warehouse.
-        /// Biome: Indoor warehouse
-        /// Pathing: Narrow corridors
-        /// Features: High-density waves
-        /// Difficulty: Path manipulation focus
-        /// </summary>
+        ///<summary>
+        ///Dead Warehouse - Cramped indoor warehouse.
+        ///Biome: Indoor warehouse
+        ///Pathing: Narrow corridors
+        ///Features: High-density waves
+        ///Difficulty: Path manipulation focus
+        ///</summary>
         DeadWarehouse,
 
-        /// <summary>
-        /// Shop Til You Drop - Open floor retail store.
-        /// Biome: Open floor retail
-        /// Pathing: Player-created pathing
-        /// Features: High turret placement freedom
-        /// Difficulty: Killbox-focused gameplay
-        /// </summary>
+        ///<summary>
+        ///Shop Til You Drop - Open floor retail store.
+        ///Biome: Open floor retail
+        ///Pathing: Player-created pathing
+        ///Features: High turret placement freedom
+        ///Difficulty: Killbox-focused gameplay
+        ///</summary>
         ShopTilYouDrop,
 
-        /// <summary>
-        /// Killtop - Vegetated hilltop with multi-directional spawns.
-        /// Biome: Vegetated hilltop
-        /// Pathing: Multi-directional spawns
-        /// Features: Elevation props
-        /// Difficulty: Chaotic wave pacing
-        /// </summary>
+        ///<summary>
+        ///Killtop - Vegetated hilltop with multi-directional spawns.
+        ///Biome: Vegetated hilltop
+        ///Pathing: Multi-directional spawns
+        ///Features: Elevation props
+        ///Difficulty: Chaotic wave pacing
+        ///</summary>
         Killtop,
 
-        /// <summary>
-        /// Touchdown - Stadium with curved paths.
-        /// Biome: Stadium
-        /// Pathing: Curved paths
-        /// Features: Barrier props
-        /// Difficulty: Mid-game spike
-        /// </summary>
+        ///<summary>
+        ///Touchdown - Stadium with curved paths.
+        ///Biome: Stadium
+        ///Pathing: Curved paths
+        ///Features: Barrier props
+        ///Difficulty: Mid-game spike
+        ///</summary>
         Touchdown,
 
-        /// <summary>
-        /// Cleanup On Aisle 13 - Grocery store with aisle-based choke points.
-        /// Biome: Grocery store
-        /// Pathing: Single dominant spawn direction
-        /// Features: Aisle-based choke points
-        /// Difficulty: Strong funneling potential
-        /// </summary>
+        ///<summary>
+        ///Cleanup On Aisle 13 - Grocery store with aisle-based choke points.
+        ///Biome: Grocery store
+        ///Pathing: Single dominant spawn direction
+        ///Features: Aisle-based choke points
+        ///Difficulty: Strong funneling potential
+        ///</summary>
         Cleanup,
 
-        /// <summary>
-        /// Outbreak Mansion - Mansion and garden with final boss.
-        /// Biome: Mansion + garden
-        /// Pathing: Multiple natural choke points
-        /// Features: Final boss map (Ruin)
-        /// Difficulty: High-intensity late waves
-        /// </summary>
+        ///<summary>
+        ///Outbreak Mansion - Mansion and garden with final boss.
+        ///Biome: Mansion + garden
+        ///Pathing: Multiple natural choke points
+        ///Features: Final boss map (Ruin)
+        ///Difficulty: High-intensity late waves
+        ///</summary>
         OutbreakMansion,
         SomeValue
     }
 
-    /// <summary>
-    /// Extension methods for BattlefieldType.
-    /// </summary>
+    ///<summary>
+    ///Extension methods for BattlefieldType.
+    ///</summary>
     public static class BattlefieldTypeExtensions
     {
-        /// <summary>
-        /// Gets the display name for a battlefield type.
-        /// </summary>
-        /// <param name="battlefield">The battlefield type.</param>
-        /// <returns>The display name.</returns>
+        ///<summary>
+        ///Gets the display name for a battlefield type.
+        ///</summary>
+        ///<param name="battlefield">The battlefield type.</param>
+        ///<returns>The display name.</returns>
         public static string GetDisplayName(this BattlefieldType battlefield)
         {
             return battlefield switch
@@ -113,11 +127,11 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             };
         }
 
-        /// <summary>
-        /// Gets the biome description for a battlefield type.
-        /// </summary>
-        /// <param name="battlefield">The battlefield type.</param>
-        /// <returns>The biome description.</returns>
+        ///<summary>
+        ///Gets the biome description for a battlefield type.
+        ///</summary>
+        ///<param name="battlefield">The battlefield type.</param>
+        ///<returns>The biome description.</returns>
         public static string GetBiome(this BattlefieldType battlefield)
         {
             return battlefield switch
@@ -134,11 +148,11 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             };
         }
 
-        /// <summary>
-        /// Gets the difficulty tier for a battlefield type.
-        /// </summary>
-        /// <param name="battlefield">The battlefield type.</param>
-        /// <returns>The difficulty tier (1-8).</returns>
+        ///<summary>
+        ///Gets the difficulty tier for a battlefield type.
+        ///</summary>
+        ///<param name="battlefield">The battlefield type.</param>
+        ///<returns>The difficulty tier (1-8).</returns>
         public static int GetDifficultyTier(this BattlefieldType battlefield)
         {
             return battlefield switch
@@ -155,11 +169,11 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             };
         }
 
-        /// <summary>
-        /// Checks if a battlefield is a final boss map.
-        /// </summary>
-        /// <param name="battlefield">The battlefield type.</param>
-        /// <returns>True if this is a final boss map.</returns>
+        ///<summary>
+        ///Checks if a battlefield is a final boss map.
+        ///</summary>
+        ///<param name="battlefield">The battlefield type.</param>
+        ///<returns>True if this is a final boss map.</returns>
         public static bool IsFinalBossMap(this BattlefieldType battlefield)
         {
             return battlefield == BattlefieldType.OutbreakMansion;

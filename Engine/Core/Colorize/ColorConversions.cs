@@ -1,8 +1,8 @@
-// File:    ColorConversions.cs
-// Purpose: Format conversion methods for Color with comprehensive format support.
-//          Handles BGRA (framebuffer), ARGB (interop), hex strings, and batch conversions.
+//File:    ColorConversions.cs
+//Purpose: Format conversion methods for Color with comprehensive format support.
+//         Handles BGRA (framebuffer), ARGB (interop), hex strings, and batch conversions.
 //
-// Architecture:
+//Architecture:
 //- Partial struct extension of core Color type
 //- BGRA format conversion for framebuffer operations
 //- ARGB format conversion for interop operations
@@ -11,38 +11,40 @@
 //- Critical for rendering pipeline performance
 
 //Usage:
-//    uint bgra = color.ToBGRA();
-//    uint argb = color.ToARGB();
-//    string hex = color.ToHexString();
-// Convert between color formats efficiently
+//   uint bgra = color.ToBGRA();
+//   uint argb = color.ToARGB();
+//   string hex = color.ToHexString();
+//Convert between color formats efficiently
 //
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 
 using System;
 using System.Runtime.CompilerServices;
+
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Core.Colorize
 {
     public readonly partial struct Color
     {
-        // ---------------------------------------------------------
-        // PACKED FORMAT CONVERSIONS (To/From UInt32)
-        // ---------------------------------------------------------
-        // Framebuffer uses BGRA (little-endian: 0xAARRGGBB in memory = BGRA bytes)
-        // System.Drawing uses ARGB (0xAARRGGBB shifted)
-        // Understanding byte order is critical for interop performance.
+        //---------------------------------------------------------
+        //PACKED FORMAT CONVERSIONS (To/From UInt32)
+        //---------------------------------------------------------
+        //Framebuffer uses BGRA (little-endian: 0xAARRGGBB in memory = BGRA bytes)
+        //System.Drawing uses ARGB (0xAARRGGBB shifted)
+        //Understanding byte order is critical for interop performance.
 
-        /// <summary>
-        /// Converts to BGRA uint32 for direct framebuffer writing.
-        /// Format: 0xAARRGGBB in register = [B][G][R][A] in memory (little-endian)
-        /// </summary>
-        /// <returns>32-bit BGRA packed value</returns>
-        /// <remarks>
-        /// This is the FAST path for framebuffer output.
-        /// BGRA matches Windows DIB and most GPU texture formats.
-        /// Use this instead of ToArgb() when writing to pixel buffers.
-        /// </remarks>
+        ///<summary>
+        ///Converts to BGRA uint32 for direct framebuffer writing.
+        ///Format: 0xAARRGGBB in register = [B][G][R][A] in memory (little-endian)
+        ///</summary>
+        ///<returns>32-bit BGRA packed value</returns>
+        ///<remarks>
+        ///This is the FAST path for framebuffer output.
+        ///BGRA matches Windows DIB and most GPU texture formats.
+        ///Use this instead of ToArgb() when writing to pixel buffers.
+        ///</remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint ToBgra()
         {
@@ -52,15 +54,15 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
                    ((uint)(BByte));
         }
 
-        /// <summary>
-        /// Converts to ARGB uint32 for System.Drawing/GDI interop.
-        /// Format: 0xAARRGGBB (Alpha in high byte, then R, G, B)
-        /// </summary>
-        /// <returns>32-bit ARGB packed value</returns>
-        /// <remarks>
-        /// Matches Win32 COLORREF with alpha.
-        /// Required for System.Drawing.Color.FromArgb() compatibility.
-        /// </remarks>
+        ///<summary>
+        ///Converts to ARGB uint32 for System.Drawing/GDI interop.
+        ///Format: 0xAARRGGBB (Alpha in high byte, then R, G, B)
+        ///</summary>
+        ///<returns>32-bit ARGB packed value</returns>
+        ///<remarks>
+        ///Matches Win32 COLORREF with alpha.
+        ///Required for System.Drawing.Color.FromArgb() compatibility.
+        ///</remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint ToArgb()
         {
@@ -70,10 +72,10 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
                    ((uint)(BByte));
         }
 
-        /// <summary>
-        /// Converts to RGB uint32 (no alpha, assumes opaque).
-        /// Format: 0x00RRGGBB
-        /// </summary>
+        ///<summary>
+        ///Converts to RGB uint32 (no alpha, assumes opaque).
+        ///Format: 0x00RRGGBB
+        ///</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint ToRgb()
         {
@@ -82,46 +84,46 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
                    ((uint)(BByte));
         }
 
-        /// <summary>
-        /// Creates color from packed BGRA uint32.
-        /// Input format: 0xAARRGGBB in register = [B][G][R][A] in memory
-        /// </summary>
+        ///<summary>
+        ///Creates color from packed BGRA uint32.
+        ///Input format: 0xAARRGGBB in register = [B][G][R][A] in memory
+        ///</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color FromBgra(uint bgra)
         {
             return CreateUnchecked(
-                ((bgra >> 16) & 0xFF) / 255f,  // R
-                ((bgra >> 8) & 0xFF) / 255f,   // G
-                (bgra & 0xFF) / 255f,          // B
-                ((bgra >> 24) & 0xFF) / 255f   // A
+                ((bgra >> 16) & 0xFF) / 255f,  //R
+                ((bgra >> 8) & 0xFF) / 255f,   //G
+                (bgra & 0xFF) / 255f,          //B
+                ((bgra >> 24) & 0xFF) / 255f   //A
             );
         }
 
-        /// <summary>
-        /// Creates color from packed uint32 (alias for FromArgb).
-        /// Input format: 0xAARRGGBB
-        /// </summary>
+        ///<summary>
+        ///Creates color from packed uint32 (alias for FromArgb).
+        ///Input format: 0xAARRGGBB
+        ///</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color FromUint(uint value) => FromArgb(value);
 
-        /// <summary>
-        /// Creates color from packed ARGB uint32.
-        /// Input format: 0xAARRGGBB
-        /// </summary>
+        ///<summary>
+        ///Creates color from packed ARGB uint32.
+        ///Input format: 0xAARRGGBB
+        ///</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color FromArgb(uint argb)
         {
             return CreateUnchecked(
-                ((argb >> 16) & 0xFF) / 255f,  // R
-                ((argb >> 8) & 0xFF) / 255f,   // G
-                (argb & 0xFF) / 255f,          // B
-                ((argb >> 24) & 0xFF) / 255f   // A
+                ((argb >> 16) & 0xFF) / 255f,  //R
+                ((argb >> 8) & 0xFF) / 255f,   //G
+                (argb & 0xFF) / 255f,          //B
+                ((argb >> 24) & 0xFF) / 255f   //A
             );
         }
 
-        /// <summary>
-        /// Creates color from byte components (ARGB order).
-        /// </summary>
+        ///<summary>
+        ///Creates color from byte components (ARGB order).
+        ///</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color FromArgb(byte a, byte r, byte g, byte b)
         {
@@ -133,10 +135,10 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             );
         }
 
-        /// <summary>
-        /// Creates color from int components with validation.
-        /// Clamps values to 0-255 before conversion.
-        /// </summary>
+        ///<summary>
+        ///Creates color from int components with validation.
+        ///Clamps values to 0-255 before conversion.
+        ///</summary>
         public static Color FromArgb(int a, int r, int g, int b)
         {
             return new Color(
@@ -147,19 +149,19 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             );
         }
 
-        /// <summary>
-        /// Creates color from RGB only (assumes opaque alpha).
-        /// </summary>
+        ///<summary>
+        ///Creates color from RGB only (assumes opaque alpha).
+        ///</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color FromRgb(byte r, byte g, byte b)
         {
             return CreateUnchecked(r / 255f, g / 255f, b / 255f, 1f);
         }
 
-        /// <summary>
-        /// Creates color from HSV (Hue, Saturation, Value) components.
-        /// Hue: 0-360 degrees, Saturation: 0-1, Value: 0-1
-        /// </summary>
+        ///<summary>
+        ///Creates color from HSV (Hue, Saturation, Value) components.
+        ///Hue: 0-360 degrees, Saturation: 0-1, Value: 0-1
+        ///</summary>
         public static Color FromHsv(float h, float s, float v)
         {
             h = h % 360f;
@@ -180,23 +182,23 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             return CreateUnchecked(r + m, g + m, b + m, 1f);
         }
 
-        // ---------------------------------------------------------
-        // SYSTEM.DRAWING INTEROP
-        // ---------------------------------------------------------
+        //---------------------------------------------------------
+        //SYSTEM.DRAWING INTEROP
+        //---------------------------------------------------------
 
-        /// <summary>
-        /// Converts to System.Drawing.Color for GDI+ interop.
-        /// </summary>
+        ///<summary>
+        ///Converts to System.Drawing.Color for GDI+ interop.
+        ///</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public System.Drawing.Color ToSystemDrawingColor()
         {
             return System.Drawing.Color.FromArgb(AByte, RByte, GByte, BByte);
         }
 
-        /// <summary>
-        /// Implicit conversion from System.Drawing.Color.
-        /// Allows seamless assignment: Color c = System.Drawing.Color.Red;
-        /// </summary>
+        ///<summary>
+        ///Implicit conversion from System.Drawing.Color.
+        ///Allows seamless assignment: Color c = System.Drawing.Color.Red;
+        ///</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Color(System.Drawing.Color color)
         {
@@ -208,14 +210,14 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             );
         }
 
-        // ---------------------------------------------------------
-        // STRING CONVERSIONS
-        // ---------------------------------------------------------
+        //---------------------------------------------------------
+        //STRING CONVERSIONS
+        //---------------------------------------------------------
 
-        /// <summary>
-        /// Converts to hex string representation.
-        /// Opaque colors: #RRGGBB, Transparent colors: #AARRGGBB
-        /// </summary>
+        ///<summary>
+        ///Converts to hex string representation.
+        ///Opaque colors: #RRGGBB, Transparent colors: #AARRGGBB
+        ///</summary>
         public string ToHex()
         {
             if (System.Math.Abs(A - 1.0f) < 0.001f)
@@ -228,10 +230,10 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             }
         }
 
-        /// <summary>
-        /// Parses hex string to Color.
-        /// Supports: #RGB, #RRGGBB, #AARRGGBB, #ARGB, #RRGGBBAA
-        /// </summary>
+        ///<summary>
+        ///Parses hex string to Color.
+        ///Supports: #RGB, #RRGGBB, #AARRGGBB, #ARGB, #RRGGBBAA
+        ///</summary>
         public static Color ParseHex(string hex)
         {
             if (string.IsNullOrEmpty(hex))
@@ -239,21 +241,21 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
 
             hex = hex.TrimStart('#');
 
-            if (hex.Length == 3) // #RGB
+            if (hex.Length == 3) //#RGB
             {
                 byte r = (byte)(HexToByte(hex[0]) * 17);
                 byte g = (byte)(HexToByte(hex[1]) * 17);
                 byte b = (byte)(HexToByte(hex[2]) * 17);
                 return FromRgb(r, g, b);
             }
-            else if (hex.Length == 6) // #RRGGBB
+            else if (hex.Length == 6) //#RRGGBB
             {
                 byte r = (byte)(HexToByte(hex[0]) * 16 + HexToByte(hex[1]));
                 byte g = (byte)(HexToByte(hex[2]) * 16 + HexToByte(hex[3]));
                 byte b = (byte)(HexToByte(hex[4]) * 16 + HexToByte(hex[5]));
                 return FromRgb(r, g, b);
             }
-            else if (hex.Length == 8) // #AARRGGBB
+            else if (hex.Length == 8) //#AARRGGBB
             {
                 byte a = (byte)(HexToByte(hex[0]) * 16 + HexToByte(hex[1]));
                 byte r = (byte)(HexToByte(hex[2]) * 16 + HexToByte(hex[3]));
@@ -274,18 +276,18 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             throw new FormatException($"Invalid hex character: {c}");
         }
 
-        // ---------------------------------------------------------
-        // BATCH CONVERSIONS (High Performance)
-        // ---------------------------------------------------------
-        // These methods convert arrays of colors efficiently.
-        // Critical for particle systems, sprite batches, and texture processing.
+        //---------------------------------------------------------
+        //BATCH CONVERSIONS (High Performance)
+        //---------------------------------------------------------
+        //These methods convert arrays of colors efficiently.
+        //Critical for particle systems, sprite batches, and texture processing.
 
-        /// <summary>
-        /// Converts span of colors to BGRA byte array.
-        /// Output format: [B,G,R,A][B,G,R,A]... (4 bytes per pixel)
-        /// </summary>
-        /// <param name="colors">Source colors</param>
-        /// <param name="output">Destination byte span (must be 4x colors.Length)</param>
+        ///<summary>
+        ///Converts span of colors to BGRA byte array.
+        ///Output format: [B,G,R,A][B,G,R,A]... (4 bytes per pixel)
+        ///</summary>
+        ///<param name="colors">Source colors</param>
+        ///<param name="output">Destination byte span (must be 4x colors.Length)</param>
         public static void ToBgraBatch(ReadOnlySpan<Color> colors, Span<byte> output)
         {
             if (output.Length < colors.Length * 4)
@@ -302,9 +304,9 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             }
         }
 
-        /// <summary>
-        /// Converts span of colors to ARGB uint32 array.
-        /// </summary>
+        ///<summary>
+        ///Converts span of colors to ARGB uint32 array.
+        ///</summary>
         public static void ToArgbBatch(ReadOnlySpan<Color> colors, Span<uint> output)
         {
             if (output.Length < colors.Length)
@@ -316,10 +318,10 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             }
         }
 
-        /// <summary>
-        /// Converts BGRA byte array to span of colors.
-        /// Input format: [B,G,R,A][B,G,R,A]...
-        /// </summary>
+        ///<summary>
+        ///Converts BGRA byte array to span of colors.
+        ///Input format: [B,G,R,A][B,G,R,A]...
+        ///</summary>
         public static void FromBgraBatch(ReadOnlySpan<byte> bgraData, Span<Color> output)
         {
             int colorCount = bgraData.Length / 4;
@@ -330,17 +332,17 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             {
                 int idx = i * 4;
                 output[i] = CreateUnchecked(
-                    bgraData[idx + 2] / 255f,  // R
-                    bgraData[idx + 1] / 255f,  // G
-                    bgraData[idx + 0] / 255f,  // B
-                    bgraData[idx + 3] / 255f   // A
+                    bgraData[idx + 2] / 255f,  //R
+                    bgraData[idx + 1] / 255f,  //G
+                    bgraData[idx + 0] / 255f,  //B
+                    bgraData[idx + 3] / 255f   //A
                 );
             }
         }
 
-        /// <summary>
-        /// Unpacks single BGRA uint32 into 4 bytes (for unsafe pointer operations).
-        /// </summary>
+        ///<summary>
+        ///Unpacks single BGRA uint32 into 4 bytes (for unsafe pointer operations).
+        ///</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void UnpackBgra(uint packed, out byte b, out byte g, out byte r, out byte a)
         {

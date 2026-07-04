@@ -1,94 +1,94 @@
 /*
-// File: RSManager_Loader.cs
+//File: RSManager_Loader.cs
 
-// Purpose: Loading engine for RSManager internal partial class in SAS Zombie Assault TD.
+//Purpose: Loading engine for RSManager internal partial class in SAS Zombie Assault TD.
 
-// Features:
+//Features:
 
-// -Loading engine for RSManager internal partial class
-// -Contains LoadResource / UnloadResource, async operations, dependency resolution
+//-Loading engine for RSManager internal partial class
+//-Contains LoadResource / UnloadResource, async operations, dependency resolution
 
-// - All calls into RSLoader, all load/unload orchestration
-// - Thread-safe resource loading with streaming support
+//- All calls into RSLoader, all load/unload orchestration
+//- Thread-safe resource loading with streaming support
 
-// Architecture:
-// -Thread - safe implementation with locking mechanisms
-// - Weak reference caching to prevent memory leaks
-// - Type-safe generic loading methods
-// - Extensible asset type detection system
+//Architecture:
+//-Thread - safe implementation with locking mechanisms
+//- Weak reference caching to prevent memory leaks
+//- Type-safe generic loading methods
+//- Extensible asset type detection system
 
-// INTEGRATION POINTS:
-// -Coordinates with AssetManager for asset lifecycle management
-// - Coordinates with AssetBundle for packaged asset distribution
-// - Coordinates with RSManager for low-level resource management
-// - Provides unified API for all asset operations across subsystems
+//INTEGRATION POINTS:
+//-Coordinates with AssetManager for asset lifecycle management
+//- Coordinates with AssetBundle for packaged asset distribution
+//- Coordinates with RSManager for low-level resource management
+//- Provides unified API for all asset operations across subsystems
 
-// CORE PROCESSING CAPABILITIES:
-// -Resource loading with streaming and caching support
-// - Asset format conversion and optimization
-// - 3D model loading with LOD level selection
-// - Font loading with character set optimization
-// - Data loading with serialization and deserialization
-// - Script and shader loading with validation
+//CORE PROCESSING CAPABILITIES:
+//-Resource loading with streaming and caching support
+//- Asset format conversion and optimization
+//- 3D model loading with LOD level selection
+//- Font loading with character set optimization
+//- Data loading with serialization and deserialization
+//- Script and shader loading with validation
 
-// PIPELINE ARCHITECTURE:
-// -Modular processor system for extensible asset type support
-// - Configurable processing pipeline with quality vs. performance trade-offs
-// - Parallel processing for batch operations with configurable worker threads
-// - Caching system to prevent redundant processing of unchanged assets
-// - Comprehensive validation with detailed error reporting and suggestions
+//PIPELINE ARCHITECTURE:
+//-Modular processor system for extensible asset type support
+//- Configurable processing pipeline with quality vs. performance trade-offs
+//- Parallel processing for batch operations with configurable worker threads
+//- Caching system to prevent redundant processing of unchanged assets
+//- Comprehensive validation with detailed error reporting and suggestions
 
-// PERFORMANCE CHARACTERISTICS:
-// -Minimal overhead through direct subsystem delegation
-// - Optimized initialization with lazy loading where appropriate
-// - Efficient resource management with automatic cleanup
-// - Thread-safe operations with minimal contention
-// - Background processing coordination to prevent blocking
-// - Intelligent caching with hash-based change detection
-// - Memory-efficient streaming for large assets
+//PERFORMANCE CHARACTERISTICS:
+//-Minimal overhead through direct subsystem delegation
+//- Optimized initialization with lazy loading where appropriate
+//- Efficient resource management with automatic cleanup
+//- Thread-safe operations with minimal contention
+//- Background processing coordination to prevent blocking
+//- Intelligent caching with hash-based change detection
+//- Memory-efficient streaming for large assets
 
-// USAGE EXAMPLES:
-// ```csharp
-// // Initialize RSManager
-// var rsManager = new RSManager("Resources");
+//USAGE EXAMPLES:
+//```csharp
+////Initialize RSManager
+//var rsManager = new RSManager("Resources");
 
-// // Load resources
-// var texture = rsManager.LoadResource<Texture2D>("textures/player.png");
-// var audio = rsManager.LoadResource<AudioClip>("audio/explosion.wav");
+////Load resources
+//var texture = rsManager.LoadResource<Texture2D>("textures/player.png");
+//var audio = rsManager.LoadResource<AudioClip>("audio/explosion.wav");
 
-// // Load resources asynchronously
-// var textureTask = rsManager.LoadResourceAsync<Texture2D>("ui/loading_screen.png");
-// var audioTask = rsManager.LoadResourceAsync<AudioClip>("audio/theme.wav");
-// var resources = await Task.WhenAll(textureTask, audioTask);
+////Load resources asynchronously
+//var textureTask = rsManager.LoadResourceAsync<Texture2D>("ui/loading_screen.png");
+//var audioTask = rsManager.LoadResourceAsync<AudioClip>("audio/theme.wav");
+//var resources = await Task.WhenAll(textureTask, audioTask);
 
-// // Load with progress tracking
-// var progress = new Progress<float>(p => System.Diagnostics.Debug.WriteLine($"Loading: {p:P0%}"));
-// await rsManager.LoadResourceAsync<Texture2D>("ui/loading_screen.png", progress);
+////Load with progress tracking
+//var progress = new Progress<float>(p => System.Diagnostics.Debug.WriteLine($"Loading: {p:P0%}"));
+//await rsManager.LoadResourceAsync<Texture2D>("ui/loading_screen.png", progress);
 
-// // Unload resources
-// rsManager.UnloadResource("player_texture");
-// rsManager.UnloadResource("explosion_sound");
+////Unload resources
+//rsManager.UnloadResource("player_texture");
+//rsManager.UnloadResource("explosion_sound");
 
-// // Monitor RSManager performance
-// var stats = rsManager.GetPerformanceStats();
-// System.Diagnostics.Debug.WriteLine($"Loaded {stats.LoadedResources} resources, cache hits: {stats.CacheHits}");
+////Monitor RSManager performance
+//var stats = rsManager.GetPerformanceStats();
+//System.Diagnostics.Debug.WriteLine($"Loaded {stats.LoadedResources} resources, cache hits: {stats.CacheHits}");
 
-// // Configure RSManager settings
-// var config = new RSManager_Config
-// {
-// MaxMemoryUsage = 1024L * 1024 * 1024, // 1GB
-// MaxConcurrentLoads = 8,
-// EnableStreaming = true
-// };
-// rsManager.Configure(config);
-// ```
-using SASZombieAssaultTD.Engine.Diagnostics;
+////Configure RSManager settings
+//var config = new RSManager_Config
+//{
+//MaxMemoryUsage = 1024L * 1024 * 1024, //1GB
+//MaxConcurrentLoads = 8,
+//EnableStreaming = true
+//};
+//rsManager.Configure(config);
+//```
+//
 
 */
 
 using SASZombieAssaultTD.Engine.Audio;
 using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Extensions;
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.VectorMath;
@@ -101,26 +101,27 @@ using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Resources
 {
-    /// <summary>
-    /// Loading engine for RSManager partial class in SAS Zombie Assault TD.
-    /// Provides resource loading, unloading, and dependency resolution with
-    /// thread-safe concurrent access and streaming support.
-    /// </summary>
-    /// <remarks>
-    /// This is a partial class - functionality is split across multiple files:
-    /// - RSManager_Core.cs: Core initialization and management
-    /// - RSManager_Loader.cs: Resource loading and unloading
-    /// - RSManager_Validation.cs: Integrity checking and verification
-    /// - RSManager_Cache.cs: Caching and performance optimization
-    /// </remarks>
-    /// <example>
-    /// <code>
-    /// var rsManager = new RSManager("Resources");
-    /// var texture = rsManager.LoadResource&lt;Texture2D&gt;("textures/player.png");
-    /// </code>
-    /// </example>
+    ///<summary>
+    ///Loading engine for RSManager partial class in SAS Zombie Assault TD.
+    ///Provides resource loading, unloading, and dependency resolution with
+    ///thread-safe concurrent access and streaming support.
+    ///</summary>
+    ///<remarks>
+    ///This is a partial class - functionality is split across multiple files:
+    ///- RSManager_Core.cs: Core initialization and management
+    ///- RSManager_Loader.cs: Resource loading and unloading
+    ///- RSManager_Validation.cs: Integrity checking and verification
+    ///- RSManager_Cache.cs: Caching and performance optimization
+    ///</remarks>
+    ///<example>
+    ///<code>
+    ///var rsManager = new RSManager("Resources");
+    ///var texture = rsManager.LoadResource&lt;Texture2D&gt;("textures/player.png");
+    ///</code>
+    ///</example>
     public partial class RSManager
     {
         private bool _initialized;
@@ -128,21 +129,21 @@ namespace SASZombieAssaultTD.Engine.Resources
         private object TheType;
         private object TheMember;
 
-        /// <summary>
-        /// Loads asset by type with metadata.
-        /// </summary>
+        ///<summary>
+        ///Loads asset by type with metadata.
+        ///</summary>
         private T LoadAsset<T>(string key)
         {
             if (!_resourceMetadata.TryGetValue(key, out RSMetadata? metadata))
             {
-                DebugLogger.LogError("AssetManager", $"AssetManager: No metadata found for asset '{key}'");
+                DLogger.Log("AssetManager", $"AssetManager: No metadata found for asset '{key}'");
                 throw new KeyNotFoundException($"Asset metadata not found for key: {key}");
             }
 
-            // Asset validation before loading
+            //Asset validation before loading
             if (!ValidateAsset(key, metadata))
             {
-                DebugLogger.LogError(
+                DLogger.Log(
                 "AssetManager.Validation",
                 $"Asset validation failed for '{key}': {_validationErrors[key]}"
             );
@@ -155,7 +156,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 object loadedAsset = LoadAssetByType(metadata);
                 CacheAsset(key, loadedAsset);
 
-                DebugLogger.LogDebug("AssetManager", $"AssetManager: Loaded asset '{key}' as type {loadedAsset.GetType().Name}");
+                DLogger.Log("AssetManager", $"AssetManager: Loaded asset '{key}' as type {loadedAsset.GetType().Name}");
 
                 if (loadedAsset is T typedAsset)
                 {
@@ -163,14 +164,14 @@ namespace SASZombieAssaultTD.Engine.Resources
                 }
                 else
                 {
-                    DebugLogger.LogError("AssetManager", 
+                    DLogger.Log("AssetManager", 
                         $"AssetManager: Type conversion failed for '{key}' - Expected {typeof(T).Name}, got {loadedAsset.GetType().Name}");
                     throw new InvalidOperationException($"Asset '{key}' loaded as {loadedAsset.GetType().Name}, expected {typeof(T).Name}");
                 }
             }
             catch (Exception ex)
             {
-                DebugLogger.LogError("AssetManager", $"AssetManager: Failed to load asset '{key}': {ex.Message}");
+                DLogger.Log("AssetManager", $"AssetManager: Failed to load asset '{key}': {ex.Message}");
                 throw;
             }
         }
@@ -182,17 +183,17 @@ namespace SASZombieAssaultTD.Engine.Resources
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Loads asset by type determination.
-        /// </summary>
+        ///<summary>
+        ///Loads asset by type determination.
+        ///</summary>
         private object LoadAssetByType(RSMetadata metadata)
         {
             return LoadAssetByType(metadata.Key);
         }
 
-        /// <summary>
-        /// Loads asset by type with automatic type detection.
-        /// </summary>
+        ///<summary>
+        ///Loads asset by type with automatic type detection.
+        ///</summary>
         private object LoadAssetByType(string key)
         {
             if (!_resourceMetadata.TryGetValue(key, out RSMetadata? metadata))
@@ -202,7 +203,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             string extension = Path.GetExtension(metadata.Path).ToLowerInvariant();
 
-            // Runtime asset loading based on type
+            //Runtime asset loading based on type
             switch (metadata.Type)
             {
                 case RSType.Texture:
@@ -221,7 +222,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                     return LoadBinaryAsset(metadata);
 
                 default:
-                    // Fallback: determine type from file extension using pattern matching
+                    //Fallback: determine type from file extension using pattern matching
                     return extension switch
                     {
                         var ext when IsImageFile(ext) => LoadTextureAsset(metadata),
@@ -236,45 +237,45 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
         }
 
-        /// <summary>
-        /// Loads texture asset.
-        /// </summary>
+        ///<summary>
+        ///Loads texture asset.
+        ///</summary>
         private Texture2D LoadTextureAsset(RSMetadata metadata)
         {
-            DebugLogger.LogDebug("AssetManager", $"AssetManager: Loading texture '{metadata.Key}' from '{metadata.Path}'");
+            DLogger.Log("AssetManager", $"AssetManager: Loading texture '{metadata.Key}' from '{metadata.Path}'");
 
-            // Route texture loading through TextureCache
+            //Route texture loading through TextureCache
             return Texture2D.LoadFromFile(metadata.Path, _textureCache);
         }
 
-        /// <summary>
-        /// Loads sound effect asset.
-        /// </summary>
+        ///<summary>
+        ///Loads sound effect asset.
+        ///</summary>
         private CoreSoundEffect LoadSoundAsset(RSMetadata metadata)
         {
-            DebugLogger.LogDebug("AssetManager", $"AssetManager: Loading sound effect '{metadata.Key}' from '{metadata.Path}'");
+            DLogger.Log("AssetManager", $"AssetManager: Loading sound effect '{metadata.Key}' from '{metadata.Path}'");
 
-            // Platform-specific sound effect loading
-            return new CoreSoundEffect(metadata.Key, 1.0f); // Default volume
+            //Platform-specific sound effect loading
+            return new CoreSoundEffect(metadata.Key, 1.0f); //Default volume
         }
 
-        /// <summary>
-        /// Loads music track asset.
-        /// </summary>
+        ///<summary>
+        ///Loads music track asset.
+        ///</summary>
         private CoreSoundEffect LoadMusicAsset(RSMetadata metadata)
         {
-            DebugLogger.LogDebug("AssetManager", $"AssetManager: Loading music track '{metadata.Key}' from '{metadata.Path}'");
+            DLogger.Log("AssetManager", $"AssetManager: Loading music track '{metadata.Key}' from '{metadata.Path}'");
 
-            // Platform-specific music track loading
-            return new CoreSoundEffect(metadata.Key, 1.0f); // Default volume
+            //Platform-specific music track loading
+            return new CoreSoundEffect(metadata.Key, 1.0f); //Default volume
         }
 
-        /// <summary>
-        /// Loads JSON data asset.
-        /// </summary>
+        ///<summary>
+        ///Loads JSON data asset.
+        ///</summary>
         private string LoadJsonAsset(RSMetadata metadata)
         {
-            DebugLogger.LogDebug("AssetManager", $"AssetManager: Loading JSON data '{metadata.Key}' from '{metadata.Path}'");
+            DLogger.Log("AssetManager", $"AssetManager: Loading JSON data '{metadata.Key}' from '{metadata.Path}'");
 
             if (!File.Exists(metadata.Path))
             {
@@ -284,12 +285,12 @@ namespace SASZombieAssaultTD.Engine.Resources
             return File.ReadAllText(metadata.Path);
         }
 
-        /// <summary>
-        /// Loads binary data asset.
-        /// </summary>
+        ///<summary>
+        ///Loads binary data asset.
+        ///</summary>
         private byte[] LoadBinaryAsset(RSMetadata metadata)
         {
-            DebugLogger.LogDebug("AssetManager", $"AssetManager: Loading binary data '{metadata.Key}' from '{metadata.Path}'");
+            DLogger.Log("AssetManager", $"AssetManager: Loading binary data '{metadata.Key}' from '{metadata.Path}'");
 
             if (!File.Exists(metadata.Path))
             {
@@ -299,15 +300,15 @@ namespace SASZombieAssaultTD.Engine.Resources
             return File.ReadAllBytes(metadata.Path);
         }
 
-        /// <summary>
-        /// Determines resource type based on file extension and key patterns.
-        /// </summary>
+        ///<summary>
+        ///Determines resource type based on file extension and key patterns.
+        ///</summary>
         private RSType DetermineRSType(string key, string path)
         {
             string extension = Path.GetExtension(path).ToLowerInvariant();
             string lowerKey = key.ToLowerInvariant();
 
-            // Determine type based on key patterns and file extension
+            //Determine type based on key patterns and file extension
             if (IsImageFile(extension))
                 return RSType.Texture;
 
@@ -316,7 +317,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             if (IsAudioFile(extension))
             {
-                // Distinguish between sound effects and music using pattern matching
+                //Distinguish between sound effects and music using pattern matching
                 return lowerKey switch
                 {
                     var k when k.Contains("sfx_") ||
@@ -334,66 +335,66 @@ namespace SASZombieAssaultTD.Engine.Resources
             return RSType.Binary;
         }
 
-        /// <summary>
-        /// Gets asset by key with type safety and loading.
-        /// </summary>
+        ///<summary>
+        ///Gets asset by key with type safety and loading.
+        ///</summary>
         public T GetAsset<T>(string key)
         {
             if (!_initialized)
             {
-                DebugLogger.LogError("AssetManager", $"AssetManager: GetAsset failed - Not initialized (Key: {key})");
+                DLogger.Log("AssetManager", $"AssetManager: GetAsset failed - Not initialized (Key: {key})");
                 throw new InvalidOperationException("AssetManager not initialized");
             }
 
             if (string.IsNullOrEmpty(key))
             {
-                DebugLogger.LogError("AssetManager", "AssetManager: GetAsset failed - Invalid key (null or empty)");
+                DLogger.Log("AssetManager", "AssetManager: GetAsset failed - Invalid key (null or empty)");
                 throw new ArgumentException("Asset key cannot be null or empty", nameof(key));
             }
 
             lock (_lockObject)
             {
-                // Check if asset is already loaded
+                //Check if asset is already loaded
                 if (_loadedAssets.TryGetValue(key, out object? asset))
                 {
                     if (asset is T typedAsset)
                     {
-                        DebugLogger.LogDebug("AssetManager", $"AssetManager: Retrieved cached asset '{key}' as type {typeof(T).Name}");
+                        DLogger.Log("AssetManager", $"AssetManager: Retrieved cached asset '{key}' as type {typeof(T).Name}");
                         return typedAsset;
                     }
                     else
                     {
-                        DebugLogger.LogError("AssetManager", 
+                        DLogger.Log("AssetManager", 
                             $"AssetManager: Type mismatch for asset '{key}' - Expected {typeof(T).Name}, got {asset.GetType().Name}");
                         throw new InvalidOperationException($"Asset '{key}' is of type {asset.GetType().Name}, expected {typeof(T).Name}");
                     }
                 }
 
-                // Asset not loaded, attempt to load it
-                DebugLogger.LogDebug("AssetManager", $"AssetManager: Loading asset '{key}' on demand");
+                //Asset not loaded, attempt to load it
+                DLogger.Log("AssetManager", $"AssetManager: Loading asset '{key}' on demand");
                 return LoadAsset<T>(key);
             }
         }
 
-        /// <summary>
-        /// Preloads multiple assets.
-        /// </summary>
+        ///<summary>
+        ///Preloads multiple assets.
+        ///</summary>
         public void PreloadAssets(IEnumerable<string> keys)
         {
             if (!_initialized)
             {
-                DebugLogger.LogError("AssetManager", "AssetManager: PreloadAssets failed - Not initialized");
+                DLogger.Log("AssetManager", "AssetManager: PreloadAssets failed - Not initialized");
                 throw new InvalidOperationException("AssetManager not initialized");
             }
 
             if (keys == null)
             {
-                DebugLogger.LogError("AssetManager", "AssetManager: PreloadAssets failed - Null keys collection");
+                DLogger.Log("AssetManager", "AssetManager: PreloadAssets failed - Null keys collection");
                 return;
             }
 
             var keysList = keys.ToList();
-            DebugLogger.LogDebug("AssetManager", $"AssetManager: Preloading {keysList.Count} assets...");
+            DLogger.Log("AssetManager", $"AssetManager: Preloading {keysList.Count} assets...");
 
             int successCount = 0;
             int errorCount = 0;
@@ -404,7 +405,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 {
                     if (string.IsNullOrEmpty(key))
                     {
-                        DebugLogger.LogError("AssetManager", "AssetManager: Skipping null/empty key during preload");
+                        DLogger.Log("AssetManager", "AssetManager: Skipping null/empty key during preload");
                         continue;
                     }
 
@@ -412,11 +413,11 @@ namespace SASZombieAssaultTD.Engine.Resources
                     {
                         if (_loadedAssets.ContainsKey(key))
                         {
-                            DebugLogger.LogDebug("AssetManager", $"AssetManager: Asset '{key}' already loaded, skipping");
+                            DLogger.Log("AssetManager", $"AssetManager: Asset '{key}' already loaded, skipping");
                             continue;
                         }
 
-                        // Preload the asset (we don't know the type, so we'll determine it)
+                        //Preload the asset (we don't know the type, so we'll determine it)
                         LoadAssetByType(key);
                         successCount++;
                     }
@@ -424,16 +425,16 @@ namespace SASZombieAssaultTD.Engine.Resources
                 catch (Exception ex)
                 {
                     errorCount++;
-                    DebugLogger.LogError("AssetManager", $"AssetManager: Failed to preload asset '{key}': {ex.Message}");
+                    DLogger.Log("AssetManager", $"AssetManager: Failed to preload asset '{key}': {ex.Message}");
                 }
             }
 
-            DebugLogger.LogDebug("AssetManager", $"AssetManager: Preload complete - Success: {successCount}, Errors: {errorCount}");
+            DLogger.Log("AssetManager", $"AssetManager: Preload complete - Success: {successCount}, Errors: {errorCount}");
         }
 
-        /// <summary>
-        /// Unloads specific asset.
-        /// </summary>
+        ///<summary>
+        ///Unloads specific asset.
+        ///</summary>
         public void UnloadAsset(string key)
         {
             if (string.IsNullOrEmpty(key))
@@ -443,17 +444,17 @@ namespace SASZombieAssaultTD.Engine.Resources
             {
                 if (_loadedAssets.TryGetValue(key, out object? asset))
                 {
-                    // Dispose if it's disposable
+                    //Dispose if it's disposable
                     if (asset is IDisposable disposable)
                     {
                         try
                         {
                             disposable.Dispose();
-                            DebugLogger.LogDebug("AssetManager", $"AssetManager: Disposed asset '{key}'");
+                            DLogger.Log("AssetManager", $"AssetManager: Disposed asset '{key}'");
                         }
                         catch (Exception ex)
                         {
-                            DebugLogger.LogError("AssetManager", $"AssetManager: Failed to dispose asset '{key}': {ex.Message}");
+                            DLogger.Log("AssetManager", $"AssetManager: Failed to dispose asset '{key}': {ex.Message}");
                         }
                     }
 
@@ -461,17 +462,17 @@ namespace SASZombieAssaultTD.Engine.Resources
                     _validatedAssets.Remove(key);
                     _validationErrors.Remove(key);
 
-                    DebugLogger.LogDebug("AssetManager", $"AssetManager: Unloaded asset '{key}'");
+                    DLogger.Log("AssetManager", $"AssetManager: Unloaded asset '{key}'");
                 }
             }
         }
 
-        /// <summary>
-        /// Unloads all assets.
-        /// </summary>
+        ///<summary>
+        ///Unloads all assets.
+        ///</summary>
         public void UnloadAllAssets()
         {
-            DebugLogger.LogDebug("AssetManager", "AssetManager: Unloading all assets...");
+            DLogger.Log("AssetManager", "AssetManager: Unloading all assets...");
 
             lock (_lockObject)
             {
@@ -491,7 +492,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                     catch (Exception ex)
                     {
                         errorCount++;
-                        DebugLogger.LogError("AssetManager", $"AssetManager: Failed to dispose asset '{kvp.Key}': {ex.Message}");
+                        DLogger.Log("AssetManager", $"AssetManager: Failed to dispose asset '{kvp.Key}': {ex.Message}");
                     }
                 }
 
@@ -499,7 +500,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 _validatedAssets.Clear();
                 _validationErrors.Clear();
 
-                DebugLogger.LogDebug("AssetManager", $"AssetManager: Unloaded all assets - Disposed: {disposedCount}, Errors: {errorCount}");
+                DLogger.Log("AssetManager", $"AssetManager: Unloaded all assets - Disposed: {disposedCount}, Errors: {errorCount}");
             }
         }
     }

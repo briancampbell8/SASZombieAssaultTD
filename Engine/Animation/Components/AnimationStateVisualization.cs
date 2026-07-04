@@ -6,13 +6,13 @@ Purpose: P11-16-05 - Animation state visualization data and rendering.
 
 using System;
 using System.Collections.Generic;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Interfaces;
 using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 
-// FORCE THIS FILE TO USE SYSTEM.DRAWING.COLOR
+//FORCE THIS FILE TO USE SYSTEM.DRAWING.COLOR
 using DrawingColor = System.Drawing.Color;
-
 namespace SASZombieAssaultTD.Engine.Animation.Components
 {
     public class AnimationStateVisualization
@@ -167,7 +167,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             }
         }
 
-        public void Render(IDebugRenderer debugRenderer)
+        public void Render(IDebugRenderer debugRenderer, Exception ex1)
         {
             if (!_isVisible || debugRenderer == null) return;
 
@@ -185,8 +185,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 }
                 catch (Exception ex)
                 {
-                    Engine.Diagnostics.DebugLogger.LogError(
-                        $"Failed to render animation state visualization: {ex.Message}", ex);
+                    DLogger.Log(
+                        LogSubsystems.Animation, LogLevel.Error,
+                        $"Failed to render animation state visualization: {ex.Message}");
                 }
             }
         }
@@ -260,7 +261,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         public float Duration { get; set; }
         public float Intensity { get; set; }
 
-        // FORCE System.Drawing.Color
+        //FORCE System.Drawing.Color
         public DrawingColor Color { get; set; }
 
         public bool IsExpired => Duration > 0f && CalculateElapsedTime() >= Duration;

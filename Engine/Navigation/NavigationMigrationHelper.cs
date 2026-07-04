@@ -1,36 +1,37 @@
-// ============================================================================
-// FILE: Engine/Navigation/NavigationMigrationHelper.cs
-// AUTHOR: BDC
-// PURPOSE: Helper for migrating between navigation systems.
-// ============================================================================
+//============================================================================
+//FILE: Engine/Navigation/NavigationMigrationHelper.cs
+//AUTHOR: BDC
+//PURPOSE: Helper for migrating between navigation systems.
+//============================================================================
 /*
 File:    NavigationMigrationHelper.cs
 Purpose: Helper for migrating between navigation systems.
 */
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.VectorMath;
 using System.Diagnostics;
 using System.Linq;
-
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.VectorMath;
 namespace SASZombieAssaultTD.Engine.Navigation
+
 {
-    /// <summary>
-    /// Provides utilities for migrating legacy movement systems to the modern
-    /// NavAgent-based navigation architecture. Supports single-entity migration,
-    /// batch migration, validation, and migration analysis.
-    /// </summary>
+    ///<summary>
+    ///Provides utilities for migrating legacy movement systems to the modern
+    ///NavAgent-based navigation architecture. Supports single-entity migration,
+    ///batch migration, validation, and migration analysis.
+    ///</summary>
     public static class NavigationMigrationHelper
     {
-        // ---------------------------------------------------------------------
-        // SINGLE ENTITY MIGRATION
-        // ---------------------------------------------------------------------
+        //---------------------------------------------------------------------
+        //SINGLE ENTITY MIGRATION
+        //---------------------------------------------------------------------
 
-        /// <summary>
-        /// Migrates a single entity from legacy MovementComponent to NavAgentComponent.
-        /// Ensures required components exist, configures NavAgent behavior, and
-        /// removes legacy movement to prevent conflicts.
-        /// </summary>
+        ///<summary>
+        ///Migrates a single entity from legacy MovementComponent to NavAgentComponent.
+        ///Ensures required components exist, configures NavAgent behavior, and
+        ///removes legacy movement to prevent conflicts.
+        ///</summary>
         public static bool MigrateToNavAgent(Entity entity, ECSWorld world)
         {
             if (entity == null)
@@ -41,34 +42,34 @@ namespace SASZombieAssaultTD.Engine.Navigation
 
             var result = true;
 
-            // Required components
+            //Required components
             var transform = entity.GetComponent<TransformComponent>();
             var enemyType = entity.GetComponent<EnemyTypeComponent>();
             var legacyMovement = entity.GetComponent<MovementComponent>();
 
             if (transform == null)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", "Entity missing TransformComponent.");
+                DLogger.Log("MIGRATION", "Entity missing TransformComponent.");
                 return false;
             }
 
             if (enemyType == null)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", "Entity missing EnemyTypeComponent.");
+                DLogger.Log("MIGRATION", "Entity missing EnemyTypeComponent.");
                 return false;
             }
 
-            // Skip if already migrated
+            //Skip if already migrated
             if (entity.HasComponent<NavAgentComponent>())
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", "Entity already has NavAgentComponent. Skipping.");
+                DLogger.Log("MIGRATION", "Entity already has NavAgentComponent. Skipping.");
                 return true;
             }
 
-            // Extract legacy movement data
+            //Extract legacy movement data
             float speed = legacyMovement?.Speed ?? 1.0f;
 
-            // Create NavAgent
+            //Create NavAgent
             var navAgent = new NavAgentComponent
             {
                 Speed = speed,
@@ -77,28 +78,28 @@ namespace SASZombieAssaultTD.Engine.Navigation
                 RepathOnBlock = true
             };
 
-            // Apply behavior-specific configuration
+            //Apply behavior-specific configuration
             ConfigureNavAgentForEnemyType(navAgent, enemyType.Type);
 
             entity.AddComponent(navAgent);
 
-            // Remove legacy movement
+            //Remove legacy movement
             if (legacyMovement != null)
                 entity.RemoveComponent<MovementComponent>();
 
-            Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", $"Migrated entity {entity.Id} to NavAgent.");
+            DLogger.Log("MIGRATION", $"Migrated entity {entity.Id} to NavAgent.");
 
             return result;
         }
 
-        // ---------------------------------------------------------------------
-        // BATCH MIGRATION
-        // ---------------------------------------------------------------------
+        //---------------------------------------------------------------------
+        //BATCH MIGRATION
+        //---------------------------------------------------------------------
 
-        /// <summary>
-        /// Migrates a collection of entities to NavAgent-based navigation.
-        /// Returns the number of successfully migrated entities.
-        /// </summary>
+        ///<summary>
+        ///Migrates a collection of entities to NavAgent-based navigation.
+        ///Returns the number of successfully migrated entities.
+        ///</summary>
         public static int BatchMigrateToNavAgent(IEnumerable<Entity> entities, ECSWorld world)
         {
             if (entities == null)
@@ -112,18 +113,18 @@ namespace SASZombieAssaultTD.Engine.Navigation
                     migrated++;
             }
 
-            Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", $"Batch migration complete. Migrated {migrated} entities.");
+            DLogger.Log("MIGRATION", $"Batch migration complete. Migrated {migrated} entities.");
 
             return migrated;
         }
 
-        // ---------------------------------------------------------------------
-        // DIRECT NAVAGENT CREATION
-        // ---------------------------------------------------------------------
+        //---------------------------------------------------------------------
+        //DIRECT NAVAGENT CREATION
+        //---------------------------------------------------------------------
 
-        /// <summary>
-        /// Creates a new entity with NavAgent navigation already configured.
-        /// </summary>
+        ///<summary>
+        ///Creates a new entity with NavAgent navigation already configured.
+        ///</summary>
         public static Entity CreateNavAgentEntity(ECSWorld world, float speed, Vector3 position)
         {
             if (world == null)
@@ -140,18 +141,18 @@ namespace SASZombieAssaultTD.Engine.Navigation
                 RepathOnBlock = true
             });
 
-            Engine.Diagnostics.DebugLogger.LogDebug("MIGRATION", $"Created NavAgent entity at {position}");
+            DLogger.Log("MIGRATION", $"Created NavAgent entity at {position}");
 
             return entity;
         }
 
-        // ---------------------------------------------------------------------
-        // BEHAVIOR-BASED CONFIGURATION
-        // ---------------------------------------------------------------------
+        //---------------------------------------------------------------------
+        //BEHAVIOR-BASED CONFIGURATION
+        //---------------------------------------------------------------------
 
-        /// <summary>
-        /// Configures NavAgent settings based on enemy behavior flags.
-        /// </summary>
+        ///<summary>
+        ///Configures NavAgent settings based on enemy behavior flags.
+        ///</summary>
         public static void ConfigureNavAgentForEnemyType(NavAgentComponent agent, EnemyType type)
         {
             switch (type)
@@ -179,14 +180,14 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
         }
 
-        // ---------------------------------------------------------------------
-        // VALIDATION
-        // ---------------------------------------------------------------------
+        //---------------------------------------------------------------------
+        //VALIDATION
+        //---------------------------------------------------------------------
 
-        /// <summary>
-        /// Validates that entities have been properly migrated to NavAgent.
-        /// Ensures required components exist and legacy movement is removed.
-        /// </summary>
+        ///<summary>
+        ///Validates that entities have been properly migrated to NavAgent.
+        ///Ensures required components exist and legacy movement is removed.
+        ///</summary>
         public static MigrationValidationResult ValidateMigration(IEnumerable<Entity> entities)
         {
             var result = new MigrationValidationResult();
@@ -226,13 +227,13 @@ namespace SASZombieAssaultTD.Engine.Navigation
             return result;
         }
 
-        // ---------------------------------------------------------------------
-        // ANALYSIS
-        // ---------------------------------------------------------------------
+        //---------------------------------------------------------------------
+        //ANALYSIS
+        //---------------------------------------------------------------------
 
-        /// <summary>
-        /// Analyzes migration progress and provides recommendations.
-        /// </summary>
+        ///<summary>
+        ///Analyzes migration progress and provides recommendations.
+        ///</summary>
         public static MigrationAnalysisResult AnalyzeMigration(ECSWorld world)
         {
             var entities = world.GetAllEntities();
@@ -261,13 +262,13 @@ namespace SASZombieAssaultTD.Engine.Navigation
         }
     }
 
-    // =====================================================================
-    // SUPPORTING TYPES
-    // =====================================================================
+    //=====================================================================
+    //SUPPORTING TYPES
+    //=====================================================================
 
-    /// <summary>
-    /// Stores validation results for migration checks.
-    /// </summary>
+    ///<summary>
+    ///Stores validation results for migration checks.
+    ///</summary>
     public sealed class MigrationValidationResult
     {
         public int MigratedCount { get; set; }
@@ -284,9 +285,9 @@ namespace SASZombieAssaultTD.Engine.Navigation
         public bool Success => Issues.Count == 0;
     }
 
-    /// <summary>
-    /// Stores migration analysis statistics and recommendations.
-    /// </summary>
+    ///<summary>
+    ///Stores migration analysis statistics and recommendations.
+    ///</summary>
     public sealed class MigrationAnalysisResult
     {
         public int TotalEntities { get; set; }
@@ -296,9 +297,9 @@ namespace SASZombieAssaultTD.Engine.Navigation
         public List<string> Recommendations { get; } = new();
     }
 
-    // =====================================================================
-    // INFERRED ECS + NAVIGATION STRUCTURES
-    // =====================================================================
+    //=====================================================================
+    //INFERRED ECS + NAVIGATION STRUCTURES
+    //=====================================================================
 
     public enum EnemyType
     {
@@ -315,12 +316,12 @@ namespace SASZombieAssaultTD.Engine.Navigation
         public int MaxRepathAttempts;
         public bool RepathOnBlock;
         public bool UseFlowField;
-        
-        // Navigation state properties
+
+        //Navigation state properties
         public bool PathValid { get; set; }
         public List<Vector3> CurrentPath { get; set; } = new List<Vector3>();
         public Vector3 TargetPosition { get; set; }
-        
+
         public string GetStateSummary()
         {
             return $"Speed: {Speed}, PathValid: {PathValid}, PathLength: {CurrentPath.Count}, Target: {TargetPosition}";
@@ -331,7 +332,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
     {
         public float X;
         public float Y;
-        
+
         public Vector3 Position => new Vector3(X, Y, 0f);
     }
 

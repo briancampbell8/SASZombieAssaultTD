@@ -1,4 +1,4 @@
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Resources;
 using System;
 using System.Collections.Generic;
@@ -17,25 +17,26 @@ Updated for the NEW Asset System API.
 */
 
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Assets
 {
-    /// <summary>
-    /// Entry point for asset initialization. Performs the full
-    /// discovery → validation → registration sequence.
-    /// </summary>
+    ///<summary>
+    ///Entry point for asset initialization. Performs the full
+    ///discovery → validation → registration sequence.
+    ///</summary>
     
     public static class AssetInitializer
     {
         private static object TheType;
         private static object TheMember;
 
-        /// <summary>
-        /// Performs the complete asset initialization pipeline.
-        /// Called by GameRoot during engine startup.
-        /// </summary>
-        /// <summary>
-        /// Discovered resource for asset discovery system.
-        /// </summary>
+        ///<summary>
+        ///Performs the complete asset initialization pipeline.
+        ///Called by GameRoot during engine startup.
+        ///</summary>
+        ///<summary>
+        ///Discovered resource for asset discovery system.
+        ///</summary>
         public class DiscoveredResource
         {
             internal object Key;
@@ -54,7 +55,7 @@ namespace SASZombieAssaultTD.Engine.Assets
             }
         }
 
-        /// 
+        ///
         internal static void Register(string v1, string v2)
         {
             NotImplementedGuard.Hit("NOT_IMPLEMENTED");
@@ -63,45 +64,45 @@ namespace SASZombieAssaultTD.Engine.Assets
 
         public static void InitializeAllAssets()
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("Info", "[Assets] Initialization started.");
+            DLogger.Log("Info", "[Assets] Initialization started.");
 
-            // ------------------------------------------------------------
-            // 1. Discover assets
-            // ------------------------------------------------------------
-            Engine.Diagnostics.DebugLogger.LogDebug("Info", "[Assets] Running AssetDiscovery...");
+            //------------------------------------------------------------
+            //1. Discover assets
+            //------------------------------------------------------------
+            DLogger.Log("Info", "[Assets] Running AssetDiscovery...");
 
             AssetLoadContext discoveryContext = new AssetLoadContext("Content");
             RSDiscovery assetDiscovery = new RSDiscovery();
 
-            // NEW API: Discover() returns IReadOnlyList<DiscoveredResource>
+            //NEW API: Discover() returns IReadOnlyList<DiscoveredResource>
             IReadOnlyList<DiscoveredResource> discoveredAssets = (IReadOnlyList<DiscoveredResource>)assetDiscovery.Discover(discoveryContext);
 
             if (discoveredAssets == null || discoveredAssets.Count == 0)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("Warn", "[Assets] No assets discovered. Engine will run with empty asset tables.");
+                DLogger.Log("Warn", "[Assets] No assets discovered. Engine will run with empty asset tables.");
                 return;
             }
 
-            Engine.Diagnostics.DebugLogger.LogDebug("Info", $"[Assets] Discovered {discoveredAssets.Count} assets.");
+            DLogger.Log("Info", $"[Assets] Discovered {discoveredAssets.Count} assets.");
 
-            // ------------------------------------------------------------
-            // 2. Validate metadata
-            // ------------------------------------------------------------
-            Engine.Diagnostics.DebugLogger.LogDebug("Info", "[Assets] Validating metadata...");
+            //------------------------------------------------------------
+            //2. Validate metadata
+            //------------------------------------------------------------
+            DLogger.Log("Info", "[Assets] Validating metadata...");
 
             List<DiscoveredResource> validAssets = new List<DiscoveredResource>();
             int invalidCount = 0;
 
             foreach (var discovered in discoveredAssets)
             {
-                // NEW API: ValidateMetadata returns bool
-                // bool isValid = AssetValidation.ValidateMetadata(discovered.Metadata);
-                bool isValid = true; // TODO: Implement proper validation when AssetValidation exists
+                //NEW API: ValidateMetadata returns bool
+                //bool isValid = AssetValidation.ValidateMetadata(discovered.Metadata);
+                bool isValid = true; //TODO: Implement proper validation when AssetValidation exists
 
                 if (!isValid)
                 {
-                    // NEW API: Key is now a value object; use ToString()
-                    Engine.Diagnostics.DebugLogger.LogDebug("Warn", $"[Assets] Invalid metadata for {discovered.Key}");
+                    //NEW API: Key is now a value object; use ToString()
+                    DLogger.Log("Warn", $"[Assets] Invalid metadata for {discovered.Key}");
                     invalidCount++;
                     continue;
                 }
@@ -109,34 +110,34 @@ namespace SASZombieAssaultTD.Engine.Assets
                 validAssets.Add(discovered);
             }
 
-            Engine.Diagnostics.DebugLogger.LogDebug("Info", $"[Assets] {validAssets.Count}/{discoveredAssets.Count} assets passed validation.");
+            DLogger.Log("Info", $"[Assets] {validAssets.Count}/{discoveredAssets.Count} assets passed validation.");
 
-            // ------------------------------------------------------------
-            // 3. Register metadata
-            // ------------------------------------------------------------
-            Engine.Diagnostics.DebugLogger.LogDebug("Info", "[Assets] Registering metadata...");
+            //------------------------------------------------------------
+            //3. Register metadata
+            //------------------------------------------------------------
+            DLogger.Log("Info", "[Assets] Registering metadata...");
 
             foreach (var discovered in validAssets)
             {
                 AssetRegistry.Register(discovered.Key.ToString(), discovered.Source.ToString());
             }
 
-            Engine.Diagnostics.DebugLogger.LogDebug("Info", "[Assets] Metadata registration complete.");
+            DLogger.Log("Info", "[Assets] Metadata registration complete.");
 
-            // ------------------------------------------------------------
-            // 4. Summary
-            // ------------------------------------------------------------
+            //------------------------------------------------------------
+            //4. Summary
+            //------------------------------------------------------------
             int successCount = validAssets.Count;
             int failureCount = invalidCount;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("Info", $"[Assets] Registration complete. Success: {successCount}, Failed: {failureCount}");
+            DLogger.Log("Info", $"[Assets] Registration complete. Success: {successCount}, Failed: {failureCount}");
 
             if (failureCount > 0)
-                Engine.Diagnostics.DebugLogger.LogDebug("Warn", "[Assets] Some assets failed validation. Check logs for details.");
+                DLogger.Log("Warn", "[Assets] Some assets failed validation. Check logs for details.");
             else
-                Engine.Diagnostics.DebugLogger.LogDebug("Info", "[Assets] All assets registered successfully.");
+                DLogger.Log("Info", "[Assets] All assets registered successfully.");
 
-            Engine.Diagnostics.DebugLogger.LogDebug("Info", "[Assets] Initialization finished.");
+            DLogger.Log("Info", "[Assets] Initialization finished.");
         }
     }
 }

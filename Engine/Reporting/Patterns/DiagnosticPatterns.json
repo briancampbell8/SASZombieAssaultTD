@@ -1,0 +1,53 @@
+{
+  "diagnostic_patterns": [
+    {
+      "pattern_id": "P0001",
+      "signature": "{SystemName} initialized",
+      "status": "active",
+      "category": "SYSTEM",
+      "level": "Info"
+    },
+    {
+      "pattern_id": "P0002",
+      "signature": "Emergency stop triggered due to excessive {Condition}",
+      "status": "active",
+      "category": "SYSTEM",
+      "level": "Critical"
+    },
+    {
+      "pattern_id": "P0003",
+      "signature": "High {Metric} detected",
+      "status": "active",
+      "category": "SYSTEM",
+      "level": "Warning"
+    },
+    {
+      "pattern_id": "P0004",
+      "signature": "High duplicate {Type} rate detected",
+      "status": "active",
+      "category": "SYSTEM",
+      "level": "Warning"
+    },
+    {
+      "pattern_id": "P0005",
+      "signature": "{Context?} {ExceptionType}: {Message}",
+      "status": "active",
+      "category": "EXCEPTION",
+      "level": "Error"
+    },
+    {
+      "pattern_id": "P0006",
+      "signature": "{CategoryString}: {Message}",
+      "status": "legacy",
+      "category": "Dynamic",
+      "level": "Mapped"
+    },
+    {
+      "pattern_id": "P0007",
+      "signature": "{Message}: {ExceptionMessage}",
+      "status": "active",
+      "category": "ERROR",
+      "level": "Error"
+    }
+  ]
+}

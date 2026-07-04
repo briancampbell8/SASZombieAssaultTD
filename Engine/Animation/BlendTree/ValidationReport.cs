@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Animation.BlendTree
 {
-    /// <summary>
-    /// Validation report for blend tree validation.
-    /// </summary>
+    ///<summary>
+    ///Validation report for blend tree validation.
+    ///</summary>
     public class ValidationReport
     {
         public List<string> Errors { get; set; } = new List<string>();

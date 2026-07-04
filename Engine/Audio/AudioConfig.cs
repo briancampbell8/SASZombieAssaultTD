@@ -1,19 +1,34 @@
-/*
-Program Name: SASZombieAssaultTD
-File Path: Engine\Audio\AudioConfig.cs
-Purpose: P90 Modern Audio Subsystem - Audio configuration and registry.
-Features: Centralized audio configuration, sound registry, volume management.
-*/
+// ====================================================================================================
+//  FILE: AudioConfig.cs
+//  PATH: Engine/Audio/
+//  MODULE: Audio Subsystem (Configuration)
+//
+//  ROLE:
+//      Centralized audio configuration holder and simple validation utilities.
+//
+//  RESPONSIBILITIES:
+//      - Expose Master/Music/SFX/UI volume controls and audio-related toggles.
+//      - Provide default configuration factory and validation helpers.
+//
+//  NON-RESPONSIBILITIES:
+//      - Persisting configuration to disk (higher-level manager should handle persistence).
+//      - Platform-specific audio device configuration.
+//
+//  ARCHITECTURAL NOTES:
+//      - Keep this class small and POCO-like to simplify serialization and testing.
+// ====================================================================================================
 
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Audio
 {
-    /// <summary>
-    /// Audio configuration settings for the audio subsystem.
-    /// P90-04: AudioConfig implementation for centralized audio settings
-    /// </summary>
+    ///<summary>
+    ///Audio configuration settings for the audio subsystem.
+    ///P90-04: AudioConfig implementation for centralized audio settings
+    ///</summary>
     public class AudioConfig
     {
         public float MasterVolume { get; set; } = 1.0f;
@@ -26,14 +41,14 @@ namespace SASZombieAssaultTD.Engine.Audio
         public int SampleRate { get; set; } = 44100;
         public int BufferSize { get; set; } = 512;
 
-        /// <summary>
-        /// Creates a default audio configuration.
-        /// </summary>
+        ///<summary>
+        ///Creates a default audio configuration.
+        ///</summary>
         public static AudioConfig Default => new AudioConfig();
 
-        /// <summary>
-        /// Validates the configuration.
-        /// </summary>
+        ///<summary>
+        ///Validates the configuration.
+        ///</summary>
         public bool Validate()
         {
             return MasterVolume >= 0f && MasterVolume <= 1f &&
@@ -46,18 +61,18 @@ namespace SASZombieAssaultTD.Engine.Audio
         }
     }
 
-    /// <summary>
-    /// Audio registry mapping sound names to file paths.
-    /// P90-05: AudioRegistry implementation for sound asset management
-    /// </summary>
+    ///<summary>
+    ///Audio registry mapping sound names to file paths.
+    ///P90-05: AudioRegistry implementation for sound asset management
+    ///</summary>
     public class AudioRegistry
     {
         private readonly Dictionary<string, string> _soundPaths = new();
         private readonly Dictionary<string, AudioCategory> _soundCategories = new();
 
-        /// <summary>
-        /// Registers a sound with its file path.
-        /// </summary>
+        ///<summary>
+        ///Registers a sound with its file path.
+        ///</summary>
         public void RegisterSound(string soundName, string filePath, AudioCategory category = AudioCategory.SFX)
         {
             if (string.IsNullOrWhiteSpace(soundName) || string.IsNullOrWhiteSpace(filePath))
@@ -69,41 +84,41 @@ namespace SASZombieAssaultTD.Engine.Audio
             System.Diagnostics.Debug.WriteLine($"AudioRegistry: Registered sound '{soundName}' -> '{filePath}' (Category: {category})");
         }
 
-        /// <summary>
-        /// Gets the file path for a sound.
-        /// </summary>
+        ///<summary>
+        ///Gets the file path for a sound.
+        ///</summary>
         public string GetSoundPath(string soundName)
         {
             return _soundPaths.TryGetValue(soundName, out var path) ? path : null;
         }
 
-        /// <summary>
-        /// Gets the category for a sound.
-        /// </summary>
+        ///<summary>
+        ///Gets the category for a sound.
+        ///</summary>
         public AudioCategory GetSoundCategory(string soundName)
         {
             return _soundCategories.TryGetValue(soundName, out var category) ? category : AudioCategory.SFX;
         }
 
-        /// <summary>
-        /// Checks if a sound is registered.
-        /// </summary>
+        ///<summary>
+        ///Checks if a sound is registered.
+        ///</summary>
         public bool IsSoundRegistered(string soundName)
         {
             return _soundPaths.ContainsKey(soundName);
         }
 
-        /// <summary>
-        /// Gets all registered sound names.
-        /// </summary>
+        ///<summary>
+        ///Gets all registered sound names.
+        ///</summary>
         public IEnumerable<string> GetRegisteredSounds()
         {
             return _soundPaths.Keys;
         }
 
-        /// <summary>
-        /// Clears all registered sounds.
-        /// </summary>
+        ///<summary>
+        ///Clears all registered sounds.
+        ///</summary>
         public void Clear()
         {
             _soundPaths.Clear();
@@ -111,12 +126,12 @@ namespace SASZombieAssaultTD.Engine.Audio
             System.Diagnostics.Debug.WriteLine("AudioRegistry: Cleared all sounds");
         }
 
-        /// <summary>
-        /// Loads default sound registrations.
-        /// </summary>
+        ///<summary>
+        ///Loads default sound registrations.
+        ///</summary>
         public void LoadDefaults()
         {
-            // Success sounds
+            //Success sounds
             RegisterSound("success_generic", "Audio/SFX/success_generic.wav", AudioCategory.SFX);
             RegisterSound("success_tower_purchase", "Audio/SFX/tower_purchase.wav", AudioCategory.SFX);
             RegisterSound("success_upgrade_purchase", "Audio/SFX/upgrade_purchase.wav", AudioCategory.SFX);
@@ -126,7 +141,7 @@ namespace SASZombieAssaultTD.Engine.Audio
             RegisterSound("success_game_complete", "Audio/SFX/game_complete.wav", AudioCategory.SFX);
             RegisterSound("success_ability_unlock", "Audio/SFX/ability_unlock.wav", AudioCategory.SFX);
 
-            // Error sounds
+            //Error sounds
             RegisterSound("error_generic", "Audio/SFX/error_generic.wav", AudioCategory.SFX);
             RegisterSound("error_insufficient_funds", "Audio/SFX/insufficient_funds.wav", AudioCategory.SFX);
             RegisterSound("error_invalid_placement", "Audio/SFX/invalid_placement.wav", AudioCategory.SFX);
@@ -136,7 +151,7 @@ namespace SASZombieAssaultTD.Engine.Audio
             RegisterSound("error_tower_limit", "Audio/SFX/tower_limit.wav", AudioCategory.SFX);
             RegisterSound("error_cooldown", "Audio/SFX/cooldown.wav", AudioCategory.SFX);
 
-            // UI sounds
+            //UI sounds
             RegisterSound("ui_click", "Audio/UI/click.wav", AudioCategory.UI);
             RegisterSound("ui_hover", "Audio/UI/hover.wav", AudioCategory.UI);
             RegisterSound("ui_open", "Audio/UI/open.wav", AudioCategory.UI);
@@ -144,14 +159,14 @@ namespace SASZombieAssaultTD.Engine.Audio
             RegisterSound("ui_cash_increase", "Audio/UI/cash_increase.wav", AudioCategory.UI);
             RegisterSound("ui_cash_decrease", "Audio/UI/cash_decrease.wav", AudioCategory.UI);
 
-            // Gameplay sounds
+            //Gameplay sounds
             RegisterSound("wave_start", "Audio/Gameplay/wave_start.wav", AudioCategory.SFX);
             RegisterSound("enemy_death", "Audio/Gameplay/enemy_death.wav", AudioCategory.SFX);
             RegisterSound("tower_fire", "Audio/Gameplay/tower_fire.wav", AudioCategory.SFX);
             RegisterSound("tower_place", "Audio/Gameplay/tower_place.wav", AudioCategory.SFX);
             RegisterSound("tower_sell", "Audio/Gameplay/tower_sell.wav", AudioCategory.SFX);
 
-            // Music
+            //Music
             RegisterSound("music_menu", "Audio/Music/menu.ogg", AudioCategory.Music);
             RegisterSound("music_gameplay", "Audio/Music/gameplay.ogg", AudioCategory.Music);
             RegisterSound("music_wave", "Audio/Music/wave.ogg", AudioCategory.Music);
@@ -162,9 +177,9 @@ namespace SASZombieAssaultTD.Engine.Audio
         }
     }
 
-    /// <summary>
-    /// Audio category for volume grouping.
-    /// </summary>
+    ///<summary>
+    ///Audio category for volume grouping.
+    ///</summary>
     public enum AudioCategory
     {
         Music,

@@ -14,11 +14,13 @@ using TowerUpgrade = SASZombieAssaultTD.Engine.Towers.TowerUpgrade;
 using AudioSystem = SASZombieAssaultTD.Engine.Audio.AudioSystem;
 using EconomyManager = SASZombieAssaultTD.Engine.Economy.EconomyManager;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Towers
 {
-    /// <summary>
-    /// Input data for handling user input.
-    /// </summary>
+    ///<summary>
+    ///Input data for handling user input.
+    ///</summary>
     public class InputData
     {
         public int MouseX { get; set; }
@@ -37,9 +39,9 @@ namespace SASZombieAssaultTD.Engine.Towers
         }
     }
 
-    /// <summary>
-    /// HUD controller for tower placement preview.
-    /// </summary>
+    ///<summary>
+    ///HUD controller for tower placement preview.
+    ///</summary>
     public class HUDController
     {
         public bool IsActive { get; set; }
@@ -51,10 +53,10 @@ namespace SASZombieAssaultTD.Engine.Towers
         }
     }
 
-    /// <summary>
-    /// Tower placement preview system for SAS Zombie Assault TD.
-    /// Provides visual feedback for tower placement with validation.
-    /// </summary>
+    ///<summary>
+    ///Tower placement preview system for SAS Zombie Assault TD.
+    ///Provides visual feedback for tower placement with validation.
+    ///</summary>
     public class TowerPlacementPreview
     {
         private bool _isActive = false;
@@ -67,13 +69,13 @@ namespace SASZombieAssaultTD.Engine.Towers
         private PlacementValidator _validator;
         private HUDController _hudController;
 
-        // Preview properties
+        //Preview properties
         private float _previewAlpha = 0.7f;
-        private Color _validColor = new Color(0, 255, 0, 180); // Green with transparency
-        private Color _invalidColor = new Color(255, 0, 0, 180); // Red with transparency
-        private Color _rangeColor = new Color(255, 255, 0, 100); // Yellow with transparency
+        private Color _validColor = new Color(0, 255, 0, 180); //Green with transparency
+        private Color _invalidColor = new Color(255, 0, 0, 180); //Red with transparency
+        private Color _rangeColor = new Color(255, 255, 0, 100); //Yellow with transparency
 
-        // Events
+        //Events
         public event Action<Vector3Int> OnPlacementAttempt;
         public event Action<TowerType> OnTowerSelected;
         public event Action OnPlacementConfirmed;
@@ -89,9 +91,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             Initialize();
         }
 
-        /// <summary>
-        /// Initialize the placement preview system.
-        /// </summary>
+        ///<summary>
+        ///Initialize the placement preview system.
+        ///</summary>
         private void Initialize()
         {
             _renderer = new PlacementRenderer();
@@ -100,10 +102,10 @@ namespace SASZombieAssaultTD.Engine.Towers
             System.Diagnostics.Debug.WriteLine("Tower Placement Preview initialized");
         }
 
-        /// <summary>
-        /// Start placement preview for a specific tower type.
-        /// </summary>
-        /// <param name="towerType">Type of tower to place.</param>
+        ///<summary>
+        ///Start placement preview for a specific tower type.
+        ///</summary>
+        ///<param name="towerType">Type of tower to place.</param>
         public void StartPlacement(TowerType towerType)
         {
             if (_isActive && _selectedTowerType == towerType)
@@ -122,16 +124,16 @@ namespace SASZombieAssaultTD.Engine.Towers
 
                 _isActive = true;
 
-                // Initialize renderer with tower data
+                //Initialize renderer with tower data
                 _renderer.Initialize(_towerData);
 
-                // Play selection sound
+                //Play selection sound
                 AudioSystem.PlaySound("tower_select");
 
-                // Show placement UI
+                //Show placement UI
                 ShowPlacementUI();
 
-                // Notify of tower selection
+                //Notify of tower selection
                 OnTowerSelected?.Invoke(towerType);
 
                 System.Diagnostics.Debug.WriteLine($"Started placement preview for {towerType}");
@@ -143,9 +145,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Stop placement preview.
-        /// </summary>
+        ///<summary>
+        ///Stop placement preview.
+        ///</summary>
         public void StopPlacement()
         {
             if (!_isActive) return;
@@ -153,22 +155,22 @@ namespace SASZombieAssaultTD.Engine.Towers
             _isActive = false;
             _canPlace = false;
 
-            // Hide placement UI
+            //Hide placement UI
             HidePlacementUI();
 
-            // Play cancel sound
+            //Play cancel sound
             AudioSystem.PlaySound("tower_cancel");
 
-            // Notify of cancellation
+            //Notify of cancellation
             OnPlacementCancelled?.Invoke();
 
             System.Diagnostics.Debug.WriteLine("Stopped placement preview");
         }
 
-        /// <summary>
-        /// Update placement preview based on current mouse position.
-        /// </summary>
-        /// <param name="worldPosition">Current mouse world position.</param>
+        ///<summary>
+        ///Update placement preview based on current mouse position.
+        ///</summary>
+        ///<param name="worldPosition">Current mouse world position.</param>
         public void UpdatePosition(Vector3 worldPosition)
         {
             if (!_isActive) return;
@@ -178,13 +180,13 @@ namespace SASZombieAssaultTD.Engine.Towers
                 _currentWorldPosition = worldPosition;
                 _currentGridPosition = WorldToGrid(worldPosition);
 
-                // Validate placement
+                //Validate placement
                 _canPlace = _validator.CanPlaceTower(_currentGridPosition, _towerData);
 
-                // Update renderer
+                //Update renderer
                 _renderer.UpdatePosition(_currentWorldPosition, _currentGridPosition, _canPlace);
 
-                // Update UI feedback
+                //Update UI feedback
                 UpdateUIFeedback();
             }
             catch (Exception ex)
@@ -193,45 +195,45 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Attempt to place the tower at current position.
-        /// </summary>
-        /// <returns>True if placement was successful.</returns>
+        ///<summary>
+        ///Attempt to place the tower at current position.
+        ///</summary>
+        ///<returns>True if placement was successful.</returns>
         public bool AttemptPlacement(Vector3Int gridPosition)
         {
             if (!_isActive) return false;
 
             try
             {
-                // Validate placement
+                //Validate placement
                 if (!_validator.CanPlaceTower(gridPosition, _towerData))
                 {
                     PlayInvalidPlacementSound();
                     return false;
                 }
 
-                // Check if player can afford
+                //Check if player can afford
                 if (!EconomyManager.CanAfford(_towerData.Cost))
                 {
                     PlayInsufficientFundsSound();
                     return false;
                 }
 
-                // Notify of placement attempt
+                //Notify of placement attempt
                 OnPlacementAttempt?.Invoke(gridPosition);
 
-                // Actually place the tower
+                //Actually place the tower
                 var success = PlaceTower(gridPosition);
 
                 if (success)
                 {
-                    // Play placement sound
+                    //Play placement sound
                     AudioSystem.PlaySound("tower_place");
 
-                    // Notify of successful placement
+                    //Notify of successful placement
                     OnPlacementConfirmed?.Invoke();
 
-                    // Stop placement preview
+                    //Stop placement preview
                     StopPlacement();
                 }
 
@@ -244,36 +246,36 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Handle input for placement preview.
-        /// </summary>
-        /// <param name="input">Input data.</param>
+        ///<summary>
+        ///Handle input for placement preview.
+        ///</summary>
+        ///<param name="input">Input data.</param>
         public void HandleInput(InputData input)
         {
             if (!_isActive) return;
 
             try
             {
-                // Update position based on mouse
+                //Update position based on mouse
                 if (input.MouseX >= 0 && input.MouseY >= 0)
                 {
                     var worldPos = CameraSystem.Instance.ScreenToWorld(input.MouseX, input.MouseY);
                     UpdatePosition(worldPos);
                 }
 
-                // Handle placement
+                //Handle placement
                 if (input.MouseClicked && _canPlace)
                 {
                     AttemptPlacement(_currentGridPosition);
                 }
 
-                // Handle cancellation
+                //Handle cancellation
                 if (input.EscapePressed)
                 {
                     StopPlacement();
                 }
 
-                // Handle tower type switching
+                //Handle tower type switching
                 HandleTowerTypeSwitching(input);
             }
             catch (Exception ex)
@@ -282,9 +284,9 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Render the placement preview.
-        /// </summary>
+        ///<summary>
+        ///Render the placement preview.
+        ///</summary>
         public void Render()
         {
             if (!_isActive) return;
@@ -299,10 +301,10 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Update placement preview.
-        /// </summary>
-        /// <param name="deltaTime">Time since last frame.</param>
+        ///<summary>
+        ///Update placement preview.
+        ///</summary>
+        ///<param name="deltaTime">Time since last frame.</param>
         public void Update(float deltaTime)
         {
             if (!_isActive) return;
@@ -317,10 +319,10 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Select a different tower type.
-        /// </summary>
-        /// <param name="towerType">New tower type to select.</param>
+        ///<summary>
+        ///Select a different tower type.
+        ///</summary>
+        ///<param name="towerType">New tower type to select.</param>
         public void SelectTowerType(TowerType towerType)
         {
             if (_selectedTowerType == towerType && _isActive)
@@ -334,10 +336,10 @@ namespace SASZombieAssaultTD.Engine.Towers
             StartPlacement(towerType);
         }
 
-        /// <summary>
-        /// Get placement information for UI display.
-        /// </summary>
-        /// <returns>Placement information.</returns>
+        ///<summary>
+        ///Get placement information for UI display.
+        ///</summary>
+        ///<returns>Placement information.</returns>
         public PlacementInfo GetPlacementInfo()
         {
             if (!_isActive || _towerData == null)
@@ -357,44 +359,44 @@ namespace SASZombieAssaultTD.Engine.Towers
             };
         }
 
-        /// <summary>
-        /// Place the actual tower.
-        /// </summary>
+        ///<summary>
+        ///Place the actual tower.
+        ///</summary>
         private bool PlaceTower(Vector3Int gridPosition)
         {
-            // Deduct cost
+            //Deduct cost
             EconomyManager.Spend(_towerData.Cost);
 
-            // Create tower
+            //Create tower
             var worldPosition = GridToWorld(gridPosition);
             var tower = TowerFactory.CreateTower(_selectedTowerType.ToString(), worldPosition);
 
             if (tower == null)
             {
-                // Refund cost on failure
+                //Refund cost on failure
                 EconomyManager.Earn(_towerData.Cost);
                 return false;
             }
 
-            // Mark grid as occupied
+            //Mark grid as occupied
             NavigationGrid.Instance.SetOccupied(gridPosition.X, gridPosition.Y, _towerData.GridSize, true);
 
-            // Add tower to game world
+            //Add tower to game world
             GameWorld.Instance.AddEntity(tower);
 
-            // Add to tower registry
+            //Add to tower registry
             TowerRegistry.Instance.AddTower((Tower)tower);
 
             System.Diagnostics.Debug.WriteLine($"Successfully placed {_selectedTowerType} at {gridPosition}");
             return true;
         }
 
-        /// <summary>
-        /// Handle tower type switching with number keys.
-        /// </summary>
+        ///<summary>
+        ///Handle tower type switching with number keys.
+        ///</summary>
         private void HandleTowerTypeSwitching(InputData input)
         {
-            // Map number keys to tower types
+            //Map number keys to tower types
             var towerType = input.NumberKey switch
             {
                 1 => TowerType.Basic,
@@ -411,25 +413,25 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Show placement UI elements.
-        /// </summary>
+        ///<summary>
+        ///Show placement UI elements.
+        ///</summary>
         private void ShowPlacementUI()
         {
             _hudController?.ShowPlacementInfo(GetPlacementInfo().ToString());
         }
 
-        /// <summary>
-        /// Hide placement UI elements.
-        /// </summary>
+        ///<summary>
+        ///Hide placement UI elements.
+        ///</summary>
         private void HidePlacementUI()
         {
             _hudController?.HidePlacementInfo();
         }
 
-        /// <summary>
-        /// Update UI feedback based on placement validity.
-        /// </summary>
+        ///<summary>
+        ///Update UI feedback based on placement validity.
+        ///</summary>
         private void UpdateUIFeedback()
         {
             var info = GetPlacementInfo();
@@ -439,41 +441,41 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Play sound for invalid placement.
-        /// </summary>
+        ///<summary>
+        ///Play sound for invalid placement.
+        ///</summary>
         private void PlayInvalidPlacementSound()
         {
             AudioSystem.PlaySound("invalid_placement");
         }
 
-        /// <summary>
-        /// Play sound for insufficient funds.
-        /// </summary>
+        ///<summary>
+        ///Play sound for insufficient funds.
+        ///</summary>
         private void PlayInsufficientFundsSound()
         {
             AudioSystem.PlaySound("insufficient_funds");
         }
 
-        /// <summary>
-        /// Convert world coordinates to grid coordinates.
-        /// </summary>
+        ///<summary>
+        ///Convert world coordinates to grid coordinates.
+        ///</summary>
         private Vector3Int WorldToGrid(Vector3 worldPosition)
         {
             return NavigationGrid.Instance.WorldToGrid(worldPosition);
         }
 
-        /// <summary>
-        /// Convert grid coordinates to world coordinates.
-        /// </summary>
+        ///<summary>
+        ///Convert grid coordinates to world coordinates.
+        ///</summary>
         private Vector3 GridToWorld(Vector3Int gridPosition)
         {
             return NavigationGrid.Instance.GridToWorld(gridPosition);
         }
 
-        /// <summary>
-        /// Cleanup resources.
-        /// </summary>
+        ///<summary>
+        ///Cleanup resources.
+        ///</summary>
         public void Cleanup()
         {
             StopPlacement();

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Save.SAS
 {
-    /// <summary>
-    /// SAS TD game save manager.
-    /// Handles save file operations, management, and persistence.
-    /// </summary>
+    ///<summary>
+    ///SAS TD game save manager.
+    ///Handles save file operations, management, and persistence.
+    ///</summary>
     public class SASGameSaveManager
     {
         private readonly string _saveDirectory;
@@ -17,20 +19,20 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         private bool _isInitialized;
         private static SASGameSaveManager _instance;
 
-        // Events
+        //Events
         public event Action<string> OnSaveCreated;
         public event Action<string> OnSaveLoaded;
         public event Action<string> OnSaveDeleted;
         public event Action<string> OnSaveCorrupted;
 
-        // Properties
+        //Properties
         public bool IsInitialized => _isInitialized;
         public int SaveCount => _saveCache.Count;
         public string SaveDirectory => _saveDirectory;
         public IReadOnlyDictionary<string, SASGameSave> SaveCache => _saveCache;
         public IReadOnlyDictionary<string, string> SaveFilePaths => _saveFilePaths;
 
-        // Singleton
+        //Singleton
         public static SASGameSaveManager Instance => _instance ??= new SASGameSaveManager();
 
         private SASGameSaveManager()
@@ -40,9 +42,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             _saveFilePaths = new Dictionary<string, string>();
         }
 
-        /// <summary>
-        /// Initialize the save manager.
-        /// </summary>
+        ///<summary>
+        ///Initialize the save manager.
+        ///</summary>
         public void Initialize()
         {
             if (_isInitialized) return;
@@ -51,10 +53,10 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
             try
             {
-                // Create save directory
+                //Create save directory
                 Directory.CreateDirectory(_saveDirectory);
 
-                // Load existing saves
+                //Load existing saves
                 LoadAllSaves();
 
                 _isInitialized = true;
@@ -67,12 +69,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Create a new save.
-        /// </summary>
-        /// <param name="saveName">Name for the save.</param>
-        /// <param name="description">Optional description.</param>
-        /// <returns>True if save was created successfully.</returns>
+        ///<summary>
+        ///Create a new save.
+        ///</summary>
+        ///<param name="saveName">Name for the save.</param>
+        ///<param name="description">Optional description.</param>
+        ///<returns>True if save was created successfully.</returns>
         public bool CreateSave(string saveName, string description = null)
         {
             if (string.IsNullOrEmpty(saveName))
@@ -81,7 +83,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 return false;
             }
 
-            // Check if save already exists
+            //Check if save already exists
             if (_saveCache.ContainsKey(saveName))
             {
                 System.Diagnostics.Debug.WriteLine($"Save '{saveName}' already exists");
@@ -90,7 +92,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
             try
             {
-                // Create save from current state
+                //Create save from current state
                 var save = SASGameSave.CreateFromCurrentState(saveName);
 
                 if (description != null)
@@ -98,17 +100,17 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     save.Metadata.Description = description;
                 }
 
-                // Save to file
+                //Save to file
                 var filePath = GetSaveFilePath(saveName);
                 var json = save.SerializeToJson();
 
                 File.WriteAllText(filePath, json);
 
-                // Add to cache
+                //Add to cache
                 _saveCache[saveName] = save;
                 _saveFilePaths[saveName] = filePath;
 
-                // Trigger event
+                //Trigger event
                 OnSaveCreated?.Invoke(saveName);
 
                 System.Diagnostics.Debug.WriteLine($"Created save: {saveName}");
@@ -121,11 +123,11 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Load a save by name.
-        /// </summary>
-        /// <param name="saveName">Name of save to load.</param>
-        /// <returns>Loaded save data, or null if failed.</returns>
+        ///<summary>
+        ///Load a save by name.
+        ///</summary>
+        ///<param name="saveName">Name of save to load.</param>
+        ///<returns>Loaded save data, or null if failed.</returns>
         public SASGameSave LoadSave(string saveName)
         {
             if (string.IsNullOrEmpty(saveName))
@@ -134,13 +136,13 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 return null;
             }
 
-            // Check if save exists in cache
+            //Check if save exists in cache
             if (_saveCache.TryGetValue(saveName, out var cachedSave))
             {
                 return cachedSave;
             }
 
-            // Try to load from file
+            //Try to load from file
             var filePath = GetSaveFilePath(saveName);
             if (!File.Exists(filePath))
             {
@@ -155,11 +157,11 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
                 if (save != null)
                 {
-                    // Add to cache
+                    //Add to cache
                     _saveCache[saveName] = save;
                     _saveFilePaths[saveName] = filePath;
 
-                    // Trigger event
+                    //Trigger event
                     OnSaveLoaded?.Invoke(saveName);
 
                     System.Diagnostics.Debug.WriteLine($"Loaded save: {saveName}");
@@ -180,11 +182,11 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Save current game state to existing save.
-        /// </summary>
-        /// <param name="saveName">Name of save to overwrite.</param>
-        /// <returns>True if save was updated successfully.</returns>
+        ///<summary>
+        ///Save current game state to existing save.
+        ///</summary>
+        ///<param name="saveName">Name of save to overwrite.</param>
+        ///<returns>True if save was updated successfully.</returns>
         public bool UpdateSave(string saveName)
         {
             if (string.IsNullOrEmpty(saveName))
@@ -201,22 +203,22 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
             try
             {
-                // Create new save from current state
+                //Create new save from current state
                 var save = SASGameSave.CreateFromCurrentState(saveName);
 
-                // Preserve existing metadata
+                //Preserve existing metadata
                 var existingSave = _saveCache[saveName];
                 save.Metadata.Creator = existingSave.Metadata.Creator;
                 save.Metadata.Tags = existingSave.Metadata.Tags;
                 save.Metadata.CustomData = existingSave.Metadata.CustomData;
 
-                // Save to file
+                //Save to file
                 var filePath = GetSaveFilePath(saveName);
                 var json = save.SerializeToJson();
 
                 File.WriteAllText(filePath, json);
 
-                // Update cache
+                //Update cache
                 _saveCache[saveName] = save;
 
                 System.Diagnostics.Debug.WriteLine($"Updated save: {saveName}");
@@ -229,11 +231,11 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Delete a save.
-        /// </summary>
-        /// <param name="saveName">Name of save to delete.</param>
-        /// <returns>True if save was deleted successfully.</returns>
+        ///<summary>
+        ///Delete a save.
+        ///</summary>
+        ///<param name="saveName">Name of save to delete.</param>
+        ///<returns>True if save was deleted successfully.</returns>
         public bool DeleteSave(string saveName)
         {
             if (string.IsNullOrEmpty(saveName))
@@ -250,18 +252,18 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
             try
             {
-                // Delete file
+                //Delete file
                 var filePath = GetSaveFilePath(saveName);
                 if (File.Exists(filePath))
                 {
                     File.Delete(filePath);
                 }
 
-                // Remove from cache
+                //Remove from cache
                 _saveCache.Remove(saveName);
                 _saveFilePaths.Remove(saveName);
 
-                // Trigger event
+                //Trigger event
                 OnSaveDeleted?.Invoke(saveName);
 
                 System.Diagnostics.Debug.WriteLine($"Deleted save: {saveName}");
@@ -274,12 +276,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Create a backup of a save.
-        /// </summary>
-        /// <param name="saveName">Name of save to backup.</param>
-        /// <param name="backupName">Name for the backup (optional).</param>
-        /// <returns>True if backup was created successfully.</returns>
+        ///<summary>
+        ///Create a backup of a save.
+        ///</summary>
+        ///<param name="saveName">Name of save to backup.</param>
+        ///<param name="backupName">Name for the backup (optional).</param>
+        ///<returns>True if backup was created successfully.</returns>
         public bool CreateBackup(string saveName, string backupName = null)
         {
             if (string.IsNullOrEmpty(saveName))
@@ -306,13 +308,13 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
                 backup.SaveName = backupName;
 
-                // Save backup to file
+                //Save backup to file
                 var backupFilePath = GetSaveFilePath(backupName);
                 var json = backup.SerializeToJson();
 
                 File.WriteAllText(backupFilePath, json);
 
-                // Add to cache
+                //Add to cache
                 _saveCache[backupName] = backup;
                 _saveFilePaths[backupName] = backupFilePath;
 
@@ -326,10 +328,10 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Get all save information.
-        /// </summary>
-        /// <returns>List of save information.</returns>
+        ///<summary>
+        ///Get all save information.
+        ///</summary>
+        ///<returns>List of save information.</returns>
         public List<SaveInfo> GetAllSaveInfo()
         {
             var saveInfos = new List<SaveInfo>();
@@ -361,11 +363,11 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return saveInfos.OrderByDescending(s => s.SaveTime).ToList();
         }
 
-        /// <summary>
-        /// Get save information by name.
-        /// </summary>
-        /// <param name="saveName">Name of save.</param>
-        /// <returns>Save information, or null if not found.</returns>
+        ///<summary>
+        ///Get save information by name.
+        ///</summary>
+        ///<param name="saveName">Name of save.</param>
+        ///<returns>Save information, or null if not found.</returns>
         public SaveInfo GetSaveInfo(string saveName)
         {
             if (!_saveCache.TryGetValue(saveName, out var save))
@@ -388,30 +390,30 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             };
         }
 
-        /// <summary>
-        /// Check if a save exists.
-        /// </summary>
-        /// <param name="saveName">Name of save to check.</param>
-        /// <returns>True if save exists.</returns>
+        ///<summary>
+        ///Check if a save exists.
+        ///</summary>
+        ///<param name="saveName">Name of save to check.</param>
+        ///<returns>True if save exists.</returns>
         public bool SaveExists(string saveName)
         {
             return _saveCache.ContainsKey(saveName);
         }
 
-        /// <summary>
-        /// Get save file path.
-        /// </summary>
-        /// <param name="saveName">Name of save.</param>
-        /// <returns>Full file path.</returns>
+        ///<summary>
+        ///Get save file path.
+        ///</summary>
+        ///<param name="saveName">Name of save.</param>
+        ///<returns>Full file path.</returns>
         public string GetSaveFilePath(string saveName)
         {
             return Path.Combine(_saveDirectory, $"{SanitizeFileName(saveName)}.json");
         }
 
-        /// <summary>
-        /// Validate all save files.
-        /// </summary>
-        /// <returns>Validation result.</returns>
+        ///<summary>
+        ///Validate all save files.
+        ///</summary>
+        ///<returns>Validation result.</returns>
         public ValidationResult ValidateAllSaves()
         {
             var result = new ValidationResult { IsValid = true };
@@ -427,7 +429,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     result.AddError($"Invalid save data: {saveName}");
                 }
 
-                // Check file exists
+                //Check file exists
                 var filePath = GetSaveFilePath(saveName);
                 if (!File.Exists(filePath))
                 {
@@ -439,10 +441,10 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return result;
         }
 
-        /// <summary>
-        /// Clean up corrupted saves.
-        /// </summary>
-        /// <returns>Number of corrupted saves cleaned up.</returns>
+        ///<summary>
+        ///Clean up corrupted saves.
+        ///</summary>
+        ///<returns>Number of corrupted saves cleaned up.</returns>
         public int CleanupCorruptedSaves()
         {
             var corruptedSaves = new List<string>();
@@ -458,7 +460,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 }
             }
 
-            // Remove corrupted saves
+            //Remove corrupted saves
             foreach (var saveName in corruptedSaves)
             {
                 DeleteSave(saveName);
@@ -468,12 +470,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return corruptedSaves.Count;
         }
 
-        /// <summary>
-        /// Export save to external location.
-        /// </summary>
-        /// <param name="saveName">Name of save to export.</param>
-        /// <param name="exportPath">Export file path.</param>
-        /// <returns>True if exported successfully.</returns>
+        ///<summary>
+        ///Export save to external location.
+        ///</summary>
+        ///<param name="saveName">Name of save to export.</param>
+        ///<param name="exportPath">Export file path.</param>
+        ///<returns>True if exported successfully.</returns>
         public bool ExportSave(string saveName, string exportPath)
         {
             if (!_saveCache.TryGetValue(saveName, out var save))
@@ -496,12 +498,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Import save from external location.
-        /// </summary>
-        /// <param name="importPath">Import file path.</param>
-        /// <param name="newSaveName">New save name (optional).</param>
-        /// <returns>True if imported successfully.</returns>
+        ///<summary>
+        ///Import save from external location.
+        ///</summary>
+        ///<param name="importPath">Import file path.</param>
+        ///<param name="newSaveName">New save name (optional).</param>
+        ///<returns>True if imported successfully.</returns>
         public bool ImportSave(string importPath, string newSaveName = null)
         {
             if (!File.Exists(importPath))
@@ -526,19 +528,19 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     newSaveName = Path.GetFileNameWithoutExtension(importPath);
                 }
 
-                // Check if save name already exists
+                //Check if save name already exists
                 if (_saveCache.ContainsKey(newSaveName))
                 {
                     System.Diagnostics.Debug.WriteLine($"Save '{newSaveName}' already exists");
                     return false;
                 }
 
-                // Add to cache
+                //Add to cache
                 _saveCache[newSaveName] = save;
                 var filePath = GetSaveFilePath(newSaveName);
                 _saveFilePaths[newSaveName] = filePath;
 
-                // Save to file
+                //Save to file
                 File.WriteAllText(filePath, json);
 
                 System.Diagnostics.Debug.WriteLine($"Imported save as '{newSaveName}'");
@@ -551,10 +553,10 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Get total size of all save files.
-        /// </summary>
-        /// <returns>Total size in bytes.</returns>
+        ///<summary>
+        ///Get total size of all save files.
+        ///</summary>
+        ///<returns>Total size in bytes.</returns>
         public long GetTotalSaveSize()
         {
             long totalSize = 0;
@@ -567,9 +569,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return totalSize;
         }
 
-        /// <summary>
-        /// Refresh save cache from disk.
-        /// </summary>
+        ///<summary>
+        ///Refresh save cache from disk.
+        ///</summary>
         public void RefreshCache()
         {
             _saveCache.Clear();
@@ -577,11 +579,11 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             LoadAllSaves();
         }
 
-        ///  Private Methods
+        /// Private Methods
 
-        /// <summary>
-        /// Load all saves from disk.
-        /// </summary>
+        ///<summary>
+        ///Load all saves from disk.
+        ///</summary>
         private void LoadAllSaves()
         {
             if (!Directory.Exists(_saveDirectory))
@@ -610,9 +612,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Sanitize file name for safe file system usage.
-        /// </summary>
+        ///<summary>
+        ///Sanitize file name for safe file system usage.
+        ///</summary>
         private string SanitizeFileName(string fileName)
         {
             var invalidChars = Path.GetInvalidFileNameChars();
@@ -626,12 +628,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return sanitized;
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// Save information for display purposes.
-    /// </summary>
+    ///<summary>
+    ///Save information for display purposes.
+    ///</summary>
     public class SaveInfo
     {
         public string Name { get; set; }
@@ -648,9 +650,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         public string Summary { get; set; }
     }
 
-    /// <summary>
-    /// Validation result for save operations.
-    /// </summary>
+    ///<summary>
+    ///Validation result for save operations.
+    ///</summary>
     public class ValidationResult
     {
         public bool IsValid { get; set; }

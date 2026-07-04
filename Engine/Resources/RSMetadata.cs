@@ -9,41 +9,43 @@ Notes:   Mutable. Used by loaders, validation, and resource registries.
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Resources
 {
-    /// <summary>
-    /// Represents descriptive metadata for a resource.
-    /// </summary>
+    ///<summary>
+    ///Represents descriptive metadata for a resource.
+    ///</summary>
     public sealed class RSMetadata
     {
-        /// <summary>
-        /// The unique key identifying this asset.
-        /// </summary>
+        ///<summary>
+        ///The unique key identifying this asset.
+        ///</summary>
         public string Key { get; set; }
 
-        /// <summary>
-        /// The file system path to the asset.
-        /// </summary>
+        ///<summary>
+        ///The file system path to the asset.
+        ///</summary>
         public string Path { get; set; }
 
-        /// <summary>
-        /// The category of the resource (Texture, Sound, Json, etc.).
-        /// </summary>
+        ///<summary>
+        ///The category of the resource (Texture, Sound, Json, etc.).
+        ///</summary>
         public RSType Type { get; set; }
 
-        /// <summary>
-        /// Optional file size in bytes, if known.
-        /// </summary>
+        ///<summary>
+        ///Optional file size in bytes, if known.
+        ///</summary>
         public long? SizeBytes { get; set; }
 
-        /// <summary>
-        /// Optional format string (e.g., "png", "wav", "json").
-        /// </summary>
+        ///<summary>
+        ///Optional format string (e.g., "png", "wav", "json").
+        ///</summary>
         public string? Format { get; set; }
 
-        /// <summary>
-        /// Optional tags for classification or search.
-        /// </summary>
+        ///<summary>
+        ///Optional tags for classification or search.
+        ///</summary>
         public IReadOnlyList<string> Tags { get; set; }
 
         public RSMetadata(
@@ -62,7 +64,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             Tags = tags ?? Array.Empty<string>();
         }
 
-        // Parameterless constructor for scenarios where properties are set afterward
+        //Parameterless constructor for scenarios where properties are set afterward
         public RSMetadata(object key)
         {
             Key = string.Empty;

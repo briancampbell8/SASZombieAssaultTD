@@ -1,11 +1,13 @@
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Debug
 {
-    /// <summary>
-    /// A basic inspector for selecting and inspecting UI elements
-    /// P80-07-02: UIDebugInspector providing a basic inspector for selecting and inspecting UI elements
-    /// </summary>
+    ///<summary>
+    ///A basic inspector for selecting and inspecting UI elements
+    ///P80-07-02: UIDebugInspector providing a basic inspector for selecting and inspecting UI elements
+    ///</summary>
     public class UIDebugInspector
     {
         private readonly UIDebugOverlay _debugOverlay;
@@ -16,9 +18,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
         private readonly System.Drawing.Color _textColor = System.Drawing.Color.White;
         private readonly System.Drawing.Color _borderColor = System.Drawing.Color.Green;
 
-        /// <summary>
-        /// Gets or sets whether the inspector is visible
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether the inspector is visible
+        ///</summary>
         public bool IsVisible
         {
             get => _isVisible;
@@ -32,9 +34,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Gets or sets whether the inspector is in inspect mode
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether the inspector is in inspect mode
+        ///</summary>
         public bool IsInspecting
         {
             get => _isInspecting;
@@ -48,25 +50,25 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Gets the currently inspected element
-        /// </summary>
+        ///<summary>
+        ///Gets the currently inspected element
+        ///</summary>
         public UIElement InspectedElement => _inspectedElement;
 
-        /// <summary>
-        /// Initializes a new UIDebugInspector
-        /// </summary>
-        /// <param name="debugOverlay">Debug overlay to inspect</param>
+        ///<summary>
+        ///Initializes a new UIDebugInspector
+        ///</summary>
+        ///<param name="debugOverlay">Debug overlay to inspect</param>
         public UIDebugInspector(UIDebugOverlay debugOverlay)
         {
             _debugOverlay = debugOverlay ?? throw new ArgumentNullException(nameof(debugOverlay));
             System.Diagnostics.Debug.WriteLine("UIDebugInspector: Initialized");
         }
 
-        /// <summary>
-        /// Selects an element for inspection
-        /// </summary>
-        /// <param name="element">Element to select</param>
+        ///<summary>
+        ///Selects an element for inspection
+        ///</summary>
+        ///<param name="element">Element to select</param>
         public void SelectElement(UIElement element)
         {
             try
@@ -88,15 +90,15 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Updates the inspector
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds</param>
+        ///<summary>
+        ///Updates the inspector
+        ///</summary>
+        ///<param name="deltaTime">Time since last update in seconds</param>
         public void Update(float deltaTime)
         {
             try
             {
-                // Update inspection mode
+                //Update inspection mode
                 if (_isInspecting)
                 {
                     UpdateInspection(deltaTime);
@@ -110,19 +112,19 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Updates the inspection
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds</param>
+        ///<summary>
+        ///Updates the inspection
+        ///</summary>
+        ///<param name="deltaTime">Time since last update in seconds</param>
         private void UpdateInspection(float deltaTime)
         {
             try
             {
-                // Update inspection based on selected element
+                //Update inspection based on selected element
                 if (_inspectedElement != null)
                 {
-                    // This would update inspection details
-                    // For now, just log the inspection
+                    //This would update inspection details
+                    //For now, just log the inspection
                     System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Inspecting {_inspectedElement.GetType().Name}");
                 }
             }
@@ -132,9 +134,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Renders the inspector
-        /// </summary>
+        ///<summary>
+        ///Renders the inspector
+        ///</summary>
         public void Render()
         {
             try
@@ -142,17 +144,17 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 if (!_isVisible)
                     return;
 
-                // This would use the actual rendering system
-                // For now, just log the inspector state
+                //This would use the actual rendering system
+                //For now, just log the inspector state
                 System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Rendering inspector with {_inspectedElement?.GetType().Name}");
 
-                // Render selection indicator
+                //Render selection indicator
                 if (_inspectedElement != null)
                 {
                     RenderSelectionIndicator();
                 }
 
-                // Render inspection details
+                //Render inspection details
                 RenderInspectionDetails();
 
                 System.Diagnostics.Debug.WriteLine("UIDebugInspector: Rendered inspector");
@@ -163,15 +165,15 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Renders the selection indicator
-        /// </summary>
+        ///<summary>
+        ///Renders the selection indicator
+        ///</summary>
         private void RenderSelectionIndicator()
         {
             try
             {
-                // This would render a selection indicator near the selected element
-                // For now, just log the selection
+                //This would render a selection indicator near the selected element
+                //For now, just log the selection
                 System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Rendering selection indicator for {_inspectedElement?.GetType().Name}");
             }
             catch (Exception ex)
@@ -180,9 +182,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Renders the inspection details
-        /// </summary>
+        ///<summary>
+        ///Renders the inspection details
+        ///</summary>
         private void RenderInspectionDetails()
         {
             try
@@ -190,11 +192,11 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
                 if (_inspectedElement == null)
                     return;
 
-                // This would render actual inspection details
-                // For now, just log the element type
+                //This would render actual inspection details
+                //For now, just log the element type
                 System.Diagnostics.Debug.WriteLine($"UIDebugInspector: Element type: {_inspectedElement.GetType().Name}");
 
-                // Render element properties
+                //Render element properties
                 var position = _inspectedElement.AbsolutePosition;
                 var size = _inspectedElement.Size;
                 var isVisible = _inspectedElement.IsVisible;
@@ -207,9 +209,9 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Exits the inspection mode
-        /// </summary>
+        ///<summary>
+        ///Exits the inspection mode
+        ///</summary>
         public void ExitInspection()
         {
             try
@@ -228,10 +230,10 @@ namespace SASZombieAssaultTD.Engine.UI.Debug
             }
         }
 
-        /// <summary>
-        /// Gets a string representation of the inspector state
-        /// </summary>
-        /// <returns>String representation</returns>
+        ///<summary>
+        ///Gets a string representation of the inspector state
+        ///</summary>
+        ///<returns>String representation</returns>
         public override string ToString()
         {
             try

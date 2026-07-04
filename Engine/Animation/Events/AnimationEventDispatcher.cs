@@ -1,13 +1,14 @@
-using SASZombieAssaultTD.Engine.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Animation.Events
+//
 {
-    /// <summary>
-    /// Statistics for AnimationEventDispatcher.
-    /// </summary>
+    ///<summary>
+    ///Statistics for AnimationEventDispatcher.
+    ///</summary>
     public class AnimationEventDispatcherStatistics
     {
         public int TotalUpdates { get; set; }
@@ -17,9 +18,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
         public float AverageUpdateTime { get; set; }
     }
 
-    /// <summary>
-    /// Validation result for AnimationEventDispatcher.
-    /// </summary>
+    ///<summary>
+    ///Validation result for AnimationEventDispatcher.
+    ///</summary>
     public class AnimationEventDispatcherValidationResult
     {
         public bool IsValid { get; set; }
@@ -28,10 +29,10 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
         public int ReceiverCount { get; set; }
         public int TrackCount { get; set; }
     }
-    /// <summary>
-    /// P11-19-04: Dispatcher that evaluates event tracks, determines which events fire, and sends them to registered receivers.
-    /// Provides deterministic event dispatching with ordered processing and comprehensive error handling.
-    /// </summary>
+    ///<summary>
+    ///P11-19-04: Dispatcher that evaluates event tracks, determines which events fire, and sends them to registered receivers.
+    ///Provides deterministic event dispatching with ordered processing and comprehensive error handling.
+    ///</summary>
     public class AnimationEventDispatcher
     {
         private readonly SortedDictionary<int, List<IAnimationEventReceiver>> _receiversByPriority = new();
@@ -45,27 +46,28 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
 
         public AnimationEventDispatcher()
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "AnimationEventDispatcher: Initialized dispatcher");
+            DLogger.Log(
+                LogSubsystems.Animation, LogLevel.Debug, "AnimationEventDispatcher: Initialized dispatcher");
         }
 
         public bool RegisterReceiver(IAnimationEventReceiver receiver)
         {
             if (receiver == null)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "AnimationEventDispatcher: Cannot register null receiver");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, "AnimationEventDispatcher: Cannot register null receiver");
                 return false;
             }
 
             var validation = receiver.Validate();
             if (!validation.IsValid)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventDispatcher: Receiver '{receiver.ReceiverName}' validation failed: {string.Join(", ", validation.Errors)}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"AnimationEventDispatcher: Receiver '{receiver.ReceiverName}' validation failed: {string.Join(", ", validation.Errors)}");
                 return false;
             }
 
             if (_receiversByPriority.Values.SelectMany(list => list).Any(r => r.ReceiverId == receiver.ReceiverId))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventDispatcher: Receiver ID '{receiver.ReceiverId}' already registered");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"AnimationEventDispatcher: Receiver ID '{receiver.ReceiverId}' already registered");
                 return false;
             }
 
@@ -75,7 +77,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             }
             _receiversByPriority[receiver.Priority].Add(receiver);
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventDispatcher: Registered receiver '{receiver.ReceiverName}' ({receiver.ReceiverId}) with priority {receiver.Priority}");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationEventDispatcher: Registered receiver '{receiver.ReceiverName}' ({receiver.ReceiverId}) with priority {receiver.Priority}");
             return true;
         }
 
@@ -83,7 +85,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
         {
             if (string.IsNullOrEmpty(receiverId))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "AnimationEventDispatcher: Cannot deregister receiver with null or empty ID");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, "AnimationEventDispatcher: Cannot deregister receiver with null or empty ID");
                 return false;
             }
 
@@ -93,12 +95,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
                 if (receiverToRemove != null)
                 {
                     priorityList.Remove(receiverToRemove);
-                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventDispatcher: Deregistered receiver '{receiverToRemove.ReceiverName}' ({receiverId})");
+                    DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationEventDispatcher: Deregistered receiver '{receiverToRemove.ReceiverName}' ({receiverId})");
                     return true;
                 }
             }
 
-            Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AnimationEventDispatcher: Receiver ID '{receiverId}' not found for deregistration");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Warning, $"AnimationEventDispatcher: Receiver ID '{receiverId}' not found for deregistration");
             return false;
         }
 
@@ -106,27 +108,27 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
         {
             if (eventTrack == null)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "AnimationEventDispatcher: Cannot register null event track");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, "AnimationEventDispatcher: Cannot register null event track");
                 return false;
             }
 
             var validation = eventTrack.Validate();
             if (!validation.IsValid)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventDispatcher: Event track '{eventTrack.TrackName}' validation failed: {string.Join(", ", validation.Errors)}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"AnimationEventDispatcher: Event track '{eventTrack.TrackName}' validation failed: {string.Join(", ", validation.Errors)}");
                 return false;
             }
 
             if (_eventTracksByClip.ContainsKey(eventTrack.ClipId))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventDispatcher: Event track for clip '{eventTrack.ClipId}' already registered");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"AnimationEventDispatcher: Event track for clip '{eventTrack.ClipId}' already registered");
                 return false;
             }
 
             _eventTracksByClip[eventTrack.ClipId] = eventTrack;
             _allEventTracks.Add(eventTrack);
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventDispatcher: Registered event track '{eventTrack.TrackName}' ({eventTrack.TrackId}) for clip '{eventTrack.ClipId}'");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationEventDispatcher: Registered event track '{eventTrack.TrackName}' ({eventTrack.TrackId}) for clip '{eventTrack.ClipId}'");
             return true;
         }
 
@@ -134,18 +136,18 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
         {
             if (string.IsNullOrEmpty(clipId))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", "AnimationEventDispatcher: Cannot deregister event track with null or empty clip ID");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, "AnimationEventDispatcher: Cannot deregister event track with null or empty clip ID");
                 return false;
             }
 
             if (_eventTracksByClip.Remove(clipId, out var eventTrack))
             {
                 _allEventTracks.Remove(eventTrack);
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventDispatcher: Deregistered event track '{eventTrack.TrackName}' ({eventTrack.TrackId}) for clip '{clipId}'");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationEventDispatcher: Deregistered event track '{eventTrack.TrackName}' ({eventTrack.TrackId}) for clip '{clipId}'");
                 return true;
             }
 
-            Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AnimationEventDispatcher: Event track for clip '{clipId}' not found for deregistration");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Warning, $"AnimationEventDispatcher: Event track for clip '{clipId}' not found for deregistration");
             return false;
         }
 
@@ -180,21 +182,21 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
 
                 if (dispatchedEvents.Count > 0)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AnimationEventDispatcher: Dispatched {dispatchedEvents.Count} events for clip '{currentClipId}' at {playbackTime:F3}s");
+                    DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationEventDispatcher: Dispatched {dispatchedEvents.Count} events for clip '{currentClipId}' at {playbackTime:F3}s");
                 }
             }
             catch (Exception ex)
             {
                 Statistics.ErrorCount++;
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventDispatcher: Error during update: {ex.Message}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"AnimationEventDispatcher: Error during update: {ex.Message}");
             }
 
             return dispatchedEvents;
         }
 
-        /// <summary>
-        /// Process events for the given clip and playback time (alias for Update).
-        /// </summary>
+        ///<summary>
+        ///Process events for the given clip and playback time (alias for Update).
+        ///</summary>
         public IReadOnlyList<AnimationEvent> ProcessEvents(float deltaTime, string currentClipId, float playbackTime, uint entityId = 0)
         {
             return Update(deltaTime, currentClipId, playbackTime, entityId);
@@ -229,7 +231,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
                     }
                     catch (Exception ex)
                     {
-                        Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AnimationEventDispatcher: Receiver '{receiver.ReceiverId}' failed to handle event '{animationEvent.EventName}': {ex.Message}");
+                        DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"AnimationEventDispatcher: Receiver '{receiver.ReceiverId}' failed to handle event '{animationEvent.EventName}': {ex.Message}");
                     }
                 }
             }
@@ -250,7 +252,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             }
 
             Statistics = new AnimationEventDispatcherStatistics();
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "AnimationEventDispatcher: Reset all event tracks and statistics");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, "AnimationEventDispatcher: Reset all event tracks and statistics");
         }
 
         public IReadOnlyList<IAnimationEventReceiver> GetRegisteredReceivers() =>

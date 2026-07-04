@@ -1,11 +1,13 @@
 using SASZombieAssaultTD.Engine.VectorMath;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Enemies
 {
-    /// <summary>
-    /// Enemy behavior modifier for special abilities and effects.
-    /// </summary>
+    ///<summary>
+    ///Enemy behavior modifier for special abilities and effects.
+    ///</summary>
     public class EnemyBehaviorModifier
     {
         public string Name { get; set; }
@@ -16,7 +18,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
         public Vector3 SizeMultiplier { get; set; } = Vector3.One;
         public bool IsChampion { get; set; } = false;
         public int ChampionLevel { get; set; } = 1;
-        public float Duration { get; set; } = 0f; // 0 = permanent
+        public float Duration { get; set; } = 0f; //0 = permanent
         public string ModifierType { get; set; }
         public float Value { get; set; }
         public Dictionary<string, object> Parameters { get; set; }
@@ -31,9 +33,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             Name = name;
         }
 
-        /// <summary>
-        /// Creates a champion modifier.
-        /// </summary>
+        ///<summary>
+        ///Creates a champion modifier.
+        ///</summary>
         public static EnemyBehaviorModifier CreateChampion(int level = 1)
         {
             return new EnemyBehaviorModifier("Champion")
@@ -47,9 +49,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             };
         }
 
-        /// <summary>
-        /// Creates a speed modifier.
-        /// </summary>
+        ///<summary>
+        ///Creates a speed modifier.
+        ///</summary>
         public static EnemyBehaviorModifier CreateSpeed(float multiplier)
         {
             return new EnemyBehaviorModifier("Speed Boost")
@@ -58,9 +60,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             };
         }
 
-        /// <summary>
-        /// Creates a health modifier.
-        /// </summary>
+        ///<summary>
+        ///Creates a health modifier.
+        ///</summary>
         public static EnemyBehaviorModifier CreateHealth(float multiplier)
         {
             return new EnemyBehaviorModifier("Health Boost")
@@ -69,9 +71,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
             };
         }
 
-        /// <summary>
-        /// Creates an armor modifier.
-        /// </summary>
+        ///<summary>
+        ///Creates an armor modifier.
+        ///</summary>
         public static EnemyBehaviorModifier CreateArmor(float multiplier)
         {
             return new EnemyBehaviorModifier("Armor Boost")

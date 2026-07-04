@@ -3,16 +3,17 @@ File:    JumpState.cs
 Purpose: P11-17-05 - Implement JumpState using IAnimationState with explicit transition conditions and deterministic Update behavior.
 Provides deterministic jump state with explicit transition conditions and no placeholder behavior.
 */
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Animation.Core;
 using System.Collections.Generic;
+using SASZombieAssaultTD.Engine.Animation.Core;
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Animation.Components
+
 {
-    /// <summary>
-    /// P11-17-05: Jump state implementation with deterministic transitions.
-    /// Implements IAnimationState with explicit transition conditions and deterministic Update behavior.
-    /// </summary>
+    ///<summary>
+    ///P11-17-05: Jump state implementation with deterministic transitions.
+    ///Implements IAnimationState with explicit transition conditions and deterministic Update behavior.
+    ///</summary>
     public class JumpState : IAnimationState
     {
         public string Name => "Jump";
@@ -44,25 +45,25 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             IsGrounded = false;
             IsJumping = true;
             JumpVelocity = System.MathF.Sqrt(2f * GRAVITY * JumpHeight);
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"JumpState: Entering jump state with height {JumpHeight:F2}");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"JumpState: Entering jump state with height {JumpHeight:F2}");
         }
 
         public void Exit()
         {
             JumpVelocity = 0f;
             IsJumping = false;
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"JumpState: Exiting jump state after {JumpTime:F2}s");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"JumpState: Exiting jump state after {JumpTime:F2}s");
         }
 
         public void Update(float deltaTime, float timeInState)
         {
             JumpTime = timeInState;
 
-            // Deterministic jump physics calculation
+            //Deterministic jump physics calculation
             JumpVelocity -= GRAVITY * deltaTime;
             JumpHeight += JumpVelocity * deltaTime;
 
-            // Ground detection
+            //Ground detection
             if (JumpHeight <= 0f)
             {
                 JumpHeight = 0f;
@@ -75,7 +76,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             if (IsAttacking)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "JumpState: Transition condition met for AttackState");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, "JumpState: Transition condition met for AttackState");
                 return _attackState;
             }
 
@@ -83,17 +84,17 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             {
                 if (_moveState.IsMoving)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "JumpState: Transition condition met for MoveState (landing while moving)");
+                    DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, "JumpState: Transition condition met for MoveState (landing while moving)");
                     return _moveState;
                 }
 
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "JumpState: Transition condition met for IdleState (landing while idle)");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, "JumpState: Transition condition met for IdleState (landing while idle)");
                 return _idleState;
             }
 
             if (JumpTime >= JUMP_DURATION_THRESHOLD)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"JumpState: Transition condition met for IdleState (jump duration exceeded {JUMP_DURATION_THRESHOLD}s)");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"JumpState: Transition condition met for IdleState (jump duration exceeded {JUMP_DURATION_THRESHOLD}s)");
                 return _idleState;
             }
 

@@ -7,15 +7,17 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Vector3 = SASZombieAssaultTD.Engine.VectorMath.Vector3; // Alias to resolve ambiguity
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Extensions;
-using Vector3Int = SASZombieAssaultTD.Engine.VectorMath.Vector3Int; // Alias to resolve ambiguity
+using Vector3 = SASZombieAssaultTD.Engine.VectorMath.Vector3; //Alias to resolve ambiguity
+using Vector3Int = SASZombieAssaultTD.Engine.VectorMath.Vector3Int; //Alias to resolve ambiguity
 namespace SASZombieAssaultTD.Engine.Navigation
+//
 {
-    /// <summary>
-    /// P11-15-02: Classic A* pathfinding implementation over NavigationGrid.
-    /// Supports 4-way and 8-way movement with configurable movement costs.
-    /// </summary>
+    ///<summary>
+    ///P11-15-02: Classic A* pathfinding implementation over NavigationGrid.
+    ///Supports 4-way and 8-way movement with configurable movement costs.
+    ///</summary>
     public sealed class AStarPathfinder
     {
         private readonly NavigationGrid _grid;
@@ -27,27 +29,27 @@ namespace SASZombieAssaultTD.Engine.Navigation
         private int _nodesExplored;
         private int _pathLength;
 
-        /// <summary>
-        /// Gets the number of nodes explored in the last pathfinding operation.
-        /// </summary>
+        ///<summary>
+        ///Gets the number of nodes explored in the last pathfinding operation.
+        ///</summary>
         public int NodesExplored => _nodesExplored;
 
-        /// <summary>
-        /// Gets the length of the last path found.
-        /// </summary>
+        ///<summary>
+        ///Gets the length of the last path found.
+        ///</summary>
         public int PathLength => _pathLength;
 
-        /// <summary>
-        /// Gets whether diagonal movement is allowed.
-        /// </summary>
+        ///<summary>
+        ///Gets whether diagonal movement is allowed.
+        ///</summary>
         public bool AllowDiagonal => _allowDiagonal;
 
-        /// <summary>
-        /// Initializes a new AStarPathfinder.
-        /// </summary>
-        /// <param name="grid">The navigation grid to pathfind on.</param>
-        /// <param name="allowDiagonal">Whether to allow diagonal movement.</param>
-        /// <param name="diagonalCost">Cost multiplier for diagonal movement (sqrt(2) ≈ 1.414).</param>
+        ///<summary>
+        ///Initializes a new AStarPathfinder.
+        ///</summary>
+        ///<param name="grid">The navigation grid to pathfind on.</param>
+        ///<param name="allowDiagonal">Whether to allow diagonal movement.</param>
+        ///<param name="diagonalCost">Cost multiplier for diagonal movement (sqrt(2) ≈ 1.414).</param>
         public AStarPathfinder(NavigationGrid grid, bool allowDiagonal = false, float diagonalCost = 1.414f)
         {
             _grid = grid ?? throw new ArgumentNullException(nameof(grid));
@@ -57,26 +59,29 @@ namespace SASZombieAssaultTD.Engine.Navigation
             _closedSet = new HashSet<NavigationCell>();
             _pathBuffer = new List<Vector3>();
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"AStarPathfinder: Initialized with diagonal movement {allowDiagonal}");
+            DLogger.Log(
+                LogSubsystems.Navigation,
+                "INFO",
+                $"AStarPathfinder: Initialized with diagonal movement {allowDiagonal}");
         }
 
-        /// <summary>
-        /// Finds a path from start to end position asynchronously.
-        /// </summary>
-        /// <param name="startWorldPos">Start position in world coordinates.</param>
-        /// <param name="endWorldPos">End position in world coordinates.</param>
-        /// <returns>List of world-space waypoints, or empty if no path found.</returns>
+        ///<summary>
+        ///Finds a path from start to end position asynchronously.
+        ///</summary>
+        ///<param name="startWorldPos">Start position in world coordinates.</param>
+        ///<param name="endWorldPos">End position in world coordinates.</param>
+        ///<returns>List of world-space waypoints, or empty if no path found.</returns>
         public async Task<List<Vector3>> FindPathAsync(Vector3 startWorldPos, Vector3 endWorldPos)
         {
             return await Task.Run(() => FindPath(startWorldPos, endWorldPos));
         }
 
-        /// <summary>
-        /// Finds a path from start to end position.
-        /// </summary>
-        /// <param name="startWorldPos">Start position in world coordinates.</param>
-        /// <param name="endWorldPos">End position in world coordinates.</param>
-        /// <returns>List of world-space waypoints, or empty if no path found.</returns>
+        ///<summary>
+        ///Finds a path from start to end position.
+        ///</summary>
+        ///<param name="startWorldPos">Start position in world coordinates.</param>
+        ///<param name="endWorldPos">End position in world coordinates.</param>
+        ///<returns>List of world-space waypoints, or empty if no path found.</returns>
         public List<Vector3> FindPath(Vector3 startWorldPos, Vector3 endWorldPos)
         {
             ArgumentNullException.ThrowIfNull(startWorldPos, nameof(startWorldPos));
@@ -86,17 +91,17 @@ namespace SASZombieAssaultTD.Engine.Navigation
             _pathLength = 0;
             _pathBuffer.Clear();
 
-            // Convert world positions to grid coordinates
+            //Convert world positions to grid coordinates
             var startGrid = _grid.WorldToGrid(startWorldPos);
             var endGrid = _grid.WorldToGrid(endWorldPos);
 
-            // Validate start and end positions
+            //Validate start and end positions
             if (!ValidatePositions(startGrid, endGrid))
             {
                 return new List<Vector3>();
             }
 
-            // Check if start and end are the same
+            //Check if start and end are the same
             if (startGrid == endGrid)
             {
                 _pathBuffer.Add(endWorldPos);
@@ -104,52 +109,59 @@ namespace SASZombieAssaultTD.Engine.Navigation
                 return new List<Vector3>(_pathBuffer);
             }
 
-            // Reset pathfinding data
+            //Reset pathfinding data
             ResetPathfindingData();
 
-            // Create start cell
+            //Create start cell
             var startCell = new NavigationCell(startGrid, true);
 
-            // Initialize start cell
+            //Initialize start cell
             InitializeStartCell(startCell, startGrid, endGrid);
 
-            // Main A* loop
+            //Main A* loop
             while (_openSet.Count > 0)
             {
                 _nodesExplored++;
 
-                // Get cell with lowest F cost
+                //Get cell with lowest F cost
                 var currentCell = _openSet.RemoveFirst();
                 _closedSet.Add(currentCell);
 
-                // Check if we reached the goal
+                //Check if we reached the goal
                 if (currentCell.GridPosition == endGrid)
                 {
                     return ReconstructPath(currentCell);
                 }
 
-                // Explore neighbors
+                //Explore neighbors
                 ExploreNeighbors(currentCell, endGrid);
 
-                // Performance safeguard - prevent infinite loops
+                //Performance safeguard - prevent infinite loops
                 if (_nodesExplored > _grid.TotalCells)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AStarPathfinder: Pathfinding exceeded node limit ({_grid.TotalCells})");
+                    DLogger.Log(
+                        LogSubsystems.Navigation,
+                        "WARNING",
+                        $"AStarPathfinder: Pathfinding exceeded node limit ({_grid.TotalCells})");
                     break;
                 }
             }
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"AStarPathfinder: No path found after exploring {_nodesExplored} nodes");
+            DLogger.Log(
+                LogSubsystems.Navigation,
+                "INFO", $"AStarPathfinder: No path found after exploring {_nodesExplored} nodes");
             return new List<Vector3>();
         }
 
         private bool ValidatePositions(Vector3Int startGrid, Vector3Int endGrid)
         {
-            // Check if start and end positions are valid
+            //Check if start and end positions are valid
 
             if (!_grid.IsInBounds(startGrid) || !_grid.IsInBounds(endGrid))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AStarPathfinder: Start or end position out of bounds - Start: {startGrid}, End: {endGrid}");
+                DLogger.Log(
+                    LogSubsystems.Navigation,
+                    "WARNING", $"AStarPathfinder: Start or end position out of bounds - Start: {startGrid}, End: {endGrid}");
                 return false;
             }
 
@@ -158,7 +170,9 @@ namespace SASZombieAssaultTD.Engine.Navigation
 
             if (startCellValid == null || endCellValid == null)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"AStarPathfinder: Start or end position is not walkable - Start: {startGrid}, End: {endGrid}");
+                DLogger.Log(
+                    LogSubsystems.Navigation,
+                    "WARNING", $"AStarPathfinder: Start or end position is not walkable - Start: {startGrid}, End: {endGrid}");
                 return false;
             }
 
@@ -173,12 +187,12 @@ namespace SASZombieAssaultTD.Engine.Navigation
             _openSet.Add(startCell);
         }
 
-        /// <summary>
-        /// Checks if a direct path exists between two positions (line of sight).
-        /// </summary>
-        /// <param name="startWorldPos">Start position in world coordinates.</param>
-        /// <param name="endWorldPos">End position in world coordinates.</param>
-        /// <returns>True if direct path exists, false otherwise.</returns>
+        ///<summary>
+        ///Checks if a direct path exists between two positions (line of sight).
+        ///</summary>
+        ///<param name="startWorldPos">Start position in world coordinates.</param>
+        ///<param name="endWorldPos">End position in world coordinates.</param>
+        ///<returns>True if direct path exists, false otherwise.</returns>
         public bool HasDirectPath(Vector3 startWorldPos, Vector3 endWorldPos)
         {
             var startGrid = _grid.WorldToGrid(startWorldPos);
@@ -187,7 +201,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
             if (!_grid.IsInBounds(startGrid) || !_grid.IsInBounds(endGrid))
                 return false;
 
-            // Simple line-of-sight check using Bresenham's line algorithm
+            //Simple line-of-sight check using Bresenham's line algorithm
             var line = GetLinePoints(startGrid, endGrid);
             foreach (var point in line)
             {
@@ -198,22 +212,22 @@ namespace SASZombieAssaultTD.Engine.Navigation
             return true;
         }
 
-        /// <summary>
-        /// Gets the estimated distance between two grid positions.
-        /// </summary>
-        /// <param name="from">Starting position.</param>
-        /// <param name="to">Target position.</param>
-        /// <returns>Heuristic distance.</returns>
+        ///<summary>
+        ///Gets the estimated distance between two grid positions.
+        ///</summary>
+        ///<param name="from">Starting position.</param>
+        ///<param name="to">Target position.</param>
+        ///<returns>Heuristic distance.</returns>
         public float GetHeuristicDistance(Vector3Int from, Vector3Int to)
         {
             return CalculateHeuristic(from, to);
         }
 
-        /// <summary>
-        /// Explores neighbors of a cell during pathfinding.
-        /// </summary>
-        /// <param name="currentCell">The current cell being explored.</param>
-        /// <param name="endGrid">The target grid position.</param>
+        ///<summary>
+        ///Explores neighbors of a cell during pathfinding.
+        ///</summary>
+        ///<param name="currentCell">The current cell being explored.</param>
+        ///<param name="endGrid">The target grid position.</param>
         private void ExploreNeighbors(NavigationCell currentCell, Vector3Int endGrid)
         {
             var currentPos = currentCell.GridPosition;
@@ -247,17 +261,17 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
         }
 
-        /// <summary>
-        /// Calculates heuristic distance between two grid positions.
-        /// </summary>
-        /// <param name="from">Starting position.</param>
-        /// <param name="to">Target position.</param>
-        /// <returns>Heuristic distance.</returns>
+        ///<summary>
+        ///Calculates heuristic distance between two grid positions.
+        ///</summary>
+        ///<param name="from">Starting position.</param>
+        ///<param name="to">Target position.</param>
+        ///<returns>Heuristic distance.</returns>
         private float CalculateHeuristic(Vector3Int from, Vector3Int to)
         {
             if (_allowDiagonal)
             {
-                // Octile distance for diagonal movement
+                //Octile distance for diagonal movement
                 var dx = System.Math.Abs(to.X - from.X);
                 var dy = System.Math.Abs(to.Y - from.Y);
                 var min = System.Math.Min(dx, dy);
@@ -266,32 +280,32 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
             else
             {
-                // Manhattan distance for cardinal movement
+                //Manhattan distance for cardinal movement
                 return System.Math.Abs(to.X - from.X) + System.Math.Abs(to.Y - from.Y);
             }
         }
 
-        /// <summary>
-        /// Reconstructs the path from end cell back to start.
-        /// </summary>
-        /// <param name="endCell">The end cell of the path.</param>
-        /// <returns>List of world-space waypoints.</returns>
+        ///<summary>
+        ///Reconstructs the path from end cell back to start.
+        ///</summary>
+        ///<param name="endCell">The end cell of the path.</param>
+        ///<returns>List of world-space waypoints.</returns>
         private List<Vector3> ReconstructPath(NavigationCell endCell)
         {
             var pathCells = new List<NavigationCell>();
             var current = endCell;
 
-            // Build path backwards from end to start
+            //Build path backwards from end to start
             while (current != null)
             {
                 pathCells.Add(current);
                 current = current.Parent;
             }
 
-            // Reverse to get start-to-end order
+            //Reverse to get start-to-end order
             pathCells.Reverse();
 
-            // Convert to world positions
+            //Convert to world positions
             _pathBuffer.Clear();
             foreach (var cell in pathCells)
             {
@@ -301,16 +315,17 @@ namespace SASZombieAssaultTD.Engine.Navigation
 
             _pathLength = _pathBuffer.Count;
 
-            // Optimize path by removing unnecessary waypoints
+            //Optimize path by removing unnecessary waypoints
             OptimizePath();
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AStarPathfinder: Found path with {_pathLength} waypoints after exploring {_nodesExplored} nodes");
+            DLogger.Log(LogSubsystems.Navigation,
+                "DEBUG", $"AStarPathfinder: Found path with {_pathLength} waypoints after exploring {_nodesExplored} nodes");
             return new List<Vector3>(_pathBuffer);
         }
 
-        /// <summary>
-        /// Optimizes the path by removing straight-line waypoints.
-        /// </summary>
+        ///<summary>
+        ///Optimizes the path by removing straight-line waypoints.
+        ///</summary>
         private void OptimizePath()
         {
             if (_pathBuffer.Count <= 2)
@@ -324,7 +339,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
                 var current = _pathBuffer[i];
                 var next = _pathBuffer[i + 1];
 
-                // Check if we can skip the current waypoint
+                //Check if we can skip the current waypoint
                 if (!CanSkipWaypoint(prev, current, next))
                 {
                     optimized.Add(current);
@@ -336,28 +351,28 @@ namespace SASZombieAssaultTD.Engine.Navigation
             _pathBuffer.AddRange(optimized);
         }
 
-        /// <summary>
-        /// Checks if a waypoint can be skipped in path optimization.
-        /// </summary>
-        /// <param name="prev">Previous waypoint.</param>
-        /// <param name="current">Current waypoint.</param>
-        /// <param name="next">Next waypoint.</param>
-        /// <returns>True if current can be skipped.</returns>
+        ///<summary>
+        ///Checks if a waypoint can be skipped in path optimization.
+        ///</summary>
+        ///<param name="prev">Previous waypoint.</param>
+        ///<param name="current">Current waypoint.</param>
+        ///<param name="next">Next waypoint.</param>
+        ///<returns>True if current can be skipped.</returns>
         private bool CanSkipWaypoint(Vector3 prev, Vector3 current, Vector3 next)
         {
-            // Simple check: if the three points are approximately collinear, skip the middle one
+            //Simple check: if the three points are approximately collinear, skip the middle one
             var dir1 = (current - prev).Normalized;
             var dir2 = (next - current).Normalized;
             var dot = Vector3.Dot(dir1, dir2);
-            return dot > 0.99f; // Very close to same direction
+            return dot > 0.99f; //Very close to same direction
         }
 
-        /// <summary>
-        /// Gets all grid points along a line using Bresenham's algorithm.
-        /// </summary>
-        /// <param name="start">Start grid position.</param>
-        /// <param name="end">End grid position.</param>
-        /// <returns>Collection of grid positions along the line.</returns>
+        ///<summary>
+        ///Gets all grid points along a line using Bresenham's algorithm.
+        ///</summary>
+        ///<param name="start">Start grid position.</param>
+        ///<param name="end">End grid position.</param>
+        ///<returns>Collection of grid positions along the line.</returns>
         private IEnumerable<Vector3Int> GetLinePoints(Vector3Int start, Vector3Int end)
         {
             var dx = System.Math.Abs(end.X - start.X);
@@ -389,15 +404,15 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
         }
 
-        /// <summary>
-        /// Resets pathfinding data for all cells.
-        /// </summary>
+        ///<summary>
+        ///Resets pathfinding data for all cells.
+        ///</summary>
         private void ResetPathfindingData()
         {
             _openSet.Clear();
             _closedSet.Clear();
 
-            // Reset all cells that might have been modified
+            //Reset all cells that might have been modified
             for (int y = 0; y < _grid.Height; y++)
             {
                 for (int x = 0; x < _grid.Width; x++)
@@ -408,10 +423,10 @@ namespace SASZombieAssaultTD.Engine.Navigation
             }
         }
 
-        /// <summary>
-        /// Gets debug information about the pathfinder.
-        /// </summary>
-        /// <returns>Debug information string.</returns>
+        ///<summary>
+        ///Gets debug information about the pathfinder.
+        ///</summary>
+        ///<returns>Debug information string.</returns>
         public string GetDebugInfo()
         {
             var info = $"AStarPathfinder Debug Info:\n";
@@ -424,32 +439,32 @@ namespace SASZombieAssaultTD.Engine.Navigation
             return info;
         }
 
-        /// <summary>
-        /// Checks if a position is navigable on the navigation grid.
-        /// </summary>
-        /// <param name="position">The position to check.</param>
-        /// <returns>True if the position is navigable, false otherwise.</returns>
+        ///<summary>
+        ///Checks if a position is navigable on the navigation grid.
+        ///</summary>
+        ///<param name="position">The position to check.</param>
+        ///<returns>True if the position is navigable, false otherwise.</returns>
         public bool IsPositionNavigable(Vector3 position)
         {
             if (_grid == null)
                 return false;
 
-            // Convert world position to grid coordinates
+            //Convert world position to grid coordinates
             int gridX = (int)position.X;
             int gridY = (int)position.Y;
 
-            // Check if position is within grid bounds
+            //Check if position is within grid bounds
             if (gridX < 0 || gridX >= _grid.Width || gridY < 0 || gridY >= _grid.Height)
                 return false;
 
-            // Check if the grid cell is walkable
+            //Check if the grid cell is walkable
             return _grid.IsWalkable(gridX, gridY);
         }
     }
 
-    /// <summary>
-    /// Binary heap implementation for efficient pathfinding open set management.
-    /// </summary>
+    ///<summary>
+    ///Binary heap implementation for efficient pathfinding open set management.
+    ///</summary>
     internal sealed class PathfindingHeap
     {
         private readonly NavigationCell[] _items;
@@ -495,17 +510,17 @@ namespace SASZombieAssaultTD.Engine.Navigation
             _currentItemCount = 0;
         }
 
-        // Local helper to safely prioritize nodes based on pathfinding cost values
+        //Local helper to safely prioritize nodes based on pathfinding cost values
         private int CompareCells(NavigationCell a, NavigationCell b)
         {
-            // Safely convert the object fields into floats for comparison
+            //Safely convert the object fields into floats for comparison
             float aF = Convert.ToSingle(a.FCost);
             float bF = Convert.ToSingle(b.FCost);
 
             if (aF < bF) return -1;
             if (aF > bF) return 1;
 
-            // Tie-breaker conversion for HCost
+            //Tie-breaker conversion for HCost
             float aH = Convert.ToSingle(a.HCost);
             float bH = Convert.ToSingle(b.HCost);
 
@@ -524,7 +539,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
             while (true)
             {
                 var parentItem = _items[parentIndex];
-                if (CompareCells(item, parentItem) < 0) // Fixed: Uses the clean cell comparison helper
+                if (CompareCells(item, parentItem) < 0) //Fixed: Uses the clean cell comparison helper
                 {
                     Swap(item, parentItem);
                 }
@@ -549,7 +564,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
                     swapIndex = childIndexLeft;
                     if (childIndexRight < _currentItemCount)
                     {
-                        if (CompareCells(_items[childIndexLeft], _items[childIndexRight]) > 0) // Fixed: Uses the helper
+                        if (CompareCells(_items[childIndexLeft], _items[childIndexRight]) > 0) //Fixed: Uses the helper
                         {
                             swapIndex = childIndexRight;
                         }
@@ -559,7 +574,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
                 if (swapIndex == 0)
                     return;
 
-                // If item has higher cost (lower priority) than the chosen child, swap them down
+                //If item has higher cost (lower priority) than the chosen child, swap them down
                 if (CompareCells(item, _items[swapIndex]) > 0)
                 {
                     Swap(item, _items[swapIndex]);
@@ -573,52 +588,52 @@ namespace SASZombieAssaultTD.Engine.Navigation
 
         //public void Clear()
         //{
-        //    _currentItemCount = 0;
+        //   _currentItemCount = 0;
         //}
 
         //private void SortUp(NavigationCell item)
         //{
-        //    var parentIndex = (item.HeapIndex - 1) / 2;
-        //    while (true)
-        //    {
-        //        var parentItem = _items[parentIndex];
-        //        if (item.CompareTo(parentItem, StringComparison.Ordinal) < 0) // Added StringComparison.Ordinal
-        //        {
-        //            Swap(item, parentItem);
-        //        }
-        //        else
-        //        {
-        //            break;
-        //        }
-        //        parentIndex = (item.HeapIndex - 1) / 2;
-        //    }
+        //   var parentIndex = (item.HeapIndex - 1) / 2;
+        //   while (true)
+        //   {
+        //       var parentItem = _items[parentIndex];
+        //       if (item.CompareTo(parentItem, StringComparison.Ordinal) < 0) //Added StringComparison.Ordinal
+        //       {
+        //           Swap(item, parentItem);
+        //       }
+        //       else
+        //       {
+        //           break;
+        //       }
+        //       parentIndex = (item.HeapIndex - 1) / 2;
+        //   }
         //}
 
         //private void SortDown(NavigationCell item)
         //{
-        //    while (true)
-        //    {
-        //        var childIndexLeft = item.HeapIndex * 2 + 1;
-        //        var childIndexRight = item.HeapIndex * 2 + 2;
-        //        var swapIndex = 0;
+        //   while (true)
+        //   {
+        //       var childIndexLeft = item.HeapIndex * 2 + 1;
+        //       var childIndexRight = item.HeapIndex * 2 + 2;
+        //       var swapIndex = 0;
 
-        //        if (childIndexLeft < _currentItemCount)
-        //        {
-        //            swapIndex = childIndexLeft;
-        //            if (childIndexRight < _currentItemCount)
-        //            {
-        //                if (_items[childIndexLeft].CompareTo(_items[childIndexRight], StringComparison.Ordinal) > 0) // Added StringComparison.Ordinal
-        //                {
-        //                    swapIndex = childIndexRight;
-        //                }
-        //            }
-        //        }
+        //       if (childIndexLeft < _currentItemCount)
+        //       {
+        //           swapIndex = childIndexLeft;
+        //           if (childIndexRight < _currentItemCount)
+        //           {
+        //               if (_items[childIndexLeft].CompareTo(_items[childIndexRight], StringComparison.Ordinal) > 0) //Added StringComparison.Ordinal
+        //               {
+        //                   swapIndex = childIndexRight;
+        //               }
+        //           }
+        //       }
 
-        //        if (swapIndex == 0)
-        //            return;
+        //       if (swapIndex == 0)
+        //           return;
 
-        //        Swap(item, _items[swapIndex]);
-        //    }
+        //       Swap(item, _items[swapIndex]);
+        //   }
         //}
 
         private void Swap(NavigationCell itemA, NavigationCell itemB)
@@ -629,10 +644,10 @@ namespace SASZombieAssaultTD.Engine.Navigation
         }
     }
 
-    /// <summary>
-    /// Advanced pathfinding optimizations for the existing AStarPathfinder.
-    /// Enhanced with sophisticated caching and performance optimizations.
-    /// </summary>
+    ///<summary>
+    ///Advanced pathfinding optimizations for the existing AStarPathfinder.
+    ///Enhanced with sophisticated caching and performance optimizations.
+    ///</summary>
     public sealed class AdvancedPathfindingOptimizations
     {
         private readonly AStarPathfinder _pathfinder;
@@ -645,31 +660,31 @@ namespace SASZombieAssaultTD.Engine.Navigation
             _pathfinder = pathfinder ?? throw new ArgumentNullException(nameof(pathfinder));
         }
 
-        /// <summary>
-        /// Advanced pathfinding with intelligent caching and optimization.
-        /// </summary>
+        ///<summary>
+        ///Advanced pathfinding with intelligent caching and optimization.
+        ///</summary>
         public List<Vector3> FindOptimizedPath(Vector3 start, Vector3 end)
         {
             var cacheKey = (start, end);
 
-            // Check cache first with sophisticated invalidation
+            //Check cache first with sophisticated invalidation
             if (_pathCache.TryGetValue(cacheKey, out var cached) && cached.IsValid)
             {
                 return new List<Vector3>(cached.Path);
             }
 
-            // Compute path using existing pathfinder
+            //Compute path using existing pathfinder
             var path = _pathfinder.FindPath(start, end);
 
-            // Cache the result with advanced metadata
+            //Cache the result with advanced metadata
             CachePath(cacheKey, path);
 
             return path;
         }
 
-        /// <summary>
-        /// Advanced path smoothing using sophisticated algorithms.
-        /// </summary>
+        ///<summary>
+        ///Advanced path smoothing using sophisticated algorithms.
+        ///</summary>
         public List<Vector3> SmoothPath(List<Vector3> path)
         {
             if (path == null || path.Count <= 2) return path;
@@ -682,7 +697,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
                 var curr = path[i];
                 var next = path[i + 1];
 
-                // Advanced line-of-sight check with tolerance
+                //Advanced line-of-sight check with tolerance
                 if (!HasLineOfSight(prev, next, 0.1f))
                 {
                     smoothed.Add(curr);
@@ -695,7 +710,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
 
         private void CachePath((Vector3, Vector3) key, List<Vector3> path)
         {
-            // Advanced cache management with automatic eviction
+            //Advanced cache management with automatic eviction
             if (_pathCache.Count >= _maxCacheSize)
             {
                 EvictOldestCacheEntries();
@@ -711,7 +726,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
 
         private bool HasLineOfSight(Vector3 start, Vector3 end, float tolerance)
         {
-            // Sophisticated line-of-sight implementation
+            //Sophisticated line-of-sight implementation
             var direction = (end - start).Normalized;
             var distance = Vector3.Distance(start, end);
             var steps = (int)(distance / tolerance);
@@ -719,7 +734,7 @@ namespace SASZombieAssaultTD.Engine.Navigation
             for (int i = 1; i < steps; i++)
             {
                 var checkPos = start + direction * (i * tolerance);
-                // Check if position is navigable (would integrate with existing grid)
+                //Check if position is navigable (would integrate with existing grid)
                 if (!_pathfinder.IsPositionNavigable(checkPos))
                     return false;
             }

@@ -1,18 +1,18 @@
+using System;
+using System.Linq;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Core;
 using TransformComponent = SASZombieAssaultTD.Engine.Components.TransformComponent;
-using System;
-using System.Linq;
-using SASZombieAssaultTD.Engine.Extensions;
 
 namespace SASZombieAssaultTD.Engine.Physics
+
 {
-    /// <summary>
-    /// Debug visualization system for collision detection.
-    /// Renders collision shapes, spatial grid cells, and collision contacts.
-    /// </summary>
+    ///<summary>
+    ///Debug visualization system for collision detection.
+    ///Renders collision shapes, spatial grid cells, and collision contacts.
+    ///</summary>
     public sealed class CollisionDebugRenderer
     {
         private readonly ECSWorld _ecsWorld;
@@ -33,7 +33,7 @@ namespace SASZombieAssaultTD.Engine.Physics
         public CollisionDebugRenderer(ECSWorld ecsWorld)
         {
             _ecsWorld = ecsWorld ?? throw new ArgumentNullException(nameof(ecsWorld));
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "CollisionDebugRenderer: Initialized");
+            DLogger.Log(LogSubsystems.Physics, LogLevel.Info, "CollisionDebugRenderer: Initialized");
         }
 
         public void Render(IRenderContext context)
@@ -48,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"CollisionDebugRenderer: Error during rendering: {ex.Message}");
+                DLogger.Log(LogSubsystems.Physics, LogLevel.Error, $"CollisionDebugRenderer: Error during rendering: {ex.Message}");
             }
         }
 
@@ -166,9 +166,9 @@ namespace SASZombieAssaultTD.Engine.Physics
         private void RenderDebugStats(IRenderContext context)
         {
             var collisionSystem = _ecsWorld.GetSystem<CollisionSystem>();
-            string? gridStats = _ecsWorld.SpatialGrid.GetStats(); // Get the raw stats string
+            string? gridStats = _ecsWorld.SpatialGrid.GetStats(); //Get the raw stats string
 
-            // Call the extension methods explicitly as static functions to resolve ambiguity
+            //Call the extension methods explicitly as static functions to resolve ambiguity
             int totalCells = gridStats != null ? Engine.Extensions.StringExtensions.TotalCells(gridStats) : 0;
             int occupiedCells = gridStats != null ? Engine.Extensions.StringExtensions.OccupiedCells(gridStats) : 0;
             int totalEntities = gridStats != null ? Engine.Extensions.StringExtensions.TotalEntities(gridStats) : 0;
@@ -224,78 +224,78 @@ namespace SASZombieAssaultTD.Engine.Physics
     }
 }
 
-/// <summary>
-/// Statistics for spatial grid analysis.
-/// </summary>
+///<summary>
+///Statistics for spatial grid analysis.
+///</summary>
 public class SpatialGridStats
 {
-    /// <summary>
-    /// Total number of cells in the grid.
-    /// </summary>
+    ///<summary>
+    ///Total number of cells in the grid.
+    ///</summary>
     public int TotalCells { get; set; }
 
-    /// <summary>
-    /// Number of blocked cells.
-    /// </summary>
+    ///<summary>
+    ///Number of blocked cells.
+    ///</summary>
     public int BlockedCells { get; set; }
 
-    /// <summary>
-    /// Number of occupied cells.
-    /// </summary>
+    ///<summary>
+    ///Number of occupied cells.
+    ///</summary>
     public int OccupiedCells { get; set; }
 
-    /// <summary>
-    /// Number of free cells.
-    /// </summary>
+    ///<summary>
+    ///Number of free cells.
+    ///</summary>
     public int FreeCells { get; set; }
 
-    /// <summary>
-    /// Total entities in the grid.
-    /// </summary>
+    ///<summary>
+    ///Total entities in the grid.
+    ///</summary>
     public int TotalEntities { get; set; }
 
-    /// <summary>
-    /// Average entities per cell.
-    /// </summary>
+    ///<summary>
+    ///Average entities per cell.
+    ///</summary>
     public float AverageEntitiesPerCell { get; set; }
 
-    /// <summary>
-    /// Maximum entities per cell.
-    /// </summary>
+    ///<summary>
+    ///Maximum entities per cell.
+    ///</summary>
     public int MaxEntitiesPerCell { get; set; }
 
-    /// <summary>
-    /// Grid width in cells.
-    /// </summary>
+    ///<summary>
+    ///Grid width in cells.
+    ///</summary>
     public int GridWidth { get; set; }
 
-    /// <summary>
-    /// Grid height in cells.
-    /// </summary>
+    ///<summary>
+    ///Grid height in cells.
+    ///</summary>
     public int GridHeight { get; set; }
 
-    /// <summary>
-    /// Cell size.
-    /// </summary>
+    ///<summary>
+    ///Cell size.
+    ///</summary>
     public float CellSize { get; set; }
 }
 
-/// <summary>
-/// Utility class for parsing grid statistics.
-/// </summary>
+///<summary>
+///Utility class for parsing grid statistics.
+///</summary>
 public static class GridStatsParser
 {
-    /// <summary>
-    /// Parses grid statistics from debug text.
-    /// </summary>
-    /// <param name="debugText">Debug text to parse.</param>
-    /// <returns>Parsed grid statistics.</returns>
+    ///<summary>
+    ///Parses grid statistics from debug text.
+    ///</summary>
+    ///<param name="debugText">Debug text to parse.</param>
+    ///<returns>Parsed grid statistics.</returns>
     public static SpatialGridStats ParseGridStats(string debugText)
     {
         var stats = new SpatialGridStats();
-        
+
         if (string.IsNullOrEmpty(debugText)) return stats;
-        
+
         var lines = debugText.Split('\n');
         foreach (var line in lines)
         {
@@ -325,9 +325,9 @@ public static class GridStatsParser
                     stats.MaxEntitiesPerCell = maxEntities;
             }
         }
-        
+
         stats.FreeCells = stats.TotalCells - stats.BlockedCells - stats.OccupiedCells;
-        
+
         return stats;
     }
 }

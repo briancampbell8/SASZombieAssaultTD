@@ -1,25 +1,27 @@
-/// File:    E:\BDC\Projects\SASZombieAssaultTD\Engine\Player\SaveLoadController_Files.cs
-/// Purpose: Player action validation and execution system for SAS Zombie Assault TD.
-/// Features: Tower placement validation, upgrade processing, damage handling, and game state management.
-/// Validation: Comprehensive action validation with game state checking and affordability validation.
-/// Performance: Optimized for frequent action processing with minimal overhead.
-/// Threading: Thread-safe operations with proper locking for concurrent access.
-/// Integration: Designed for use with PlayerSystem, TowerManager, and WaveManager.
-/// Persistence: Action logging for debugging and player feedback.
-/// ****************************************************************************************************
-using SASZombieAssaultTD.Engine.Diagnostics;
+///File:    E:\BDC\Projects\SASZombieAssaultTD\Engine\Player\SaveLoadController_Files.cs
+///Purpose: Player action validation and execution system for SAS Zombie Assault TD.
+///Features: Tower placement validation, upgrade processing, damage handling, and game state management.
+///Validation: Comprehensive action validation with game state checking and affordability validation.
+///Performance: Optimized for frequent action processing with minimal overhead.
+///Threading: Thread-safe operations with proper locking for concurrent access.
+///Integration: Designed for use with PlayerSystem, TowerManager, and WaveManager.
+///Persistence: Action logging for debugging and player feedback.
+///****************************************************************************************************
+//
 
 using System;
 using System.IO;
+
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Player
 {
     public partial class SaveLoadController
     {
-        /// <summary>
-        /// Checks if a save file exists.
-        /// </summary>
-        /// <returns>True if a valid save file exists, false otherwise.</returns>
+        ///<summary>
+        ///Checks if a save file exists.
+        ///</summary>
+        ///<returns>True if a valid save file exists, false otherwise.</returns>
         public bool HasSaveFile()
         {
             lock (_lock)
@@ -29,7 +31,7 @@ namespace SASZombieAssaultTD.Engine.Player
                     if (!File.Exists(_savePath))
                         return false;
 
-                    // Check file size using SaveLoadCore
+                    //Check file size using SaveLoadCore
                     var fileInfo = new FileInfo(_savePath);
 
                     if (!SaveLoadCore.IsValidFileSize(fileInfo.Length))
@@ -38,7 +40,7 @@ namespace SASZombieAssaultTD.Engine.Player
                         return false;
                     }
 
-                    // Basic readability check
+                    //Basic readability check
                     try
                     {
                         using var reader = new StreamReader(_savePath);
@@ -66,10 +68,10 @@ namespace SASZombieAssaultTD.Engine.Player
             }
         }
 
-        /// <summary>
-        /// Deletes the save file and backup.
-        /// </summary>
-        /// <returns>True if the deletion was successful, false otherwise.</returns>
+        ///<summary>
+        ///Deletes the save file and backup.
+        ///</summary>
+        ///<returns>True if the deletion was successful, false otherwise.</returns>
         public bool DeleteSaveFile()
         {
             lock (_lock)
@@ -79,7 +81,7 @@ namespace SASZombieAssaultTD.Engine.Player
                     bool mainDeleted = false;
                     bool backupDeleted = false;
 
-                    // Delete main save file
+                    //Delete main save file
                     if (File.Exists(_savePath))
                     {
                         File.Delete(_savePath);
@@ -87,7 +89,7 @@ namespace SASZombieAssaultTD.Engine.Player
                         System.Diagnostics.Debug.WriteLine("Info", $"SaveLoadController: Main save file deleted: {_savePath}");
                     }
 
-                    // Delete backup save file
+                    //Delete backup save file
                     if (File.Exists(_backupPath))
                     {
                         File.Delete(_backupPath);
@@ -103,7 +105,7 @@ namespace SASZombieAssaultTD.Engine.Player
                     else
                     {
                         System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: No save files to delete");
-                        return true; // Success if no files existed
+                        return true; //Success if no files existed
                     }
                 }
                 catch (Exception ex)
@@ -114,9 +116,9 @@ namespace SASZombieAssaultTD.Engine.Player
             }
         }
 
-        /// <summary>
-        /// Creates a backup of the existing save file.
-        /// </summary>
+        ///<summary>
+        ///Creates a backup of the existing save file.
+        ///</summary>
         private void CreateBackup()
         {
             try
@@ -134,9 +136,9 @@ namespace SASZombieAssaultTD.Engine.Player
             }
         }
 
-        /// <summary>
-        /// Writes the save data to file.
-        /// </summary>
+        ///<summary>
+        ///Writes the save data to file.
+        ///</summary>
         private void WriteSaveFile(string json)
         {
             try
@@ -152,9 +154,9 @@ namespace SASZombieAssaultTD.Engine.Player
             }
         }
 
-        /// <summary>
-        /// Reads the save data from file.
-        /// </summary>
+        ///<summary>
+        ///Reads the save data from file.
+        ///</summary>
         private string ReadSaveFile()
         {
             try
@@ -168,9 +170,9 @@ namespace SASZombieAssaultTD.Engine.Player
             }
         }
 
-        /// <summary>
-        /// Verifies the integrity of the save file.
-        /// </summary>
+        ///<summary>
+        ///Verifies the integrity of the save file.
+        ///</summary>
         private bool VerifySaveFile()
         {
             try
@@ -186,9 +188,9 @@ namespace SASZombieAssaultTD.Engine.Player
             }
         }
 
-        /// <summary>
-        /// Restores the backup save file.
-        /// </summary>
+        ///<summary>
+        ///Restores the backup save file.
+        ///</summary>
         private void RestoreBackup()
         {
             try

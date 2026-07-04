@@ -13,6 +13,8 @@ Notes:
 using SASZombieAssaultTD.Engine.Rendering;
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
     public class Button : UIElementBase
@@ -24,7 +26,7 @@ namespace SASZombieAssaultTD.Engine.UI
 
         public override void Render(IRenderContext context)
         {
-            // placeholder rendering
+            //placeholder rendering
         }
     }
 }

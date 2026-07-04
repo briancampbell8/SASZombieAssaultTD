@@ -1,25 +1,24 @@
-/*
-Program Name: SASZombieAssaultTD
-File Path: Engine/UI/HUDLayout.cs
-Purpose: Data models for HUD JSON schema defining layout structure and element types.
-Features:
-  - Provides HUDLayout root class with Images, Text, and RenderOrder collections
-  - Defines IHUDElement interface for all HUD elements with Id, Layer, and Draw methods
-  - Includes HUDTextureElement class for static image elements with position, size, layer, and visibility
-  - Supports JSON serialization with JsonPropertyName attributes
-  - Provides Draw method for texture rendering with IDrawingContext
-  - Supports layer-based rendering order control
-*/
-
+// ====================================================================================================
+//  FILE: HUDLayout.cs
+//  PATH: Engine/UI/
+//  MODULE: UI Data Models (HUD Layout)
 //
-
-// *HUDLayout.cs
-
-// * Data models for HUD JSON schema
-
-using SASZombieAssaultTD.Engine.Diagnostics;
-
- //
+//  ROLE:
+//      Defines the JSON-backed data models and interfaces used to describe HUD layouts.
+//
+//  RESPONSIBILITIES:
+//      - Provide strongly-typed classes for Images, Text, and RenderOrder entries in HUD JSON.
+//      - Define IHUDElement interface used by the rendering pipeline.
+//      - Offer simple Draw() helper for HUDTextureElement to forward to IDrawingContext.
+//
+//  NON-RESPONSIBILITIES:
+//      - Actual rendering backend implementations (Rendering subsystem provides IDrawingContext).
+//      - Validation or transformation of layout beyond basic JSON deserialization.
+//
+//  ARCHITECTURAL NOTES:
+//      - These types should remain POCOs to keep JSON (de)serialization stable and predictable.
+//      - Keep Draw() implementations lightweight and side-effect free.
+// ====================================================================================================
 
 using System.Collections.Generic;
 
@@ -31,14 +30,16 @@ using SASZombieAssaultTD.Engine.Rendering;
 
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 
 {
-    /// <summary>
+    ///<summary>
 
-    /// Root HUD layout definition from JSON.
+    ///Root HUD layout definition from JSON.
 
-    /// </summary>
+    ///</summary>
 
     public class HUDLayout
 
@@ -53,11 +54,11 @@ namespace SASZombieAssaultTD.Engine.UI
         public List<string> RenderOrder { get; set; } = new();
     }
 
-    /// <summary>
+    ///<summary>
 
-    /// Interface for all HUD elements.
+    ///Interface for all HUD elements.
 
-    /// </summary>
+    ///</summary>
 
     public interface IHUDElement
 
@@ -69,11 +70,11 @@ namespace SASZombieAssaultTD.Engine.UI
         void Draw(IDrawingContext context);
     }
 
-    /// <summary>
+    ///<summary>
 
-    /// HUD texture element for static images.
+    ///HUD texture element for static images.
 
-    /// </summary>
+    ///</summary>
 
     public class HUDTextureElement : IHUDElement
 

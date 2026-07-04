@@ -20,22 +20,22 @@
  *      - Must remain deterministic and avoid gameplay drift.
  * ==================================================================================================== */
 
+////using SASZombieAssaultTD.Engine.Diagnostics;
+using System;
 using SASZombieAssaultTD.Engine.Audio;
 using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.UI;
-using System;
 
 namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
 {
     public partial class WaveDirector
     {
-        // ===============================================================================================
-        //  WAVE START NOTIFICATION
-        // ===============================================================================================
+        //===============================================================================================
+        // WAVE START NOTIFICATION
+        //===============================================================================================
 
-        /// <summary>
-        /// Displays a notification when a wave begins.
-        /// </summary>
+        ///<summary>
+        ///Displays a notification when a wave begins.
+        ///</summary>
         internal void ShowWaveNotification_Internal(WaveScript script)
         {
             if (script == null)
@@ -59,13 +59,13 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        // ===============================================================================================
-        //  WAVE COMPLETE NOTIFICATION
-        // ===============================================================================================
+        //===============================================================================================
+        // WAVE COMPLETE NOTIFICATION
+        //===============================================================================================
 
-        /// <summary>
-        /// Displays a notification when a wave is completed.
-        /// </summary>
+        ///<summary>
+        ///Displays a notification when a wave is completed.
+        ///</summary>
         internal void ShowWaveCompleteNotification_Internal(WaveScript script)
         {
             if (script == null)
@@ -87,13 +87,13 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        // ===============================================================================================
-        //  WAVE DESCRIPTION
-        // ===============================================================================================
+        //===============================================================================================
+        // WAVE DESCRIPTION
+        //===============================================================================================
 
-        /// <summary>
-        /// Generates a human-readable description of the wave.
-        /// </summary>
+        ///<summary>
+        ///Generates a human-readable description of the wave.
+        ///</summary>
         internal string GetWaveDescription_Internal(WaveScript script)
         {
             if (script == null)
@@ -114,21 +114,21 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        // ===============================================================================================
-        //  WAVE COMPLETION BONUS
-        // ===============================================================================================
+        //===============================================================================================
+        // WAVE COMPLETION BONUS
+        //===============================================================================================
 
-        /// <summary>
-        /// Awards the player a bonus for completing a wave.
-        /// </summary>
+        ///<summary>
+        ///Awards the player a bonus for completing a wave.
+        ///</summary>
         internal void AwardWaveCompletionBonus_Internal()
         {
             try
             {
                 int bonus = 25 + (_currentWaveNumber * 5);
 
-                // TODO: Wire to PlayerStats when available.
-                // PlayerStats.Instance.AddCash(bonus);
+                //TODO: Wire to PlayerStats when available.
+                //PlayerStats.Instance.AddCash(bonus);
 
                 NotificationBanner.Show(
                     title: "Wave Bonus",

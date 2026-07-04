@@ -14,84 +14,86 @@ Notes:   This is a placeholder implementation for sprinter-type enemies.
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
 {
-    /// <summary>
-    /// High-speed pressure enemy.
-    /// Represents fast, aggressive enemies that apply pressure through speed.
-    /// </summary>
+    ///<summary>
+    ///High-speed pressure enemy.
+    ///Represents fast, aggressive enemies that apply pressure through speed.
+    ///</summary>
     public class SprinterZombie
     {
-        ///  Properties
+        /// Properties
         
-        /// <summary>Unique identifier for this enemy instance.</summary>
+        ///<summary>Unique identifier for this enemy instance.</summary>
         public string Id { get; private set; }
         
-        /// <summary>Type identifier for this enemy.</summary>
+        ///<summary>Type identifier for this enemy.</summary>
         public string EnemyType => "SprinterZombie";
         
-        /// <summary>Category of this enemy (sprinter type).</summary>
+        ///<summary>Category of this enemy (sprinter type).</summary>
         public string Category => "Sprinter";
         
-        /// <summary>Display name for this enemy.</summary>
+        ///<summary>Display name for this enemy.</summary>
         public string DisplayName => "Sprinter Zombie";
         
-        /// <summary>Base health value for this enemy type.</summary>
+        ///<summary>Base health value for this enemy type.</summary>
         public float BaseHealth => 75f;
         
-        /// <summary>Base movement speed multiplier.</summary>
+        ///<summary>Base movement speed multiplier.</summary>
         public float BaseSpeed => 2.0f;
         
-        /// <summary>Base damage value for this enemy type.</summary>
+        ///<summary>Base damage value for this enemy type.</summary>
         public float BaseDamage => 15f;
         
-        /// <summary>Recommended group size for this enemy type.</summary>
+        ///<summary>Recommended group size for this enemy type.</summary>
         public int RecommendedGroupSize => 3;
         
-        /// <summary>Threat level rating (1-10).</summary>
+        ///<summary>Threat level rating (1-10).</summary>
         public int ThreatLevel => 6;
         
-        /// <summary>Whether this enemy appears in groups.</summary>
+        ///<summary>Whether this enemy appears in groups.</summary>
         public bool AppearsInGroups => true;
         
-        /// <summary>Preferred spawn pattern for this enemy.</summary>
+        ///<summary>Preferred spawn pattern for this enemy.</summary>
         public string PreferredSpawnPattern => "Flanking";
         
-        /// <summary>Weakness type for this enemy.</summary>
+        ///<summary>Weakness type for this enemy.</summary>
         public string Weakness => "SlowEffects";
         
-        /// <summary>Resistance type for this enemy.</summary>
+        ///<summary>Resistance type for this enemy.</summary>
         public string Resistance => "QuickAttacks";
         
-        /// 
+        ///
 
-        ///  Constructors
+        /// Constructors
         
-        /// <summary>
-        /// Creates a new sprinter zombie instance.
-        /// </summary>
+        ///<summary>
+        ///Creates a new sprinter zombie instance.
+        ///</summary>
         public SprinterZombie()
         {
             Id = GenerateId();
         }
         
-        /// <summary>
-        /// Creates a new sprinter zombie instance with specified ID.
-        /// </summary>
-        /// <param name="id">Unique identifier.</param>
+        ///<summary>
+        ///Creates a new sprinter zombie instance with specified ID.
+        ///</summary>
+        ///<param name="id">Unique identifier.</param>
         public SprinterZombie(string id)
         {
             Id = id ?? GenerateId();
         }
         
-        /// 
+        ///
 
-        ///  Enemy Behavior (Placeholder)
+        /// Enemy Behavior (Placeholder)
         
-        /// <summary>
-        /// Gets the behavior characteristics for this enemy type.
-        /// </summary>
-        /// <returns>Behavior characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the behavior characteristics for this enemy type.
+        ///</summary>
+        ///<returns>Behavior characteristics dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetBehaviorCharacteristics()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -104,10 +106,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             };
         }
         
-        /// <summary>
-        /// Gets the spawn requirements for this enemy type.
-        /// </summary>
-        /// <returns>Spawn requirements dictionary.</returns>
+        ///<summary>
+        ///Gets the spawn requirements for this enemy type.
+        ///</summary>
+        ///<returns>Spawn requirements dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetSpawnRequirements()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -120,10 +122,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             };
         }
         
-        /// <summary>
-        /// Gets the combat characteristics for this enemy type.
-        /// </summary>
-        /// <returns>Combat characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the combat characteristics for this enemy type.
+        ///</summary>
+        ///<returns>Combat characteristics dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetCombatCharacteristics()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -136,37 +138,37 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             };
         }
         
-        /// 
+        ///
 
-        ///  Utility Methods
+        /// Utility Methods
         
-        /// <summary>
-        /// Generates a unique ID for this enemy instance.
-        /// </summary>
-        /// <returns>Unique identifier string.</returns>
+        ///<summary>
+        ///Generates a unique ID for this enemy instance.
+        ///</summary>
+        ///<returns>Unique identifier string.</returns>
         private static string GenerateId()
         {
             return $"SprinterZombie_{Guid.NewGuid():N}";
         }
         
-        /// <summary>
-        /// Creates a copy of this enemy instance.
-        /// </summary>
-        /// <returns>New sprinter zombie instance.</returns>
+        ///<summary>
+        ///Creates a copy of this enemy instance.
+        ///</summary>
+        ///<returns>New sprinter zombie instance.</returns>
         public SprinterZombie Clone()
         {
             return new SprinterZombie();
         }
         
-        /// <summary>
-        /// Gets a summary of this enemy type.
-        /// </summary>
-        /// <returns>Summary string.</returns>
+        ///<summary>
+        ///Gets a summary of this enemy type.
+        ///</summary>
+        ///<returns>Summary string.</returns>
         public override string ToString()
         {
             return $"{DisplayName} (ID: {Id}, Threat: {ThreatLevel}, Speed: {BaseSpeed}x)";
         }
         
-        /// 
+        ///
     }
 }

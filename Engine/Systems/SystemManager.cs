@@ -37,38 +37,39 @@
 
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Systems
 {
-    /// <summary>
-    /// Provides system registration, lookup, initialization, and shutdown.
-    /// </summary>
+    ///<summary>
+    ///Provides system registration, lookup, initialization, and shutdown.
+    ///</summary>
     public class SystemManager
     {
-        /// <summary>
-        /// Indicates whether the manager is active.
-        /// </summary>
+        ///<summary>
+        ///Indicates whether the manager is active.
+        ///</summary>
         public bool IsActive { get; private set; } = true;
 
-        /// <summary>
-        /// Stores registered systems keyed by concrete type.
-        /// </summary>
+        ///<summary>
+        ///Stores registered systems keyed by concrete type.
+        ///</summary>
         private readonly Dictionary<Type, object> _systems = new();
         private object TheContainingType;
         private object TheContainingMember;
 
-        /// <summary>
-        /// Constructs the SystemManager.
-        /// </summary>
+        ///<summary>
+        ///Constructs the SystemManager.
+        ///</summary>
         public SystemManager()
         {
-            DebugLogger.LogInfo("SystemManager constructed");
+            DLogger.Log("SystemManager constructed");
         }
 
-        /// <summary>
-        /// Registers a system instance under its concrete type.
-        /// </summary>
+        ///<summary>
+        ///Registers a system instance under its concrete type.
+        ///</summary>
         public void RegisterSystem<T>(T system) where T : class
         {
             if (system == null)
@@ -77,44 +78,44 @@ namespace SASZombieAssaultTD.Engine.Systems
             var type = typeof(T);
             _systems[type] = system;
 
-            DebugLogger.LogInfo($"SystemManager.RegisterSystem: Registered '{type.FullName}'");
+            DLogger.Log($"SystemManager.RegisterSystem: Registered '{type.FullName}'");
         }
 
-        /// <summary>
-        /// Returns a registered system instance or null.
-        /// </summary>
+        ///<summary>
+        ///Returns a registered system instance or null.
+        ///</summary>
         public T GetSystem<T>() where T : class
         {
             var type = typeof(T);
 
             if (_systems.TryGetValue(type, out var system))
             {
-                DebugLogger.LogDebug($"SystemManager.GetSystem: Resolved '{type.FullName}'");
+                DLogger.Log($"SystemManager.GetSystem: Resolved '{type.FullName}'");
                 return system as T;
             }
 
-            DebugLogger.LogDebug($"SystemManager.GetSystem: '{type.FullName}' not found");
+            DLogger.Log($"SystemManager.GetSystem: '{type.FullName}' not found");
             return null;
         }
 
-        /// <summary>
-        /// Returns diagnostic information about the registry.
-        /// </summary>
+        ///<summary>
+        ///Returns diagnostic information about the registry.
+        ///</summary>
         public string GetDiagnostics()
         {
             return $"SystemManager: {_systems.Count} systems registered, Active: {IsActive}";
         }
 
-        /// <summary>
-        /// Initializes all registered systems implementing IInitializable.
-        /// </summary>
+        ///<summary>
+        ///Initializes all registered systems implementing IInitializable.
+        ///</summary>
         internal void Initialize()
         {
-            DebugLogger.LogInfo("SystemManager.Initialize: ENTER");
+            DLogger.Log("SystemManager.Initialize: ENTER");
 
             if (_systems.Count == 0)
             {
-                DebugLogger.LogError(
+                DLogger.Log(
                     "ENGINE INIT DIAGNOSTIC — SystemManager.Initialize() invoked with ZERO registered systems.\n" +
                     "Subsystem: SystemManager\n" +
                     "File: SystemManager.cs\n" +
@@ -126,8 +127,8 @@ namespace SASZombieAssaultTD.Engine.Systems
                     "Next Step: Register required systems before calling GameRoot.Initialize()."
                 );
 
-                DebugLogger.LogWarning("SystemManager.Initialize: No systems registered");
-                DebugLogger.LogInfo("SystemManager.Initialize: EXIT (no systems)");
+                DLogger.Log("SystemManager.Initialize: No systems registered");
+                DLogger.Log("SystemManager.Initialize: EXIT (no systems)");
                 return;
             }
 
@@ -136,12 +137,12 @@ namespace SASZombieAssaultTD.Engine.Systems
                 var systemType = kvp.Key;
                 var systemInstance = kvp.Value;
 
-                DebugLogger.LogDebug($"SystemManager.Initialize: Processing '{systemType.FullName}'");
+                DLogger.Log($"SystemManager.Initialize: Processing '{systemType.FullName}'");
 
-                // Detect accidental NotImplemented placeholders
+                //Detect accidental NotImplemented placeholders
                 if (systemInstance is null)
                 {
-                    DebugLogger.LogError($"SystemManager.Initialize: NULL system instance for '{systemType.FullName}'");
+                    DLogger.Log($"SystemManager.Initialize: NULL system instance for '{systemType.FullName}'");
                     continue;
                 }
 
@@ -149,26 +150,27 @@ namespace SASZombieAssaultTD.Engine.Systems
                 {
                     try
                     {
-                        DebugLogger.LogInfo($"SystemManager.Initialize: Initializing '{systemType.FullName}'");
+                        DLogger.Log($"SystemManager.Initialize: Initializing '{systemType.FullName}'");
                         initializable.Initialize();
-                        DebugLogger.LogInfo($"SystemManager.Initialize: Initialized '{systemType.FullName}'");
+                        DLogger.Log($"SystemManager.Initialize: Initialized '{systemType.FullName}'");
                     }
                     catch (NotImplementedException niex)
                     {
                         NotImplementedGuard.Hit("NOT_IMPLEMENTED");
 
-                        DebugLogger.LogError(
+                        DLogger.Log(
                             $"SystemManager.Initialize: NOT IMPLEMENTED in '{systemType.FullName}'"
                         );
-                        DebugLogger.Exception(niex, $"SystemManager.Initialize:{systemType.FullName}");
+                        DLogger.Log(niex.ToString(), $"SystemManager.Initialize:{systemType.FullName}");
                         throw;
                     }
                     catch (Exception ex)
                     {
-                        DebugLogger.LogError(
+                        DLogger.Log(
                             $"SystemManager.Initialize: Failure in '{systemType.FullName}': {ex.Message}"
                         );
-                        DebugLogger.Exception(ex, $"SystemManager.Initialize:{systemType.FullName}");
+                        DLogger.Log(ex.ToString(),
+                            $"SystemManager.Initialize:{systemType.FullName}");
 
                         throw new InvalidOperationException(
                             $"SystemManager.Initialize: Critical failure in '{systemType.FullName}'",
@@ -178,32 +180,32 @@ namespace SASZombieAssaultTD.Engine.Systems
                 }
                 else
                 {
-                    DebugLogger.LogDebug(
+                    DLogger.Log(
                         $"SystemManager.Initialize: '{systemType.FullName}' does not implement IInitializable"
                     );
                 }
             }
 
-            DebugLogger.LogInfo("SystemManager.Initialize: EXIT");
+            DLogger.Log("SystemManager.Initialize: EXIT");
         }
 
-        /// <summary>
-        /// Clears all systems and marks the manager inactive.
-        /// </summary>
+        ///<summary>
+        ///Clears all systems and marks the manager inactive.
+        ///</summary>
         public void Shutdown()
         {
-            DebugLogger.LogInfo("SystemManager.Shutdown: ENTER");
+            DLogger.Log("SystemManager.Shutdown: ENTER");
 
             IsActive = false;
             _systems.Clear();
 
-            DebugLogger.LogInfo("SystemManager.Shutdown: EXIT");
+            DLogger.Log("SystemManager.Shutdown: EXIT");
         }
     }
 
-    /// <summary>
-    /// Defines a system requiring explicit initialization.
-    /// </summary>
+    ///<summary>
+    ///Defines a system requiring explicit initialization.
+    ///</summary>
     public interface IInitializable
     {
         void Initialize();

@@ -14,93 +14,95 @@ Notes:   This is a placeholder implementation for ruin-type enemies.
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
 {
-    /// <summary>
-    /// Heavy, destructive, slow enemy.
-    /// Represents siege-type enemies that threaten structures.
-    /// </summary>
+    ///<summary>
+    ///Heavy, destructive, slow enemy.
+    ///Represents siege-type enemies that threaten structures.
+    ///</summary>
     public class RuinZombie
     {
-        ///  Properties
+        /// Properties
         
-        /// <summary>Unique identifier for this enemy instance.</summary>
+        ///<summary>Unique identifier for this enemy instance.</summary>
         public string Id { get; private set; }
         
-        /// <summary>Type identifier for this enemy.</summary>
+        ///<summary>Type identifier for this enemy.</summary>
         public string EnemyType => "RuinZombie";
         
-        /// <summary>Category of this enemy (ruin type).</summary>
+        ///<summary>Category of this enemy (ruin type).</summary>
         public string Category => "Ruin";
         
-        /// <summary>Display name for this enemy.</summary>
+        ///<summary>Display name for this enemy.</summary>
         public string DisplayName => "Ruin Zombie";
         
-        /// <summary>Base health value for this enemy type.</summary>
+        ///<summary>Base health value for this enemy type.</summary>
         public float BaseHealth => 300f;
         
-        /// <summary>Base movement speed multiplier.</summary>
+        ///<summary>Base movement speed multiplier.</summary>
         public float BaseSpeed => 0.4f;
         
-        /// <summary>Base damage value for this enemy type.</summary>
+        ///<summary>Base damage value for this enemy type.</summary>
         public float BaseDamage => 50f;
         
-        /// <summary>Recommended group size for this enemy type.</summary>
+        ///<summary>Recommended group size for this enemy type.</summary>
         public int RecommendedGroupSize => 1;
         
-        /// <summary>Threat level rating (1-10).</summary>
+        ///<summary>Threat level rating (1-10).</summary>
         public int ThreatLevel => 9;
         
-        /// <summary>Whether this enemy appears in groups.</summary>
+        ///<summary>Whether this enemy appears in groups.</summary>
         public bool AppearsInGroups => false;
         
-        /// <summary>Preferred spawn pattern for this enemy.</summary>
+        ///<summary>Preferred spawn pattern for this enemy.</summary>
         public string PreferredSpawnPattern => "Siege";
         
-        /// <summary>Weakness type for this enemy.</summary>
+        ///<summary>Weakness type for this enemy.</summary>
         public string Weakness => "Explosives";
         
-        /// <summary>Resistance type for this enemy.</summary>
+        ///<summary>Resistance type for this enemy.</summary>
         public string Resistance => "Physical";
         
-        /// <summary>Structure damage multiplier.</summary>
+        ///<summary>Structure damage multiplier.</summary>
         public float StructureDamageMultiplier => 2.0f;
         
-        /// <summary>Preferred target type (structures vs units).</summary>
+        ///<summary>Preferred target type (structures vs units).</summary>
         public string PreferredTarget => "Structures";
         
-        /// <summary>Siege range for structure attacks.</summary>
+        ///<summary>Siege range for structure attacks.</summary>
         public float SiegeRange => 5.0f;
         
-        /// 
+        ///
 
-        ///  Constructors
+        /// Constructors
         
-        /// <summary>
-        /// Creates a new ruin zombie instance.
-        /// </summary>
+        ///<summary>
+        ///Creates a new ruin zombie instance.
+        ///</summary>
         public RuinZombie()
         {
             Id = GenerateId();
         }
         
-        /// <summary>
-        /// Creates a new ruin zombie instance with specified ID.
-        /// </summary>
-        /// <param name="id">Unique identifier.</param>
+        ///<summary>
+        ///Creates a new ruin zombie instance with specified ID.
+        ///</summary>
+        ///<param name="id">Unique identifier.</param>
         public RuinZombie(string id)
         {
             Id = id ?? GenerateId();
         }
         
-        /// 
+        ///
 
-        ///  Enemy Behavior (Placeholder)
+        /// Enemy Behavior (Placeholder)
         
-        /// <summary>
-        /// Gets the behavior characteristics for this enemy type.
-        /// </summary>
-        /// <returns>Behavior characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the behavior characteristics for this enemy type.
+        ///</summary>
+        ///<returns>Behavior characteristics dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetBehaviorCharacteristics()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -113,10 +115,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             };
         }
         
-        /// <summary>
-        /// Gets the spawn requirements for this enemy type.
-        /// </summary>
-        /// <returns>Spawn requirements dictionary.</returns>
+        ///<summary>
+        ///Gets the spawn requirements for this enemy type.
+        ///</summary>
+        ///<returns>Spawn requirements dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetSpawnRequirements()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -129,10 +131,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             };
         }
         
-        /// <summary>
-        /// Gets the combat characteristics for this enemy type.
-        /// </summary>
-        /// <returns>Combat characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the combat characteristics for this enemy type.
+        ///</summary>
+        ///<returns>Combat characteristics dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetCombatCharacteristics()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -145,10 +147,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             };
         }
         
-        /// <summary>
-        /// Gets the siege characteristics for this enemy type.
-        /// </summary>
-        /// <returns>Siege characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the siege characteristics for this enemy type.
+        ///</summary>
+        ///<returns>Siege characteristics dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetSiegeCharacteristics()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -161,37 +163,37 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             };
         }
         
-        /// 
+        ///
 
-        ///  Utility Methods
+        /// Utility Methods
         
-        /// <summary>
-        /// Generates a unique ID for this enemy instance.
-        /// </summary>
-        /// <returns>Unique identifier string.</returns>
+        ///<summary>
+        ///Generates a unique ID for this enemy instance.
+        ///</summary>
+        ///<returns>Unique identifier string.</returns>
         private static string GenerateId()
         {
             return $"RuinZombie_{Guid.NewGuid():N}";
         }
         
-        /// <summary>
-        /// Creates a copy of this enemy instance.
-        /// </summary>
-        /// <returns>New ruin zombie instance.</returns>
+        ///<summary>
+        ///Creates a copy of this enemy instance.
+        ///</summary>
+        ///<returns>New ruin zombie instance.</returns>
         public RuinZombie Clone()
         {
             return new RuinZombie();
         }
         
-        /// <summary>
-        /// Gets a summary of this enemy type.
-        /// </summary>
-        /// <returns>Summary string.</returns>
+        ///<summary>
+        ///Gets a summary of this enemy type.
+        ///</summary>
+        ///<returns>Summary string.</returns>
         public override string ToString()
         {
             return $"{DisplayName} (ID: {Id}, Threat: {ThreatLevel}, Siege: {PreferredTarget})";
         }
         
-        /// 
+        ///
     }
 }

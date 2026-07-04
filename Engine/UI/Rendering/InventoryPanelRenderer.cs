@@ -11,12 +11,14 @@ using SASZombieAssaultTD.Engine.Rendering;
 using System;
 using SASZombieAssaultTD.Engine.Resources;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
-    /// <summary>
-    /// Renders the inventory panel UI with grid-based item display.
-    /// P11-04-12-I: Provides inventory panel rendering with UIElementBase integration.
-    /// </summary>
+    ///<summary>
+    ///Renders the inventory panel UI with grid-based item display.
+    ///P11-04-12-I: Provides inventory panel rendering with UIElementBase integration.
+    ///</summary>
     public class InventoryPanelRenderer
     {
         private readonly RSManager _assetManager;
@@ -26,16 +28,16 @@ namespace SASZombieAssaultTD.Engine.UI
         private object _currentInventoryData;
         private readonly bool _debugOutput = true;
 
-        /// <summary>
-        /// Gets whether the inventory panel is currently visible.
-        /// </summary>
+        ///<summary>
+        ///Gets whether the inventory panel is currently visible.
+        ///</summary>
         public bool IsVisible => _isVisible;
 
-        /// <summary>
-        /// Creates a new inventory panel renderer.
-        /// </summary>
-        /// <param name="assetManager">Asset manager for UI assets</param>
-        /// <param name="textRenderer">Text renderer for UI text</param>
+        ///<summary>
+        ///Creates a new inventory panel renderer.
+        ///</summary>
+        ///<param name="assetManager">Asset manager for UI assets</param>
+        ///<param name="textRenderer">Text renderer for UI text</param>
         public InventoryPanelRenderer(RSManager assetManager, TextRenderer textRenderer)
         {
             _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
@@ -44,11 +46,11 @@ namespace SASZombieAssaultTD.Engine.UI
             DebugLog("InventoryPanelRenderer: Initialized");
         }
 
-        /// <summary>
-        /// Shows the inventory panel for the specified entity.
-        /// </summary>
-        /// <param name="entityId">Entity ID whose inventory to display</param>
-        /// <param name="inventoryData">Inventory data to render</param>
+        ///<summary>
+        ///Shows the inventory panel for the specified entity.
+        ///</summary>
+        ///<param name="entityId">Entity ID whose inventory to display</param>
+        ///<param name="inventoryData">Inventory data to render</param>
         public void Show(int entityId, object inventoryData)
         {
             try
@@ -59,12 +61,12 @@ namespace SASZombieAssaultTD.Engine.UI
 
                 DebugLog($"InventoryPanelRenderer: Showing inventory for entity {entityId}");
 
-                // In a full implementation, this would:
-                // 1. Create inventory panel UI element with UIElementBase
-                // 2. Set up grid layout for inventory slots
-                // 3. Render item icons and stack counts
-                // 4. Handle mouse input for item selection/drag-drop
-                // 5. Show item tooltips on hover
+                //In a full implementation, this would:
+                //1. Create inventory panel UI element with UIElementBase
+                //2. Set up grid layout for inventory slots
+                //3. Render item icons and stack counts
+                //4. Handle mouse input for item selection/drag-drop
+                //5. Show item tooltips on hover
             }
             catch (Exception ex)
             {
@@ -72,9 +74,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Hides the inventory panel.
-        /// </summary>
+        ///<summary>
+        ///Hides the inventory panel.
+        ///</summary>
         public void Hide()
         {
             try
@@ -85,10 +87,10 @@ namespace SASZombieAssaultTD.Engine.UI
 
                 DebugLog("InventoryPanelRenderer: Hiding inventory panel");
 
-                // In a full implementation, this would:
-                // 1. Hide inventory panel UI element
-                // 2. Clean up event handlers
-                // 3. Reset UI state
+                //In a full implementation, this would:
+                //1. Hide inventory panel UI element
+                //2. Clean up event handlers
+                //3. Reset UI state
             }
             catch (Exception ex)
             {
@@ -96,10 +98,10 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Updates the inventory panel with new data.
-        /// </summary>
-        /// <param name="inventoryData">Updated inventory data</param>
+        ///<summary>
+        ///Updates the inventory panel with new data.
+        ///</summary>
+        ///<param name="inventoryData">Updated inventory data</param>
         public void UpdateInventory(object inventoryData)
         {
             try
@@ -110,11 +112,11 @@ namespace SASZombieAssaultTD.Engine.UI
 
                 DebugLog("InventoryPanelRenderer: Updating inventory data");
 
-                // In a full implementation, this would:
-                // 1. Update inventory slot contents
-                // 2. Refresh item icons and stack counts
-                // 3. Update slot highlighting states
-                // 4. Handle inventory capacity changes
+                //In a full implementation, this would:
+                //1. Update inventory slot contents
+                //2. Refresh item icons and stack counts
+                //3. Update slot highlighting states
+                //4. Handle inventory capacity changes
             }
             catch (Exception ex)
             {
@@ -122,18 +124,18 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Updates the inventory panel (called each frame).
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since last update</param>
+        ///<summary>
+        ///Updates the inventory panel (called each frame).
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since last update</param>
         public void Update(float deltaTime)
         {
             if (!_isVisible) return;
 
             try
             {
-                // Update animations, hover states, etc.
-                // This is a placeholder for future enhancements
+                //Update animations, hover states, etc.
+                //This is a placeholder for future enhancements
             }
             catch (Exception ex)
             {
@@ -141,23 +143,23 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Renders the inventory panel.
-        /// </summary>
-        /// <param name="context">Render context for drawing</param>
+        ///<summary>
+        ///Renders the inventory panel.
+        ///</summary>
+        ///<param name="context">Render context for drawing</param>
         public void Render(IRenderContext context)
         {
             if (!_isVisible || context == null) return;
 
             try
             {
-                // In a full implementation, this would:
-                // 1. Draw inventory panel background
-                // 2. Draw inventory slot grid
-                // 3. Draw item icons in slots
-                // 4. Draw stack count text
-                // 5. Draw selection highlights
-                // 6. Draw drag/drop ghost items
+                //In a full implementation, this would:
+                //1. Draw inventory panel background
+                //2. Draw inventory slot grid
+                //3. Draw item icons in slots
+                //4. Draw stack count text
+                //5. Draw selection highlights
+                //6. Draw drag/drop ghost items
 
                 DebugLog("InventoryPanelRenderer: Rendering inventory panel");
             }
@@ -167,10 +169,10 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Gets statistics about the inventory panel renderer.
-        /// </summary>
-        /// <returns>Inventory panel statistics</returns>
+        ///<summary>
+        ///Gets statistics about the inventory panel renderer.
+        ///</summary>
+        ///<returns>Inventory panel statistics</returns>
         public object GetStatistics()
         {
             return new

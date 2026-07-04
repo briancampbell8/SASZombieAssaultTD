@@ -41,42 +41,44 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
-    /// <summary>
-    /// Static mapping engine for converting runtime models ↔ DTOs.
-    /// </summary>
+    ///<summary>
+    ///Static mapping engine for converting runtime models ↔ DTOs.
+    ///</summary>
     public static class ProgressionSerializer
     {
-        // METHOD: CreateSaveData()
-        // PURPOSE: Build a complete ProgressionSaveData object from the current LevelProgression state.
-        // CALLED BY: LevelProgression.SaveProgression()
-        // CALLS INTO: ToDTO() methods
+        //METHOD: CreateSaveData()
+        //PURPOSE: Build a complete ProgressionSaveData object from the current LevelProgression state.
+        //CALLED BY: LevelProgression.SaveProgression()
+        //CALLS INTO: ToDTO() methods
         public static ProgressionSaveData CreateSaveData(
             LevelProgression progression,
             Dictionary<string, object> achievementDataBlob)
         {
-            // Completed milestone IDs
+            //Completed milestone IDs
             var completedMilestones = progression._milestones
                 .Where(m => m.IsCompleted)
                 .Select(m => m.Id)
                 .ToList();
 
-            // Unlocked achievement IDs
+            //Unlocked achievement IDs
             var unlockedAchievements = progression._achievements.Values
                 .Where(a => a.IsUnlocked)
                 .Select(a => a.Id)
                 .ToList();
 
-            // Full milestone DTO map
+            //Full milestone DTO map
             var milestoneData = progression._milestones
                 .ToDictionary(m => m.Id, m => ToDTO(m));
 
-            // Full achievement DTO map
+            //Full achievement DTO map
             var achievementData = progression._achievements
                 .ToDictionary(kvp => kvp.Key, kvp => ToDTO(kvp.Value));
 
-            // Event DTO list
+            //Event DTO list
             var eventData = progression._events
                 .Select(ToDTO)
                 .ToList();
@@ -92,13 +94,13 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             };
         }
 
-        // METHOD: RestoreFromSaveData()
-        // PURPOSE: Restore LevelProgression state from a ProgressionSaveData object.
-        // CALLED BY: LevelProgression.LoadProgression()
-        // CALLS INTO: FromDTO() methods
+        //METHOD: RestoreFromSaveData()
+        //PURPOSE: Restore LevelProgression state from a ProgressionSaveData object.
+        //CALLED BY: LevelProgression.LoadProgression()
+        //CALLS INTO: FromDTO() methods
         public static void RestoreFromSaveData(LevelProgression progression, ProgressionSaveData saveData)
         {
-            // Restore milestones
+            //Restore milestones
             foreach (var kvp in saveData.MilestoneData)
             {
                 var milestone = progression._milestones.FirstOrDefault(m => m.Id == kvp.Key);
@@ -108,7 +110,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 }
             }
 
-            // Restore achievements
+            //Restore achievements
             foreach (var kvp in saveData.AchievementData)
             {
                 if (progression._achievements.TryGetValue(kvp.Key, out var achievement))
@@ -117,7 +119,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 }
             }
 
-            // Restore events
+            //Restore events
             progression._events.Clear();
             if (saveData.EventData != null)
             {
@@ -130,12 +132,12 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        // ===============================================================================================
-        //  MILESTONE MAPPING
-        // ===============================================================================================
+        //===============================================================================================
+        // MILESTONE MAPPING
+        //===============================================================================================
 
-        // METHOD: ToDTO(ProgressionMilestone)
-        // PURPOSE: Convert runtime milestone → DTO.
+        //METHOD: ToDTO(ProgressionMilestone)
+        //PURPOSE: Convert runtime milestone → DTO.
         private static ProgressionMilestoneDTO ToDTO(ProgressionMilestone m)
         {
             return new ProgressionMilestoneDTO
@@ -151,8 +153,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             };
         }
 
-        // METHOD: FromDTO(ProgressionMilestoneDTO)
-        // PURPOSE: Apply DTO → runtime milestone.
+        //METHOD: FromDTO(ProgressionMilestoneDTO)
+        //PURPOSE: Apply DTO → runtime milestone.
         private static void FromDTO(ProgressionMilestoneDTO dto, ProgressionMilestone m)
         {
             m.Id = dto.Id;
@@ -165,9 +167,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             m.Rewards = dto.Rewards?.Select(FromDTO).ToList() ?? new List<ProgressionReward>();
         }
 
-        // ===============================================================================================
-        //  ACHIEVEMENT MAPPING
-        // ===============================================================================================
+        //===============================================================================================
+        // ACHIEVEMENT MAPPING
+        //===============================================================================================
 
         private static ProgressionAchievementDTO ToDTO(ProgressionAchievement a)
         {
@@ -196,9 +198,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             a.MaxProgress = dto.MaxProgress;
         }
 
-        // ===============================================================================================
-        //  EVENT MAPPING
-        // ===============================================================================================
+        //===============================================================================================
+        // EVENT MAPPING
+        //===============================================================================================
 
         private static ProgressionEventDTO ToDTO(ProgressionEvent e)
         {
@@ -230,9 +232,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             };
         }
 
-        // ===============================================================================================
-        //  REWARD MAPPING
-        // ===============================================================================================
+        //===============================================================================================
+        // REWARD MAPPING
+        //===============================================================================================
 
         private static ProgressionRewardDTO ToDTO(ProgressionReward r)
         {

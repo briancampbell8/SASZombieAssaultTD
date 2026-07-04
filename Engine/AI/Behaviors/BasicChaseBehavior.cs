@@ -1,6 +1,8 @@
 using System;
 using System.Drawing;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.AI.Behaviors
 {
     using SASZombieAssaultTD.Engine.AI;

@@ -1,25 +1,27 @@
 //
-// * File:    RendererSelector.cs
-// * Path:    Engine/Rendering/RendererSelector.cs
-// * Purpose: Renderer backend selector - switches between D3D11 and BGFX.
-// *
-// * Role:    - Factory for creating the appropriate graphics device
-// *          - Allows side-by-side testing of renderers
+//* File:    RendererSelector.cs
+//* Path:    Engine/Rendering/RendererSelector.cs
+//* Purpose: Renderer backend selector - switches between D3D11 and BGFX.
+//*
+//* Role:    - Factory for creating the appropriate graphics device
+//*          - Allows side-by-side testing of renderers
 //
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Rendering.D3D11;
 using SASZombieAssaultTD.Engine.UI.Rendering;
 using System;
 using System.Collections.Generic;
 using Vortice.Direct3D11;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Rendering
 {
-    /// <summary>
-    /// Renderer backend selector factory.
-    /// Creates the appropriate graphics device based on backend selection.
-    /// </summary>
+    ///<summary>
+    ///Renderer backend selector factory.
+    ///Creates the appropriate graphics device based on backend selection.
+    ///</summary>
     public static class RendererSelector
     {
         public static IGraphicsDevice Create(RendererBackend backend)

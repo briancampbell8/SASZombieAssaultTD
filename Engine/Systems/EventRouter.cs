@@ -1,9 +1,11 @@
-// File: Engine/Systems/EventRouter.cs
-// Purpose: Provides an event routing system for managing and triggering events.
-// Features: Supports event registration and triggering with associated data.
+//File: Engine/Systems/EventRouter.cs
+//Purpose: Provides an event routing system for managing and triggering events.
+//Features: Supports event registration and triggering with associated data.
 
 using System;
 using System.Collections.Generic;
+
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Systems
 {

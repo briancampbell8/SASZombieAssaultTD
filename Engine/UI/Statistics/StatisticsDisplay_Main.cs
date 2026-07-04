@@ -10,11 +10,13 @@ using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.State;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
-    /// <summary>
-    /// Stub classes for missing statistics types.
-    /// </summary>
+    ///<summary>
+    ///Stub classes for missing statistics types.
+    ///</summary>
     public class VictoryStatistics
     {
         public int Score { get; set; }
@@ -31,41 +33,41 @@ namespace SASZombieAssaultTD.Engine.UI
         public int GamesWon { get; set; }
     }
 
-    /// <summary>
-    /// Statistics display UI component for SAS Zombie Assault TD.
-    /// Shows game statistics, scores, and performance metrics.
-    /// </summary>
+    ///<summary>
+    ///Statistics display UI component for SAS Zombie Assault TD.
+    ///Shows game statistics, scores, and performance metrics.
+    ///</summary>
     public class StatisticsDisplay
     {
-        ///  Properties
+        /// Properties
 
-        /// <summary>
-        /// Whether the statistics display is visible.
-        /// </summary>
+        ///<summary>
+        ///Whether the statistics display is visible.
+        ///</summary>
         public bool IsVisible { get; set; }
 
-        /// <summary>
-        /// Current score display.
-        /// </summary>
+        ///<summary>
+        ///Current score display.
+        ///</summary>
         public int Score { get; set; }
 
-        /// <summary>
-        /// Current kills display.
-        /// </summary>
+        ///<summary>
+        ///Current kills display.
+        ///</summary>
         public int Kills { get; set; }
 
-        /// <summary>
-        /// Current time display.
-        /// </summary>
+        ///<summary>
+        ///Current time display.
+        ///</summary>
         public TimeSpan Time { get; set; }
 
-        /// 
+        ///
 
-        ///  Constructor
+        /// Constructor
 
-        /// <summary>
-        /// Creates a new StatisticsDisplay instance.
-        /// </summary>
+        ///<summary>
+        ///Creates a new StatisticsDisplay instance.
+        ///</summary>
         public StatisticsDisplay()
         {
             IsVisible = false;
@@ -74,49 +76,49 @@ namespace SASZombieAssaultTD.Engine.UI
             Time = TimeSpan.Zero;
         }
 
-        /// 
+        ///
 
-        ///  Public Methods
+        /// Public Methods
 
-        /// <summary>
-        /// Shows the statistics display.
-        /// </summary>
+        ///<summary>
+        ///Shows the statistics display.
+        ///</summary>
         public void Show()
         {
             IsVisible = true;
         }
 
-        /// <summary>
-        /// Hides the statistics display.
-        /// </summary>
+        ///<summary>
+        ///Hides the statistics display.
+        ///</summary>
         public void Hide()
         {
             IsVisible = false;
         }
 
-        /// <summary>
-        /// Updates the statistics display.
-        /// </summary>
-        /// <param name="deltaTime">Time since last update.</param>
+        ///<summary>
+        ///Updates the statistics display.
+        ///</summary>
+        ///<param name="deltaTime">Time since last update.</param>
         public void Update(float deltaTime)
         {
-            // Update animations and data
+            //Update animations and data
         }
 
-        /// <summary>
-        /// Renders the statistics display.
-        /// </summary>
-        /// <param name="context">Render context.</param>
+        ///<summary>
+        ///Renders the statistics display.
+        ///</summary>
+        ///<param name="context">Render context.</param>
         public void Render(IRenderContext context)
         {
             if (!IsVisible) return;
 
-            // Render statistics
+            //Render statistics
         }
 
-        /// <summary>
-        /// Initializes the statistics display.
-        /// </summary>
+        ///<summary>
+        ///Initializes the statistics display.
+        ///</summary>
         public void Initialize()
         {
             IsVisible = false;
@@ -125,36 +127,36 @@ namespace SASZombieAssaultTD.Engine.UI
             Time = TimeSpan.Zero;
         }
 
-        /// <summary>
-        /// Initializes the statistics display with victory statistics.
-        /// </summary>
-        /// <param name="victoryStats">Victory statistics to display.</param>
+        ///<summary>
+        ///Initializes the statistics display with victory statistics.
+        ///</summary>
+        ///<param name="victoryStats">Victory statistics to display.</param>
         public void Initialize(VictoryStatistics victoryStats)
         {
             IsVisible = false;
-            // TODO: Fix VictoryStatistics properties - TotalScore and TotalKills don't exist
-            // Score = victoryStats?.TotalScore ?? 0;
-            // Kills = victoryStats?.TotalKills ?? 0;
+            //TODO: Fix VictoryStatistics properties - TotalScore and TotalKills don't exist
+            //Score = victoryStats?.TotalScore ?? 0;
+            //Kills = victoryStats?.TotalKills ?? 0;
             Score = 0;
             Kills = 0;
             Time = TimeSpan.Zero;
         }
 
-        /// <summary>
-        /// Initializes the statistics display with game statistics.
-        /// </summary>
-        /// <param name="gameStats">Game statistics to display.</param>
+        ///<summary>
+        ///Initializes the statistics display with game statistics.
+        ///</summary>
+        ///<param name="gameStats">Game statistics to display.</param>
         public void Initialize(GameStatistics gameStats)
         {
             IsVisible = false;
-            // TODO: Fix GameStatistics properties - TotalScore and TotalKills don't exist
-            // Score = gameStats?.TotalScore ?? 0;
-            // Kills = gameStats?.TotalKills ?? 0;
+            //TODO: Fix GameStatistics properties - TotalScore and TotalKills don't exist
+            //Score = gameStats?.TotalScore ?? 0;
+            //Kills = gameStats?.TotalKills ?? 0;
             Score = 0;
             Kills = 0;
             Time = TimeSpan.Zero;
         }
 
-        /// 
+        ///
     }
 }

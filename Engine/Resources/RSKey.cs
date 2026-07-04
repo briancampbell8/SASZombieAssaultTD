@@ -8,22 +8,24 @@ Notes:   Immutable, value-based equality. Safe for use as dictionary keys and re
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Resources
 {
-    /// <summary>
-    /// Represents a unique identifier for a resource, combining its runtime type and a string key
-    /// (such as a path, name, or logical identifier).
-    /// </summary>
+    ///<summary>
+    ///Represents a unique identifier for a resource, combining its runtime type and a string key
+    ///(such as a path, name, or logical identifier).
+    ///</summary>
     public readonly struct RSKey : IEquatable<RSKey>
     {
-        /// <summary>
-        /// The runtime type of the resource (e.g., Texture2D, Sound, JsonData).
-        /// </summary>
+        ///<summary>
+        ///The runtime type of the resource (e.g., Texture2D, Sound, JsonData).
+        ///</summary>
         public Type AssetType { get; }
 
-        /// <summary>
-        /// The string identifier for the resource (e.g., "ui/main_menu/background").
-        /// </summary>
+        ///<summary>
+        ///The string identifier for the resource (e.g., "ui/main_menu/background").
+        ///</summary>
         public string Key { get; }
 
         public RSKey(Type assetType, string key)
@@ -32,9 +34,9 @@ namespace SASZombieAssaultTD.Engine.Resources
             Key = key ?? throw new ArgumentNullException(nameof(key));
         }
 
-        /// <summary>
-        /// Creates an RSKey for a specific resource type T.
-        /// </summary>
+        ///<summary>
+        ///Creates an RSKey for a specific resource type T.
+        ///</summary>
         public static RSKey For<T>(string key)
         {
             if (key is null)
@@ -68,9 +70,9 @@ namespace SASZombieAssaultTD.Engine.Resources
         public static bool operator ==(RSKey left, RSKey right) => left.Equals(right);
         public static bool operator !=(RSKey left, RSKey right) => !left.Equals(right);
 
-        /// <summary>
-        /// Returns the string representation of the RSKey.
-        /// </summary>
+        ///<summary>
+        ///Returns the string representation of the RSKey.
+        ///</summary>
         public override string ToString()
         {
             return Key;

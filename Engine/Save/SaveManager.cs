@@ -10,17 +10,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+//
+//
 using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Gameplay;
-
 namespace SASZombieAssaultTD.Engine.Save
 {
-    /// <summary>
-    /// Unified save manager for SAS Zombie Assault TD.
-    /// P140-03: Consolidates SaveSystem and SASGameSaveManager into single unified system.
-    /// Supports both slot-based (0-9) and named saves with full P120/P100 integration.
-    /// </summary>
+    ///<summary>
+    ///Unified save manager for SAS Zombie Assault TD.
+    ///P140-03: Consolidates SaveSystem and SASGameSaveManager into single unified system.
+    ///Supports both slot-based (0-9) and named saves with full P120/P100 integration.
+    ///</summary>
     public class SaveManager
     {
         private readonly string _saveDirectory;
@@ -34,88 +33,88 @@ namespace SASZombieAssaultTD.Engine.Save
         private static SaveManager _instance;
         private int _currentSaveVersion;
 
-        /// <summary>
-        /// Gets the save directory path.
-        /// </summary>
+        ///<summary>
+        ///Gets the save directory path.
+        ///</summary>
         public string SaveDirectory => _saveDirectory;
 
-        /// <summary>
-        /// Gets the number of named saves.
-        /// </summary>
+        ///<summary>
+        ///Gets the number of named saves.
+        ///</summary>
         public int NamedSaveCount => _namedSaves.Count;
 
-        /// <summary>
-        /// Gets the number of slot saves with data.
-        /// </summary>
+        ///<summary>
+        ///Gets the number of slot saves with data.
+        ///</summary>
         public int SlotSaveCount => _slotSaves.Count(kvp => kvp.Value != null);
 
-        /// <summary>
-        /// Gets or sets the current save slot (0-9).
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the current save slot (0-9).
+        ///</summary>
         public int CurrentSaveSlot
         {
             get => _currentSaveSlot;
             set => _currentSaveSlot = System.Math.Clamp(value, 0, 9);
         }
 
-        /// <summary>
-        /// Gets or sets whether auto-save is enabled.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether auto-save is enabled.
+        ///</summary>
         public bool AutoSave
         {
             get => _autoSave;
             set => _autoSave = value;
         }
 
-        /// <summary>
-        /// Gets or sets the auto-save interval in seconds.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the auto-save interval in seconds.
+        ///</summary>
         public float AutoSaveInterval
         {
             get => _autoSaveInterval;
             set => _autoSaveInterval = System.Math.Max(10f, value);
         }
 
-        /// <summary>
-        /// Gets the current save version.
-        /// </summary>
+        ///<summary>
+        ///Gets the current save version.
+        ///</summary>
         public int CurrentSaveVersion => _currentSaveVersion;
 
-        /// <summary>
-        /// Event fired when a save is created.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a save is created.
+        ///</summary>
         public event Action<string, SaveData> OnNamedSaveCreated;
 
-        /// <summary>
-        /// Event fired when a slot save is created.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a slot save is created.
+        ///</summary>
         public event Action<int, SaveData> OnSlotSaveCreated;
 
-        /// <summary>
-        /// Event fired when a save is loaded.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a save is loaded.
+        ///</summary>
         public event Action<SaveData> OnSaveLoaded;
 
-        /// <summary>
-        /// Event fired when a save is deleted.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a save is deleted.
+        ///</summary>
         public event Action OnSaveDeleted;
 
-        /// <summary>
-        /// Event fired when an error occurs.
-        /// </summary>
+        ///<summary>
+        ///Event fired when an error occurs.
+        ///</summary>
         public event Action<string, Exception> OnError;
 
-        /// <summary>
-        /// Singleton instance for global access.
-        /// </summary>
+        ///<summary>
+        ///Singleton instance for global access.
+        ///</summary>
         public static SaveManager Instance => _instance ??= new SaveManager();
 
-        /// <summary>
-        /// Initializes a new save manager.
-        /// </summary>
-        /// <param name="saveDirectory">Directory to save files in.</param>
-        /// <param name="fileExtension">File extension for save files.</param>
+        ///<summary>
+        ///Initializes a new save manager.
+        ///</summary>
+        ///<param name="saveDirectory">Directory to save files in.</param>
+        ///<param name="fileExtension">File extension for save files.</param>
         private SaveManager(string? saveDirectory = null, string fileExtension = ".json")
         {
             _saveDirectory = saveDirectory ?? Path.Combine(
@@ -127,19 +126,20 @@ namespace SASZombieAssaultTD.Engine.Save
             _slotSaves = new Dictionary<int, SaveData>();
             _currentSaveSlot = 0;
             _autoSave = false;
-            _autoSaveInterval = 300f; // 5 minutes
+            _autoSaveInterval = 300f; //5 minutes
             _lastAutoSaveTime = 0f;
-            _currentSaveVersion = 2; // P140: Version 2 with P120/P100 integration
+            _currentSaveVersion = 2; //P140: Version 2 with P120/P100 integration
 
             InitializeSaveDirectory();
             LoadAllSaves();
 
-            DebugLogger.Log(DiagnosticLevel.Info, "INFO", $"SaveManager initialized with directory '{_saveDirectory}'");
+            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO",
+                $"SaveManager initialized with directory '{_saveDirectory}'");
         }
 
-        /// <summary>
-        /// Initializes the save directory.
-        /// </summary>
+        ///<summary>
+        ///Initializes the save directory.
+        ///</summary>
         private void InitializeSaveDirectory()
         {
             try
@@ -147,7 +147,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 if (!Directory.Exists(_saveDirectory))
                 {
                     Directory.CreateDirectory(_saveDirectory);
-                    DebugLogger.Log(DiagnosticLevel.Info, "INFO", $"Created save directory '{_saveDirectory}'");
+                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Created save directory '{_saveDirectory}'");
                 }
             }
             catch (Exception ex)
@@ -157,15 +157,15 @@ namespace SASZombieAssaultTD.Engine.Save
             }
         }
 
-        /// <summary>
-        /// Loads all saves from disk.
-        /// </summary>
+        ///<summary>
+        ///Loads all saves from disk.
+        ///</summary>
         private void LoadAllSaves()
         {
             _namedSaves.Clear();
             _slotSaves.Clear();
 
-            // Load named saves
+            //Load named saves
             var namedFiles = Directory.GetFiles(_saveDirectory, $"*{_fileExtension}")
                 .Where(f => !Path.GetFileNameWithoutExtension(f).StartsWith("slot"));
 
@@ -184,11 +184,11 @@ namespace SASZombieAssaultTD.Engine.Save
                 }
                 catch (Exception ex)
                 {
-                    DebugLogger.Log(DiagnosticLevel.Warning, "Warning", $"Failed to load named save from {filePath}: {ex.Message}");
+                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Failed to load named save from {filePath}: {ex.Message}");
                 }
             }
 
-            // Load slot saves (0-9)
+            //Load slot saves (0-9)
             for (int slot = 0; slot <= 9; slot++)
             {
                 try
@@ -207,38 +207,38 @@ namespace SASZombieAssaultTD.Engine.Save
                 }
                 catch (Exception ex)
                 {
-                    DebugLogger.Log(DiagnosticLevel.Warning, "Warning", $"Failed to load slot {slot}: {ex.Message}");
+                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Failed to load slot {slot}: {ex.Message}");
                 }
             }
 
-            DebugLogger.Log(DiagnosticLevel.Info, "INFO", $"Loaded {_namedSaves.Count} named saves and {_slotSaves.Count} slot saves");
+            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Loaded {_namedSaves.Count} named saves and {_slotSaves.Count} slot saves");
         }
 
-        /// <summary>
-        /// Creates a new named save.
-        /// </summary>
-        /// <param name="saveName">Name for the save.</param>
-        /// <param name="saveData">The save data to save.</param>
-        /// <returns>True if save was created successfully.</returns>
+        ///<summary>
+        ///Creates a new named save.
+        ///</summary>
+        ///<param name="saveName">Name for the save.</param>
+        ///<param name="saveData">The save data to save.</param>
+        ///<returns>True if save was created successfully.</returns>
         public bool CreateNamedSave(string saveName, SaveData saveData)
         {
             if (string.IsNullOrEmpty(saveName) || saveData == null)
             {
-                DebugLogger.Log(DiagnosticLevel.Warning, "Warning", "Invalid save name or null save data");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", "Invalid save name or null save data");
                 return false;
             }
 
             if (_namedSaves.ContainsKey(saveName))
             {
-                DebugLogger.Log(DiagnosticLevel.Warning, "Warning", $"Save '{saveName}' already exists");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Save '{saveName}' already exists");
                 return false;
             }
 
             try
             {
                 ValidateSaveData(saveData);
-                // Note: Version property is read-only in base SaveData
-                // Version tracking handled by SaveManager
+                //Note: Version property is read-only in base SaveData
+                //Version tracking handled by SaveManager
 
                 var filePath = GetNamedSaveFilePath(saveName);
                 File.WriteAllText(filePath, SerializeSaveData(saveData));
@@ -246,7 +246,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 _namedSaves[saveName] = saveData;
                 OnNamedSaveCreated?.Invoke(saveName, saveData);
 
-                DebugLogger.Log(DiagnosticLevel.Info, "INFO", $"Created named save '{saveName}'");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Created named save '{saveName}'");
                 return true;
             }
             catch (Exception ex)
@@ -256,25 +256,25 @@ namespace SASZombieAssaultTD.Engine.Save
             }
         }
 
-        /// <summary>
-        /// Saves data to a specific slot.
-        /// </summary>
-        /// <param name="slot">The save slot (0-9).</param>
-        /// <param name="saveData">The save data to save.</param>
-        /// <returns>True if save was successful.</returns>
+        ///<summary>
+        ///Saves data to a specific slot.
+        ///</summary>
+        ///<param name="slot">The save slot (0-9).</param>
+        ///<param name="saveData">The save data to save.</param>
+        ///<returns>True if save was successful.</returns>
         public bool SaveToSlot(int slot, SaveData saveData)
         {
             if (!IsValidSlot(slot) || saveData == null)
             {
-                DebugLogger.Log(DiagnosticLevel.Warning, "Warning", $"Invalid slot {slot} or null save data");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Invalid slot {slot} or null save data");
                 return false;
             }
 
             try
             {
                 ValidateSaveData(saveData);
-                // Note: Version property is read-only in base SaveData
-                // Version tracking handled by SaveManager
+                //Note: Version property is read-only in base SaveData
+                //Version tracking handled by SaveManager
 
                 var filePath = GetSlotSaveFilePath(slot);
                 File.WriteAllText(filePath, SerializeSaveData(saveData));
@@ -282,7 +282,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 _slotSaves[slot] = saveData;
                 OnSlotSaveCreated?.Invoke(slot, saveData);
 
-                DebugLogger.Log(DiagnosticLevel.Info, "INFO", $"Saved to slot {slot}");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Saved to slot {slot}");
                 return true;
             }
             catch (Exception ex)
@@ -292,59 +292,59 @@ namespace SASZombieAssaultTD.Engine.Save
             }
         }
 
-        /// <summary>
-        /// Loads a named save.
-        /// </summary>
-        /// <param name="saveName">Name of save to load.</param>
-        /// <returns>The save data, or null if not found.</returns>
+        ///<summary>
+        ///Loads a named save.
+        ///</summary>
+        ///<param name="saveName">Name of save to load.</param>
+        ///<returns>The save data, or null if not found.</returns>
         public SaveData LoadNamedSave(string saveName)
         {
             if (string.IsNullOrEmpty(saveName))
             {
-                DebugLogger.Log(DiagnosticLevel.Warning, "Warning", "Invalid save name");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", "Invalid save name");
                 return null;
             }
 
             if (_namedSaves.TryGetValue(saveName, out var saveData))
             {
                 OnSaveLoaded?.Invoke(saveData);
-                DebugLogger.Log(DiagnosticLevel.Info, "INFO", $"Loaded named save '{saveName}'");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Loaded named save '{saveName}'");
                 return saveData;
             }
 
-            DebugLogger.Log(DiagnosticLevel.Warning, "Warning", $"Named save '{saveName}' not found");
+            DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Named save '{saveName}' not found");
             return null;
         }
 
-        /// <summary>
-        /// Loads a slot save.
-        /// </summary>
-        /// <param name="slot">The save slot (0-9).</param>
-        /// <returns>The save data, or null if not found.</returns>
+        ///<summary>
+        ///Loads a slot save.
+        ///</summary>
+        ///<param name="slot">The save slot (0-9).</param>
+        ///<returns>The save data, or null if not found.</returns>
         public SaveData LoadSlotSave(int slot)
         {
             if (!IsValidSlot(slot))
             {
-                DebugLogger.Log(DiagnosticLevel.Warning, "Warning", $"Invalid slot {slot}");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Invalid slot {slot}");
                 return null;
             }
 
             if (_slotSaves.TryGetValue(slot, out var saveData))
             {
                 OnSaveLoaded?.Invoke(saveData);
-                DebugLogger.Log(DiagnosticLevel.Info, "INFO", $"Loaded slot {slot}");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Loaded slot {slot}");
                 return saveData;
             }
 
-            DebugLogger.Log(DiagnosticLevel.Warning, "Warning", $"Slot {slot} has no data");
+            DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Slot {slot} has no data");
             return null;
         }
 
-        /// <summary>
-        /// Deletes a named save.
-        /// </summary>
-        /// <param name="saveName">Name of save to delete.</param>
-        /// <returns>True if deletion succeeded.</returns>
+        ///<summary>
+        ///Deletes a named save.
+        ///</summary>
+        ///<param name="saveName">Name of save to delete.</param>
+        ///<returns>True if deletion succeeded.</returns>
         public bool DeleteNamedSave(string saveName)
         {
             if (string.IsNullOrEmpty(saveName) || !_namedSaves.ContainsKey(saveName))
@@ -363,7 +363,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 _namedSaves.Remove(saveName);
                 OnSaveDeleted?.Invoke();
 
-                DebugLogger.Log(DiagnosticLevel.Info, "INFO", $"Deleted named save '{saveName}'");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Deleted named save '{saveName}'");
                 return true;
             }
             catch (Exception ex)
@@ -373,11 +373,11 @@ namespace SASZombieAssaultTD.Engine.Save
             }
         }
 
-        /// <summary>
-        /// Deletes a slot save.
-        /// </summary>
-        /// <param name="slot">The save slot (0-9).</param>
-        /// <returns>True if deletion succeeded.</returns>
+        ///<summary>
+        ///Deletes a slot save.
+        ///</summary>
+        ///<param name="slot">The save slot (0-9).</param>
+        ///<returns>True if deletion succeeded.</returns>
         public bool DeleteSlotSave(int slot)
         {
             if (!IsValidSlot(slot))
@@ -396,7 +396,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 _slotSaves.Remove(slot);
                 OnSaveDeleted?.Invoke();
 
-                DebugLogger.Log(DiagnosticLevel.Info, "INFO", $"Deleted slot {slot}");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Deleted slot {slot}");
                 return true;
             }
             catch (Exception ex)
@@ -406,59 +406,59 @@ namespace SASZombieAssaultTD.Engine.Save
             }
         }
 
-        /// <summary>
-        /// Gets save data for a named save.
-        /// </summary>
-        /// <param name="saveName">Name of save.</param>
-        /// <returns>The save data, or null if not found.</returns>
+        ///<summary>
+        ///Gets save data for a named save.
+        ///</summary>
+        ///<param name="saveName">Name of save.</param>
+        ///<returns>The save data, or null if not found.</returns>
         public SaveData GetNamedSaveData(string saveName)
         {
             return _namedSaves.TryGetValue(saveName, out var saveData) ? saveData : null;
         }
 
-        /// <summary>
-        /// Gets save data for a slot.
-        /// </summary>
-        /// <param name="slot">The save slot (0-9).</param>
-        /// <returns>The save data, or null if not found.</returns>
+        ///<summary>
+        ///Gets save data for a slot.
+        ///</summary>
+        ///<param name="slot">The save slot (0-9).</param>
+        ///<returns>The save data, or null if not found.</returns>
         public SaveData GetSlotSaveData(int slot)
         {
             return IsValidSlot(slot) && _slotSaves.TryGetValue(slot, out var saveData) ? saveData : null;
         }
 
-        /// <summary>
-        /// Checks if a named save exists.
-        /// </summary>
-        /// <param name="saveName">Name of save.</param>
-        /// <returns>True if the save exists.</returns>
+        ///<summary>
+        ///Checks if a named save exists.
+        ///</summary>
+        ///<param name="saveName">Name of save.</param>
+        ///<returns>True if the save exists.</returns>
         public bool NamedSaveExists(string saveName)
         {
             return _namedSaves.ContainsKey(saveName);
         }
 
-        /// <summary>
-        /// Checks if a slot has data.
-        /// </summary>
-        /// <param name="slot">The save slot (0-9).</param>
-        /// <returns>True if the slot has data.</returns>
+        ///<summary>
+        ///Checks if a slot has data.
+        ///</summary>
+        ///<param name="slot">The save slot (0-9).</param>
+        ///<returns>True if the slot has data.</returns>
         public bool SlotHasData(int slot)
         {
             return IsValidSlot(slot) && _slotSaves.ContainsKey(slot) && _slotSaves[slot] != null;
         }
 
-        /// <summary>
-        /// Gets all named save names.
-        /// </summary>
-        /// <returns>List of named save names.</returns>
+        ///<summary>
+        ///Gets all named save names.
+        ///</summary>
+        ///<returns>List of named save names.</returns>
         public List<string> GetAllNamedSaveNames()
         {
             return _namedSaves.Keys.ToList();
         }
 
-        /// <summary>
-        /// Gets information about all slot saves.
-        /// </summary>
-        /// <returns>Dictionary of slot information.</returns>
+        ///<summary>
+        ///Gets information about all slot saves.
+        ///</summary>
+        ///<returns>Dictionary of slot information.</returns>
         public Dictionary<int, SaveSlotInfo> GetSlotSaveInfos()
         {
             var infos = new Dictionary<int, SaveSlotInfo>();
@@ -479,10 +479,10 @@ namespace SASZombieAssaultTD.Engine.Save
             return infos;
         }
 
-        /// <summary>
-        /// Updates the save manager (for auto-save functionality).
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since last update.</param>
+        ///<summary>
+        ///Updates the save manager (for auto-save functionality).
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since last update.</param>
         public void Update(float deltaTime)
         {
             if (!_autoSave) return;
@@ -495,48 +495,50 @@ namespace SASZombieAssaultTD.Engine.Save
             }
         }
 
-        /// <summary>
-        /// Performs auto-save for the current slot.
-        /// </summary>
+        ///<summary>
+        ///Performs auto-save for the current slot.
+        ///</summary>
         public void AutoSaveCurrentSlot()
         {
             var currentSaveData = GetSlotSaveData(_currentSaveSlot);
             if (currentSaveData != null)
             {
                 SaveToSlot(_currentSaveSlot, currentSaveData);
-                DebugLogger.Log(DiagnosticLevel.Info, "INFO", $"Auto-saved to slot {_currentSaveSlot}");
+                DLogger.Log(LogSubsystems.Unknown,
+                    LogLevel.Info,
+                    "INFO", $"Auto-saved to slot {_currentSaveSlot}");
             }
         }
 
-        /// <summary>
-        /// Checks if a save version is compatible.
-        /// </summary>
-        /// <param name="version">The save version.</param>
-        /// <returns>True if compatible.</returns>
+        ///<summary>
+        ///Checks if a save version is compatible.
+        ///</summary>
+        ///<param name="version">The save version.</param>
+        ///<returns>True if compatible.</returns>
         private bool IsVersionCompatible(int version)
         {
-            // P140: Support versions 1 and 2
-            // Version 1: Original format
-            // Version 2: P120/P100 integration
+            //P140: Support versions 1 and 2
+            //Version 1: Original format
+            //Version 2: P120/P100 integration
             return version >= 1 && version <= _currentSaveVersion;
         }
 
-        /// <summary>
-        /// Validates save data.
-        /// </summary>
-        /// <param name="saveData">The save data to validate.</param>
+        ///<summary>
+        ///Validates save data.
+        ///</summary>
+        ///<param name="saveData">The save data to validate.</param>
         private void ValidateSaveData(SaveData saveData)
         {
             var validationIssues = saveData.Validate();
             if (validationIssues.Count > 0)
             {
-                DebugLogger.Log(DiagnosticLevel.Warning, "Warning", $"Save data validation failed: {string.Join(", ", validationIssues)}");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Save data validation failed: {string.Join(", ", validationIssues)}");
             }
         }
 
-        /// <summary>
-        /// Serializes save data to JSON.
-        /// </summary>
+        ///<summary>
+        ///Serializes save data to JSON.
+        ///</summary>
         private string SerializeSaveData(SaveData saveData)
         {
             return JsonSerializer.Serialize(saveData, new JsonSerializerOptions
@@ -546,9 +548,9 @@ namespace SASZombieAssaultTD.Engine.Save
             });
         }
 
-        /// <summary>
-        /// Deserializes save data from JSON.
-        /// </summary>
+        ///<summary>
+        ///Deserializes save data from JSON.
+        ///</summary>
         private SaveData DeserializeSaveData(string json)
         {
             return JsonSerializer.Deserialize<SaveData>(json, new JsonSerializerOptions
@@ -558,25 +560,25 @@ namespace SASZombieAssaultTD.Engine.Save
             });
         }
 
-        /// <summary>
-        /// Gets file path for a named save.
-        /// </summary>
+        ///<summary>
+        ///Gets file path for a named save.
+        ///</summary>
         private string GetNamedSaveFilePath(string saveName)
         {
             return Path.Combine(_saveDirectory, $"{SanitizeFileName(saveName)}{_fileExtension}");
         }
 
-        /// <summary>
-        /// Gets file path for a slot save.
-        /// </summary>
+        ///<summary>
+        ///Gets file path for a slot save.
+        ///</summary>
         private string GetSlotSaveFilePath(int slot)
         {
             return Path.Combine(_saveDirectory, $"slot{slot}{_fileExtension}");
         }
 
-        /// <summary>
-        /// Sanitizes file name for safe file system usage.
-        /// </summary>
+        ///<summary>
+        ///Sanitizes file name for safe file system usage.
+        ///</summary>
         private string SanitizeFileName(string fileName)
         {
             var invalidChars = Path.GetInvalidFileNameChars();
@@ -590,23 +592,24 @@ namespace SASZombieAssaultTD.Engine.Save
             return sanitized;
         }
 
-        /// <summary>
-        /// Checks if a slot is valid.
-        /// </summary>
+        ///<summary>
+        ///Checks if a slot is valid.
+        ///</summary>
         private bool IsValidSlot(int slot) => slot >= 0 && slot <= 9;
 
-        /// <summary>
-        /// Handles errors.
-        /// </summary>
+        ///<summary>
+        ///Handles errors.
+        ///</summary>
         private void HandleError(string context, Exception ex)
         {
-            DebugLogger.Log(DiagnosticLevel.Error, "ERROR", $"SaveManager: {context} - {ex.Message}");
+            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "ERROR",
+                $"SaveManager: {context} - {ex.Message}");
             OnError?.Invoke(context, ex);
         }
 
-        /// <summary>
-        /// Gets save manager information as a string.
-        /// </summary>
+        ///<summary>
+        ///Gets save manager information as a string.
+        ///</summary>
         public override string ToString()
         {
             return $"SaveManager: Directory='{_saveDirectory}', NamedSaves={_namedSaves.Count}, " +
@@ -615,7 +618,7 @@ namespace SASZombieAssaultTD.Engine.Save
         }
     }
 
-    internal class DiagnosticLevel
+    internal class LogLevels
     {
         internal static string Info;
         internal static string Warning;

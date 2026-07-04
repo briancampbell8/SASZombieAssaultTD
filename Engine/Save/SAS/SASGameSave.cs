@@ -6,15 +6,17 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Save.SAS
 {
-    /// <summary>
-    /// SAS TD game save data container.
-    /// Handles serialization and deserialization of game state.
-    /// </summary>
+    ///<summary>
+    ///SAS TD game save data container.
+    ///Handles serialization and deserialization of game state.
+    ///</summary>
     public class SASGameSave
     {
-        // Basic game information
+        //Basic game information
         public string SaveName { get; set; }
         public DateTime SaveTime { get; set; }
         public string GameVersion { get; set; }
@@ -23,7 +25,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         public string Difficulty { get; set; }
         public string MapName { get; set; }
 
-        // Player state
+        //Player state
         public PlayerSaveData Player { get; set; }
         public EconomySaveData Economy { get; set; }
         public WaveSaveData Waves { get; set; }
@@ -31,12 +33,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         public EnemySaveData Enemies { get; set; }
         public GameStateSaveData GameState { get; set; }
 
-        // Statistics
+        //Statistics
         public GameStatistics Statistics { get; set; }
         public AchievementSaveData Achievements { get; set; }
         public UnlockSaveData Unlocks { get; set; }
 
-        // Metadata
+        //Metadata
         public SaveMetadata Metadata { get; set; }
 
         public SASGameSave()
@@ -59,32 +61,32 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         {
             try
             {
-                // Apply player state
+                //Apply player state
                 Player?.ApplyToGame();
 
-                // Apply economy state
+                //Apply economy state
                 Economy?.ApplyToGame();
 
-                // Apply wave state
+                //Apply wave state
                 Waves?.ApplyToGame();
 
                 Towers.Tower tower = null;
-                // Apply tower state
+                //Apply tower state
                 Towers?.ApplyToGame(tower, tower.Position);
 
-                // Apply enemy state
+                //Apply enemy state
                 Enemies?.ApplyToGame();
 
-                // Apply game state
+                //Apply game state
                 GameState?.ApplyToGame();
 
-                // Apply statistics
+                //Apply statistics
                 Statistics?.ApplyToGame();
 
-                // Apply achievements
+                //Apply achievements
                 Achievements?.ApplyToGame();
 
-                // Apply unlocks
+                //Apply unlocks
                 Unlocks?.ApplyToGame();
 
                 System.Diagnostics.Debug.WriteLine($"Applied save: {SaveName}");
@@ -97,11 +99,11 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Create a new save from current game state.
-        /// </summary>
-        /// <param name="saveName">Name for the save.</param>
-        /// <returns>Created save data.</returns>
+        ///<summary>
+        ///Create a new save from current game state.
+        ///</summary>
+        ///<param name="saveName">Name for the save.</param>
+        ///<returns>Created save data.</returns>
         public static SASGameSave CreateFromCurrentState(string saveName)
         {
             var difficultyManager = SASZombieAssaultTD.Engine.Difficulty.DifficultyManager.Instance;
@@ -116,7 +118,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
             save.MapName = GetCurrentMapName();
 
-            // Capture current game state
+            //Capture current game state
             CapturePlayerState(save);
             CaptureEconomyState(save);
             CaptureWaveState(save);
@@ -130,10 +132,10 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return save;
         }
 
-        /// <summary>
-        /// Serialize save data to JSON.
-        /// </summary>
-        /// <returns>JSON string.</returns>
+        ///<summary>
+        ///Serialize save data to JSON.
+        ///</summary>
+        ///<returns>JSON string.</returns>
         public string SerializeToJson()
         {
             try
@@ -153,11 +155,11 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Deserialize save data from JSON.
-        /// </summary>
-        /// <param name="json">JSON string to deserialize.</param>
-        /// <returns>Deserialized save data.</returns>
+        ///<summary>
+        ///Deserialize save data from JSON.
+        ///</summary>
+        ///<param name="json">JSON string to deserialize.</param>
+        ///<returns>Deserialized save data.</returns>
         public static SASGameSave DeserializeFromJson(string json)
         {
             try
@@ -169,7 +171,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
                 var save = JsonSerializer.Deserialize<SASGameSave>(json, options);
 
-                // Validate save data
+                //Validate save data
                 if (save != null && save.ValidateSaveData())
                 {
                     return save;
@@ -184,13 +186,13 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Validate save data integrity.
-        /// </summary>
-        /// <returns>True if save data is valid.</returns>
+        ///<summary>
+        ///Validate save data integrity.
+        ///</summary>
+        ///<returns>True if save data is valid.</returns>
         public bool ValidateSaveData()
         {
-            // Check basic fields
+            //Check basic fields
             if (string.IsNullOrEmpty(SaveName))
                 return false;
 
@@ -200,7 +202,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             if (SaveTime == default)
                 return false;
 
-            // Validate nested data
+            //Validate nested data
             if (Player?.Validate() == false)
                 return false;
 
@@ -222,20 +224,20 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return true;
         }
 
-        /// <summary>
-        /// Get save file size in bytes.
-        /// </summary>
-        /// <returns>Save file size.</returns>
+        ///<summary>
+        ///Get save file size in bytes.
+        ///</summary>
+        ///<returns>Save file size.</returns>
         public long GetSaveSize()
         {
             var json = SerializeToJson();
             return json?.Length ?? 0;
         }
 
-        /// <summary>
-        /// Get save summary for display.
-        /// </summary>
-        /// <returns>Save summary.</returns>
+        ///<summary>
+        ///Get save summary for display.
+        ///</summary>
+        ///<returns>Save summary.</returns>
         public string GetSummary()
         {
             return $"Save: {SaveName}\n" +
@@ -248,25 +250,25 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                    $"Play Time: {FormatPlayTime(PlayTime)}";
         }
 
-        /// <summary>
-        /// Check if save is compatible with current game version.
-        /// </summary>
-        /// <returns>True if compatible.</returns>
+        ///<summary>
+        ///Check if save is compatible with current game version.
+        ///</summary>
+        ///<returns>True if compatible.</returns>
         public bool IsCompatible()
         {
-            // Simple version check - in real implementation would be more complex
+            //Simple version check - in real implementation would be more complex
             return SaveVersion <= 1 && GameVersion == "1.0.0";
         }
 
-        /// <summary>
-        /// Apply save data to current game state.
-        /// </summary>
-        /// <returns>True if successfully applied.</returns>
+        ///<summary>
+        ///Apply save data to current game state.
+        ///</summary>
+        ///<returns>True if successfully applied.</returns>
 
-        /// <summary>
-        /// Create a backup of this save.
-        /// </summary>
-        /// <returns>Backup save data.</returns>
+        ///<summary>
+        ///Create a backup of this save.
+        ///</summary>
+        ///<returns>Backup save data.</returns>
         public SASGameSave CreateBackup()
         {
             var backup = new SASGameSave
@@ -297,11 +299,11 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return backup;
         }
 
-        ///  Private Methods
+        /// Private Methods
 
         static void CapturePlayerState(SASGameSave save)
         {
-            // Fix PlayerLevel and PlayerLives references
+            //Fix PlayerLevel and PlayerLives references
             save.Player = new PlayerSaveData
             {
                 Level = PlayerLevel.Instance?.CurrentLevel ?? 1,
@@ -315,7 +317,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         static void CaptureEconomyState(SASGameSave save)
         {
-            // Fix EconomyManager references
+            //Fix EconomyManager references
             save.Economy = new EconomySaveData
             {
                 CurrentCash = EconomyManager.CurrentCash,
@@ -328,7 +330,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         static void CaptureWaveState(SASGameSave save)
         {
-            // Fix WaveDirector references
+            //Fix WaveDirector references
             var waveDirector = SASZombieAssaultTD.Engine.Waves.WaveDirector.Instance;
 
             save.Waves = new WaveSaveData
@@ -338,26 +340,26 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 WaveProgress = waveDirector?.WaveProgress ?? 0f,
                 OverallProgress = waveDirector?.OverallProgress ?? 0f,
                 IsWaveActive = waveDirector?.IsWaveActive ?? false,
-                CompletedWaves = new List<int>() // TODO: WaveDirector doesn't have CompletedWaves property
+                CompletedWaves = new List<int>() //TODO: WaveDirector doesn't have CompletedWaves property
             };
         }
 
         static void CaptureTowerState(SASGameSave save)
         {
-            // TODO: TowerUpgradeManager class doesn't exist - using placeholder
+            //TODO: TowerUpgradeManager class doesn't exist - using placeholder
             save.Towers = new TowerSaveData
             {
-                TowerCount = 0, // Placeholder
-                TotalValue = 0, // Placeholder
-                TowerTypes = new List<string>(), // Placeholder
-                TowerPositions = new Dictionary<string, Vector3>(), // Placeholder
-                TowerLevels = new Dictionary<string, int>() // Placeholder
+                TowerCount = 0, //Placeholder
+                TotalValue = 0, //Placeholder
+                TowerTypes = new List<string>(), //Placeholder
+                TowerPositions = new Dictionary<string, Vector3>(), //Placeholder
+                TowerLevels = new Dictionary<string, int>() //Placeholder
             };
         }
 
         static void CaptureEnemyState(SASGameSave save)
         {
-            // Implementation would capture enemy data
+            //Implementation would capture enemy data
             save.Enemies = new EnemySaveData
             {
                 TotalSpawned = EnemyManager.Instance?.GetTotalSpawned() ?? 0,
@@ -369,10 +371,10 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         static void CaptureGameState(SASGameSave save)
         {
-            // Implementation would capture game state
+            //Implementation would capture game state
             save.GameState = new GameStateSaveData
             {
-                CurrentState = "Unknown", // TODO: Implement proper state machine access
+                CurrentState = "Unknown", //TODO: Implement proper state machine access
                 IsPaused = false,
                 GameSpeed = 1.0f,
                 AutoSaveEnabled = true,
@@ -382,7 +384,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         static void CaptureStatistics(SASGameSave save)
         {
-            // Implementation would capture statistics
+            //Implementation would capture statistics
             save.Statistics = new GameStatistics
             {
                 TotalPlayTime = 0f,
@@ -397,7 +399,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         static void CaptureAchievements(SASGameSave save)
         {
-            // Implementation would capture achievements
+            //Implementation would capture achievements
             save.Achievements = new AchievementSaveData
             {
                 UnlockedAchievements = new List<string>(),
@@ -409,7 +411,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         static void CaptureUnlocks(SASGameSave save)
         {
-            // Implementation would capture unlocks
+            //Implementation would capture unlocks
             save.Unlocks = new UnlockSaveData
             {
                 UnlockedTowers = new List<string>(),
@@ -422,7 +424,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         static string GetCurrentMapName()
         {
-            // Implementation would get current map name
+            //Implementation would get current map name
             return "DefaultMap";
         }
 
@@ -436,12 +438,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 return $"{time.Seconds}s";
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// Save metadata for additional information.
-    /// </summary>
+    ///<summary>
+    ///Save metadata for additional information.
+    ///</summary>
     public class SaveMetadata
     {
         public string Creator { get; set; }
@@ -475,9 +477,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         }
     }
 
-    /// <summary>
-    /// Player save data for SAS TD.
-    /// </summary>
+    ///<summary>
+    ///Player save data for SAS TD.
+    ///</summary>
     public class PlayerSaveData
     {
         public int Level { get; set; }
@@ -501,7 +503,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         public void ApplyToGame()
         {
-            // Implementation to apply player data to the current game
+            //Implementation to apply player data to the current game
         }
 
         public PlayerSaveData Clone()
@@ -522,9 +524,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         }
     }
 
-    /// <summary>
-    /// Economy save data for SAS TD.
-    /// </summary>
+    ///<summary>
+    ///Economy save data for SAS TD.
+    ///</summary>
     public class EconomySaveData
     {
         public int CurrentCash { get; set; }
@@ -546,7 +548,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         public void ApplyToGame()
         {
-            // Implementation to apply economy data to the current game
+            //Implementation to apply economy data to the current game
         }
 
         public EconomySaveData Clone()
@@ -562,9 +564,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         }
     }
 
-    /// <summary>
-    /// Game statistics for SAS TD.
-    /// </summary>
+    ///<summary>
+    ///Game statistics for SAS TD.
+    ///</summary>
     public class GameStatistics
     {
         public float TotalPlayTime { get; set; }
@@ -575,7 +577,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         public TimeSpan FastestWaveCompletion { get; set; }
         public int HighestWave { get; set; }
 
-        // Missing properties
+        //Missing properties
         public int WaveReached { get; set; }
         public int EnemiesKilled { get; set; }
         public int TowersBuilt { get; set; }
@@ -599,7 +601,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         public void ApplyToGame()
         {
-            // Implementation to apply statistics to the current game
+            //Implementation to apply statistics to the current game
         }
 
         public GameStatistics Clone()
@@ -617,9 +619,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         }
     }
 
-    /// <summary>
-    /// Achievement save data for SAS TD.
-    /// </summary>
+    ///<summary>
+    ///Achievement save data for SAS TD.
+    ///</summary>
     public class AchievementSaveData
     {
         public List<string> UnlockedAchievements { get; set; }
@@ -637,7 +639,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         public void ApplyToGame()
         {
-            // Implementation to apply achievements to the current game
+            //Implementation to apply achievements to the current game
         }
 
         public AchievementSaveData Clone()
@@ -652,9 +654,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         }
     }
 
-    /// <summary>
-    /// Unlock save data for SAS TD.
-    /// </summary>
+    ///<summary>
+    ///Unlock save data for SAS TD.
+    ///</summary>
     public class UnlockSaveData
     {
         public List<string> UnlockedTowers { get; set; }
@@ -674,7 +676,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         public void ApplyToGame()
         {
-            // Implementation to apply unlocks to the current game
+            //Implementation to apply unlocks to the current game
         }
 
         public UnlockSaveData Clone()
@@ -690,9 +692,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         }
     }
 
-    /// <summary>
-    /// Wave save data for SAS TD.
-    /// </summary>
+    ///<summary>
+    ///Wave save data for SAS TD.
+    ///</summary>
     public class WaveSaveData
     {
         public int CurrentWave { get; set; }
@@ -716,7 +718,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         public void ApplyToGame()
         {
-            // Implementation to apply wave data to the current game
+            //Implementation to apply wave data to the current game
         }
 
         public WaveSaveData Clone()
@@ -733,9 +735,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         }
     }
 
-    /// <summary>
-    /// Game state save data for SAS TD.
-    /// </summary>
+    ///<summary>
+    ///Game state save data for SAS TD.
+    ///</summary>
     public class GameStateSaveData
     {
         public string CurrentState { get; set; }
@@ -757,7 +759,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
         public void ApplyToGame()
         {
-            // Implementation to apply game state to the current game
+            //Implementation to apply game state to the current game
         }
 
         public GameStateSaveData Clone()

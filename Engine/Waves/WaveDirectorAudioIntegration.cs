@@ -1,27 +1,41 @@
-/*
-Program Name: SASZombieAssaultTD
-File Path: Engine\Waves\WaveDirectorAudioIntegration.cs
-Purpose: P100 Wave and Enemy Modernization - WaveDirector audio integration.
-Features: Hooks WaveDirector events to WaveAudioIntegration for audio feedback.
-*/
+// ====================================================================================================
+//  FILE: WaveDirectorAudioIntegration.cs
+//  PATH: Engine/Waves/
+//  MODULE: Wave System Integration (Audio)
+//
+//  ROLE:
+//  Bridges WaveDirector events to the audio subsystem for gameplay feedback.
+//
+//  RESPONSIBILITIES:
+//  - Subscribe to WaveDirector lifecycle events and play corresponding sounds.
+//  - Provide initialization guard to ensure hooks are attached once.
+//
+//  NON-RESPONSIBILITIES:
+//  - Implementing audio playback primitives (delegated to ModernPlaySound/Audio subsystem).
+//
+//  ARCHITECTURAL NOTES:
+//  - Lightweight static helper intended to be initialized at game startup.
+// ====================================================================================================
 
 using SASZombieAssaultTD.Engine.Audio;
 using SASZombieAssaultTD.Engine.Enemies;
 using SASZombieAssaultTD.Engine.VectorMath;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves
 {
-    /// <summary>
-    /// Audio integration for WaveDirector.
-    /// P100-04: WaveDirector audio integration with WaveAudioIntegration
-    /// </summary>
+    ///<summary>
+    ///Audio integration for WaveDirector.
+    ///P100-04: WaveDirector audio integration with WaveAudioIntegration
+    ///</summary>
     public static class WaveDirectorAudioIntegration
     {
         private static bool _isInitialized = false;
 
-        /// <summary>
-        /// Initialize audio integration with WaveDirector.
-        /// </summary>
+        ///<summary>
+        ///Initialize audio integration with WaveDirector.
+        ///</summary>
         public static void Initialize()
         {
             if (_isInitialized) return;
@@ -29,7 +43,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             var director = WaveDirector.Instance;
             if (director == null) return;
 
-            // Hook into wave events
+            //Hook into wave events
             director.OnWaveStarted += OnWaveStarted;
             director.OnWaveCompleted += OnWaveCompleted;
             director.OnEnemySpawned += OnEnemySpawned;
@@ -40,9 +54,9 @@ namespace SASZombieAssaultTD.Engine.Waves
             System.Diagnostics.Debug.WriteLine("WaveDirectorAudioIntegration: Initialized");
         }
 
-        /// <summary>
-        /// Shutdown audio integration.
-        /// </summary>
+        ///<summary>
+        ///Shutdown audio integration.
+        ///</summary>
         public static void Shutdown()
         {
             if (!_isInitialized) return;
@@ -81,11 +95,11 @@ namespace SASZombieAssaultTD.Engine.Waves
 
             EnemyAudioIntegration.PlayEnemySpawn(enemy.Position);
 
-            // Play special sound for champion enemies
+            //Play special sound for champion enemies
             if (enemy.IsChampion)
             {
                 ModernPlaySound.Play("success_level_up", 1.2f);
-                // TODO: Enemy.ChampionLevel doesn't exist - need to add this property or use different approach
+                //TODO: Enemy.ChampionLevel doesn't exist - need to add this property or use different approach
                 System.Diagnostics.Debug.WriteLine($"WaveDirectorAudioIntegration: Champion enemy spawned");
             }
         }

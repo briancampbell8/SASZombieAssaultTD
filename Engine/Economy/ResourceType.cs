@@ -4,49 +4,51 @@ Purpose: Defines different resource types for the economy system.
 Features: Resource enumeration, metadata, and conversion rates.
 */
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Economy
 {
-    /// <summary>
-    /// Enumeration of different resource types in the game economy.
-    /// </summary>
+    ///<summary>
+    ///Enumeration of different resource types in the game economy.
+    ///</summary>
     public enum ResourceType
     {
-        /// <summary>
-        /// Primary currency for purchasing towers and upgrades.
-        /// </summary>
+        ///<summary>
+        ///Primary currency for purchasing towers and upgrades.
+        ///</summary>
         Cash = 0,
 
-        /// <summary>
-        /// Alternative currency, often used for premium content.
-        /// </summary>
+        ///<summary>
+        ///Alternative currency, often used for premium content.
+        ///</summary>
         Gold = 1,
 
-        /// <summary>
-        /// Credits earned from achievements and special events.
-        /// </summary>
+        ///<summary>
+        ///Credits earned from achievements and special events.
+        ///</summary>
         Credits = 2,
 
-        /// <summary>
-        /// Experience points for player progression.
-        /// </summary>
+        ///<summary>
+        ///Experience points for player progression.
+        ///</summary>
         Experience = 3,
 
-        /// <summary>
-        /// Special currency for limited-time offers.
-        /// </summary>
+        ///<summary>
+        ///Special currency for limited-time offers.
+        ///</summary>
         Tokens = 4
     }
 
-    /// <summary>
-    /// Provides metadata and utilities for resource types.
-    /// </summary>
+    ///<summary>
+    ///Provides metadata and utilities for resource types.
+    ///</summary>
     public static class ResourceTypeExtensions
     {
-        /// <summary>
-        /// Gets the display name for a resource type.
-        /// </summary>
-        /// <param name="resourceType">The resource type</param>
-        /// <returns>Display name</returns>
+        ///<summary>
+        ///Gets the display name for a resource type.
+        ///</summary>
+        ///<param name="resourceType">The resource type</param>
+        ///<returns>Display name</returns>
         public static string GetDisplayName(this ResourceType resourceType)
         {
             return resourceType switch
@@ -60,11 +62,11 @@ namespace SASZombieAssaultTD.Engine.Economy
             };
         }
 
-        /// <summary>
-        /// Gets the description for a resource type.
-        /// </summary>
-        /// <param name="resourceType">The resource type</param>
-        /// <returns>Description</returns>
+        ///<summary>
+        ///Gets the description for a resource type.
+        ///</summary>
+        ///<param name="resourceType">The resource type</param>
+        ///<returns>Description</returns>
         public static string GetDescription(this ResourceType resourceType)
         {
             return resourceType switch
@@ -78,11 +80,11 @@ namespace SASZombieAssaultTD.Engine.Economy
             };
         }
 
-        /// <summary>
-        /// Gets the icon path for a resource type.
-        /// </summary>
-        /// <param name="resourceType">The resource type</param>
-        /// <returns>Icon path</returns>
+        ///<summary>
+        ///Gets the icon path for a resource type.
+        ///</summary>
+        ///<param name="resourceType">The resource type</param>
+        ///<returns>Icon path</returns>
         public static string GetIconPath(this ResourceType resourceType)
         {
             return resourceType switch
@@ -96,21 +98,21 @@ namespace SASZombieAssaultTD.Engine.Economy
             };
         }
 
-        /// <summary>
-        /// Checks if a resource type is a premium currency.
-        /// </summary>
-        /// <param name="resourceType">The resource type</param>
-        /// <returns>True if premium</returns>
+        ///<summary>
+        ///Checks if a resource type is a premium currency.
+        ///</summary>
+        ///<param name="resourceType">The resource type</param>
+        ///<returns>True if premium</returns>
         public static bool IsPremium(this ResourceType resourceType)
         {
             return resourceType == ResourceType.Gold || resourceType == ResourceType.Tokens;
         }
 
-        /// <summary>
-        /// Checks if a resource type is a primary currency.
-        /// </summary>
-        /// <param name="resourceType">The resource type</param>
-        /// <returns>True if primary</returns>
+        ///<summary>
+        ///Checks if a resource type is a primary currency.
+        ///</summary>
+        ///<param name="resourceType">The resource type</param>
+        ///<returns>True if primary</returns>
         public static bool IsPrimary(this ResourceType resourceType)
         {
             return resourceType == ResourceType.Cash;

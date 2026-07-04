@@ -18,85 +18,87 @@ using System.Linq;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.ECS
 {
-    /// <summary>
-    /// Unified Entity implementation for SASZombieAssaultTD engine.
-    /// Provides comprehensive entity management with unified math integration.
-    /// This is the single authoritative Entity type across the entire engine.
-    /// </summary>
+    ///<summary>
+    ///Unified Entity implementation for SASZombieAssaultTD engine.
+    ///Provides comprehensive entity management with unified math integration.
+    ///This is the single authoritative Entity type across the entire engine.
+    ///</summary>
     public struct Entity : IEquatable<Entity>
     {
-        ///  Public Fields
+        /// Public Fields
 
-        /// <summary>
-        /// The unique identifier for the entity.
-        /// </summary>
+        ///<summary>
+        ///The unique identifier for the entity.
+        ///</summary>
         public uint Id { get; }
 
-        /// <summary>
-        /// Indicates whether the entity is valid.
-        /// </summary>
+        ///<summary>
+        ///Indicates whether the entity is valid.
+        ///</summary>
         public bool IsValid { get; }
 
-        /// <summary>
-        /// Indicates whether the entity is currently active.
-        /// </summary>
+        ///<summary>
+        ///Indicates whether the entity is currently active.
+        ///</summary>
         public bool IsActive { get; set; } = true;
 
-        /// <summary>
-        /// Indicates whether the entity is enabled.
-        /// </summary>
+        ///<summary>
+        ///Indicates whether the entity is enabled.
+        ///</summary>
         public bool IsEnabled { get; set; } = true;
 
-        /// <summary>
-        /// Tag for entity grouping and identification.
-        /// </summary>
+        ///<summary>
+        ///Tag for entity grouping and identification.
+        ///</summary>
         public string Tag { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Indicates whether entity is pending destruction.
-        /// </summary>
+        ///<summary>
+        ///Indicates whether entity is pending destruction.
+        ///</summary>
         public bool IsPendingDestroy { get; set; }
 
-        /// <summary>
-        /// Indicates whether the entity has been destroyed.
-        /// </summary>
+        ///<summary>
+        ///Indicates whether the entity has been destroyed.
+        ///</summary>
         public bool IsDestroyed { get; set; }
 
-        /// <summary>
-        /// Position of the entity in world space.
-        /// </summary>
+        ///<summary>
+        ///Position of the entity in world space.
+        ///</summary>
         public Vector3 Position { get; set; }
 
-        /// 
+        ///
 
-        ///  Static Properties
+        /// Static Properties
 
-        /// <summary>
-        /// Represents an invalid entity.
-        /// </summary>
+        ///<summary>
+        ///Represents an invalid entity.
+        ///</summary>
         public static Entity Invalid => new Entity(0, false);
 
-        /// <summary>
-        /// Represents the minimum valid entity.
-        /// </summary>
+        ///<summary>
+        ///Represents the minimum valid entity.
+        ///</summary>
         public static Entity MinValue => new Entity(uint.MinValue, true);
 
-        /// <summary>
-        /// Represents the maximum valid entity.
-        /// </summary>
+        ///<summary>
+        ///Represents the maximum valid entity.
+        ///</summary>
         public static Entity MaxValue => new Entity(uint.MaxValue, true);
 
-        /// 
+        ///
 
-        ///  Constructors
+        /// Constructors
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> struct.
-        /// </summary>
-        /// <param name="id">The unique identifier for the entity.</param>
-        /// <param name="isValid">Indicates whether the entity is valid.</param>
+        ///<summary>
+        ///Initializes a new instance of the <see cref="Entity"/> struct.
+        ///</summary>
+        ///<param name="id">The unique identifier for the entity.</param>
+        ///<param name="isValid">Indicates whether the entity is valid.</param>
         public Entity(uint id, bool isValid = true)
         {
             Id = id;
@@ -106,16 +108,16 @@ namespace SASZombieAssaultTD.Engine.ECS
             Position = Vector3.Zero;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> struct with validity inferred from the ID.
-        /// </summary>
-        /// <param name="id">The unique identifier for the entity.</param>
+        ///<summary>
+        ///Initializes a new instance of the <see cref="Entity"/> struct with validity inferred from the ID.
+        ///</summary>
+        ///<param name="id">The unique identifier for the entity.</param>
         public Entity(uint id) : this(id, id != 0) { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> struct by copying another entity.
-        /// </summary>
-        /// <param name="other">The entity to copy.</param>
+        ///<summary>
+        ///Initializes a new instance of the <see cref="Entity"/> struct by copying another entity.
+        ///</summary>
+        ///<param name="other">The entity to copy.</param>
         public Entity(Entity other) : this(other.Id, other.IsValid) 
         {
             IsEnabled = other.IsEnabled;
@@ -123,126 +125,126 @@ namespace SASZombieAssaultTD.Engine.ECS
             Position = other.Position;
         }
 
-        /// 
+        ///
 
-        ///  Instance Properties
+        /// Instance Properties
 
-        /// <summary>
-        /// Indicates whether the entity is invalid.
-        /// </summary>
+        ///<summary>
+        ///Indicates whether the entity is invalid.
+        ///</summary>
         public bool IsInvalid => !IsValid;
 
-        /// <summary>
-        /// Indicates whether the entity ID is zero.
-        /// </summary>
+        ///<summary>
+        ///Indicates whether the entity ID is zero.
+        ///</summary>
         public bool IsZero => Id == 0;
 
-        /// 
+        ///
 
-        ///  Instance Methods
+        /// Instance Methods
 
-        /// <summary>
-        /// Creates a new entity with the specified ID.
-        /// </summary>
-        /// <param name="newId">The new ID for the entity.</param>
-        /// <returns>A new entity with the specified ID.</returns>
+        ///<summary>
+        ///Creates a new entity with the specified ID.
+        ///</summary>
+        ///<param name="newId">The new ID for the entity.</param>
+        ///<returns>A new entity with the specified ID.</returns>
         public Entity WithId(uint newId) => new Entity(newId, IsValid);
 
-        /// <summary>
-        /// Creates a new entity with the specified validity.
-        /// </summary>
-        /// <param name="isValid">The validity of the entity.</param>
-        /// <returns>A new entity with the specified validity.</returns>
+        ///<summary>
+        ///Creates a new entity with the specified validity.
+        ///</summary>
+        ///<param name="isValid">The validity of the entity.</param>
+        ///<returns>A new entity with the specified validity.</returns>
         public Entity WithValidity(bool isValid) => new Entity(Id, isValid);
 
-        /// <summary>
-        /// Creates a new entity with validity inferred from the ID.
-        /// </summary>
-        /// <returns>A new entity with inferred validity.</returns>
+        ///<summary>
+        ///Creates a new entity with validity inferred from the ID.
+        ///</summary>
+        ///<returns>A new entity with inferred validity.</returns>
         public Entity WithValidity() => new Entity(Id, Id != 0);
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public bool Equals(Entity other) => Id == other.Id;
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public override bool Equals(object? obj) => obj is Entity other && Equals(other);
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public override int GetHashCode() => Id.GetHashCode();
 
-        /// <inheritdoc/>
+        ///<inheritdoc/>
         public override string ToString() => IsValid ? $"Entity({Id})" : "Entity(Invalid)";
 
-        /// 
+        ///
 
-        ///  Static Methods
+        /// Static Methods
 
-        /// <summary>
-        /// Creates a new entity from the specified ID.
-        /// </summary>
-        /// <param name="id">The ID of the entity.</param>
-        /// <returns>A new entity with the specified ID.</returns>
+        ///<summary>
+        ///Creates a new entity from the specified ID.
+        ///</summary>
+        ///<param name="id">The ID of the entity.</param>
+        ///<returns>A new entity with the specified ID.</returns>
         public static Entity FromId(uint id) => new Entity(id);
 
-        /// <summary>
-        /// Creates a new entity with the default starting ID.
-        /// </summary>
-        /// <returns>A new entity.</returns>
+        ///<summary>
+        ///Creates a new entity with the default starting ID.
+        ///</summary>
+        ///<returns>A new entity.</returns>
         public static Entity Create() => new Entity(1, true);
 
-        /// <summary>
-        /// Increments the entity ID.
-        /// </summary>
+        ///<summary>
+        ///Increments the entity ID.
+        ///</summary>
         public static Entity operator ++(Entity entity) =>
             entity.IsValid ? new Entity(entity.Id + 1, true) : entity;
 
-        /// <summary>
-        /// Decrements the entity ID.
-        /// </summary>
+        ///<summary>
+        ///Decrements the entity ID.
+        ///</summary>
         public static Entity operator --(Entity entity) =>
             entity.IsValid && entity.Id > 1 ? new Entity(entity.Id - 1, true) : entity;
 
-        /// <summary>
-        /// Adds an offset to the entity ID.
-        /// </summary>
+        ///<summary>
+        ///Adds an offset to the entity ID.
+        ///</summary>
         public static Entity operator +(Entity entity, uint offset) =>
             new Entity(entity.Id + offset, entity.IsValid);
 
-        /// <summary>
-        /// Subtracts an offset from the entity ID.
-        /// </summary>
+        ///<summary>
+        ///Subtracts an offset from the entity ID.
+        ///</summary>
         public static Entity operator -(Entity entity, uint offset) =>
             entity.Id > offset ? new Entity(entity.Id - offset, entity.IsValid) : Entity.Invalid;
 
-        /// <summary>
-        /// Determines whether two entities are equal.
-        /// </summary>
+        ///<summary>
+        ///Determines whether two entities are equal.
+        ///</summary>
         public static bool operator ==(Entity a, Entity b) => a.Equals(b);
 
-        /// <summary>
-        /// Determines whether two entities are not equal.
-        /// </summary>
+        ///<summary>
+        ///Determines whether two entities are not equal.
+        ///</summary>
         public static bool operator !=(Entity a, Entity b) => !a.Equals(b);
 
-        /// <summary>
-        /// Implicitly converts an entity to its ID.
-        /// </summary>
+        ///<summary>
+        ///Implicitly converts an entity to its ID.
+        ///</summary>
         public static implicit operator uint(Entity entity) => entity.Id;
 
-        /// <summary>
-        /// Explicitly converts an ID to an entity.
-        /// </summary>
+        ///<summary>
+        ///Explicitly converts an ID to an entity.
+        ///</summary>
         public static explicit operator Entity(uint id) => new Entity(id);
 
-        /// 
+        ///
 
-        ///  Component API
+        /// Component API
 
         private static readonly Dictionary<uint, Dictionary<Type, object>> _entityComponents = new();
 
-        /// <summary>
-        /// Gets the component collection for this entity.
-        /// </summary>
+        ///<summary>
+        ///Gets the component collection for this entity.
+        ///</summary>
         public IReadOnlyDictionary<Type, object> Components
         {
             get
@@ -256,9 +258,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             }
         }
 
-        /// <summary>
-        /// Gets a component of type T from this entity.
-        /// </summary>
+        ///<summary>
+        ///Gets a component of type T from this entity.
+        ///</summary>
         public T? GetComponent<T>() where T : class
         {
             if (_entityComponents.TryGetValue(Id, out var components) &&
@@ -269,18 +271,18 @@ namespace SASZombieAssaultTD.Engine.ECS
             return null;
         }
 
-        /// <summary>
-        /// Tries to get a component of type T from this entity.
-        /// </summary>
+        ///<summary>
+        ///Tries to get a component of type T from this entity.
+        ///</summary>
         public bool TryGetComponent<T>(out T? component) where T : class
         {
             component = GetComponent<T>();
             return component != null;
         }
 
-        /// <summary>
-        /// Adds a component to this entity.
-        /// </summary>
+        ///<summary>
+        ///Adds a component to this entity.
+        ///</summary>
         public void AddComponent<T>(T component)
         {
             if (component == null) return;
@@ -294,9 +296,9 @@ namespace SASZombieAssaultTD.Engine.ECS
             components[typeof(T)] = component;
         }
 
-        /// <summary>
-        /// Removes a component from this entity.
-        /// </summary>
+        ///<summary>
+        ///Removes a component from this entity.
+        ///</summary>
         public void RemoveComponent<T>()
         {
             if (_entityComponents.TryGetValue(Id, out var components))
@@ -305,18 +307,18 @@ namespace SASZombieAssaultTD.Engine.ECS
             }
         }
 
-        /// <summary>
-        /// Checks if this entity has a component of type T.
-        /// </summary>
+        ///<summary>
+        ///Checks if this entity has a component of type T.
+        ///</summary>
         public bool HasComponent<T>()
         {
             return _entityComponents.TryGetValue(Id, out var components) &&
                    components.ContainsKey(typeof(T));
         }
 
-        /// <summary>
-        /// Gets all components of this entity.
-        /// </summary>
+        ///<summary>
+        ///Gets all components of this entity.
+        ///</summary>
         public IEnumerable<object> GetAllComponents()
         {
             if (_entityComponents.TryGetValue(Id, out var components))
@@ -326,48 +328,48 @@ namespace SASZombieAssaultTD.Engine.ECS
             return Enumerable.Empty<object>();
         }
 
-        /// <summary>
-        /// Clears all components from this entity.
-        /// </summary>
+        ///<summary>
+        ///Clears all components from this entity.
+        ///</summary>
         public void ClearComponents()
         {
             _entityComponents.Remove(Id);
         }
 
-        /// 
+        ///
 
-        ///  Lifecycle
+        /// Lifecycle
 
-        /// <summary>
-        /// Indicates whether this entity is alive.
-        /// </summary>
+        ///<summary>
+        ///Indicates whether this entity is alive.
+        ///</summary>
         public bool IsAlive => IsValid && _entityComponents.ContainsKey(Id);
 
-        /// <summary>
-        /// Updates this entity.
-        /// </summary>
+        ///<summary>
+        ///Updates this entity.
+        ///</summary>
         public void Update(float deltaTime)
         {
-            // Entity update logic would go here
-            // For now, this is a placeholder for the expected interface
+            //Entity update logic would go here
+            //For now, this is a placeholder for the expected interface
         }
 
-        /// <summary>
-        /// Destroys this entity.
-        /// </summary>
+        ///<summary>
+        ///Destroys this entity.
+        ///</summary>
         public void Destroy()
         {
             ClearComponents();
         }
 
-        /// <summary>
-        /// Internal destroy method for cleanup.
-        /// </summary>
+        ///<summary>
+        ///Internal destroy method for cleanup.
+        ///</summary>
         internal void DestroyInternal()
         {
             ClearComponents();
         }
 
-        /// 
+        ///
     }
 }

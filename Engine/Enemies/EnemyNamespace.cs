@@ -8,31 +8,33 @@ using SASZombieAssaultTD.Engine.ECS;
 using System;
 using System.Numerics;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Enemies
 {
-    /// <summary>
-    /// Static factory class to ensure Enemy class is properly initialized and accessible.
-    /// </summary>
+    ///<summary>
+    ///Static factory class to ensure Enemy class is properly initialized and accessible.
+    ///</summary>
     public static class EnemyFactory
     {
         private static object TheType;
         private static object TheMember;
 
-        /// <summary>
-        /// Creates a new enemy instance.
-        /// </summary>
+        ///<summary>
+        ///Creates a new enemy instance.
+        ///</summary>
         public static Enemy CreateEnemy(Entity entity)
         {
             return new Enemy(entity);
         }
 
-        /// <summary>
-        /// Ensures the Enemy namespace is properly loaded.
-        /// </summary>
+        ///<summary>
+        ///Ensures the Enemy namespace is properly loaded.
+        ///</summary>
         public static void InitializeNamespace()
         {
-            // This method ensures the namespace is loaded
-            // and can be called during engine initialization
+            //This method ensures the namespace is loaded
+            //and can be called during engine initialization
         }
 
         internal static Enemy CreateEnemy(WaveSpawnGroup.ZombieType enemyType, Vector2 position)

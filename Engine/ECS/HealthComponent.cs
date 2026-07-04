@@ -1,8 +1,10 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.ECS
 {
-    /// <summary>
-    /// Health component for damage and lifecycle management.
-    /// </summary>
+    ///<summary>
+    ///Health component for damage and lifecycle management.
+    ///</summary>
     public class HealthComponent
     {
         public double CurrentHealth { get; set; }
@@ -13,18 +15,18 @@ namespace SASZombieAssaultTD.Engine.ECS
         public bool IsDamaged => CurrentHealth < MaxHealth;
         public float DamageTaken => (float)(MaxHealth - CurrentHealth);
 
-        /// <summary>
-        /// Required so object initializers work.
-        /// </summary>
+        ///<summary>
+        ///Required so object initializers work.
+        ///</summary>
         public HealthComponent()
         {
             CurrentHealth = 0;
             MaxHealth = 0;
         }
 
-        /// <summary>
-        /// Convenience constructor for setting max health.
-        /// </summary>
+        ///<summary>
+        ///Convenience constructor for setting max health.
+        ///</summary>
         public HealthComponent(double maxHealth)
         {
             CurrentHealth = maxHealth;

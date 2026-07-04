@@ -17,87 +17,89 @@ Notes:    This is the base class that all hazards inherit from.
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.HazardsControl
 {
-    /// <summary>
-    /// Base class for all hazard types.
-    /// Defines core properties and state for hazards.
-    /// </summary>
+    ///<summary>
+    ///Base class for all hazard types.
+    ///Defines core properties and state for hazards.
+    ///</summary>
     public class Hazard
     {
-        ///  Properties
+        /// Properties
 
-        /// <summary>Unique identifier for the hazard.</summary>
+        ///<summary>Unique identifier for the hazard.</summary>
         public int Id { get; set; }
 
-        /// <summary>Type of hazard (e.g., nuke, radiation, fire, chemical).</summary>
+        ///<summary>Type of hazard (e.g., nuke, radiation, fire, chemical).</summary>
         public string Type { get; set; } = string.Empty;
 
-        /// <summary>Current state of the hazard.</summary>
+        ///<summary>Current state of the hazard.</summary>
         public HazardState State { get; set; } = HazardState.Pending;
 
-        /// <summary>Position of the hazard in world space.</summary>
+        ///<summary>Position of the hazard in world space.</summary>
         public Vector3 Position { get; set; }
 
-        /// <summary>Radius of the effect area.</summary>
+        ///<summary>Radius of the effect area.</summary>
         public float Radius { get; set; }
 
-        /// <summary>Maximum lifetime in seconds.</summary>
+        ///<summary>Maximum lifetime in seconds.</summary>
         public float MaxLifetime { get; set; }
 
-        /// <summary>Current intensity (0-1).</summary>
+        ///<summary>Current intensity (0-1).</summary>
         public float CurrentIntensity { get; set; } = 1f;
 
-        /// <summary>Initial intensity value.</summary>
+        ///<summary>Initial intensity value.</summary>
         public float InitialIntensity { get; set; } = 1f;
 
-        /// <summary>Indicates whether the hazard decays over time.</summary>
+        ///<summary>Indicates whether the hazard decays over time.</summary>
         public bool HasDecay { get; set; } = false;
 
-        /// <summary>Time until activation.</summary>
+        ///<summary>Time until activation.</summary>
         public float ActivationDelay { get; set; }
 
-        /// <summary>Duration of the activation animation.</summary>
+        ///<summary>Duration of the activation animation.</summary>
         public float ActivationDuration { get; set; } = 1f;
 
-        /// <summary>Progress of activation (0-1).</summary>
+        ///<summary>Progress of activation (0-1).</summary>
         public float ActivationProgress { get; set; }
 
-        /// <summary>Indicates whether the hazard has been activated.</summary>
+        ///<summary>Indicates whether the hazard has been activated.</summary>
         public bool HasActivated { get; set; } = false;
 
-        /// <summary>Time when the hazard was activated.</summary>
+        ///<summary>Time when the hazard was activated.</summary>
         public DateTime ActivationTime { get; set; }
 
-        /// <summary>Current elapsed lifetime.</summary>
+        ///<summary>Current elapsed lifetime.</summary>
         public float Lifetime { get; set; }
 
-        /// <summary>Duration of the decay process.</summary>
+        ///<summary>Duration of the decay process.</summary>
         public float DecayDuration { get; set; } = 5f;
 
-        /// <summary>Progress of decay (0-1).</summary>
+        ///<summary>Progress of decay (0-1).</summary>
         public float DecayProgress { get; set; }
 
-        /// <summary>Rate of intensity decay per second.</summary>
+        ///<summary>Rate of intensity decay per second.</summary>
         public float IntensityDecayRate { get; set; }
 
-        /// <summary>Period for effects (0 = no periodic effects).</summary>
+        ///<summary>Period for effects (0 = no periodic effects).</summary>
         public float EffectPeriod { get; set; }
 
-        /// <summary>Elapsed time since the last effect.</summary>
+        ///<summary>Elapsed time since the last effect.</summary>
         public float ElapsedTime { get; set; }
 
-        /// <summary>Time when the hazard was created.</summary>
+        ///<summary>Time when the hazard was created.</summary>
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        /// 
+        ///
 
-        ///  Methods
+        /// Methods
 
-        /// <summary>
-        /// Updates the hazard's state based on elapsed time.
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since the last update.</param>
+        ///<summary>
+        ///Updates the hazard's state based on elapsed time.
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since the last update.</param>
         public virtual void Update(float deltaTime)
         {
             Lifetime += deltaTime;
@@ -119,9 +121,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             }
         }
 
-        /// <summary>
-        /// Activates the hazard.
-        /// </summary>
+        ///<summary>
+        ///Activates the hazard.
+        ///</summary>
         public virtual void Activate()
         {
             State = HazardState.Active;
@@ -129,34 +131,34 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             ActivationTime = DateTime.Now;
         }
 
-        /// <summary>
-        /// Expires the hazard, transitioning it to the expired state.
-        /// </summary>
+        ///<summary>
+        ///Expires the hazard, transitioning it to the expired state.
+        ///</summary>
         public virtual void Expire()
         {
             State = HazardState.Expired;
             CurrentIntensity = 0f;
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// States that a hazard can be in.
-    /// </summary>
+    ///<summary>
+    ///States that a hazard can be in.
+    ///</summary>
     public enum HazardState
     {
-        Pending,    // Waiting to be activated.
-        Activating, // In the process of activation.
-        Active,     // Fully active.
-        Decaying,   // In the process of decaying.
-        Expired,    // Fully expired.
-        Inactive    // Not currently active.
+        Pending,    //Waiting to be activated.
+        Activating, //In the process of activation.
+        Active,     //Fully active.
+        Decaying,   //In the process of decaying.
+        Expired,    //Fully expired.
+        Inactive    //Not currently active.
     }
 
-    /// <summary>
-    /// Simple 3D vector for positions.
-    /// </summary>
+    ///<summary>
+    ///Simple 3D vector for positions.
+    ///</summary>
     public struct Vector3
     {
         public float X { get; set; }
@@ -181,9 +183,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         public float Length => (float)System.Math.Sqrt(LengthSquared);
     }
 
-    /// <summary>
-    /// Simple rectangle for areas.
-    /// </summary>
+    ///<summary>
+    ///Simple rectangle for areas.
+    ///</summary>
     public struct Rectangle
     {
         public float X { get; set; }

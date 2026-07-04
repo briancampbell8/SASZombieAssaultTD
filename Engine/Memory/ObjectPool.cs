@@ -1,16 +1,18 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Memory
+//
 {
-    /// <summary>
-    /// Generic object pool for memory management optimization.
-    /// Optimized for thread safety, asynchronous operations, and event-driven design.
-    /// </summary>
-    /// <typeparam name="T">The type of objects to pool.</typeparam>
+    ///<summary>
+    ///Generic object pool for memory management optimization.
+    ///Optimized for thread safety, asynchronous operations, and event-driven design.
+    ///</summary>
+    ///<typeparam name="T">The type of objects to pool.</typeparam>
     public class ObjectPool<T> where T : class, new()
     {
         private readonly ConcurrentQueue<T> _available;
@@ -23,63 +25,63 @@ namespace SASZombieAssaultTD.Engine.Memory
         private int _totalReused;
         private int _peakUsage;
 
-        /// <summary>
-        /// Gets the number of available objects.
-        /// </summary>
+        ///<summary>
+        ///Gets the number of available objects.
+        ///</summary>
         public int AvailableCount => _available.Count;
 
-        /// <summary>
-        /// Gets the number of objects currently in use.
-        /// </summary>
+        ///<summary>
+        ///Gets the number of objects currently in use.
+        ///</summary>
         public int InUseCount => _inUse.Count;
 
-        /// <summary>
-        /// Gets the maximum capacity of the pool.
-        /// </summary>
+        ///<summary>
+        ///Gets the maximum capacity of the pool.
+        ///</summary>
         public int MaxCapacity => _maxCapacity;
 
-        /// <summary>
-        /// Gets the total number of objects created.
-        /// </summary>
+        ///<summary>
+        ///Gets the total number of objects created.
+        ///</summary>
         public int TotalCreated => _totalCreated;
 
-        /// <summary>
-        /// Gets the total number of objects reused.
-        /// </summary>
+        ///<summary>
+        ///Gets the total number of objects reused.
+        ///</summary>
         public int TotalReused => _totalReused;
 
-        /// <summary>
-        /// Gets the peak usage count.
-        /// </summary>
+        ///<summary>
+        ///Gets the peak usage count.
+        ///</summary>
         public int PeakUsage => _peakUsage;
 
-        /// <summary>
-        /// Gets the reuse efficiency (0.0 to 1.0).
-        /// </summary>
+        ///<summary>
+        ///Gets the reuse efficiency (0.0 to 1.0).
+        ///</summary>
         public float ReuseEfficiency => _totalCreated > 0 ? (float)_totalReused / _totalCreated : 0f;
 
-        /// <summary>
-        /// Event fired when an object is rented.
-        /// </summary>
+        ///<summary>
+        ///Event fired when an object is rented.
+        ///</summary>
         public event EventHandler<T>? ObjectRented;
 
-        /// <summary>
-        /// Event fired when an object is returned.
-        /// </summary>
+        ///<summary>
+        ///Event fired when an object is returned.
+        ///</summary>
         public event EventHandler<T>? ObjectReturned;
 
-        /// <summary>
-        /// Event fired when a new object is created.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a new object is created.
+        ///</summary>
         public event EventHandler<T>? ObjectCreated;
 
-        /// <summary>
-        /// Initializes a new object pool.
-        /// </summary>
-        /// <param name="maxCapacity">Maximum capacity of the pool.</param>
-        /// <param name="createFunc">Factory function for creating new objects.</param>
-        /// <param name="resetAction">Action to reset objects when returned.</param>
-        /// <param name="disposeAction">Action to dispose objects when cleaned up.</param>
+        ///<summary>
+        ///Initializes a new object pool.
+        ///</summary>
+        ///<param name="maxCapacity">Maximum capacity of the pool.</param>
+        ///<param name="createFunc">Factory function for creating new objects.</param>
+        ///<param name="resetAction">Action to reset objects when returned.</param>
+        ///<param name="disposeAction">Action to dispose objects when cleaned up.</param>
         public ObjectPool(int maxCapacity = 100, Func<T>? createFunc = null, Action<T>? resetAction = null, Action<T>? disposeAction = null)
         {
             _available = new ConcurrentQueue<T>();
@@ -88,22 +90,22 @@ namespace SASZombieAssaultTD.Engine.Memory
             _createFunc = createFunc ?? (() => new T());
             _resetAction = resetAction;
             _disposeAction = disposeAction;
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ObjectPool<{typeof(T).Name}>: Initialized with max capacity {_maxCapacity}");
+            DLogger.Log(LogSubsystems.Memory,LogLevel.Info, $"ObjectPool<{typeof(T).Name}>: Initialized with max capacity {_maxCapacity}");
         }
 
-        /// <summary>
-        /// Rents an object from the pool asynchronously.
-        /// </summary>
-        /// <returns>An object from the pool.</returns>
+        ///<summary>
+        ///Rents an object from the pool asynchronously.
+        ///</summary>
+        ///<returns>An object from the pool.</returns>
         public async Task<T> RentAsync()
         {
             return await Task.Run(() => Rent());
         }
 
-        /// <summary>
-        /// Rents an object from the pool.
-        /// </summary>
-        /// <returns>An object from the pool.</returns>
+        ///<summary>
+        ///Rents an object from the pool.
+        ///</summary>
+        ///<returns>An object from the pool.</returns>
         public T Rent()
         {
             if (_available.TryDequeue(out var obj))
@@ -120,35 +122,35 @@ namespace SASZombieAssaultTD.Engine.Memory
             _inUse[obj] = true;
             UpdatePeakUsage();
             ObjectRented?.Invoke(this, obj);
-            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"ObjectPool<{typeof(T).Name}>: Rented object (available: {_available.Count}, in use: {_inUse.Count})");
+           DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", $"ObjectPool<{typeof(T).Name}>: Rented object (available: {_available.Count}, in use: {_inUse.Count})");
 
             return obj;
         }
 
-        /// <summary>
-        /// Returns an object to the pool asynchronously.
-        /// </summary>
-        /// <param name="obj">The object to return.</param>
+        ///<summary>
+        ///Returns an object to the pool asynchronously.
+        ///</summary>
+        ///<param name="obj">The object to return.</param>
         public async Task ReturnAsync(T obj)
         {
             if (obj == null)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"ObjectPool<{typeof(T).Name}>: Cannot return null object");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"ObjectPool<{typeof(T).Name}>: Cannot return null object");
                 return;
             }
 
             await Task.Run(() => Return(obj));
         }
 
-        /// <summary>
-        /// Returns an object to the pool.
-        /// </summary>
-        /// <param name="obj">The object to return.</param>
+        ///<summary>
+        ///Returns an object to the pool.
+        ///</summary>
+        ///<param name="obj">The object to return.</param>
         public void Return(T obj)
         {
             if (!_inUse.TryRemove(obj, out _))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"ObjectPool<{typeof(T).Name}>: Object not found in use set");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"ObjectPool<{typeof(T).Name}>: Object not found in use set");
                 return;
             }
 
@@ -164,12 +166,12 @@ namespace SASZombieAssaultTD.Engine.Memory
             }
 
             ObjectReturned?.Invoke(this, obj);
-            Engine.Diagnostics.DebugLogger.LogDebug("TRACE", $"ObjectPool<{typeof(T).Name}>: Returned object (available: {_available.Count}, in use: {_inUse.Count})");
+           DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", $"ObjectPool<{typeof(T).Name}>: Returned object (available: {_available.Count}, in use: {_inUse.Count})");
         }
 
-        /// <summary>
-        /// Clears the pool and disposes all objects.
-        /// </summary>
+        ///<summary>
+        ///Clears the pool and disposes all objects.
+        ///</summary>
         public void Clear()
         {
             while (_available.TryDequeue(out var obj))
@@ -183,13 +185,13 @@ namespace SASZombieAssaultTD.Engine.Memory
             }
 
             _inUse.Clear();
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ObjectPool<{typeof(T).Name}>: Cleared pool");
+            DLogger.Log(LogSubsystems.Memory,LogLevel.Info, $"ObjectPool<{typeof(T).Name}>: Cleared pool");
         }
 
-        /// <summary>
-        /// Pre-warms the pool with a specified number of objects.
-        /// </summary>
-        /// <param name="count">Number of objects to create.</param>
+        ///<summary>
+        ///Pre-warms the pool with a specified number of objects.
+        ///</summary>
+        ///<param name="count">Number of objects to create.</param>
         public void PreWarm(int count)
         {
             count = System.Math.Min(count, _maxCapacity - _available.Count);
@@ -202,12 +204,12 @@ namespace SASZombieAssaultTD.Engine.Memory
                 ObjectCreated?.Invoke(this, obj);
             }
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"ObjectPool<{typeof(T).Name}>: Pre-warmed with {count} objects");
+            DLogger.Log(LogSubsystems.Memory,LogLevel.Info, $"ObjectPool<{typeof(T).Name}>: Pre-warmed with {count} objects");
         }
 
-        /// <summary>
-        /// Updates the peak usage count.
-        /// </summary>
+        ///<summary>
+        ///Updates the peak usage count.
+        ///</summary>
         private void UpdatePeakUsage()
         {
             var currentUsage = _inUse.Count;
@@ -217,10 +219,10 @@ namespace SASZombieAssaultTD.Engine.Memory
             }
         }
 
-        /// <summary>
-        /// Gets pool statistics.
-        /// </summary>
-        /// <returns>Pool statistics.</returns>
+        ///<summary>
+        ///Gets pool statistics.
+        ///</summary>
+        ///<returns>Pool statistics.</returns>
         public PoolStatistics GetStatistics()
         {
             return new PoolStatistics
@@ -235,9 +237,9 @@ namespace SASZombieAssaultTD.Engine.Memory
             };
         }
 
-        /// <summary>
-        /// Gets pool information as a string.
-        /// </summary>
+        ///<summary>
+        ///Gets pool information as a string.
+        ///</summary>
         public override string ToString()
         {
             return $"ObjectPool<{typeof(T).Name}>: Available={_available.Count}, InUse={_inUse.Count}, " +
@@ -246,9 +248,9 @@ namespace SASZombieAssaultTD.Engine.Memory
         }
     }
 
-    /// <summary>
-    /// Pool statistics.
-    /// </summary>
+    ///<summary>
+    ///Pool statistics.
+    ///</summary>
     public class PoolStatistics
     {
         public int AvailableCount { get; set; }

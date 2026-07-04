@@ -14,74 +14,76 @@ Notes:   This is a placeholder implementation for the base tower class.
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Gameplay.Towers
 {
-    /// <summary>
-    /// Parent class for all towers.
-    /// Defines shared tower identity, category, and placeholder fields.
-    /// </summary>
+    ///<summary>
+    ///Parent class for all towers.
+    ///Defines shared tower identity, category, and placeholder fields.
+    ///</summary>
     public abstract class BaseTower
     {
-        ///  Properties
+        /// Properties
         
-        /// <summary>Unique identifier for this tower instance.</summary>
+        ///<summary>Unique identifier for this tower instance.</summary>
         public string Id { get; protected set; }
         
-        /// <summary>Type identifier for this tower.</summary>
+        ///<summary>Type identifier for this tower.</summary>
         public abstract string TowerType { get; }
         
-        /// <summary>Category of this tower.</summary>
+        ///<summary>Category of this tower.</summary>
         public abstract string Category { get; }
         
-        /// <summary>Display name for this tower.</summary>
+        ///<summary>Display name for this tower.</summary>
         public abstract string DisplayName { get; }
         
-        /// <summary>Base cost to build this tower.</summary>
+        ///<summary>Base cost to build this tower.</summary>
         public abstract int BaseCost { get; }
         
-        /// <summary>Base attack damage for this tower.</summary>
+        ///<summary>Base attack damage for this tower.</summary>
         public abstract float BaseDamage { get; }
         
-        /// <summary>Base attack range for this tower.</summary>
+        ///<summary>Base attack range for this tower.</summary>
         public abstract float BaseRange { get; }
         
-        /// <summary>Base attack speed for this tower.</summary>
+        ///<summary>Base attack speed for this tower.</summary>
         public abstract float BaseAttackSpeed { get; }
         
-        /// <summary>Current level of this tower.</summary>
+        ///<summary>Current level of this tower.</summary>
         public int Level { get; protected set; }
         
-        /// <summary>Maximum level this tower can reach.</summary>
+        ///<summary>Maximum level this tower can reach.</summary>
         public virtual int MaxLevel => 5;
         
-        /// <summary>Whether this tower is currently active.</summary>
+        ///<summary>Whether this tower is currently active.</summary>
         public bool IsActive { get; protected set; }
         
-        /// <summary>Current upgrade cost for this tower.</summary>
+        ///<summary>Current upgrade cost for this tower.</summary>
         public virtual int UpgradeCost => BaseCost * (Level + 1);
         
-        /// <summary>Current total investment in this tower.</summary>
+        ///<summary>Current total investment in this tower.</summary>
         public int TotalInvestment { get; protected set; }
         
-        /// <summary>Target priority for this tower type.</summary>
+        ///<summary>Target priority for this tower type.</summary>
         public abstract string TargetPriority { get; }
         
-        /// <summary>Damage type for this tower.</summary>
+        ///<summary>Damage type for this tower.</summary>
         public abstract string DamageType { get; }
         
-        /// <summary>Whether this tower can target air units.</summary>
+        ///<summary>Whether this tower can target air units.</summary>
         public virtual bool CanTargetAir => false;
         
-        /// <summary>Whether this tower can target ground units.</summary>
+        ///<summary>Whether this tower can target ground units.</summary>
         public virtual bool CanTargetGround => true;
         
-        /// 
+        ///
 
-        ///  Constructors
+        /// Constructors
         
-        /// <summary>
-        /// Creates a new base tower instance.
-        /// </summary>
+        ///<summary>
+        ///Creates a new base tower instance.
+        ///</summary>
         protected BaseTower()
         {
             Id = GenerateId();
@@ -90,10 +92,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             TotalInvestment = 0;
         }
         
-        /// <summary>
-        /// Creates a new base tower instance with specified ID.
-        /// </summary>
-        /// <param name="id">Unique identifier.</param>
+        ///<summary>
+        ///Creates a new base tower instance with specified ID.
+        ///</summary>
+        ///<param name="id">Unique identifier.</param>
         protected BaseTower(string id)
         {
             Id = id ?? GenerateId();
@@ -102,30 +104,30 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             TotalInvestment = 0;
         }
         
-        /// 
+        ///
 
-        ///  Tower Operations (Placeholder)
+        /// Tower Operations (Placeholder)
         
-        /// <summary>
-        /// Activates this tower.
-        /// </summary>
+        ///<summary>
+        ///Activates this tower.
+        ///</summary>
         public virtual void Activate()
         {
             IsActive = true;
         }
         
-        /// <summary>
-        /// Deactivates this tower.
-        /// </summary>
+        ///<summary>
+        ///Deactivates this tower.
+        ///</summary>
         public virtual void Deactivate()
         {
             IsActive = false;
         }
         
-        /// <summary>
-        /// Upgrades this tower to the next level.
-        /// </summary>
-        /// <returns>True if upgrade was successful.</returns>
+        ///<summary>
+        ///Upgrades this tower to the next level.
+        ///</summary>
+        ///<returns>True if upgrade was successful.</returns>
         public virtual bool Upgrade()
         {
             if (Level >= MaxLevel)
@@ -136,21 +138,21 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             return true;
         }
         
-        /// <summary>
-        /// Sells this tower and returns the refund amount.
-        /// </summary>
-        /// <returns>Refund amount.</returns>
+        ///<summary>
+        ///Sells this tower and returns the refund amount.
+        ///</summary>
+        ///<returns>Refund amount.</returns>
         public virtual int Sell()
         {
-            var refund = TotalInvestment / 2; // 50% refund
+            var refund = TotalInvestment / 2; //50% refund
             Deactivate();
             return refund;
         }
         
-        /// <summary>
-        /// Gets the current stats for this tower.
-        /// </summary>
-        /// <returns>Tower stats dictionary.</returns>
+        ///<summary>
+        ///Gets the current stats for this tower.
+        ///</summary>
+        ///<returns>Tower stats dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetCurrentStats()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -165,10 +167,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             };
         }
         
-        /// <summary>
-        /// Gets the upgrade requirements for this tower.
-        /// </summary>
-        /// <returns>Upgrade requirements dictionary.</returns>
+        ///<summary>
+        ///Gets the upgrade requirements for this tower.
+        ///</summary>
+        ///<returns>Upgrade requirements dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetUpgradeRequirements()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -180,10 +182,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             };
         }
         
-        /// <summary>
-        /// Gets the targeting characteristics for this tower type.
-        /// </summary>
-        /// <returns>Targeting characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the targeting characteristics for this tower type.
+        ///</summary>
+        ///<returns>Targeting characteristics dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetTargetingCharacteristics()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -196,62 +198,62 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             };
         }
         
-        /// <summary>
-        /// Gets the behavior characteristics for this tower type.
-        /// </summary>
-        /// <returns>Behavior characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the behavior characteristics for this tower type.
+        ///</summary>
+        ///<returns>Behavior characteristics dictionary.</returns>
         public abstract System.Collections.Generic.Dictionary<string, object> GetBehaviorCharacteristics();
         
-        /// <summary>
-        /// Gets the combat characteristics for this tower type.
-        /// </summary>
-        /// <returns>Combat characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the combat characteristics for this tower type.
+        ///</summary>
+        ///<returns>Combat characteristics dictionary.</returns>
         public abstract System.Collections.Generic.Dictionary<string, object> GetCombatCharacteristics();
         
-        /// <summary>
-        /// Gets the upgrade characteristics for this tower type.
-        /// </summary>
-        /// <returns>Upgrade characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the upgrade characteristics for this tower type.
+        ///</summary>
+        ///<returns>Upgrade characteristics dictionary.</returns>
         public abstract System.Collections.Generic.Dictionary<string, object> GetUpgradeCharacteristics();
         
-        /// 
+        ///
 
-        ///  Level-based Calculations
+        /// Level-based Calculations
         
-        /// <summary>
-        /// Gets the damage at a specific level.
-        /// </summary>
-        /// <param name="level">Tower level.</param>
-        /// <returns>Damage at specified level.</returns>
+        ///<summary>
+        ///Gets the damage at a specific level.
+        ///</summary>
+        ///<param name="level">Tower level.</param>
+        ///<returns>Damage at specified level.</returns>
         protected virtual float GetDamageAtLevel(int level)
         {
             return BaseDamage * (1f + (level - 1) * 0.2f);
         }
         
-        /// <summary>
-        /// Gets the range at a specific level.
-        /// </summary>
-        /// <param name="level">Tower level.</param>
-        /// <returns>Range at specified level.</returns>
+        ///<summary>
+        ///Gets the range at a specific level.
+        ///</summary>
+        ///<param name="level">Tower level.</param>
+        ///<returns>Range at specified level.</returns>
         protected virtual float GetRangeAtLevel(int level)
         {
             return BaseRange * (1f + (level - 1) * 0.1f);
         }
         
-        /// <summary>
-        /// Gets the attack speed at a specific level.
-        /// </summary>
-        /// <param name="level">Tower level.</param>
-        /// <returns>Attack speed at specified level.</returns>
+        ///<summary>
+        ///Gets the attack speed at a specific level.
+        ///</summary>
+        ///<param name="level">Tower level.</param>
+        ///<returns>Attack speed at specified level.</returns>
         protected virtual float GetAttackSpeedAtLevel(int level)
         {
             return BaseAttackSpeed * (1f + (level - 1) * 0.15f);
         }
         
-        /// <summary>
-        /// Gets the upgrade benefits for the next level.
-        /// </summary>
-        /// <returns>Upgrade benefits list.</returns>
+        ///<summary>
+        ///Gets the upgrade benefits for the next level.
+        ///</summary>
+        ///<returns>Upgrade benefits list.</returns>
         protected virtual System.Collections.Generic.List<string> GetUpgradeBenefits()
         {
             var benefits = new System.Collections.Generic.List<string>();
@@ -266,28 +268,28 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Towers
             return benefits;
         }
         
-        /// 
+        ///
 
-        ///  Utility Methods
+        /// Utility Methods
         
-        /// <summary>
-        /// Generates a unique ID for this tower instance.
-        /// </summary>
-        /// <returns>Unique identifier string.</returns>
+        ///<summary>
+        ///Generates a unique ID for this tower instance.
+        ///</summary>
+        ///<returns>Unique identifier string.</returns>
         private static string GenerateId()
         {
             return $"Tower_{Guid.NewGuid():N}";
         }
         
-        /// <summary>
-        /// Gets a summary of this tower type.
-        /// </summary>
-        /// <returns>Summary string.</returns>
+        ///<summary>
+        ///Gets a summary of this tower type.
+        ///</summary>
+        ///<returns>Summary string.</returns>
         public override string ToString()
         {
             return $"{DisplayName} (ID: {Id}, Level: {Level}/{MaxLevel}, Cost: {BaseCost})";
         }
         
-        /// 
+        ///
     }
 }

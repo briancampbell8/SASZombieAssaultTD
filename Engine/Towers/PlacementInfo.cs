@@ -7,77 +7,79 @@ Features: Position validation, tower data reference, and placement status.
 
 using SASZombieAssaultTD.Engine.VectorMath;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Towers
 {
-    /// <summary>
-    /// Information about a tower placement attempt.
-    /// Used by placement validation and UI systems.
-    /// </summary>
+    ///<summary>
+    ///Information about a tower placement attempt.
+    ///Used by placement validation and UI systems.
+    ///</summary>
     public class PlacementInfo
     {
-        ///  Properties
+        /// Properties
 
-        /// <summary>
-        /// Grid position where tower is being placed.
-        /// </summary>
+        ///<summary>
+        ///Grid position where tower is being placed.
+        ///</summary>
         public Vector3Int GridPosition { get; set; }
 
-        /// <summary>
-        /// World position where tower is being placed.
-        /// </summary>
+        ///<summary>
+        ///World position where tower is being placed.
+        ///</summary>
         public Vector3 WorldPosition { get; set; }
 
-        /// <summary>
-        /// Tower data for the tower being placed.
-        /// </summary>
+        ///<summary>
+        ///Tower data for the tower being placed.
+        ///</summary>
         public TowerData TowerData { get; set; }
 
-        /// <summary>
-        /// Whether the placement is valid.
-        /// </summary>
+        ///<summary>
+        ///Whether the placement is valid.
+        ///</summary>
         public bool IsValid { get; set; }
 
-        /// <summary>
-        /// Error message if placement is invalid.
-        /// </summary>
+        ///<summary>
+        ///Error message if placement is invalid.
+        ///</summary>
         public string ErrorMessage { get; set; } = string.Empty;
 
-        /// <summary>
-        /// Warning messages for placement.
-        /// </summary>
+        ///<summary>
+        ///Warning messages for placement.
+        ///</summary>
         public System.Collections.Generic.List<string> Warnings { get; set; } = new();
 
-        /// <summary>
-        /// Whether the placement would block enemy paths.
-        /// </summary>
+        ///<summary>
+        ///Whether the placement would block enemy paths.
+        ///</summary>
         public bool WouldBlockPaths { get; set; }
 
-        /// <summary>
-        /// Distance to nearest tower.
-        /// </summary>
+        ///<summary>
+        ///Distance to nearest tower.
+        ///</summary>
         public float DistanceToNearestTower { get; set; }
 
-        /// <summary>
-        /// Whether the placement is valid.
-        /// </summary>
+        ///<summary>
+        ///Whether the placement is valid.
+        ///</summary>
         public bool CanPlace { get; set; }
 
-        /// <summary>
-        /// Whether the player can afford the tower.
-        /// </summary>
+        ///<summary>
+        ///Whether the player can afford the tower.
+        ///</summary>
         public bool CanAfford { get; set; }
 
-        /// <summary>
-        /// Terrain type at placement position.
-        /// </summary>
+        ///<summary>
+        ///Terrain type at placement position.
+        ///</summary>
         public TerrainType TerrainType { get; set; }
 
-        /// <summary>
-        /// Whether the position is occupied.
-        /// </summary>
+        ///<summary>
+        ///Whether the position is occupied.
+        ///</summary>
         public bool IsOccupied { get; set; }
 
-        // Missing properties
+        //Missing properties
         public TowerType TowerType { get; set; }
         public string TowerName { get; set; }
         public int Cost { get; set; }
@@ -86,15 +88,15 @@ namespace SASZombieAssaultTD.Engine.Towers
         public float Damage { get; set; }
         public float FireRate { get; set; }
 
-        /// 
+        ///
 
-        ///  Constructor
+        /// Constructor
 
-        /// <summary>
-        /// Creates a new placement info instance.
-        /// </summary>
-        /// <param name="gridPosition">Grid position.</param>
-        /// <param name="towerData">Tower data.</param>
+        ///<summary>
+        ///Creates a new placement info instance.
+        ///</summary>
+        ///<param name="gridPosition">Grid position.</param>
+        ///<param name="towerData">Tower data.</param>
         public PlacementInfo(Vector3Int gridPosition, TowerData towerData)
         {
             GridPosition = gridPosition;
@@ -102,14 +104,14 @@ namespace SASZombieAssaultTD.Engine.Towers
             TowerData = towerData ?? throw new System.ArgumentNullException(nameof(towerData));
         }
 
-        /// 
+        ///
 
-        ///  Methods
+        /// Methods
 
-        /// <summary>
-        /// Adds a warning message.
-        /// </summary>
-        /// <param name="message">Warning message.</param>
+        ///<summary>
+        ///Adds a warning message.
+        ///</summary>
+        ///<param name="message">Warning message.</param>
         public void AddWarning(string message)
         {
             if (!string.IsNullOrEmpty(message))
@@ -118,10 +120,10 @@ namespace SASZombieAssaultTD.Engine.Towers
             }
         }
 
-        /// <summary>
-        /// Gets a summary of the placement info.
-        /// </summary>
-        /// <returns>Summary string.</returns>
+        ///<summary>
+        ///Gets a summary of the placement info.
+        ///</summary>
+        ///<returns>Summary string.</returns>
         public override string ToString()
         {
             var status = IsValid ? "Valid" : "Invalid";
@@ -140,6 +142,6 @@ namespace SASZombieAssaultTD.Engine.Towers
             return details;
         }
 
-        /// 
+        ///
     }
 }

@@ -22,37 +22,39 @@
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Platform
 {
-    /// <summary>
-    /// Defines the minimal deterministic lifecycle contract for any engine-hosted program.
-    /// Implemented by <see cref="GameRoot"/> to provide a clean, engine-facing API.
-    /// </summary>
+    ///<summary>
+    ///Defines the minimal deterministic lifecycle contract for any engine-hosted program.
+    ///Implemented by <see cref="GameRoot"/> to provide a clean, engine-facing API.
+    ///</summary>
     public interface IProgram
     {
-        /// <summary>
-        /// Called exactly once at engine startup.
-        /// Used to initialize all game-level systems and state.
-        /// </summary>
+        ///<summary>
+        ///Called exactly once at engine startup.
+        ///Used to initialize all game-level systems and state.
+        ///</summary>
         void Initialize();
 
-        /// <summary>
-        /// Called once per frame by the engine's host loop.
-        /// Used to advance game logic, systems, and state machines.
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since the previous frame.</param>
+        ///<summary>
+        ///Called once per frame by the engine's host loop.
+        ///Used to advance game logic, systems, and state machines.
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since the previous frame.</param>
         void Update(TimeSpan deltaTime);
 
-        /// <summary>
-        /// Called once per frame after <see cref="Update"/>.
-        /// Used to issue all rendering commands through the active render context.
-        /// </summary>
+        ///<summary>
+        ///Called once per frame after <see cref="Update"/>.
+        ///Used to issue all rendering commands through the active render context.
+        ///</summary>
         void Render();
 
-        /// <summary>
-        /// Called exactly once when the engine is shutting down.
-        /// Used to cleanly release resources and stop all systems.
-        /// </summary>
+        ///<summary>
+        ///Called exactly once when the engine is shutting down.
+        ///Used to cleanly release resources and stop all systems.
+        ///</summary>
         void Shutdown();
     }
 }

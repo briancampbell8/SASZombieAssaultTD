@@ -2,6 +2,8 @@ using System;
 using System.Drawing;
 using SASZombieAssaultTD.Engine.VectorMath;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Camera
 {
     public class CameraSystem
@@ -53,9 +55,9 @@ namespace SASZombieAssaultTD.Engine.Camera
             );
         }
 
-        /// <summary>
-        /// Shakes the camera with the specified intensity and duration.
-        /// </summary>
+        ///<summary>
+        ///Shakes the camera with the specified intensity and duration.
+        ///</summary>
         public void Shake(float intensity, float duration)
         {
             System.Diagnostics.Debug.WriteLine($"Shaking camera with intensity {intensity} for {duration} seconds.");

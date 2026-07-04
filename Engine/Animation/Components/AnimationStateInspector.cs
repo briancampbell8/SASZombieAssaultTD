@@ -5,17 +5,18 @@ Purpose: P11-16-05 - Animation state inspection and analysis tools.
 Provides detailed animation state information and debugging capabilities.
 */
 
-using SASZombieAssaultTD.Engine.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Animation.Components
+//
 {
-    /// <summary>
-    /// Animation state inspection and analysis tools.
-    /// Implements P11-16-05: Animation state inspection and debugging capabilities.
-    /// </summary>
+    ///<summary>
+    ///Animation state inspection and analysis tools.
+    ///Implements P11-16-05: Animation state inspection and debugging capabilities.
+    ///</summary>
     public class AnimationStateInspector
     {
         private readonly AnimationControllerComponent _animationController;
@@ -39,12 +40,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             lock (_inspectorLock)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "Initializing AnimationStateInspector...");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Info, "Initializing AnimationStateInspector...");
                 _stateSnapshots.Clear();
                 _transitionHistories.Clear();
                 _isEnabled = true;
                 _startTime = DateTime.Now;
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "AnimationStateInspector initialized successfully");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Info, "AnimationStateInspector initialized successfully");
             }
         }
 
@@ -52,12 +53,12 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             lock (_inspectorLock)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "Shutting down AnimationStateInspector...");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Info, "Shutting down AnimationStateInspector...");
                 GenerateFinalReport();
                 _stateSnapshots.Clear();
                 _transitionHistories.Clear();
                 _isEnabled = false;
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "AnimationStateInspector shutdown completed");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Info, "AnimationStateInspector shutdown completed");
             }
         }
 
@@ -100,7 +101,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 }
                 catch (Exception ex)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to get state info for entity {entityId}: {ex.Message}");
+                    DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"Failed to get state info for entity {entityId}: {ex.Message}");
                     return null;
                 }
             }
@@ -180,7 +181,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 }
                 catch (Exception ex)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to get parameter info for entity {entityId}: {ex.Message}");
+                    DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"Failed to get parameter info for entity {entityId}: {ex.Message}");
                     return null;
                 }
             }
@@ -209,7 +210,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 }
                 catch (Exception ex)
                 {
-                    Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to get blend weight info for entity {entityId}: {ex.Message}");
+                    DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"Failed to get blend weight info for entity {entityId}: {ex.Message}");
                     return null;
                 }
             }
@@ -220,7 +221,8 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             lock (_inspectorLock)
             {
                 _isEnabled = enabled;
-                Engine.Diagnostics.DebugLogger.LogInfo($"Animation state inspection {(enabled ? "enabled" : "disabled")}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Info,
+                    $"Animation state inspection {(enabled ? "enabled" : "disabled")}");
             }
         }
 
@@ -231,7 +233,8 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
                 _stateSnapshots.Clear();
                 _transitionHistories.Clear();
                 _startTime = DateTime.Now;
-                Engine.Diagnostics.DebugLogger.LogInfo("Animation state inspection data cleared");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Info,
+                    "Animation state inspection data cleared");
             }
         }
 
@@ -258,15 +261,15 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             try
             {
                 var stats = GetStats();
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", "Animation state inspector final report:");
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"  Total run time: {stats.TotalRunTime:F2}s");
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"  Inspected entities: {stats.InspectedEntityCount}");
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"  Total transition records: {stats.TotalTransitionRecords}");
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"  Average transitions per entity: {stats.AverageTransitionsPerEntity:F2}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Info, "Animation state inspector final report:");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Info, $"  Total run time: {stats.TotalRunTime:F2}s");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Info, $"  Inspected entities: {stats.InspectedEntityCount}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Info, $"  Total transition records: {stats.TotalTransitionRecords}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Info, $"  Average transitions per entity: {stats.AverageTransitionsPerEntity:F2}");
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"Failed to generate final report: {ex.Message}");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"Failed to generate final report: {ex.Message}");
             }
         }
     }

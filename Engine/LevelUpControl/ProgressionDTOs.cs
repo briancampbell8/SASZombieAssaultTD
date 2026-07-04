@@ -37,10 +37,12 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
-    // DTO: ProgressionMilestoneDTO
-    // PURPOSE: JSON-safe representation of ProgressionMilestone.
+    //DTO: ProgressionMilestoneDTO
+    //PURPOSE: JSON-safe representation of ProgressionMilestone.
     public class ProgressionMilestoneDTO
     {
         public string Id { get; set; }
@@ -53,8 +55,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public List<ProgressionRewardDTO> Rewards { get; set; }
     }
 
-    // DTO: ProgressionAchievementDTO
-    // PURPOSE: JSON-safe representation of ProgressionAchievement.
+    //DTO: ProgressionAchievementDTO
+    //PURPOSE: JSON-safe representation of ProgressionAchievement.
     public class ProgressionAchievementDTO
     {
         public string Id { get; set; }
@@ -67,8 +69,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public float MaxProgress { get; set; }
     }
 
-    // DTO: ProgressionEventDTO
-    // PURPOSE: JSON-safe representation of ProgressionEvent.
+    //DTO: ProgressionEventDTO
+    //PURPOSE: JSON-safe representation of ProgressionEvent.
     public class ProgressionEventDTO
     {
         public string Id { get; set; }
@@ -80,16 +82,16 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public ProgressionRewardDTO Reward { get; set; }
     }
 
-    // DTO: ProgressionRewardDTO
-    // PURPOSE: JSON-safe representation of ProgressionReward.
+    //DTO: ProgressionRewardDTO
+    //PURPOSE: JSON-safe representation of ProgressionReward.
     public class ProgressionRewardDTO
     {
         public RewardType Type { get; set; }
         public int Amount { get; set; }
     }
 
-    // DTO: ProgressionSaveData
-    // PURPOSE: Root save container for the entire progression system.
+    //DTO: ProgressionSaveData
+    //PURPOSE: Root save container for the entire progression system.
     public class ProgressionSaveData
     {
         public List<string> CompletedMilestones { get; set; }

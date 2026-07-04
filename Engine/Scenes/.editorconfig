@@ -1,0 +1,2 @@
+[*.cs]
+file_header_template =  =========================================================\n FILE: {fileName}\n PATH: Engine/Platform/BaseScene.cs\n SUBSYSTEM: Platform Abstraction Layer\n ROLE: Defines the deterministic lifecycle contract\n =========================================================

@@ -1,15 +1,17 @@
-﻿using System;
+using System;
+
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Dictionary
 {
     public static class EngineMath
     {
-        // Missing methods
+        //Missing methods
         public static bool Approximately(float a, float b, float epsilon = 0.0001f) => System.Math.Abs(a - b) < epsilon;
         public static bool Approximately(double a, double b, double epsilon = 0.0001) => System.Math.Abs(a - b) < epsilon;
         public static float GetTime() => (float)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         
-        // MathFunctions nested class
+        //MathFunctions nested class
         public static class MathFunctions
         {
             public static float Clamp(float value, float min, float max) => System.Math.Clamp(value, min, max);
@@ -20,7 +22,7 @@ namespace SASZombieAssaultTD.Engine.Dictionary
 
     public struct Matrix
     {
-        // Missing method
+        //Missing method
         public static Matrix CreateTranslation(float x, float y, float z) => 
             new Matrix
             {

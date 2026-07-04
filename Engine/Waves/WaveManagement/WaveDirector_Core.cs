@@ -35,45 +35,47 @@ using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Enemies;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
 {
     public partial class WaveDirector
     {
-        // ===============================================================================================
-        //  SINGLETON
-        // ===============================================================================================
+        //===============================================================================================
+        // SINGLETON
+        //===============================================================================================
 
         private static WaveDirector _instance;
         public static WaveDirector Instance => _instance ??= new WaveDirector();
 
-        // ===============================================================================================
-        //  CORE INTERNAL STATE
-        // ===============================================================================================
+        //===============================================================================================
+        // CORE INTERNAL STATE
+        //===============================================================================================
 
-        // Wave scripts and queue
+        //Wave scripts and queue
         internal readonly Dictionary<int, WaveScript> _waveScripts;
         internal readonly Queue<WaveScript> _upcomingWaves;
 
-        // Current wave
+        //Current wave
         internal WaveScript _currentWave;
         internal WaveState _currentState;
         internal int _currentWaveNumber;
         internal int _totalWaves;
 
-        // Flags
+        //Flags
         internal bool _isInitialized;
         internal bool _isPaused;
         internal bool _isGameComplete;
 
-        // Timers
+        //Timers
         internal float _waveTimer;
         internal float _interWaveTimer;
         internal float _spawnTimer;
         internal float _currentSpawnDelay;
 
-        // ===============================================================================================
-        //  CONSTRUCTOR
-        // ===============================================================================================
+        //===============================================================================================
+        // CONSTRUCTOR
+        //===============================================================================================
 
         private WaveDirector()
         {
@@ -94,13 +96,13 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             _currentSpawnDelay = 0f;
         }
 
-        // ===============================================================================================
-        //  INTERNAL SHARED HELPERS (NO LOGIC)
-        // ===============================================================================================
+        //===============================================================================================
+        // INTERNAL SHARED HELPERS (NO LOGIC)
+        //===============================================================================================
 
-        /// <summary>
-        /// Internal helper for resetting timers.
-        /// </summary>
+        ///<summary>
+        ///Internal helper for resetting timers.
+        ///</summary>
         internal void ResetTimers()
         {
             _waveTimer = 0f;
@@ -109,9 +111,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             _currentSpawnDelay = 0f;
         }
 
-        /// <summary>
-        /// Internal helper for resetting flags.
-        /// </summary>
+        ///<summary>
+        ///Internal helper for resetting flags.
+        ///</summary>
         internal void ResetFlags()
         {
             _isPaused = false;

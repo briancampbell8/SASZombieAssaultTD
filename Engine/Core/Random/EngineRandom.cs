@@ -12,20 +12,22 @@ Notes:   This is the canonical random system for the entire engine.
          All random operations should use this unified EngineRandom system.
 */
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.VectorMath;
 using System;
 using System.Security.AccessControl;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Core.Random
 {
-    /// <summary>
-    /// Unified random number generator for the entire engine with deterministic behavior support.
-    /// Used by AI, procedural generation, gameplay mechanics, and testing systems.
-    /// </summary>
+    ///<summary>
+    ///Unified random number generator for the entire engine with deterministic behavior support.
+    ///Used by AI, procedural generation, gameplay mechanics, and testing systems.
+    ///</summary>
     public static class EngineRandom
     {
-        ///  Private Fields
+        /// Private Fields
         
         private static readonly System.Random _globalRandom = new System.Random();
         private static System.Random? _deterministicRandom;
@@ -33,143 +35,143 @@ namespace SASZombieAssaultTD.Engine.Core.Random
         private static readonly System.Random _rng = new System.Random();
         private static bool _useDeterministic = false;
         
-        // Thread-local random for performance
+        //Thread-local random for performance
         [ThreadStatic] private static System.Random? _threadLocalRandom;
         private static object TheType;
         private static object TheMember;
 
-        /// 
+        ///
 
-        ///  Public Properties
+        /// Public Properties
 
-        /// <summary>
-        /// Whether deterministic random generation is currently enabled.
-        /// </summary>
+        ///<summary>
+        ///Whether deterministic random generation is currently enabled.
+        ///</summary>
         public static bool IsDeterministic => _useDeterministic;
         
-        /// <summary>
-        /// Current deterministic seed (null if not deterministic).
-        /// </summary>
+        ///<summary>
+        ///Current deterministic seed (null if not deterministic).
+        ///</summary>
         public static int? DeterministicSeed => _deterministicSeed;
         
-        /// 
+        ///
 
-        ///  Basic Random Methods
+        /// Basic Random Methods
         
-        /// <summary>
-        /// Returns a random floating-point number between 0.0 and 1.0 (inclusive).
-        /// </summary>
-        /// <returns>Random value in range [0.0, 1.0].</returns>
+        ///<summary>
+        ///Returns a random floating-point number between 0.0 and 1.0 (inclusive).
+        ///</summary>
+        ///<returns>Random value in range [0.0, 1.0].</returns>
         public static double Value()
         {
             return GetCurrentRandom().NextDouble();
         }
         
-        /// <summary>
-        /// Returns a random floating-point number between 0.0 and 1.0 (inclusive).
-        /// </summary>
-        /// <returns>Random value in range [0.0, 1.0].</returns>
+        ///<summary>
+        ///Returns a random floating-point number between 0.0 and 1.0 (inclusive).
+        ///</summary>
+        ///<returns>Random value in range [0.0, 1.0].</returns>
         public static float ValueFloat()
         {
             return (float)GetCurrentRandom().NextDouble();
         }
         
-        /// <summary>
-        /// Returns a random integer between minInclusive and maxExclusive.
-        /// </summary>
-        /// <param name="minInclusive">Inclusive minimum value.</param>
-        /// <param name="maxExclusive">Exclusive maximum value.</param>
-        /// <returns>Random integer in range [minInclusive, maxExclusive).</returns>
+        ///<summary>
+        ///Returns a random integer between minInclusive and maxExclusive.
+        ///</summary>
+        ///<param name="minInclusive">Inclusive minimum value.</param>
+        ///<param name="maxExclusive">Exclusive maximum value.</param>
+        ///<returns>Random integer in range [minInclusive, maxExclusive).</returns>
         public static int Range(int minInclusive, int maxExclusive)
         {
             return GetCurrentRandom().Next(minInclusive, maxExclusive);
         }
         
-        /// <summary>
-        /// Returns a random floating-point number between minInclusive and maxExclusive.
-        /// </summary>
-        /// <param name="minInclusive">Inclusive minimum value.</param>
-        /// <param name="maxExclusive">Exclusive maximum value.</param>
-        /// <returns>Random float in range [minInclusive, maxExclusive).</returns>
+        ///<summary>
+        ///Returns a random floating-point number between minInclusive and maxExclusive.
+        ///</summary>
+        ///<param name="minInclusive">Inclusive minimum value.</param>
+        ///<param name="maxExclusive">Exclusive maximum value.</param>
+        ///<returns>Random float in range [minInclusive, maxExclusive).</returns>
         public static float Range(float minInclusive, float maxExclusive)
         {
             return (float)(minInclusive + GetCurrentRandom().NextDouble() * (maxExclusive - minInclusive));
         }
         
-        /// <summary>
-        /// Returns a random floating-point number between minInclusive and maxExclusive.
-        /// </summary>
-        /// <param name="minInclusive">Inclusive minimum value.</param>
-        /// <param name="maxExclusive">Exclusive maximum value.</param>
-        /// <returns>Random double in range [minInclusive, maxExclusive).</returns>
+        ///<summary>
+        ///Returns a random floating-point number between minInclusive and maxExclusive.
+        ///</summary>
+        ///<param name="minInclusive">Inclusive minimum value.</param>
+        ///<param name="maxExclusive">Exclusive maximum value.</param>
+        ///<returns>Random double in range [minInclusive, maxExclusive).</returns>
         public static double Range(double minInclusive, double maxExclusive)
         {
             return minInclusive + GetCurrentRandom().NextDouble() * (maxExclusive - minInclusive);
         }
         
-        /// <summary>
-        /// Returns a random boolean value.
-        /// </summary>
-        /// <returns>Random true or false.</returns>
+        ///<summary>
+        ///Returns a random boolean value.
+        ///</summary>
+        ///<returns>Random true or false.</returns>
         public static bool Bool()
         {
             return GetCurrentRandom().Next(0, 2) == 1;
         }
         
-        /// <summary>
-        /// Returns true with the specified probability.
-        /// </summary>
-        /// <param name="probability">Probability of returning true (0.0 to 1.0).</param>
-        /// <returns>True with the specified probability.</returns>
+        ///<summary>
+        ///Returns true with the specified probability.
+        ///</summary>
+        ///<param name="probability">Probability of returning true (0.0 to 1.0).</param>
+        ///<returns>True with the specified probability.</returns>
         public static bool Bool(float probability)
         {
             return ValueFloat() < System.Math.Clamp(probability, 0f, 1f);
         }
         
-        /// <summary>
-        /// Returns a random sign (-1 or 1).
-        /// </summary>
-        /// <returns>Random sign.</returns>
+        ///<summary>
+        ///Returns a random sign (-1 or 1).
+        ///</summary>
+        ///<returns>Random sign.</returns>
         public static int Sign()
         {
             return GetCurrentRandom().Next(0, 2) == 0 ? -1 : 1;
         }
         
-        /// 
+        ///
 
-        ///  Distribution Methods
+        /// Distribution Methods
         
-        /// <summary>
-        /// Returns a random value from a normal (Gaussian) distribution.
-        /// </summary>
-        /// <param name="mean">Mean of the distribution.</param>
-        /// <param name="standardDeviation">Standard deviation of the distribution.</param>
-        /// <returns>Random value from normal distribution.</returns>
+        ///<summary>
+        ///Returns a random value from a normal (Gaussian) distribution.
+        ///</summary>
+        ///<param name="mean">Mean of the distribution.</param>
+        ///<param name="standardDeviation">Standard deviation of the distribution.</param>
+        ///<returns>Random value from normal distribution.</returns>
         public static double Normal(double mean = 0.0, double standardDeviation = 1.0)
         {
-            // Box-Muller transform
+            //Box-Muller transform
             var u1 = GetCurrentRandom().NextDouble();
             var u2 = GetCurrentRandom().NextDouble();
             var randStdNormal = System.Math.Sqrt(-2.0 * System.Math.Log(u1)) * System.Math.Sin(2.0 * System.Math.PI * u2);
             return mean + randStdNormal * standardDeviation;
         }
         
-        /// <summary>
-        /// Returns a random value from a normal (Gaussian) distribution.
-        /// </summary>
-        /// <param name="mean">Mean of the distribution.</param>
-        /// <param name="standardDeviation">Standard deviation of the distribution.</param>
-        /// <returns>Random value from normal distribution.</returns>
+        ///<summary>
+        ///Returns a random value from a normal (Gaussian) distribution.
+        ///</summary>
+        ///<param name="mean">Mean of the distribution.</param>
+        ///<param name="standardDeviation">Standard deviation of the distribution.</param>
+        ///<returns>Random value from normal distribution.</returns>
         public static float Normal(float mean = 0f, float standardDeviation = 1f)
         {
             return (float)Normal((double)mean, (double)standardDeviation);
         }
         
-        /// <summary>
-        /// Returns a random value from an exponential distribution.
-        /// </summary>
-        /// <param name="lambda">Rate parameter (inverse of mean).</param>
-        /// <returns>Random value from exponential distribution.</returns>
+        ///<summary>
+        ///Returns a random value from an exponential distribution.
+        ///</summary>
+        ///<param name="lambda">Rate parameter (inverse of mean).</param>
+        ///<returns>Random value from exponential distribution.</returns>
         public static double Exponential(double lambda = 1.0)
         {
             if (lambda <= 0.0)
@@ -178,21 +180,21 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return -System.Math.Log(1.0 - GetCurrentRandom().NextDouble()) / lambda;
         }
         
-        /// <summary>
-        /// Returns a random value from an exponential distribution.
-        /// </summary>
-        /// <param name="lambda">Rate parameter (inverse of mean).</param>
-        /// <returns>Random value from exponential distribution.</returns>
+        ///<summary>
+        ///Returns a random value from an exponential distribution.
+        ///</summary>
+        ///<param name="lambda">Rate parameter (inverse of mean).</param>
+        ///<returns>Random value from exponential distribution.</returns>
         public static float Exponential(float lambda = 1f)
         {
             return (float)Exponential((double)lambda);
         }
         
-        /// <summary>
-        /// Returns a random value from a Poisson distribution.
-        /// </summary>
-        /// <param name="lambda">Expected value (rate parameter).</param>
-        /// <returns>Random value from Poisson distribution.</returns>
+        ///<summary>
+        ///Returns a random value from a Poisson distribution.
+        ///</summary>
+        ///<param name="lambda">Expected value (rate parameter).</param>
+        ///<returns>Random value from Poisson distribution.</returns>
         public static int Poisson(double lambda)
         {
             if (lambda <= 0.0)
@@ -211,12 +213,12 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return k - 1;
         }
         
-        /// <summary>
-        /// Returns a random value from a binomial distribution.
-        /// </summary>
-        /// <param name="trials">Number of trials.</param>
-        /// <param name="probability">Probability of success in each trial.</param>
-        /// <returns>Random value from binomial distribution.</returns>
+        ///<summary>
+        ///Returns a random value from a binomial distribution.
+        ///</summary>
+        ///<param name="trials">Number of trials.</param>
+        ///<param name="probability">Probability of success in each trial.</param>
+        ///<returns>Random value from binomial distribution.</returns>
         public static int Binomial(int trials, double probability)
         {
             if (trials < 0)
@@ -234,16 +236,16 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return successes;
         }
         
-        /// 
+        ///
 
-        ///  Selection Methods
+        /// Selection Methods
         
-        /// <summary>
-        /// Returns a random element from the specified array.
-        /// </summary>
-        /// <typeparam name="T">Type of elements.</typeparam>
-        /// <param name="array">Array to select from.</param>
-        /// <returns>Random element from the array.</returns>
+        ///<summary>
+        ///Returns a random element from the specified array.
+        ///</summary>
+        ///<typeparam name="T">Type of elements.</typeparam>
+        ///<param name="array">Array to select from.</param>
+        ///<returns>Random element from the array.</returns>
         public static T Select<T>(T[] array)
         {
             if (array == null || array.Length == 0)
@@ -252,12 +254,12 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return array[Range(0, array.Length)];
         }
         
-        /// <summary>
-        /// Returns a random element from the specified list.
-        /// </summary>
-        /// <typeparam name="T">Type of elements.</typeparam>
-        /// <param name="list">List to select from.</param>
-        /// <returns>Random element from the list.</returns>
+        ///<summary>
+        ///Returns a random element from the specified list.
+        ///</summary>
+        ///<typeparam name="T">Type of elements.</typeparam>
+        ///<param name="list">List to select from.</param>
+        ///<returns>Random element from the list.</returns>
         public static T Select<T>(System.Collections.Generic.IList<T> list)
         {
             if (list == null || list.Count == 0)
@@ -266,13 +268,13 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return list[Range(0, list.Count)];
         }
         
-        /// <summary>
-        /// Returns a random weighted element from the specified weights and values.
-        /// </summary>
-        /// <typeparam name="T">Type of elements.</typeparam>
-        /// <param name="weights">Weights for each element.</param>
-        /// <param name="values">Values corresponding to weights.</param>
-        /// <returns>Random weighted element.</returns>
+        ///<summary>
+        ///Returns a random weighted element from the specified weights and values.
+        ///</summary>
+        ///<typeparam name="T">Type of elements.</typeparam>
+        ///<param name="weights">Weights for each element.</param>
+        ///<param name="values">Values corresponding to weights.</param>
+        ///<returns>Random weighted element.</returns>
         public static T WeightedSelect<T>(float[] weights, T[] values)
         {
             if (weights == null || values == null)
@@ -291,7 +293,7 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             }
             
             if (totalWeight <= 0f)
-                return values[Range(0, values.Length)]; // Fallback to uniform selection
+                return values[Range(0, values.Length)]; //Fallback to uniform selection
                 
             var randomValue = Range(0f, totalWeight);
             var currentWeight = 0f;
@@ -303,14 +305,14 @@ namespace SASZombieAssaultTD.Engine.Core.Random
                     return values[i];
             }
             
-            return values[values.Length - 1]; // Fallback
+            return values[values.Length - 1]; //Fallback
         }
         
-        /// <summary>
-        /// Shuffles the specified array in place.
-        /// </summary>
-        /// <typeparam name="T">Type of elements.</typeparam>
-        /// <param name="array">Array to shuffle.</param>
+        ///<summary>
+        ///Shuffles the specified array in place.
+        ///</summary>
+        ///<typeparam name="T">Type of elements.</typeparam>
+        ///<param name="array">Array to shuffle.</param>
         public static void Shuffle<T>(T[] array)
         {
             if (array == null)
@@ -324,11 +326,11 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             }
         }
         
-        /// <summary>
-        /// Shuffles the specified list in place.
-        /// </summary>
-        /// <typeparam name="T">Type of elements.</typeparam>
-        /// <param name="list">List to shuffle.</param>
+        ///<summary>
+        ///Shuffles the specified list in place.
+        ///</summary>
+        ///<typeparam name="T">Type of elements.</typeparam>
+        ///<param name="list">List to shuffle.</param>
         public static void Shuffle<T>(System.Collections.Generic.IList<T> list)
         {
             if (list == null)
@@ -342,12 +344,12 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             }
         }
         
-        /// <summary>
-        /// Returns a shuffled copy of the specified array.
-        /// </summary>
-        /// <typeparam name="T">Type of elements.</typeparam>
-        /// <param name="array">Array to shuffle.</param>
-        /// <returns>Shuffled copy of the array.</returns>
+        ///<summary>
+        ///Returns a shuffled copy of the specified array.
+        ///</summary>
+        ///<typeparam name="T">Type of elements.</typeparam>
+        ///<param name="array">Array to shuffle.</param>
+        ///<returns>Shuffled copy of the array.</returns>
         public static T[] Shuffled<T>(T[] array)
         {
             if (array == null)
@@ -359,12 +361,12 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return result;
         }
         
-        /// <summary>
-        /// Returns a shuffled copy of the specified list.
-        /// </summary>
-        /// <typeparam name="T">Type of elements.</typeparam>
-        /// <param name="list">List to shuffle.</param>
-        /// <returns>Shuffled copy of the list.</returns>
+        ///<summary>
+        ///Returns a shuffled copy of the specified list.
+        ///</summary>
+        ///<typeparam name="T">Type of elements.</typeparam>
+        ///<param name="list">List to shuffle.</param>
+        ///<returns>Shuffled copy of the list.</returns>
         public static System.Collections.Generic.List<T> Shuffled<T>(System.Collections.Generic.IList<T> list)
         {
             if (list == null)
@@ -375,35 +377,35 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return result;
         }
         
-        /// 
+        ///
 
-        ///  Geometric Methods
+        /// Geometric Methods
         
-        /// <summary>
-        /// Returns a random point on a unit circle.
-        /// </summary>
-        /// <returns>Random point (x, y) on unit circle.</returns>
+        ///<summary>
+        ///Returns a random point on a unit circle.
+        ///</summary>
+        ///<returns>Random point (x, y) on unit circle.</returns>
         public static (float X, float Y) OnUnitCircle()
         {
             var angle = Range(0f, 2f * (float)System.Math.PI);
             return ((float)System.Math.Cos(angle), (float)System.Math.Sin(angle));
         }
         
-        /// <summary>
-        /// Returns a random point inside a unit circle.
-        /// </summary>
-        /// <returns>Random point (x, y) inside unit circle.</returns>
+        ///<summary>
+        ///Returns a random point inside a unit circle.
+        ///</summary>
+        ///<returns>Random point (x, y) inside unit circle.</returns>
         public static (float X, float Y) InsideUnitCircle()
         {
             var angle = Range(0f, 2f * (float)System.Math.PI);
-            var radius = (float)System.Math.Sqrt(ValueFloat()); // Square root for uniform distribution
+            var radius = (float)System.Math.Sqrt(ValueFloat()); //Square root for uniform distribution
             return (radius * (float)System.Math.Cos(angle), radius * (float)System.Math.Sin(angle));
         }
         
-        /// <summary>
-        /// Returns a random point on a unit sphere.
-        /// </summary>
-        /// <returns>Random point (x, y, z) on unit sphere.</returns>
+        ///<summary>
+        ///Returns a random point on a unit sphere.
+        ///</summary>
+        ///<returns>Random point (x, y, z) on unit sphere.</returns>
         public static (float X, float Y, float Z) OnUnitSphere()
         {
             var theta = Range(0f, 2f * (float)System.Math.PI);
@@ -416,15 +418,15 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return (x, y, z);
         }
         
-        /// <summary>
-        /// Returns a random point inside a unit sphere.
-        /// </summary>
-        /// <returns>Random point (x, y, z) inside unit sphere.</returns>
+        ///<summary>
+        ///Returns a random point inside a unit sphere.
+        ///</summary>
+        ///<returns>Random point (x, y, z) inside unit sphere.</returns>
         public static (float X, float Y, float Z) InsideUnitSphere()
         {
             var theta = Range(0f, 2f * (float)System.Math.PI);
             var phi = (float)System.Math.Acos(2f * ValueFloat() - 1f);
-            var radius = (float)System.Math.Pow(ValueFloat(), 1f / 3f); // Cube root for uniform distribution
+            var radius = (float)System.Math.Pow(ValueFloat(), 1f / 3f); //Cube root for uniform distribution
             
             var x = radius * (float)(System.Math.Sin(phi) * System.Math.Cos(theta));
             var y = radius * (float)(System.Math.Sin(phi) * System.Math.Sin(theta));
@@ -433,20 +435,20 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return (x, y, z);
         }
         
-        /// <summary>
-        /// Returns a random direction vector (normalized).
-        /// </summary>
-        /// <returns>Random normalized direction vector.</returns>
+        ///<summary>
+        ///Returns a random direction vector (normalized).
+        ///</summary>
+        ///<returns>Random normalized direction vector.</returns>
         public static Vector3 Direction()
         {
             var (x, y, z) = OnUnitSphere();
             return new Vector3(x, y, z);
         }
         
-        /// <summary>
-        /// Returns a random rotation quaternion.
-        /// </summary>
-        /// <returns>Random rotation quaternion.</returns>
+        ///<summary>
+        ///Returns a random rotation quaternion.
+        ///</summary>
+        ///<returns>Random rotation quaternion.</returns>
         public static Vector4 Rotation()
         {
             var u1 = ValueFloat();
@@ -467,14 +469,14 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             return new Vector4(x, y, z, w);
         }
         
-        /// 
+        ///
 
-        ///  Deterministic Control
+        /// Deterministic Control
         
-        /// <summary>
-        /// Enables deterministic random generation with the specified seed.
-        /// </summary>
-        /// <param name="seed">Seed for deterministic generation.</param>
+        ///<summary>
+        ///Enables deterministic random generation with the specified seed.
+        ///</summary>
+        ///<param name="seed">Seed for deterministic generation.</param>
         public static void EnableDeterministic(int seed)
         {
             _deterministicSeed = seed;
@@ -482,9 +484,9 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             _useDeterministic = true;
         }
         
-        /// <summary>
-        /// Disables deterministic random generation.
-        /// </summary>
+        ///<summary>
+        ///Disables deterministic random generation.
+        ///</summary>
         public static void DisableDeterministic()
         {
             _useDeterministic = false;
@@ -492,9 +494,9 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             _deterministicSeed = null;
         }
         
-        /// <summary>
-        /// Resets the deterministic random generator with the current seed.
-        /// </summary>
+        ///<summary>
+        ///Resets the deterministic random generator with the current seed.
+        ///</summary>
         public static void ResetDeterministic()
         {
             if (_useDeterministic && _deterministicSeed.HasValue)
@@ -503,50 +505,50 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             }
         }
         
-        /// <summary>
-        /// Creates a new independent random instance with the specified seed.
-        /// </summary>
-        /// <param name="seed">Seed for the new random instance.</param>
-        /// <returns>New independent random instance.</returns>
+        ///<summary>
+        ///Creates a new independent random instance with the specified seed.
+        ///</summary>
+        ///<param name="seed">Seed for the new random instance.</param>
+        ///<returns>New independent random instance.</returns>
         public static System.Random CreateInstance(int seed)
         {
             return new System.Random(seed);
         }
         
-        /// <summary>
-        /// Creates a new independent random instance with a random seed.
-        /// </summary>
-        /// <returns>New independent random instance.</returns>
+        ///<summary>
+        ///Creates a new independent random instance with a random seed.
+        ///</summary>
+        ///<returns>New independent random instance.</returns>
         public static System.Random CreateInstance()
         {
             return new System.Random();
         }
         
-        /// 
+        ///
 
-        ///  Utility Methods
+        /// Utility Methods
         
-        /// <summary>
-        /// Returns the current random instance based on deterministic settings.
-        /// </summary>
-        /// <returns>Current random instance.</returns>
+        ///<summary>
+        ///Returns the current random instance based on deterministic settings.
+        ///</summary>
+        ///<returns>Current random instance.</returns>
         private static System.Random GetCurrentRandom()
         {
             if (_useDeterministic && _deterministicRandom != null)
                 return _deterministicRandom;
                 
-            // Use thread-local random for better performance
+            //Use thread-local random for better performance
             if (_threadLocalRandom == null)
                 _threadLocalRandom = new System.Random();
                 
             return _threadLocalRandom;
         }
         
-        /// <summary>
-        /// Tests the randomness quality of the current generator.
-        /// </summary>
-        /// <param name="sampleSize">Number of samples to generate.</param>
-        /// <returns>Statistics about the randomness quality.</returns>
+        ///<summary>
+        ///Tests the randomness quality of the current generator.
+        ///</summary>
+        ///<param name="sampleSize">Number of samples to generate.</param>
+        ///<returns>Statistics about the randomness quality.</returns>
         public static RandomnessStatistics TestRandomness(int sampleSize = 10000)
         {
             var values = new double[sampleSize];
@@ -555,7 +557,7 @@ namespace SASZombieAssaultTD.Engine.Core.Random
                 values[i] = Value();
             }
             
-            // Calculate statistics
+            //Calculate statistics
             var mean = 0.0;
             var variance = 0.0;
             var min = 1.0;
@@ -594,13 +596,13 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             throw new NotImplementedException();
         }
 
-        /// 
+        ///
 
-        ///  Nested Classes
+        /// Nested Classes
 
-        /// <summary>
-        /// Statistics about randomness quality.
-        /// </summary>
+        ///<summary>
+        ///Statistics about randomness quality.
+        ///</summary>
         public class RandomnessStatistics
         {
             public int SampleSize { get; set; }
@@ -623,6 +625,6 @@ namespace SASZombieAssaultTD.Engine.Core.Random
             }
         }
         
-        /// 
+        ///
     }
 }

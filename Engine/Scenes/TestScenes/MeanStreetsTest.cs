@@ -6,6 +6,8 @@ using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.UI;
 using SASZombieAssaultTD.Engine.VectorMath;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Scenes.TestScenes
 {
     public class MeanStreetsTest

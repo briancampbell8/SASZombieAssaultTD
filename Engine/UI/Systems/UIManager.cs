@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.UI.Systems
+//
 {
-    /// <summary>
-    /// UI manager for handling UI elements and input.
-    /// </summary>
+    ///<summary>
+    ///UI manager for handling UI elements and input.
+    ///</summary>
     public class UIManager
     {
         private readonly List<UIElement> _uiElements = new();
@@ -54,7 +56,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
                 if (_soundEnabled != value)
                 {
                     _soundEnabled = value;
-                    Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"UIManager: UI sounds {(value ? "enabled" : "disabled")}");
+                    DLogger.Log(LogSubsystems.UI, LogLevel.Debug, $"UIManager: UI sounds {(value ? "enabled" : "disabled")}");
                 }
             }
         }
@@ -65,7 +67,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             set
             {
                 _soundVolume = System.Math.Clamp(value, 0f, 1f);
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"UIManager: UI sound volume set to {_soundVolume:F2}");
+                DLogger.Log(LogSubsystems.UI, LogLevel.Debug, $"UIManager: UI sound volume set to {_soundVolume:F2}");
             }
         }
 
@@ -79,14 +81,14 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
         {
             if (_isInitialized)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", "UIManager: Already initialized");
+                DLogger.Log(LogSubsystems.UI, LogLevel.Warning, "UIManager: Already initialized");
                 return;
             }
 
             _viewportSize = new Vector3(viewportWidth, viewportHeight, 0);
             _isInitialized = true;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"UIManager: Initialized with viewport {viewportWidth}x{viewportHeight}");
+            DLogger.Log(LogSubsystems.UI, LogLevel.Info, $"UIManager: Initialized with viewport {viewportWidth}x{viewportHeight}");
         }
 
         public void Update(float deltaTime)
@@ -100,7 +102,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UIManager: Failed to update - {ex.Message}");
+                DLogger.Log(LogSubsystems.UI, LogLevel.Error, $"UIManager: Failed to update - {ex.Message}");
             }
         }
 
@@ -114,21 +116,21 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"UIManager: Failed to render - {ex.Message}");
+                DLogger.Log(LogSubsystems.UI, LogLevel.Error, $"UIManager: Failed to render - {ex.Message}");
             }
         }
 
-        // TODO: Implement UIManager with proper UIElement interface
+        //TODO: Implement UIManager with proper UIElement interface
         public bool AddElement(UIElement element)
         {
-            // TODO: Implement when UIElement has required properties (Id, IsEnabled, etc.)
+            //TODO: Implement when UIElement has required properties (Id, IsEnabled, etc.)
             return false;
         }
 
-        // TODO: Implement UIManager with proper UIElement interface
+        //TODO: Implement UIManager with proper UIElement interface
         public bool RemoveElement(UIElement element)
         {
-            // TODO: Implement when UIElement has required properties (Id, etc.)
+            //TODO: Implement when UIElement has required properties (Id, etc.)
             return false;
         }
 
@@ -141,28 +143,28 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
         public List<T> GetElements<T>() where T : UIElement =>
             _uiElements.OfType<T>().ToList();
 
-        // TODO: Implement UIManager with proper UIElement interface
+        //TODO: Implement UIManager with proper UIElement interface
         public void SetFocus(UIElement element)
         {
-            // TODO: Implement when UIElement has required properties (IsEnabled, SetFocus, etc.)
+            //TODO: Implement when UIElement has required properties (IsEnabled, SetFocus, etc.)
         }
 
-        // TODO: Implement UIManager with proper UIElement interface
+        //TODO: Implement UIManager with proper UIElement interface
         public void ClearFocus()
         {
-            // TODO: Implement when UIElement has required properties (RemoveFocus, etc.)
+            //TODO: Implement when UIElement has required properties (RemoveFocus, etc.)
         }
 
         public void SetViewport(int width, int height)
         {
             _viewportSize = new Vector3(width, height, 0);
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"UIManager: Set viewport to {width}x{height}");
+            DLogger.Log(LogSubsystems.UI, LogLevel.Debug, $"UIManager: Set viewport to {width}x{height}");
         }
 
-        // TODO: Implement UIManager with proper UIElement interface
+        //TODO: Implement UIManager with proper UIElement interface
         private void HandleInput()
         {
-            // TODO: Implement when UIElement has required properties (IsEnabled, Bounds, HandleInput, etc.)
+            //TODO: Implement when UIElement has required properties (IsEnabled, Bounds, HandleInput, etc.)
         }
 
         public void ClearElements()
@@ -173,7 +175,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             _focusedElement = null;
             _hoveredElement = null;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "UIManager: Cleared all elements");
+            DLogger.Log(LogSubsystems.UI, LogLevel.Debug, "UIManager: Cleared all elements");
         }
 
         public void PlayUISound(string soundType)
@@ -183,11 +185,11 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             if (_soundMappings.TryGetValue(soundType.ToLower(), out var soundName))
             {
                 OnPlayUISound?.Invoke(soundName);
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"UIManager: Playing UI sound '{soundName}' for type '{soundType}'");
+                DLogger.Log(LogSubsystems.UI, LogLevel.Debug, $"UIManager: Playing UI sound '{soundName}' for type '{soundType}'");
             }
             else
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("WARNING", $"UIManager: Unknown UI sound type '{soundType}'");
+                DLogger.Log(LogSubsystems.UI, LogLevel.Warning, $"UIManager: Unknown UI sound type '{soundType}'");
             }
         }
 
@@ -196,7 +198,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
             if (!string.IsNullOrEmpty(eventType) && !string.IsNullOrEmpty(soundName))
             {
                 _soundMappings[eventType.ToLower()] = soundName;
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"UIManager: Set sound mapping '{eventType}' -> '{soundName}'");
+                DLogger.Log(LogSubsystems.UI, LogLevel.Debug, $"UIManager: Set sound mapping '{eventType}' -> '{soundName}'");
             }
         }
 
@@ -207,7 +209,7 @@ namespace SASZombieAssaultTD.Engine.UI.Systems
         {
             if (_soundMappings.Remove(eventType?.ToLower()))
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"UIManager: Removed sound mapping for '{eventType}'");
+                DLogger.Log(LogSubsystems.UI, LogLevel.Debug, $"UIManager: Removed sound mapping for '{eventType}'");
             }
         }
     }

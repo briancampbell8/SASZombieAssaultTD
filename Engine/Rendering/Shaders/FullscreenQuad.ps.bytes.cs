@@ -1,3 +1,5 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Rendering.Shaders
 {
     internal static class FullscreenQuadPs

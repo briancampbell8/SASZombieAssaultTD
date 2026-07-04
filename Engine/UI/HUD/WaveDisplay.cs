@@ -6,12 +6,14 @@ using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.Audio;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.HUD
 {
-    /// <summary>
-    /// Wave display component for SAS Zombie Assault TD HUD.
-    /// Shows current wave number, progress, and wave information.
-    /// </summary>
+    ///<summary>
+    ///Wave display component for SAS Zombie Assault TD HUD.
+    ///Shows current wave number, progress, and wave information.
+    ///</summary>
     public class WaveDisplay : HUDComponent
     {
         private int _currentWave = 1;
@@ -22,7 +24,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         private float _interWaveTimer = 0f;
         private float _interWaveDelay = 10f;
 
-        // Visual properties
+        //Visual properties
         private new Vector3 _position;
         private new Vector3 _size;
         private Color _normalColor = Color.White;
@@ -30,20 +32,20 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         private Color _dangerColor = Color.Red;
         private Color _currentColor;
 
-        // Text properties
+        //Text properties
         private Font _titleFont;
         private Font _progressFont;
         private Font _timerFont;
         private string _wavePrefix = "WAVE";
         private string _progressPrefix = "PROGRESS";
 
-        // Animation properties
+        //Animation properties
         private float _pulseSpeed = 2f;
         private float _pulseAmount = 0.1f;
         private float _pulseTimer = 0f;
         private bool _isPulsing = false;
 
-        // Events
+        //Events
         public event Action<int> OnWaveStarted;
         public event Action<int> OnWaveCompleted;
         public event Action<float> OnWaveProgress;
@@ -54,7 +56,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _size = new Vector3(250f, 60f, 0);
             _currentColor = _normalColor;
 
-            // Initialize fonts
+            //Initialize fonts
             var cachedTitleFont = FontCache.GetFont("large");
             _titleFont = new Font(cachedTitleFont?.Name ?? "Arial", cachedTitleFont?.Size ?? 16);
             var cachedProgressFont = FontCache.GetFont("medium");
@@ -63,12 +65,12 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _timerFont = new Font(cachedTimerFont?.Name ?? "Arial", cachedTimerFont?.Size ?? 10);
         }
 
-        /// <summary>
-        /// Set wave information.
-        /// </summary>
-        /// <param name="waveNumber">Current wave number.</param>
-        /// <param name="totalWaves">Total number of waves.</param>
-        /// <param name="progress">Wave progress (0-1).</param>
+        ///<summary>
+        ///Set wave information.
+        ///</summary>
+        ///<param name="waveNumber">Current wave number.</param>
+        ///<param name="totalWaves">Total number of waves.</param>
+        ///<param name="progress">Wave progress (0-1).</param>
         public void SetWaveInfo(int waveNumber, int totalWaves, float progress)
         {
             _currentWave = waveNumber;
@@ -76,16 +78,16 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _progress = progress;
             _isWaveActive = progress < 1f;
 
-            // Update color based on wave progress
+            //Update color based on wave progress
             UpdateWaveColor();
 
-            // Start pulsing if wave is active
+            //Start pulsing if wave is active
             if (_isWaveActive)
             {
                 StartPulsing();
             }
 
-            // Trigger events
+            //Trigger events
             if (progress >= 1f)
             {
                 OnWaveCompleted?.Invoke(waveNumber);
@@ -93,10 +95,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Set wave progress.
-        /// </summary>
-        /// <param name="progress">Wave progress (0-1).</param>
+        ///<summary>
+        ///Set wave progress.
+        ///</summary>
+        ///<param name="progress">Wave progress (0-1).</param>
         public void SetProgress(float progress)
         {
             _progress = System.Math.Clamp(progress, 0f, 1f);
@@ -110,68 +112,68 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Set inter-wave timer display.
-        /// </summary>
-        /// <param name="timer">Time remaining until next wave.</param>
+        ///<summary>
+        ///Set inter-wave timer display.
+        ///</summary>
+        ///<param name="timer">Time remaining until next wave.</param>
         public void SetInterWaveTimer(float timer)
         {
             _interWaveTimer = timer;
             _showInterWaveTimer = timer > 0;
         }
 
-        /// <summary>
-        /// Set display position.
-        /// </summary>
-        /// <param name="position">New position.</param>
+        ///<summary>
+        ///Set display position.
+        ///</summary>
+        ///<param name="position">New position.</param>
         public void SetPosition(Vector3 position)
         {
             _position = position;
         }
 
-        /// <summary>
-        /// Set display size.
-        /// </summary>
-        /// <param name="size">New size.</param>
+        ///<summary>
+        ///Set display size.
+        ///</summary>
+        ///<param name="size">New size.</param>
         public void SetSize(Vector3 size)
         {
             _size = size;
         }
 
-        /// <summary>
-        /// Set normal color.
-        /// </summary>
-        /// <param name="color">Normal color.</param>
+        ///<summary>
+        ///Set normal color.
+        ///</summary>
+        ///<param name="color">Normal color.</param>
         public void SetNormalColor(Color color)
         {
             _normalColor = color;
             UpdateWaveColor();
         }
 
-        /// <summary>
-        /// Set warning color.
-        /// </summary>
-        /// <param name="color">Warning color.</param>
+        ///<summary>
+        ///Set warning color.
+        ///</summary>
+        ///<param name="color">Warning color.</param>
         public void SetWarningColor(Color color)
         {
             _warningColor = color;
             UpdateWaveColor();
         }
 
-        /// <summary>
-        /// Set danger color.
-        /// </summary>
-        /// <param name="color">Danger color.</param>
+        ///<summary>
+        ///Set danger color.
+        ///</summary>
+        ///<param name="color">Danger color.</param>
         public void SetDangerColor(Color color)
         {
             _dangerColor = color;
             UpdateWaveColor();
         }
 
-        /// <summary>
-        /// Enable or disable pulsing effect.
-        /// </summary>
-        /// <param name="enabled">Whether to enable pulsing.</param>
+        ///<summary>
+        ///Enable or disable pulsing effect.
+        ///</summary>
+        ///<param name="enabled">Whether to enable pulsing.</param>
         public void SetPulsingEnabled(bool enabled)
         {
             _isPulsing = enabled;
@@ -181,28 +183,28 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Set pulse speed.
-        /// </summary>
-        /// <param name="speed">Pulse speed multiplier.</param>
+        ///<summary>
+        ///Set pulse speed.
+        ///</summary>
+        ///<param name="speed">Pulse speed multiplier.</param>
         public void SetPulseSpeed(float speed)
         {
             _pulseSpeed = System.Math.Max(0.1f, speed);
         }
 
-        /// <summary>
-        /// Set wave prefix text.
-        /// </summary>
-        /// <param name="prefix">Wave prefix text.</param>
+        ///<summary>
+        ///Set wave prefix text.
+        ///</summary>
+        ///<param name="prefix">Wave prefix text.</param>
         public void SetWavePrefix(string prefix)
         {
             _wavePrefix = prefix;
         }
 
-        /// <summary>
-        /// Set progress prefix text.
-        /// </summary>
-        /// <param name="prefix">Progress prefix text.</param>
+        ///<summary>
+        ///Set progress prefix text.
+        ///</summary>
+        ///<param name="prefix">Progress prefix text.</param>
         public void SetProgressPrefix(string prefix)
         {
             _progressPrefix = prefix;
@@ -212,7 +214,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         {
             base.Initialize();
 
-            // Load fonts
+            //Load fonts
             var cachedLargeFont = FontCache.GetFont("large");
             _titleFont = new Font(cachedLargeFont?.Name ?? "Arial", cachedLargeFont?.Size ?? 16);
             var cachedMediumFont = FontCache.GetFont("medium");
@@ -220,7 +222,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             var cachedSmallFont = FontCache.GetFont("small");
             _timerFont = new Font(cachedSmallFont?.Name ?? "Arial", cachedSmallFont?.Size ?? 10);
 
-            // Set initial values
+            //Set initial values
             UpdateWaveColor();
         }
 
@@ -228,13 +230,13 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         {
             base.Update(deltaTime);
 
-            // Update pulse animation
+            //Update pulse animation
             if (_isPulsing)
             {
                 UpdatePulseAnimation(deltaTime);
             }
 
-            // Update inter-wave timer
+            //Update inter-wave timer
             if (_showInterWaveTimer && _interWaveTimer > 0)
             {
                 _interWaveTimer -= deltaTime;
@@ -245,57 +247,57 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         {
             base.Render();
 
-            // Render background
+            //Render background
             RenderBackground();
 
-            // Render wave info
+            //Render wave info
             RenderWaveInfo();
 
-            // Render progress bar
+            //Render progress bar
             RenderProgressBar();
 
-            // Render inter-wave timer
+            //Render inter-wave timer
             if (_showInterWaveTimer)
             {
                 RenderInterWaveTimer();
             }
 
-            // Render pulse effect
+            //Render pulse effect
             if (_isPulsing)
             {
                 RenderPulseEffect();
             }
         }
 
-        /// <summary>
-        /// Start pulsing animation.
-        /// </summary>
+        ///<summary>
+        ///Start pulsing animation.
+        ///</summary>
         private void StartPulsing()
         {
             _isPulsing = true;
             _pulseTimer = 0f;
         }
 
-        /// <summary>
-        /// Stop pulsing animation.
-        /// </summary>
+        ///<summary>
+        ///Stop pulsing animation.
+        ///</summary>
         private void StopPulsing()
         {
             _isPulsing = false;
             _pulseTimer = 0f;
         }
 
-        /// <summary>
-        /// Update pulse animation.
-        /// </summary>
+        ///<summary>
+        ///Update pulse animation.
+        ///</summary>
         private void UpdatePulseAnimation(float deltaTime)
         {
             _pulseTimer += deltaTime * _pulseSpeed;
         }
 
-        /// <summary>
-        /// Update wave color based on state.
-        /// </summary>
+        ///<summary>
+        ///Update wave color based on state.
+        ///</summary>
         private void UpdateWaveColor()
         {
             if (!_isWaveActive)
@@ -316,9 +318,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Render background.
-        /// </summary>
+        ///<summary>
+        ///Render background.
+        ///</summary>
         private void RenderBackground()
         {
             var backgroundColor = new Color(0, 0, 0, 150);
@@ -328,9 +330,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             RenderSystem.DrawRectangle(_position.X, _position.Y, _size.X, _size.Y, borderColor, 2f);
         }
 
-        /// <summary>
-        /// Render wave information.
-        /// </summary>
+        ///<summary>
+        ///Render wave information.
+        ///</summary>
         private void RenderWaveInfo()
         {
             var titleText = $"{_wavePrefix} {_currentWave}/{_totalWaves}";
@@ -339,16 +341,16 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             var titlePosition = new Vector3(_position.X + 10f, _position.Y + 10f, 0f);
             RenderSystem.DrawString(titleText, titlePosition, titleColor, _titleFont, new Vector3(12f, 12f, 0f));
 
-            // Add wave status indicator
+            //Add wave status indicator
             var statusText = _isWaveActive ? "IN PROGRESS" : "WAITING";
             var statusColor = _isWaveActive ? Color.Green : Color.Gray;
             var statusPosition = new Vector3(_position.X + 10f, _position.Y + 35f, 0f);
             RenderSystem.DrawString(statusText, statusPosition, statusColor, _timerFont, new Vector3(10f, 10f, 0f));
         }
 
-        /// <summary>
-        /// Render progress bar.
-        /// </summary>
+        ///<summary>
+        ///Render progress bar.
+        ///</summary>
         private void RenderProgressBar()
         {
             var barWidth = _size.X - 20f;
@@ -356,24 +358,24 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             var barX = _position.X + 10f;
             var barY = _position.Y + _size.Y - 20f;
 
-            // Background
+            //Background
             var backgroundColor = new Color(50, 50, 50, 200);
             RenderSystem.DrawRectangle(barX, barY, barWidth, barHeight, backgroundColor);
 
-            // Progress fill
+            //Progress fill
             var progressWidth = barWidth * _progress;
             var progressColor = _currentColor;
             RenderSystem.DrawRectangle(barX, barY, progressWidth, barHeight, progressColor);
 
-            // Progress text
+            //Progress text
             var progressText = $"{_progressPrefix}: {(int)(_progress * 100)}%";
             var progressColorBytes = new Color((byte)_currentColor.R, (byte)_currentColor.G, (byte)_currentColor.B, 255);
             RenderSystem.DrawString(progressText, new Vector3(barX + 5f, barY - 2f, 0), progressColorBytes, new Font("Arial", 10f), new Vector3(10f, 10f, 0f));
         }
 
-        /// <summary>
-        /// Render inter-wave timer.
-        /// </summary>
+        ///<summary>
+        ///Render inter-wave timer.
+        ///</summary>
         private void RenderInterWaveTimer()
         {
             var timerText = $"Next wave in: {_interWaveTimer:F0}s";
@@ -382,9 +384,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             RenderSystem.DrawString(timerText, new Vector3(_position.X + 10f, _position.Y + _size.Y + 5f, 0), timerColor, new Font("Arial", 10f), new Vector3(10f, 10f, 0f));
         }
 
-        /// <summary>
-        /// Render pulse effect.
-        /// </summary>
+        ///<summary>
+        ///Render pulse effect.
+        ///</summary>
         private void RenderPulseEffect()
         {
             var pulse = 1f + (MathF.Sin(_pulseTimer) * _pulseAmount);

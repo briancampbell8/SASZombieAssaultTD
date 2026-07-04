@@ -1,6 +1,8 @@
 using SASZombieAssaultTD.Engine.Rendering;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
     public class Panel : UIElementBase

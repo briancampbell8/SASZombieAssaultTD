@@ -1,12 +1,14 @@
 using System;
 using SASZombieAssaultTD.Engine.Math;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.VectorMath
 {
-    /// <summary>
-    /// Canonical Vector3 type - single authoritative 3D vector for entire engine.
-    /// All engine code must use this type to avoid namespace conflicts.
-    /// </summary>
+    ///<summary>
+    ///Canonical Vector3 type - single authoritative 3D vector for entire engine.
+    ///All engine code must use this type to avoid namespace conflicts.
+    ///</summary>
     public readonly struct Vector3 : IEquatable<Vector3>
     {
         public float X { get; }
@@ -62,15 +64,15 @@ namespace SASZombieAssaultTD.Engine.VectorMath
         public static Vector3 operator /(Vector3 vector, float scalar) =>
             scalar != 0 ? new(vector.X / scalar, vector.Y / scalar, vector.Z / scalar) : Zero;
 
-        // 1) Component-wise multiply (fixes Vector3 *= Vector3 / Vector3 * Vector3)
+        //1) Component-wise multiply (fixes Vector3 *= Vector3 / Vector3 * Vector3)
         public static Vector3 operator *(Vector3 a, Vector3 b) =>
             new(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
 
-        // 2) float - Vector3
+        //2) float - Vector3
         public static Vector3 operator -(float a, Vector3 b) =>
             new(a - b.X, a - b.Y, a - b.Z);
 
-        // 3) float + Vector3
+        //3) float + Vector3
         public static Vector3 operator +(float a, Vector3 b) =>
             new(a + b.X, a + b.Y, a + b.Z);
 
@@ -98,11 +100,11 @@ namespace SASZombieAssaultTD.Engine.VectorMath
 
         public override string ToString() => $"({X}, {Y}, {Z})";
 
-        /// <summary>
-        /// Parses a string into a Vector3.
-        /// </summary>
-        /// <param name="s">String to parse in format "X,Y,Z"</param>
-        /// <returns>Parsed Vector3</returns>
+        ///<summary>
+        ///Parses a string into a Vector3.
+        ///</summary>
+        ///<param name="s">String to parse in format "X,Y,Z"</param>
+        ///<returns>Parsed Vector3</returns>
         public static Vector3 Parse(string s)
         {
             if (string.IsNullOrWhiteSpace(s))

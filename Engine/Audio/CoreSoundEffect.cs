@@ -17,11 +17,13 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Audio
 {
-    /// <summary>
-    /// Sound effect parameters for audio playback.
-    /// </summary>
+    ///<summary>
+    ///Sound effect parameters for audio playback.
+    ///</summary>
     public struct SoundEffectParameters
     {
         public float Volume;
@@ -54,14 +56,14 @@ namespace SASZombieAssaultTD.Engine.Audio
         };
     }
 
-    /// <summary>
-    /// Unified SoundEffect implementation for SASZombieAssaultTD engine.
-    /// Provides comprehensive sound effect management with unified math integration.
-    /// This is the single authoritative SoundEffect type across the entire engine.
-    /// </summary>
+    ///<summary>
+    ///Unified SoundEffect implementation for SASZombieAssaultTD engine.
+    ///Provides comprehensive sound effect management with unified math integration.
+    ///This is the single authoritative SoundEffect type across the entire engine.
+    ///</summary>
     public class CoreSoundEffect
     {
-        ///  Private Fields
+        /// Private Fields
         private readonly string _soundName;
         private readonly float _duration;
         private readonly ConcurrentDictionary<uint, SoundEffectParameters> _activeEffects = new();
@@ -69,9 +71,9 @@ namespace SASZombieAssaultTD.Engine.Audio
         private uint _nextId = 1;
         private bool _isLoaded;
         private float _masterVolume = 1f;
-        /// 
+        ///
 
-        ///  Public Properties
+        /// Public Properties
         public string SoundName => _soundName;
         public float Duration => _duration;
         public bool IsLoaded => _isLoaded;
@@ -82,26 +84,26 @@ namespace SASZombieAssaultTD.Engine.Audio
         }
 
         public int ActiveEffectCount => _activeEffects.Count;
-        /// 
+        ///
 
-        ///  Constructor
+        /// Constructor
         public CoreSoundEffect(string soundName, float duration = 2f)
         {
             _soundName = soundName ?? throw new ArgumentNullException(nameof(soundName));
             _duration = System.Math.Max(0.1f, duration);
 
-            // Preload available IDs
+            //Preload available IDs
             for (uint i = 1; i <= 50; i++)
             {
                 _availableIds.Enqueue(i);
             }
 
-            // Simulate loading
+            //Simulate loading
             _isLoaded = LoadSoundData(soundName);
         }
-        /// 
+        ///
 
-        ///  Public Methods
+        /// Public Methods
         public uint Play(Vector3 position, SoundEffectParameters parameters = default)
         {
             if (!_isLoaded) return 0;
@@ -109,7 +111,7 @@ namespace SASZombieAssaultTD.Engine.Audio
             uint effectId = GetNextId();
             var finalParams = parameters.Equals(default(SoundEffectParameters)) ? SoundEffectParameters.Default : parameters;
 
-            // Apply master volume
+            //Apply master volume
             finalParams.Volume = System.Math.Clamp(finalParams.Volume * _masterVolume, 0f, 1f);
 
             _activeEffects.TryAdd(effectId, finalParams);
@@ -147,7 +149,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         {
             if (_activeEffects.TryGetValue(effectId, out var parameters))
             {
-                parameters.Volume = 0f; // Mark as paused
+                parameters.Volume = 0f; //Mark as paused
                 _activeEffects[effectId] = parameters;
             }
         }
@@ -156,7 +158,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         {
             if (_activeEffects.TryGetValue(effectId, out var parameters))
             {
-                parameters.Volume = System.Math.Clamp(parameters.Volume, 0f, 1f); // Restore volume
+                parameters.Volume = System.Math.Clamp(parameters.Volume, 0f, 1f); //Restore volume
                 _activeEffects[effectId] = parameters;
             }
         }
@@ -219,7 +221,7 @@ namespace SASZombieAssaultTD.Engine.Audio
             {
                 var parameters = kvp.Value;
 
-                // Update fade effects
+                //Update fade effects
                 if (parameters.FadeInTime > 0f && parameters.Volume < _masterVolume)
                 {
                     parameters.Volume = System.Math.Min(parameters.Volume + (deltaTime / parameters.FadeInTime), _masterVolume);
@@ -232,7 +234,7 @@ namespace SASZombieAssaultTD.Engine.Audio
                     _activeEffects[kvp.Key] = parameters;
                 }
 
-                // Check if non-looping effect should stop
+                //Check if non-looping effect should stop
                 if (!parameters.Loop && parameters.FadeOutTime <= 0f)
                 {
                     effectsToRemove.Add(kvp.Key);
@@ -256,20 +258,20 @@ namespace SASZombieAssaultTD.Engine.Audio
             StopAll();
             _isLoaded = false;
         }
-        /// 
+        ///
 
-        ///  Private Methods
+        /// Private Methods
         private uint GetNextId() => _availableIds.TryDequeue(out var id) ? id : _nextId++;
 
         private void ReturnId(uint id) => _availableIds.Enqueue(id);
 
         private bool LoadSoundData(string soundName) => !string.IsNullOrEmpty(soundName);
-        /// 
+        ///
 
-        ///  Static Methods
+        /// Static Methods
         public static CoreSoundEffect Load(string soundName) => new(soundName);
 
         public static CoreSoundEffect Load(string soundName, float duration) => new(soundName, duration);
-        /// 
+        ///
     }
 }

@@ -4,62 +4,62 @@ Folder:  Engine/UI/Rendering/Modern/
 Purpose:  Core UI rendering component for SAS Zombie Assault TD.
 */
 
-// ============================================================================
-// File: ModernUIRenderer_Batching.cs
-// Path: Engine/UI/Rendering/Modern/ModernUIRenderer_Batching.cs
-// Namespace: SASZombieAssaultTD.Engine.UI.Rendering.Modern
-// Program: ModernUIRenderer (Partial) — Batching Subsystem
+//============================================================================
+//File: ModernUIRenderer_Batching.cs
+//Path: Engine/UI/Rendering/Modern/ModernUIRenderer_Batching.cs
+//Namespace: SASZombieAssaultTD.Engine.UI.Rendering.Modern
+//Program: ModernUIRenderer (Partial) — Batching Subsystem
 //
-// PURPOSE:
-//     Implements GPU‑optimized batching for UI rendering. Accumulates render
-//     commands, sorts them to minimize GPU state changes, and commits them to
-//     the command buffer.
+//PURPOSE:
+//    Implements GPU‑optimized batching for UI rendering. Accumulates render
+//    commands, sorts them to minimize GPU state changes, and commits them to
+//    the command buffer.
 //
-// RESPONSIBILITIES:
-//     - Begin and end batching sessions
-//     - Accumulate render commands during batching
-//     - Sort commands by material/element to reduce GPU state switches
-//     - Commit optimized commands to the RenderCommandBuffer
+//RESPONSIBILITIES:
+//    - Begin and end batching sessions
+//    - Accumulate render commands during batching
+//    - Sort commands by material/element to reduce GPU state switches
+//    - Commit optimized commands to the RenderCommandBuffer
 //
-// EXECUTION TRIGGERS:
-//     - RenderUIElements() calls BeginBatch() and EndBatch()
-//     - RenderElement() adds commands to the batch when batching is active
+//EXECUTION TRIGGERS:
+//    - RenderUIElements() calls BeginBatch() and EndBatch()
+//    - RenderElement() adds commands to the batch when batching is active
 //
-// DEPENDENCIES:
-//     - RenderCommandBuffer
-//     - RenderCommand
-//     - UIMaterial
-//     - UIElementBase
+//DEPENDENCIES:
+//    - RenderCommandBuffer
+//    - RenderCommand
+//    - UIMaterial
+//    - UIElementBase
 //
-// CONTENTS:
-//     - BeginBatch()
-//     - EndBatch()
-//     - OptimizeBatchCommands()
-// ============================================================================
+//CONTENTS:
+//    - BeginBatch()
+//    - EndBatch()
+//    - OptimizeBatchCommands()
+//============================================================================
 
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Rendering;
+//
+//
 using System;
 using System.Collections.Generic;
-
+using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Scenes.Battlefields;
 namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
 {
     public partial class ModernUIRenderer
     {
-        // --------------------------------------------------------------------
-        // PRIVATE FIELDS — BATCHING STATE
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //PRIVATE FIELDS — BATCHING STATE
+        //--------------------------------------------------------------------
         private bool _isBatching = false;
         private readonly List<RenderCommand> _currentBatch = new();
 
-        // --------------------------------------------------------------------
-        // BEGIN BATCHING
-        // --------------------------------------------------------------------
-        /// <summary>
-        /// Begins batch rendering mode. Clears previous batch and prepares to
-        /// accumulate render commands for GPU‑optimized execution.
-        /// </summary>
+        //--------------------------------------------------------------------
+        //BEGIN BATCHING
+        //--------------------------------------------------------------------
+        ///<summary>
+        ///Begins batch rendering mode. Clears previous batch and prepares to
+        ///accumulate render commands for GPU‑optimized execution.
+        ///</summary>
         private void BeginBatch()
         {
             if (!_isBatching)
@@ -67,18 +67,18 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
                 _isBatching = true;
                 _currentBatch.Clear();
 
-                DebugLogger.Log("Debug",
+                Dlogger.Log("Debug",
                     "ModernUIRenderer: Batch started.");
             }
         }
 
-        // --------------------------------------------------------------------
-        // END BATCHING
-        // --------------------------------------------------------------------
-        /// <summary>
-        /// Ends batching mode. Sorts accumulated commands to minimize GPU state
-        /// changes, then commits them to the command buffer.
-        /// </summary>
+        //--------------------------------------------------------------------
+        //END BATCHING
+        //--------------------------------------------------------------------
+        ///<summary>
+        ///Ends batching mode. Sorts accumulated commands to minimize GPU state
+        ///changes, then commits them to the command buffer.
+        ///</summary>
         private void EndBatch()
         {
             if (_isBatching)
@@ -87,16 +87,16 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
                 {
                     OptimizeBatchCommands();
 
-                    // Commit optimized commands to the command buffer
+                    //Commit optimized commands to the command buffer
                     foreach (var command in _currentBatch)
                         _commandBuffer.AddCommand(command);
 
-                    DebugLogger.Log("Debug",
+                    Dlogger.Log("Debug",
                         $"ModernUIRenderer: Batch executed with {_currentBatch.Count} commands.");
                 }
                 catch (Exception ex)
                 {
-                    DebugLogger.Log("Error",
+                    Dlogger.Log("Error",
                         $"ModernUIRenderer: Batch execution failed: {ex.Message}");
                     throw;
                 }
@@ -108,36 +108,36 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering.Modern
             }
         }
 
-        // --------------------------------------------------------------------
-        // OPTIMIZE BATCH COMMANDS
-        // --------------------------------------------------------------------
-        /// <summary>
-        /// Sorts batched commands by material and element identity to reduce
-        /// GPU state changes and improve rendering throughput.
-        /// </summary>
+        //--------------------------------------------------------------------
+        //OPTIMIZE BATCH COMMANDS
+        //--------------------------------------------------------------------
+        ///<summary>
+        ///Sorts batched commands by material and element identity to reduce
+        ///GPU state changes and improve rendering throughput.
+        ///</summary>
         private void OptimizeBatchCommands()
         {
             try
             {
                 _currentBatch.Sort((a, b) =>
                 {
-                    // Primary sort: material identity
+                    //Primary sort: material identity
                     int materialCompare =
                         a.Material.GetHashCode().CompareTo(b.Material.GetHashCode());
 
                     if (materialCompare != 0)
                         return materialCompare;
 
-                    // Secondary sort: element identity
+                    //Secondary sort: element identity
                     return a.Element.GetHashCode().CompareTo(b.Element.GetHashCode());
                 });
 
-                DebugLogger.Log("Debug",
+                Dlogger.Log("Debug",
                     "ModernUIRenderer: Batch optimized.");
             }
             catch (Exception ex)
             {
-                DebugLogger.Log("Error",
+                Dlogger.Log("Error",
                     $"ModernUIRenderer: Batch optimization failed: {ex.Message}");
                 throw;
             }

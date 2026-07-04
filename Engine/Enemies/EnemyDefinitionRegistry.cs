@@ -2,25 +2,27 @@ using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Enemies
+//
 {
-    /// <summary>
-    /// Represents a static registry for managing and retrieving enemy definitions.
-    /// </summary>
-    /// <remarks>
-    /// This registry is initialized with predefined enemy definitions and provides methods to retrieve them by ID or enumerate all definitions.
-    /// </remarks>
+    ///<summary>
+    ///Represents a static registry for managing and retrieving enemy definitions.
+    ///</summary>
+    ///<remarks>
+    ///This registry is initialized with predefined enemy definitions and provides methods to retrieve them by ID or enumerate all definitions.
+    ///</remarks>
     public static class EnemyDefinitionRegistry
     {
-        /// <summary>
-        /// A read-only dictionary containing all enemy definitions.
-        /// </summary>
+        ///<summary>
+        ///A read-only dictionary containing all enemy definitions.
+        ///</summary>
         private static readonly IReadOnlyDictionary<string, EnemyDefinition> _defs;
 
-        /// <summary>
-        /// Initializes the <see cref="EnemyDefinitionRegistry"/> class with predefined enemy definitions.
-        /// </summary>
-        /// <exception cref="ArgumentException">Thrown when any predefined enemy definition is invalid.</exception>
+        ///<summary>
+        ///Initializes the <see cref="EnemyDefinitionRegistry"/> class with predefined enemy definitions.
+        ///</summary>
+        ///<exception cref="ArgumentException">Thrown when any predefined enemy definition is invalid.</exception>
         static EnemyDefinitionRegistry()
         {
             var definitions = new Dictionary<string, EnemyDefinition>
@@ -33,16 +35,16 @@ namespace SASZombieAssaultTD.Engine.Enemies
 
             foreach (var def in _defs.Values)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("Info", $"[EnemyDefinitionRegistry] Loaded: {def.Id} ({def.Name})");
+                DLogger.Log("Info", $"[EnemyDefinitionRegistry] Loaded: {def.Id} ({def.Name})");
             }
         }
 
-        /// <summary>
-        /// Retrieves the enemy definition associated with the specified ID.
-        /// </summary>
-        /// <param name="id">The unique identifier of the enemy definition.</param>
-        /// <returns>The <see cref="EnemyDefinition"/> if found; otherwise, <c>null</c>.</returns>
-        /// <exception cref="ArgumentException">Thrown when the provided ID is null or whitespace.</exception>
+        ///<summary>
+        ///Retrieves the enemy definition associated with the specified ID.
+        ///</summary>
+        ///<param name="id">The unique identifier of the enemy definition.</param>
+        ///<returns>The <see cref="EnemyDefinition"/> if found; otherwise, <c>null</c>.</returns>
+        ///<exception cref="ArgumentException">Thrown when the provided ID is null or whitespace.</exception>
         public static EnemyDefinition? GetById(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -53,22 +55,22 @@ namespace SASZombieAssaultTD.Engine.Enemies
             return _defs.TryGetValue(id, out var definition) ? definition : null;
         }
 
-        /// <summary>
-        /// Gets all enemy definitions in the registry.
-        /// </summary>
+        ///<summary>
+        ///Gets all enemy definitions in the registry.
+        ///</summary>
         public static IReadOnlyCollection<EnemyDefinition> All => (IReadOnlyCollection<EnemyDefinition>)_defs.Values;
 
-        /// <summary>
-        /// Creates and validates an enemy definition.
-        /// </summary>
-        /// <param name="id">Unique identifier for the enemy.</param>
-        /// <param name="name">Display name of the enemy.</param>
-        /// <param name="maxHealth">Maximum health value.</param>
-        /// <param name="speed">Movement speed.</param>
-        /// <param name="reward">Reward for defeating the enemy.</param>
-        /// <param name="spriteId">Sprite asset identifier.</param>
-        /// <returns>A validated <see cref="EnemyDefinition"/>.</returns>
-        /// <exception cref="ArgumentException">Thrown when any property is invalid.</exception>
+        ///<summary>
+        ///Creates and validates an enemy definition.
+        ///</summary>
+        ///<param name="id">Unique identifier for the enemy.</param>
+        ///<param name="name">Display name of the enemy.</param>
+        ///<param name="maxHealth">Maximum health value.</param>
+        ///<param name="speed">Movement speed.</param>
+        ///<param name="reward">Reward for defeating the enemy.</param>
+        ///<param name="spriteId">Sprite asset identifier.</param>
+        ///<returns>A validated <see cref="EnemyDefinition"/>.</returns>
+        ///<exception cref="ArgumentException">Thrown when any property is invalid.</exception>
         private static EnemyDefinition CreateDefinition(string id, string name, int maxHealth, float speed, int reward, string spriteId)
         {
             if (string.IsNullOrWhiteSpace(id)) throw new ArgumentException("ID cannot be null or whitespace.", nameof(id));

@@ -37,14 +37,16 @@
  *
  * ==================================================================================================== */
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
-    // ENUM: MilestoneCategory
-    // PURPOSE: Categorize milestones for filtering, UI grouping, and analytics.
+    //ENUM: MilestoneCategory
+    //PURPOSE: Categorize milestones for filtering, UI grouping, and analytics.
     public enum MilestoneCategory
     {
         Level,
@@ -67,8 +69,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         AchievementHunter
     }
 
-    // ENUM: AchievementCategory
-    // PURPOSE: Categorize achievements for UI grouping and analytics.
+    //ENUM: AchievementCategory
+    //PURPOSE: Categorize achievements for UI grouping and analytics.
     public enum AchievementCategory
     {
         Combat,
@@ -82,8 +84,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         Hidden
     }
 
-    // ENUM: EventCategory
-    // PURPOSE: Categorize progression events for logging and UI.
+    //ENUM: EventCategory
+    //PURPOSE: Categorize progression events for logging and UI.
     public enum EventCategory
     {
         Milestone,
@@ -96,9 +98,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         System
     }
 
-    // CLASS: ProgressionMilestone
-    // PURPOSE: Represents a milestone the player can complete.
-    // NOTES: Pure data container; logic lives in ProgressionLogic.
+    //CLASS: ProgressionMilestone
+    //PURPOSE: Represents a milestone the player can complete.
+    //NOTES: Pure data container; logic lives in ProgressionLogic.
     public class ProgressionMilestone
     {
         public string Id { get; set; }
@@ -111,8 +113,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public List<ProgressionReward> Rewards { get; set; } = new();
     }
 
-    // CLASS: ProgressionAchievement
-    // PURPOSE: Represents an achievement the player can unlock.
+    //CLASS: ProgressionAchievement
+    //PURPOSE: Represents an achievement the player can unlock.
     public class ProgressionAchievement
     {
         public string Id { get; set; }
@@ -125,8 +127,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public float MaxProgress { get; set; }
     }
 
-    // CLASS: ProgressionEvent
-    // PURPOSE: Represents a logged event in the progression system.
+    //CLASS: ProgressionEvent
+    //PURPOSE: Represents a logged event in the progression system.
     public class ProgressionEvent
     {
         public string Id { get; set; }
@@ -138,8 +140,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public ProgressionReward Reward { get; set; }
     }
 
-    // CLASS: ProgressionReward
-    // PURPOSE: Represents a reward granted by milestones or achievements.
+    //CLASS: ProgressionReward
+    //PURPOSE: Represents a reward granted by milestones or achievements.
     public class ProgressionReward
     {
         private static object TheType;
@@ -155,8 +157,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         }
     }
 
-    // CLASS: ProgressionStatistics
-    // PURPOSE: Snapshot of progression metrics for UI and analytics.
+    //CLASS: ProgressionStatistics
+    //PURPOSE: Snapshot of progression metrics for UI and analytics.
     public class ProgressionStatistics
     {
         public int TotalMilestones { get; set; }

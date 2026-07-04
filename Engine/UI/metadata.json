@@ -1,0 +1,30 @@
+{
+  "UIFinalizer.cs": {
+    "engine_action": "overwrite",
+    "moduleName": "UI Finalizer Pipeline",
+    "role": "Central pipeline manager coordinating UIStateBuilder transformations.",
+    "responsibilities": [
+      "Coordinate element updates through the builder chain.",
+      "Execute safe interface resolution operations."
+    ]
+  },
+  "HUDTextElement.cs": {
+    "engine_action": "add",
+    "moduleName": "HUD Text Element",
+    "role": "Individual display element responsible for rendering text blocks.",
+    "responsibilities": [
+      "Update display string caches dynamically.",
+      "Draw element text using the provided drawing context."
+    ]
+  },
+  "HUDManager.cs": {
+    "engine_action": "add",
+    "moduleName": "HUD Manager",
+    "role": "Central manager for HUD layout loading, rendering, and state management.",
+    "responsibilities": [
+      "Load HUD layout JSON via HUDConfigManager.",
+      "Manage HUD textures, text elements, and render order.",
+      "Maintain hitboxes for cash/lives increment buttons."
+    ]
+  }
+}

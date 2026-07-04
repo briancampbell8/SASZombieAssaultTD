@@ -2,27 +2,28 @@
 File:    AnimationComponent.cs
 Purpose: Core animation component for entities.
 */
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.ECS;
+//
 using System;
 using System.Collections.Generic;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.ECS;
 
 
 namespace SASZombieAssaultTD.Engine.Animation.Components
 {
-    /// <summary>
-    /// Animation playback mode enumeration.
-    /// </summary>
+    ///<summary>
+    ///Animation playback mode enumeration.
+    ///</summary>
     public enum AnimationPlaybackMode
     {
         Once,
         Loop
     }
 
-    /// <summary>
-    /// Core animation component for entities.
-    /// Controls animation playback, state, and transitions.
-    /// </summary>
+    ///<summary>
+    ///Core animation component for entities.
+    ///Controls animation playback, state, and transitions.
+    ///</summary>
     public class AnimationComponent : BaseComponent
     {
         private string _currentAnimation = "idle";
@@ -41,9 +42,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             { "death", 1.2f }
         };
 
-        /// <summary>
-        /// Gets or sets the current animation name.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the current animation name.
+        ///</summary>
         public string CurrentAnimation
         {
             get => _currentAnimation;
@@ -56,41 +57,41 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             }
         }
 
-        /// <summary>
-        /// Gets or sets whether the animation is currently playing.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether the animation is currently playing.
+        ///</summary>
         public bool IsPlaying
         {
             get => _isPlaying;
             set => _isPlaying = value;
         }
 
-        /// <summary>
-        /// Gets or sets whether the animation should loop.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether the animation should loop.
+        ///</summary>
         public bool IsLooping
         {
             get => _isLooping;
             set => _isLooping = value;
         }
 
-        /// <summary>
-        /// Gets or sets the playback mode.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the playback mode.
+        ///</summary>
         public AnimationPlaybackMode PlaybackMode
         {
             get => _isLooping ? AnimationPlaybackMode.Loop : AnimationPlaybackMode.Once;
             set => _isLooping = value == AnimationPlaybackMode.Loop;
         }
 
-        /// <summary>
-        /// Gets the current animation time (0 to 1).
-        /// </summary>
+        ///<summary>
+        ///Gets the current animation time (0 to 1).
+        ///</summary>
         public float AnimationTime => _animationTime;
 
-        /// <summary>
-        /// Gets or sets the animation playback speed.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the animation playback speed.
+        ///</summary>
         public float AnimationSpeed
         {
             get => _animationSpeed;
@@ -104,31 +105,31 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Gets the normalized animation progress (0 to 1).
-        /// </summary>
+        ///<summary>
+        ///Gets the normalized animation progress (0 to 1).
+        ///</summary>
         public float Progress => _animationTime;
 
-        /// <summary>
-        /// Gets whether the animation has completed (non-looping only).
-        /// </summary>
+        ///<summary>
+        ///Gets whether the animation has completed (non-looping only).
+        ///</summary>
         public bool IsCompleted => !_isLooping && _animationTime >= 1f;
 
-        /// <summary>
-        /// Event fired when animation changes.
-        /// </summary>
+        ///<summary>
+        ///Event fired when animation changes.
+        ///</summary>
         public event Action<string>? OnAnimationChanged;
 
-        /// <summary>
-        /// Event fired when animation completes (non-looping only).
-        /// </summary>
+        ///<summary>
+        ///Event fired when animation completes (non-looping only).
+        ///</summary>
         public event Action? OnAnimationComplete;
 
-        /// <summary>
-        /// Plays the specified animation.
-        /// </summary>
-        /// <param name="animationName">Name of the animation to play.</param>
-        /// <param name="loop">Whether to loop the animation.</param>
+        ///<summary>
+        ///Plays the specified animation.
+        ///</summary>
+        ///<param name="animationName">Name of the animation to play.</param>
+        ///<param name="loop">Whether to loop the animation.</param>
         public void PlayAnimation(string animationName, bool loop = true)
         {
             CurrentAnimation = animationName;
@@ -137,20 +138,20 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             _animationTime = 0f;
         }
 
-        /// <summary>
-        /// Stops the current animation.
-        /// </summary>
+        ///<summary>
+        ///Stops the current animation.
+        ///</summary>
         public void Stop() => IsPlaying = false;
 
-        /// <summary>
-        /// Resumes the current animation.
-        /// </summary>
+        ///<summary>
+        ///Resumes the current animation.
+        ///</summary>
         public void Resume() => IsPlaying = true;
 
-        /// <summary>
-        /// Updates the animation component.
-        /// </summary>
-        /// <param name="deltaTime">Time since last update.</param>
+        ///<summary>
+        ///Updates the animation component.
+        ///</summary>
+        ///<param name="deltaTime">Time since last update.</param>
         public override void Update(float deltaTime)
         {
             if (!_isPlaying) return;
@@ -173,29 +174,29 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             }
         }
 
-        /// <summary>
-        /// Sets the length for an animation.
-        /// </summary>
-        /// <param name="animationName">Animation name.</param>
-        /// <param name="length">Animation length in seconds.</param>
+        ///<summary>
+        ///Sets the length for an animation.
+        ///</summary>
+        ///<param name="animationName">Animation name.</param>
+        ///<param name="length">Animation length in seconds.</param>
         public void SetAnimationLength(string animationName, float length)
         {
             _animationLengths[animationName] = Max(0.1f, length);
         }
 
-        /// <summary>
-        /// Gets the length for an animation.
-        /// </summary>
-        /// <param name="animationName">Animation name.</param>
-        /// <returns>Animation length in seconds.</returns>
+        ///<summary>
+        ///Gets the length for an animation.
+        ///</summary>
+        ///<param name="animationName">Animation name.</param>
+        ///<returns>Animation length in seconds.</returns>
         public float GetAnimationLength(string animationName)
         {
             return _animationLengths.TryGetValue(animationName, out float length) ? length : 1f;
         }
 
-        /// <summary>
-        /// Resets the animation to the beginning.
-        /// </summary>
+        ///<summary>
+        ///Resets the animation to the beginning.
+        ///</summary>
         public void Reset()
         {
             _animationTime = 0f;

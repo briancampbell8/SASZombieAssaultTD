@@ -1,8 +1,10 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Components
 {
-    /// <summary>
-    /// Represents the score value of an entity.
-    /// </summary>
+    ///<summary>
+    ///Represents the score value of an entity.
+    ///</summary>
     public class ScoreComponent
     {
         public int ScoreValue { get; set; }

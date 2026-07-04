@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Assets
 {
-    /// <summary>
-    /// Loading utilities for fonts, textures, and UI resources
-    /// P80-07-01: UIAssetLoader providing loading utilities for fonts, textures, and UI resources
-    /// </summary>
+    ///<summary>
+    ///Loading utilities for fonts, textures, and UI resources
+    ///P80-07-01: UIAssetLoader providing loading utilities for fonts, textures, and UI resources
+    ///</summary>
     public class UIAssetLoader
     {
         private readonly Dictionary<string, UIFont> _loadedFonts;
@@ -14,29 +16,29 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
         private readonly Dictionary<string, byte[]> _loadedTextures;
         private bool _isInitialized = false;
 
-        /// <summary>
-        /// Gets the number of loaded fonts
-        /// </summary>
+        ///<summary>
+        ///Gets the number of loaded fonts
+        ///</summary>
         public int LoadedFontCount => _loadedFonts.Count;
 
-        /// <summary>
-        /// Gets the number of loaded sprites
-        /// </summary>
+        ///<summary>
+        ///Gets the number of loaded sprites
+        ///</summary>
         public int LoadedSpriteCount => _loadedSprites.Count;
 
-        /// <summary>
-        /// Gets the number of loaded textures
-        /// </summary>
+        ///<summary>
+        ///Gets the number of loaded textures
+        ///</summary>
         public int LoadedTextureCount => _loadedTextures.Count;
 
-        /// <summary>
-        /// Gets whether the loader is initialized
-        /// </summary>
+        ///<summary>
+        ///Gets whether the loader is initialized
+        ///</summary>
         public bool IsInitialized => _isInitialized;
 
-        /// <summary>
-        /// Initializes a new UIAssetLoader
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UIAssetLoader
+        ///</summary>
         public UIAssetLoader()
         {
             _loadedFonts = new Dictionary<string, UIFont>();
@@ -46,14 +48,14 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             System.Diagnostics.Debug.WriteLine("UIAssetLoader: Initialized");
         }
 
-        /// <summary>
-        /// Loads a font from file
-        /// </summary>
-        /// <param name="path">Font file path</param>
-        /// <param name="name">Font name</param>
-        /// <param name="size">Font size</param>
-        /// <param name="style">Font style</param>
-        /// <returns>Loaded font, or null if failed</returns>
+        ///<summary>
+        ///Loads a font from file
+        ///</summary>
+        ///<param name="path">Font file path</param>
+        ///<param name="name">Font name</param>
+        ///<param name="size">Font size</param>
+        ///<param name="style">Font style</param>
+        ///<returns>Loaded font, or null if failed</returns>
         public UIFont LoadFont(string path, string name, float size, System.Drawing.FontStyle style)
         {
             try
@@ -72,7 +74,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
 
                 var font = new UIFont(name, size, path, style);
 
-                // In a real implementation, this would load the font file
+                //In a real implementation, this would load the font file
                 font.MarkAsLoaded();
 
                 _loadedFonts[name] = font;
@@ -87,14 +89,14 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Loads a sprite from file
-        /// </summary>
-        /// <param name="path">Sprite file path</param>
-        /// <param name="name">Sprite name</param>
-        /// <param name="size">Sprite size</param>
-        /// <param name="sourceRect">Source rectangle in texture</param>
-        /// <returns>Loaded sprite, or null if failed</returns>
+        ///<summary>
+        ///Loads a sprite from file
+        ///</summary>
+        ///<param name="path">Sprite file path</param>
+        ///<param name="name">Sprite name</param>
+        ///<param name="size">Sprite size</param>
+        ///<param name="sourceRect">Source rectangle in texture</param>
+        ///<returns>Loaded sprite, or null if failed</returns>
         public UISprite LoadSprite(string path, string name, System.Drawing.SizeF size, System.Drawing.RectangleF sourceRect)
         {
             try
@@ -113,7 +115,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
 
                 var sprite = new UISprite(name, path, size, sourceRect);
 
-                // In a real implementation, this would load the sprite file
+                //In a real implementation, this would load the sprite file
                 sprite.MarkAsLoaded();
 
                 _loadedSprites[name] = sprite;
@@ -128,12 +130,12 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Loads a texture from file
-        /// </summary>
-        /// <param name="path">Texture file path</param>
-        /// <param name="name">Texture name</param>
-        /// <returns>Loaded texture data, or null if failed</returns>
+        ///<summary>
+        ///Loads a texture from file
+        ///</summary>
+        ///<param name="path">Texture file path</param>
+        ///<param name="name">Texture name</param>
+        ///<returns>Loaded texture data, or null if failed</returns>
         public byte[] LoadTexture(string path, string name)
         {
             try
@@ -150,8 +152,8 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
                     return _loadedTextures[name];
                 }
 
-                // In a real implementation, this would load the texture file
-                var textureData = new byte[0]; // Placeholder
+                //In a real implementation, this would load the texture file
+                var textureData = new byte[0]; //Placeholder
                 _loadedTextures[name] = textureData;
 
                 System.Diagnostics.Debug.WriteLine($"UIAssetLoader: Loaded texture '{name}' from '{path}'");
@@ -164,11 +166,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Gets a loaded font by name
-        /// </summary>
-        /// <param name="name">Font name</param>
-        /// <returns>Loaded font, or null if not found</returns>
+        ///<summary>
+        ///Gets a loaded font by name
+        ///</summary>
+        ///<param name="name">Font name</param>
+        ///<returns>Loaded font, or null if not found</returns>
         public UIFont GetFont(string name)
         {
             try
@@ -183,11 +185,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Gets a loaded sprite by name
-        /// </summary>
-        /// <param name="name">Sprite name</param>
-        /// <returns>Loaded sprite, or null if not found</returns>
+        ///<summary>
+        ///Gets a loaded sprite by name
+        ///</summary>
+        ///<param name="name">Sprite name</param>
+        ///<returns>Loaded sprite, or null if not found</returns>
         public UISprite GetSprite(string name)
         {
             try
@@ -202,11 +204,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Gets loaded texture data by name
-        /// </summary>
-        /// <param name="name">Texture name</param>
-        /// <returns>Loaded texture data, or null if not found</returns>
+        ///<summary>
+        ///Gets loaded texture data by name
+        ///</summary>
+        ///<param name="name">Texture name</param>
+        ///<returns>Loaded texture data, or null if not found</returns>
         public byte[] GetTexture(string name)
         {
             try
@@ -221,10 +223,10 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Gets all loaded font names
-        /// </summary>
-        /// <returns>Collection of font names</returns>
+        ///<summary>
+        ///Gets all loaded font names
+        ///</summary>
+        ///<returns>Collection of font names</returns>
         public IEnumerable<string> GetLoadedFontNames()
         {
             try
@@ -238,10 +240,10 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Gets all loaded sprite names
-        /// </summary>
-        /// <returns>Collection of sprite names</returns>
+        ///<summary>
+        ///Gets all loaded sprite names
+        ///</summary>
+        ///<returns>Collection of sprite names</returns>
         public IEnumerable<string> GetLoadedSpriteNames()
         {
             try
@@ -255,10 +257,10 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Gets all loaded texture names
-        /// </summary>
-        /// <returns>Collection of texture names</returns>
+        ///<summary>
+        ///Gets all loaded texture names
+        ///</summary>
+        ///<returns>Collection of texture names</returns>
         public IEnumerable<string> GetLoadedTextureNames()
         {
             try
@@ -272,11 +274,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Unloads a font
-        /// </summary>
-        /// <param name="name">Font name to unload</param>
-        /// <returns>True if font was unloaded</returns>
+        ///<summary>
+        ///Unloads a font
+        ///</summary>
+        ///<param name="name">Font name to unload</param>
+        ///<returns>True if font was unloaded</returns>
         public bool UnloadFont(string name)
         {
             try
@@ -299,11 +301,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Unloads a sprite
-        /// </summary>
-        /// <param name="name">Sprite name to unload</param>
-        /// <returns>True if sprite was unloaded</returns>
+        ///<summary>
+        ///Unloads a sprite
+        ///</summary>
+        ///<param name="name">Sprite name to unload</param>
+        ///<returns>True if sprite was unloaded</returns>
         public bool UnloadSprite(string name)
         {
             try
@@ -326,11 +328,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Unloads a texture
-        /// </summary>
-        /// <param name="name">Texture name to unload</param>
-        /// <returns>True if texture was unloaded</returns>
+        ///<summary>
+        ///Unloads a texture
+        ///</summary>
+        ///<param name="name">Texture name to unload</param>
+        ///<returns>True if texture was unloaded</returns>
         public bool UnloadTexture(string name)
         {
             try
@@ -353,9 +355,9 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Clears all loaded assets
-        /// </summary>
+        ///<summary>
+        ///Clears all loaded assets
+        ///</summary>
         public void Clear()
         {
             try
@@ -372,10 +374,10 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
         }
 
-        /// <summary>
-        /// Gets a string representation of the asset loader state
-        /// </summary>
-        /// <returns>String representation</returns>
+        ///<summary>
+        ///Gets a string representation of the asset loader state
+        ///</summary>
+        ///<returns>String representation</returns>
         public override string ToString()
         {
             try

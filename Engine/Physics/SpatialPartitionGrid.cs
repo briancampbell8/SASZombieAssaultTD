@@ -1,16 +1,17 @@
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.ECS;
-using SASZombieAssaultTD.Engine.VectorMath;
+//
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.ECS;
+using SASZombieAssaultTD.Engine.Scenes.Battlefields;
+using SASZombieAssaultTD.Engine.VectorMath;
 namespace SASZombieAssaultTD.Engine.Physics
 {
-    /// <summary>
-    /// Uniform grid spatial partitioning structure optimized for 2D tower defense maps.
-    /// Provides efficient spatial queries and collision pair generation.
-    /// </summary>
+    ///<summary>
+    ///Uniform grid spatial partitioning structure optimized for 2D tower defense maps.
+    ///Provides efficient spatial queries and collision pair generation.
+    ///</summary>
     public sealed class SpatialPartitionGrid
     {
         private readonly Dictionary<int, GridCell> _cells = new();
@@ -217,8 +218,8 @@ namespace SASZombieAssaultTD.Engine.Physics
 
         private static (uint, uint) CreateOrderedPair(uint id1, uint id2) => id1 < id2 ? (id1, id2) : (id2, id1);
 
-        private void LogInfo(string message) => Engine.Diagnostics.DebugLogger.LogDebug("INFO", message);
-        private void LogDebug(string message) => Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", message);
+        private void LogInfo(string message) => Dlogger.Log(LogSubsystems.Physics, LogLevel.Info, message);
+        private void LogDebug(string message) => Dlogger.Log(LogSubsystems.Physics, LogLevel.Debug, message);
     }
 
     internal sealed class GridCell

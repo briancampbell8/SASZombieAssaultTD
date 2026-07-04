@@ -1,12 +1,14 @@
 using System;
 using System.Runtime.Serialization;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Achievements
 {
-    /// <summary>
-    /// Tracks per-player challenge progress and completion state.
-    /// Provides time-based expiration tracking and serialization support.
-    /// </summary>
+    ///<summary>
+    ///Tracks per-player challenge progress and completion state.
+    ///Provides time-based expiration tracking and serialization support.
+    ///</summary>
     [Serializable]
     [DataContract]
     public class ChallengeInstance

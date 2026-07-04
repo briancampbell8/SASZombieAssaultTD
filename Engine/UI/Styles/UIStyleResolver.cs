@@ -4,35 +4,37 @@ using System.Linq;
 using SASZombieAssaultTD.Engine.UI.Components;
 using SASZombieAssaultTD.Engine.UI.Widgets;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Styles
 {
-    /// <summary>
-    /// Logic to apply styles to UI elements
-    /// P80-06-03: UIStyleResolver providing logic to apply styles to UI elements
-    /// </summary>
+    ///<summary>
+    ///Logic to apply styles to UI elements
+    ///P80-06-03: UIStyleResolver providing logic to apply styles to UI elements
+    ///</summary>
     public class UIStyleResolver
     {
         private readonly UIStyleSheet _styleSheet;
 
-        /// <summary>
-        /// Gets the style sheet
-        /// </summary>
+        ///<summary>
+        ///Gets the style sheet
+        ///</summary>
         public UIStyleSheet StyleSheet => _styleSheet;
 
-        /// <summary>
-        /// Initializes a new UIStyleResolver
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UIStyleResolver
+        ///</summary>
         public UIStyleResolver(UIStyleSheet styleSheet)
         {
             _styleSheet = styleSheet ?? throw new ArgumentNullException(nameof(styleSheet));
             System.Diagnostics.Debug.WriteLine("UIStyleResolver: Initialized");
         }
 
-        /// <summary>
-        /// Applies a style to a UI element
-        /// </summary>
-        /// <param name="element">Element to apply style to</param>
-        /// <param name="styleName">Name of the style to apply</param>
+        ///<summary>
+        ///Applies a style to a UI element
+        ///</summary>
+        ///<param name="element">Element to apply style to</param>
+        ///<param name="styleName">Name of the style to apply</param>
         public void ApplyStyle(UIElement element, string styleName)
         {
             try
@@ -66,30 +68,30 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Applies a style to a UI element
-        /// </summary>
-        /// <param name="element">Element to apply style to</param>
-        /// <param name="style">Style to apply</param>
+        ///<summary>
+        ///Applies a style to a UI element
+        ///</summary>
+        ///<param name="element">Element to apply style to</param>
+        ///<param name="style">Style to apply</param>
         private void ApplyStyleToElement(UIElement element, UIStyle style)
         {
             try
             {
-                // Apply background color
+                //Apply background color
                 if (style.BackgroundColor != System.Drawing.Color.Transparent)
                 {
-                    // This would use the element's background rendering method
+                    //This would use the element's background rendering method
                     System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Applied background color {style.BackgroundColor}");
                 }
 
-                // Apply text color
+                //Apply text color
                 if (element is Label textElement)
                 {
                     textElement.TextColor = new SASZombieAssaultTD.Engine.Core.Color(style.TextColor.R, style.TextColor.G, style.TextColor.B, style.TextColor.A);
                     System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Applied text color {style.TextColor}");
                 }
 
-                // Apply border
+                //Apply border
                 if (element is UIPanel panelElement)
                 {
                     panelElement.BorderColor = style.BorderColor;
@@ -97,7 +99,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                     System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Applied border color {style.BorderColor}, thickness {style.BorderThickness}");
                 }
 
-                // Apply font
+                //Apply font
                 if (element is Label textElement2)
                 {
                     textElement2.Font = new Font(style.Font, 12f);
@@ -105,7 +107,7 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
                     System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Applied font {style.Font}, size {style.FontSize}");
                 }
 
-                // Apply padding and margins
+                //Apply padding and margins
                 element.Size = new System.Drawing.SizeF(
                 element.Size.Width + style.Padding.Horizontal + style.Margin.Horizontal,
                 element.Size.Height + style.Padding.Vertical + style.Margin.Vertical
@@ -119,11 +121,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Applies a style to multiple elements
-        /// </summary>
-        /// <param name="elements">Elements to apply style to</param>
-        /// <param name="styleName">Name of the style to apply</param>
+        ///<summary>
+        ///Applies a style to multiple elements
+        ///</summary>
+        ///<param name="elements">Elements to apply style to</param>
+        ///<param name="styleName">Name of the style to apply</param>
         public void ApplyStyleToElements(IEnumerable<UIElement> elements, string styleName)
         {
             try
@@ -160,11 +162,11 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Removes a style from an element
-        /// </summary>
-        /// <param name="element">Element to remove style from</param>
-        /// <param name="styleName">Name of the style to remove</param>
+        ///<summary>
+        ///Removes a style from an element
+        ///</summary>
+        ///<param name="element">Element to remove style from</param>
+        ///<param name="styleName">Name of the style to remove</param>
         public void RemoveStyle(UIElement element, string styleName)
         {
             try
@@ -198,16 +200,16 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Removes a style from an element
-        /// </summary>
-        /// <param name="element">Element to remove style from</param>
-        /// <param name="style">Style to remove</param>
+        ///<summary>
+        ///Removes a style from an element
+        ///</summary>
+        ///<param name="element">Element to remove style from</param>
+        ///<param name="style">Style to remove</param>
         private void RemoveStyleFromElement(UIElement element, UIStyle style)
         {
             try
             {
-                // This would reset the element's appearance to default values
+                //This would reset the element's appearance to default values
                 System.Diagnostics.Debug.WriteLine($"UIStyleResolver: Removed style from element");
             }
             catch (Exception ex)
@@ -216,12 +218,12 @@ namespace SASZombieAssaultTD.Engine.UI.Styles
             }
         }
 
-        /// <summary>
-        /// Gets the current style of an element
-        /// </summary>
-        /// <param name="element">Element to get style from</param>
-        /// <param name="styleName">Name of the style to get</param>
-        /// <returns>Current style, or null if not found</returns>
+        ///<summary>
+        ///Gets the current style of an element
+        ///</summary>
+        ///<param name="element">Element to get style from</param>
+        ///<param name="styleName">Name of the style to get</param>
+        ///<returns>Current style, or null if not found</returns>
         public UIStyle GetCurrentStyle(UIElement element, string styleName)
         {
             try

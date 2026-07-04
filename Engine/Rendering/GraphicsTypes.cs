@@ -1,12 +1,14 @@
 using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using System;
 using System.Numerics;
 using System.Security.AccessControl;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Rendering
 {
-    // Stub implementations for XNA/MonoGame compatibility
+    //Stub implementations for XNA/MonoGame compatibility
     public enum SpriteSortMode
     {
         Deferred,

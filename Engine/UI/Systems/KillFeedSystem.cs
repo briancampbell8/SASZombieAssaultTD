@@ -7,11 +7,13 @@ using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Extensions;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
-    /// <summary>
-    /// Kill attributed event for tracking kills.
-    /// </summary>
+    ///<summary>
+    ///Kill attributed event for tracking kills.
+    ///</summary>
     public class KillAttributedEvent
     {
         public string KillerName { get; set; }
@@ -30,9 +32,9 @@ namespace SASZombieAssaultTD.Engine.UI
         }
     }
 
-    /// <summary>
-    /// Displays recent kills in a scrolling/fading list with death type information.
-    /// </summary>
+    ///<summary>
+    ///Displays recent kills in a scrolling/fading list with death type information.
+    ///</summary>
     public class KillFeedSystem
     {
         private readonly EventRouter _eventBus;

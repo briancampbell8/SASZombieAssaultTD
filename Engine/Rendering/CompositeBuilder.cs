@@ -1,25 +1,33 @@
-// ============================================================================
-// File Path: Engine/Rendering/CompositeBuilder.cs
-// File: CompositeBuilder.cs
-// Program: CompositeBuilder
-// Subsystem: Rendering / Compositing
+// ====================================================================================================
+//  FILE: CompositeBuilder.cs
+//  PATH: Engine/Rendering/ 
+//  PROGRAM: CompositeBuilder.cs
+//  MODULE: Resource Management Framework
+//  ROLE:
+//      Defines the structures, loaders, and integration points responsible for discovering, validating, and providing engine resources in a deterministic manner.
 //
-// Purpose:
-//     Builds a composite texture by loading individual PNG textures,
-//     drawing them onto a composite surface in the correct order,
-//     and producing a final EngineTexture.
+//  RESPONSIBILITIES:
+//      - Provide a unified API for loading, caching, and resolving engine resources.
+//      - Enforce deterministic resource lookup and lifecycle rules.
+//      - Abstract file formats, storage locations, and integration layers behind a stable interface.
+//      - Ensure resource availability for all engine subsystems (Rendering, Audio, Gameplay, UI).
 //
-// Diagnostics:
-//     - Uses engine-native Diagnostics.Trace()
-//     - Fully doctrine-compliant naming
-//     - Subsystem.Operation.Stage.Event format
-// ============================================================================
+//  NON-RESPONSIBILITIES:
+//      - Performing rendering or GPU upload operations.
+//      - Managing gameplay logic or scene entities.
+//      - Handling diagnostics, logging, or performance metrics.
+//      - Encoding or authoring resource files.
+//
+//  ARCHITECTURAL NOTES:
+//      - The Resource Management Framework acts as the central authority for all asset retrieval.
+//      - Resource modules must remain pure: no side effects outside resource acquisition and validation.
+//      - All resource types (textures, data files, definitions, metadata) must follow deterministic load rules.
+//  ====================================================================================================
 
 using Engine.Rendering.Interfaces;
-using EngineDiagnostics = SASZombieAssaultTD.Engine.Diagnostics;
-using SystemDiagnostics = System.Diagnostics;
-
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Rendering
+
 {
     public class CompositeBuilder
     {
@@ -52,62 +60,121 @@ namespace SASZombieAssaultTD.Engine.Rendering
             int supportHudX,
             int supportHudY)
         {
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Start",
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Start",
                 $"map='{mapPath}', hud='{hudPath}', support='{supportHudPath}'");
 
-            // --------------------------------------------------------------------
-            // LOAD TEXTURES
-            // --------------------------------------------------------------------
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Load.MapTexture.Start", mapPath);
+            //--------------------------------------------------------------------
+            //LOAD TEXTURES
+            //--------------------------------------------------------------------
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Load.MapTexture.Start", mapPath);
             EngineTexture mapTexture = _loader.LoadPng(mapPath);
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Load.MapTexture.Complete",
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Load.MapTexture.Complete",
                 $"{mapTexture.Width}x{mapTexture.Height}");
 
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Load.HudTexture.Start", hudPath);
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Load.HudTexture.Start", hudPath);
             EngineTexture hudTexture = _loader.LoadPng(hudPath);
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Load.HudTexture.Complete",
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Load.HudTexture.Complete",
                 $"{hudTexture.Width}x{hudTexture.Height}");
 
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Load.SupportHudTexture.Start", supportHudPath);
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Load.SupportHudTexture.Start", supportHudPath);
             EngineTexture supportHudTexture = _loader.LoadPng(supportHudPath);
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Load.SupportHudTexture.Complete",
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Load.SupportHudTexture.Complete",
                 $"{supportHudTexture.Width}x{supportHudTexture.Height}");
 
-            // --------------------------------------------------------------------
-            // CREATE SURFACE
-            // --------------------------------------------------------------------
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Surface.Create.Start",
+            //--------------------------------------------------------------------
+            //CREATE SURFACE
+            //--------------------------------------------------------------------
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Surface.Create.Start",
                 $"{mapTexture.Width}x{mapTexture.Height}");
 
             ICompositeSurface surface = _creator.CreateSurface(
                 mapTexture.Width,
                 mapTexture.Height);
 
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Surface.Create.Complete", "OK");
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Surface.Create.Complete", "OK");
 
-            // --------------------------------------------------------------------
-            // DRAW LAYERS
-            // --------------------------------------------------------------------
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Draw.Map.Start", "0,0");
+            //--------------------------------------------------------------------
+            //DRAW LAYERS
+            //--------------------------------------------------------------------
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Draw.Map.Start", "0,0");
             _mergeTool.DrawTexture(surface, mapTexture, 0, 0);
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Draw.Map.Complete", "OK");
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Draw.Map.Complete", "OK");
 
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Draw.Hud.Start", $"{hudX},{hudY}");
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Draw.Hud.Start", $"{hudX},{hudY}");
             _mergeTool.DrawTexture(surface, hudTexture, hudX, hudY);
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Draw.Hud.Complete", "OK");
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Draw.SupportHud.Start",
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Draw.Hud.Complete", "OK");
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Draw.SupportHud.Start",
                 $"{supportHudX},{supportHudY}");
             _mergeTool.DrawTexture(surface, supportHudTexture, supportHudX, supportHudY);
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Draw.SupportHud.Complete", "OK");
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Draw.SupportHud.Complete", "OK");
 
-            // --------------------------------------------------------------------
-            // FINALIZE
-            // --------------------------------------------------------------------
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Texture.Create.Start", "Converting surface");
+            //--------------------------------------------------------------------
+            //FINALIZE
+            //--------------------------------------------------------------------
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Texture.Create.Start", "Converting surface");
             EngineTexture finalTexture = _creator.CreateTexture(surface);
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.Texture.Create.Complete", "OK");
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.Texture.Create.Complete", "OK");
 
-            Engine.Diagnostics.DebugLogger.Trace("CompositeBuilder.BuildComposite.End", "Success");
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.End", "OK");
+            DLogger.Log(
+                LogSubsystems.Rendering,
+                LogLevel.Debug,
+                "CompositeBuilder.BuildComposite.End", "Success");
+
             return finalTexture;
         }
     }

@@ -36,57 +36,58 @@
 
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Systems
 {
-    /// <summary>
-    /// Update management system for SAS Zombie Assault TD.
-    /// Manages game loop updates and system scheduling.
-    /// </summary>
+    ///<summary>
+    ///Update management system for SAS Zombie Assault TD.
+    ///Manages game loop updates and system scheduling.
+    ///</summary>
     public class UpdateManager
     {
-        // --------------------------------------------------------------------
-        // Properties
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Properties
+        //--------------------------------------------------------------------
 
-        /// <summary>
-        /// Whether the update manager is active.
-        /// </summary>
+        ///<summary>
+        ///Whether the update manager is active.
+        ///</summary>
         public bool IsActive { get; set; } = true;
 
-        /// <summary>
-        /// Current update rate (unused, reserved for future fixed-step logic).
-        /// </summary>
+        ///<summary>
+        ///Current update rate (unused, reserved for future fixed-step logic).
+        ///</summary>
         public float UpdateRate { get; set; } = 60.0f;
 
-        // --------------------------------------------------------------------
-        // Private Fields
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Private Fields
+        //--------------------------------------------------------------------
 
         private readonly List<IUpdateSystem> _systems = new();
         private object TheContainingType;
         private object TheContainingMember;
 
-        // --------------------------------------------------------------------
-        // Construction
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Construction
+        //--------------------------------------------------------------------
 
-        /// <summary>
-        /// Creates a new UpdateManager instance.
-        /// </summary>
+        ///<summary>
+        ///Creates a new UpdateManager instance.
+        ///</summary>
         public UpdateManager()
         {
-            DebugLogger.LogInfo("UpdateManager constructed");
+            DLogger.Log("UpdateManager constructed");
         }
 
-        // --------------------------------------------------------------------
-        // Public Methods
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Public Methods
+        //--------------------------------------------------------------------
 
-        /// <summary>
-        /// Registers an update system.
-        /// </summary>
+        ///<summary>
+        ///Registers an update system.
+        ///</summary>
         public void RegisterSystem(IUpdateSystem system)
         {
             if (system == null)
@@ -95,13 +96,13 @@ namespace SASZombieAssaultTD.Engine.Systems
             if (!_systems.Contains(system))
             {
                 _systems.Add(system);
-                DebugLogger.LogInfo($"UpdateManager.RegisterSystem: Registered '{system.GetType().FullName}'");
+                DLogger.Log($"UpdateManager.RegisterSystem: Registered '{system.GetType().FullName}'");
             }
         }
 
-        /// <summary>
-        /// Updates all registered systems.
-        /// </summary>
+        ///<summary>
+        ///Updates all registered systems.
+        ///</summary>
         public void UpdateAll(float deltaTime)
         {
             if (!IsActive)
@@ -117,82 +118,83 @@ namespace SASZombieAssaultTD.Engine.Systems
                 {
                     NotImplementedGuard.Hit("NOT_IMPLEMENTED");
 
-                    DebugLogger.LogError(
+                    DLogger.Log(
                         $"UpdateManager.UpdateAll: NOT IMPLEMENTED in '{system.GetType().FullName}'"
                     );
-                    DebugLogger.Exception(niex, $"UpdateManager.UpdateAll:{system.GetType().FullName}");
+                    DLogger.Log(niex.ToString(), $"UpdateManager.UpdateAll:{system.GetType().FullName}");
                     throw;
                 }
                 catch (Exception ex)
                 {
-                    DebugLogger.LogError(
+                    DLogger.Log(
                         $"UpdateManager.UpdateAll: Exception in '{system.GetType().FullName}': {ex.Message}"
                     );
-                    DebugLogger.Exception(ex, $"UpdateManager.UpdateAll:{system.GetType().FullName}");
+                    DLogger.Log(ex.ToString(),
+                        $"UpdateManager.UpdateAll:{system.GetType().FullName}");
                     throw;
                 }
             }
         }
 
-        /// <summary>
-        /// Gets diagnostic information.
-        /// </summary>
+        ///<summary>
+        ///Gets diagnostic information.
+        ///</summary>
         public string GetDiagnostics()
         {
             return $"UpdateManager: {_systems.Count} systems registered, Active: {IsActive}";
         }
 
-        /// <summary>
-        /// Shuts down the update manager.
-        /// </summary>
+        ///<summary>
+        ///Shuts down the update manager.
+        ///</summary>
         public void Shutdown()
         {
-            DebugLogger.LogInfo("UpdateManager.Shutdown: ENTER");
+            DLogger.Log("UpdateManager.Shutdown: ENTER");
 
             IsActive = false;
             _systems.Clear();
 
-            DebugLogger.LogInfo("UpdateManager.Shutdown: EXIT");
+            DLogger.Log("UpdateManager.Shutdown: EXIT");
         }
 
-        // --------------------------------------------------------------------
-        // REAL INITIALIZATION IMPLEMENTATION
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //REAL INITIALIZATION IMPLEMENTATION
+        //--------------------------------------------------------------------
 
         internal void Initialize()
         {
-            DebugLogger.LogInfo("UpdateManager.Initialize: ENTER");
+            DLogger.Log("UpdateManager.Initialize: ENTER");
 
-            // Ensure the manager is active before updates begin
+            //Ensure the manager is active before updates begin
             IsActive = true;
 
-            // Diagnostics: report how many systems were registered before initialization
-            DebugLogger.LogInfo(
+            //Diagnostics: report how many systems were registered before initialization
+            DLogger.Log(
                 $"UpdateManager.Initialize: {_systems.Count} systems registered prior to initialization"
             );
 
-            // Validate that no null entries exist (defensive integrity check)
+            //Validate that no null entries exist (defensive integrity check)
             for (int i = _systems.Count - 1; i >= 0; i--)
             {
                 if (_systems[i] == null)
                 {
-                    DebugLogger.LogWarning("UpdateManager.Initialize: Null system removed from list");
+                    DLogger.Log("UpdateManager.Initialize: Null system removed from list");
                     _systems.RemoveAt(i);
                 }
             }
 
-            DebugLogger.LogInfo("UpdateManager.Initialize: EXIT");
+            DLogger.Log("UpdateManager.Initialize: EXIT");
         }
     }
 
-    /// <summary>
-    /// Interface for update systems.
-    /// </summary>
+    ///<summary>
+    ///Interface for update systems.
+    ///</summary>
     public interface IUpdateSystem
     {
-        /// <summary>
-        /// Updates the system.
-        /// </summary>
+        ///<summary>
+        ///Updates the system.
+        ///</summary>
         void Update(float deltaTime);
     }
 }

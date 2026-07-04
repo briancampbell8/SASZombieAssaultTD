@@ -1,12 +1,38 @@
-using SASZombieAssaultTD.Engine.Diagnostics;
+// ====================================================================================================
+//  FILE: Texture2D.cs
+//  PATH: Engine/Rendering/ 
+//  PROGRAM: Texture2D.cs
+//  MODULE: Resource Management Framework
+//  ROLE:
+//      Defines the structures, loaders, and integration points responsible for discovering, validating, and providing engine resources in a deterministic manner.
+//
+//  RESPONSIBILITIES:
+//      - Provide a unified API for loading, caching, and resolving engine resources.
+//      - Enforce deterministic resource lookup and lifecycle rules.
+//      - Abstract file formats, storage locations, and integration layers behind a stable interface.
+//      - Ensure resource availability for all engine subsystems (Rendering, Audio, Gameplay, UI).
+//
+//  NON-RESPONSIBILITIES:
+//      - Performing rendering or GPU upload operations.
+//      - Managing gameplay logic or scene entities.
+//      - Handling diagnostics, logging, or performance metrics.
+//      - Encoding or authoring resource files.
+//
+//  ARCHITECTURAL NOTES:
+//      - The Resource Management Framework acts as the central authority for all asset retrieval.
+//      - Resource modules must remain pure: no side effects outside resource acquisition and validation.
+//      - All resource types (textures, data files, definitions, metadata) must follow deterministic load rules.
+//  ====================================================================================================
+
 using System;
 using System.IO;
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Rendering
 {
-    /// <summary>
-    /// Supported texture formats.
-    /// </summary>
+    ///<summary>
+    ///Supported texture formats.
+    ///</summary>
     public enum TextureFormat
     {
         BGRA32,
@@ -14,9 +40,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
         A8
     }
 
-    /// <summary>
-    /// Enhanced texture representation with cache compatibility and validation.
-    /// </summary>
+    ///<summary>
+    ///Enhanced texture representation with cache compatibility and validation.
+    ///</summary>
     public sealed class Texture2D : IDisposable
     {
         private bool _disposed = false;
@@ -29,38 +55,38 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        /// <summary>
-        /// Raw pixel data (BGRA byte order, matching Framebuffer layout). Null when dimensions-only.
-        /// </summary>
+        ///<summary>
+        ///Raw pixel data (BGRA byte order, matching Framebuffer layout). Null when dimensions-only.
+        ///</summary>
         public byte[]? Pixels { get; private set; }
 
-        /// <summary>
-        /// Gets the texture format.
-        /// </summary>
+        ///<summary>
+        ///Gets the texture format.
+        ///</summary>
         public TextureFormat Format => _format;
 
-        /// <summary>
-        /// Gets the file path this texture was loaded from.
-        /// </summary>
+        ///<summary>
+        ///Gets the file path this texture was loaded from.
+        ///</summary>
         public string? FilePath => _filePath;
 
-        /// <summary>
-        /// Constructs a Texture2D with optional pixel data.
-        /// Throws if pixel array length does not match expected size.
-        /// </summary>
-        /// <param name="name">The name of the texture.</param>
-        /// <param name="width">The width of the texture.</param>
-        /// <param name="height">The height of the texture.</param>
-        /// <param name="pixels">The pixel data for the texture.</param>
-        /// <exception cref="ArgumentNullException">Thrown when name is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when width or height is less than or equal to zero.</exception>
-        /// <exception cref="ArgumentException">Thrown when pixels array length does not match expected size.</exception>
+        ///<summary>
+        ///Constructs a Texture2D with optional pixel data.
+        ///Throws if pixel array length does not match expected size.
+        ///</summary>
+        ///<param name="name">The name of the texture.</param>
+        ///<param name="width">The width of the texture.</param>
+        ///<param name="height">The height of the texture.</param>
+        ///<param name="pixels">The pixel data for the texture.</param>
+        ///<exception cref="ArgumentNullException">Thrown when name is null.</exception>
+        ///<exception cref="ArgumentOutOfRangeException">Thrown when width or height is less than or equal to zero.</exception>
+        ///<exception cref="ArgumentException">Thrown when pixels array length does not match expected size.</exception>
         public Texture2D(string name, int width, int height, byte[]? pixels)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentNullException(nameof(name));
 
-            // Validate all parameters
+            //Validate all parameters
             ValidateTexture(width, height, pixels);
 
             Name = name;
@@ -69,24 +95,24 @@ namespace SASZombieAssaultTD.Engine.Rendering
             Pixels = pixels;
         }
 
-        /// <summary>
-        /// Loads a texture from file path with cache integration.
-        /// </summary>
-        /// <param name="filePath">The file path to load from.</param>
-        /// <param name="textureCache">Optional texture cache for resource management.</param>
-        /// <returns>The loaded texture or cached version if available.</returns>
+        ///<summary>
+        ///Loads a texture from file path with cache integration.
+        ///</summary>
+        ///<param name="filePath">The file path to load from.</param>
+        ///<param name="textureCache">Optional texture cache for resource management.</param>
+        ///<returns>The loaded texture or cached version if available.</returns>
         public static Texture2D LoadFromFile(string filePath, TextureCache? textureCache = null)
         {
             if (string.IsNullOrEmpty(filePath))
                 throw new ArgumentNullException(nameof(filePath));
 
-            // Check cache first
+            //Check cache first
             if (textureCache?.TryGet(filePath, out var cachedTexture) == true)
             {
                 return cachedTexture!;
             }
 
-            // Load from file if not in cache
+            //Load from file if not in cache
             if (!File.Exists(filePath))
                 throw new FileNotFoundException($"Texture file not found: {filePath}");
 
@@ -94,15 +120,15 @@ namespace SASZombieAssaultTD.Engine.Rendering
             var texture = new Texture2D(fileName, 0, 0, null);
             texture._filePath = filePath;
 
-            // Load pixel data (placeholder implementation)
+            //Load pixel data (placeholder implementation)
             try
             {
-                // In a real implementation, this would load actual image data
-                // For now, create a test pattern
+                //In a real implementation, this would load actual image data
+                //For now, create a test pattern
                 var pixels = CreateTestPattern(texture.Width, texture.Height);
                 texture.Pixels = pixels;
 
-                // Add to cache if provided
+                //Add to cache if provided
                 textureCache?.Add(filePath, texture);
             }
             catch (Exception ex)
@@ -110,41 +136,41 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 throw new InvalidOperationException($"Failed to load texture from {filePath}: {ex.Message}", ex);
             }
 
-            return texture; // Always returns a valid texture
+            return texture; //Always returns a valid texture
         }
 
-        /// <summary>
-        /// Validates texture dimensions and format.
-        /// </summary>
-        /// <param name="width">The width to validate.</param>
-        /// <param name="height">The height to validate.</param>
-        /// <param name="pixels">Optional pixel data to validate.</param>
-        /// <exception cref="ArgumentException">Thrown when validation fails.</exception>
+        ///<summary>
+        ///Validates texture dimensions and format.
+        ///</summary>
+        ///<param name="width">The width to validate.</param>
+        ///<param name="height">The height to validate.</param>
+        ///<param name="pixels">Optional pixel data to validate.</param>
+        ///<exception cref="ArgumentException">Thrown when validation fails.</exception>
         public static void ValidateTexture(int width, int height, byte[]? pixels = null)
         {
             if (width <= 0 || height <= 0)
                 throw new ArgumentException("Texture dimensions must be positive.");
 
-            // Validate maximum supported size
+            //Validate maximum supported size
             if (width > 8192 || height > 8192)
                 throw new ArgumentException("Texture dimensions exceed maximum supported size (8192x8192).");
 
-            // Validate power-of-two dimensions for better GPU compatibility
+            //Validate power-of-two dimensions for better GPU compatibility
             if (!IsPowerOfTwo(width) || !IsPowerOfTwo(height))
                 throw new ArgumentException("Texture dimensions should be power-of-two for optimal GPU performance.");
 
-            // Validate pixel data if provided
+            //Validate pixel data if provided
             if (pixels != null && pixels!.Length != width * height * 4)
                 throw new ArgumentException(
                 $"Pixel array length ({pixels!.Length}) does not match expected size ({width * height * 4}).",
                 nameof(pixels));
         }
 
-        /// <summary>
-        /// Checks if a texture format is supported.
-        /// </summary>
-        /// <param name="format">The texture format to check.</param>
-        /// <returns>True if the format is supported.</returns>
+        ///<summary>
+        ///Checks if a texture format is supported.
+        ///</summary>
+        ///<param name="format">The texture format to check.</param>
+        ///<returns>True if the format is supported.</returns>
         public static bool IsFormatSupported(TextureFormat format)
         {
             return format switch
@@ -156,30 +182,30 @@ namespace SASZombieAssaultTD.Engine.Rendering
             };
         }
 
-        /// <summary>
-        /// Validates that the texture is not disposed.
-        /// </summary>
+        ///<summary>
+        ///Validates that the texture is not disposed.
+        ///</summary>
         private void ThrowIfDisposed()
         {
             if (_disposed)
                 throw new ObjectDisposedException(nameof(Texture2D));
         }
 
-        /// <summary>
-        /// Checks if a number is a power of two.
-        /// </summary>
+        ///<summary>
+        ///Checks if a number is a power of two.
+        ///</summary>
         private static bool IsPowerOfTwo(int value)
         {
             return value > 0 && (value & (value - 1)) == 0;
         }
 
-        /// <summary>
-        /// Creates a test pattern for texture loading validation.
-        /// </summary>
+        ///<summary>
+        ///Creates a test pattern for texture loading validation.
+        ///</summary>
         private static byte[] CreateTestPattern(int width, int height)
         {
             var pixels = new byte[width * height * 4];
-            var random = new Random(42); // Fixed seed for deterministic testing
+            var random = new Random(42); //Fixed seed for deterministic testing
 
             for (int y = 0; y < height; y++)
             {
@@ -187,25 +213,25 @@ namespace SASZombieAssaultTD.Engine.Rendering
                 {
                     var index = (y * width + x) * 4;
 
-                    // Create a checkerboard pattern
+                    //Create a checkerboard pattern
                     var isEven = (x + y) % 2 == 0;
                     var color = isEven ?
-                    new byte[] { 255, 255, 255, 255 } : // White
-                    new byte[] { 128, 128, 128, 255 };  // Gray
+                    new byte[] { 255, 255, 255, 255 } : //White
+                    new byte[] { 128, 128, 128, 255 };  //Gray
 
-                    pixels[index + 0] = color[0]; // B
-                    pixels[index + 1] = color[1]; // G
-                    pixels[index + 2] = color[2]; // R
-                    pixels[index + 3] = color[3]; // A
+                    pixels[index + 0] = color[0]; //B
+                    pixels[index + 1] = color[1]; //G
+                    pixels[index + 2] = color[2]; //R
+                    pixels[index + 3] = color[3]; //A
                 }
             }
 
             return pixels;
         }
 
-        /// <summary>
-        /// Implements deterministic resource disposal.
-        /// </summary>
+        ///<summary>
+        ///Implements deterministic resource disposal.
+        ///</summary>
         public void Dispose()
         {
             if (_disposed) return;

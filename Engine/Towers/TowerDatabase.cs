@@ -3,23 +3,23 @@ File:    TowerDatabase.cs
 Purpose: Database for tower information.
 */
 
-using System;
-using SASZombieAssaultTD.Engine.Core;
-
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Scenes.Battlefields;
 namespace SASZombieAssaultTD.Engine.Towers
+//
 {
-    /// <summary>
-    /// Database for tower information.
-    /// </summary>
+    ///<summary>
+    ///Database for tower information.
+    ///</summary>
     public static class TowerDatabase
     {
-        /// <summary>
-        /// Gets tower data for the specified tower type.
-        /// </summary>
+        ///<summary>
+        ///Gets tower data for the specified tower type.
+        ///</summary>
         public static object GetTowerData(string towerType)
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"TowerDatabase: Getting data for {towerType}");
-            // Placeholder implementation
+            Dlogger.Log(LogSubsystems.Towers, LogLevel.Info, $"TowerDatabase: Getting data for {towerType}");
+            //Placeholder implementation
             return new object();
         }
     }

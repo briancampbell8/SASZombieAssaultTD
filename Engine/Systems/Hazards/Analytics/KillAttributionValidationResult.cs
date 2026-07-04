@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Systems.Hazards.Analytics
 {
-    /// <summary>
-    /// Base class for validation results in hazard analytics.
-    /// </summary>
+    ///<summary>
+    ///Base class for validation results in hazard analytics.
+    ///</summary>
     public abstract class AnalyticsValidationResult
     {
         public bool IsValid { get; set; } = true;
@@ -13,9 +15,9 @@ namespace SASZombieAssaultTD.Engine.Systems.Hazards.Analytics
         public DateTime ValidationTime { get; set; } = DateTime.Now;
     }
 
-    /// <summary>
-    /// Validation result for kill attribution analytics.
-    /// </summary>
+    ///<summary>
+    ///Validation result for kill attribution analytics.
+    ///</summary>
     public class KillAttributionValidationResult : AnalyticsValidationResult
     {
         public List<string> Warnings { get; set; } = new();
@@ -44,9 +46,9 @@ namespace SASZombieAssaultTD.Engine.Systems.Hazards.Analytics
         }
     }
 
-    /// <summary>
-    /// Represents a single kill contribution in attribution analysis.
-    /// </summary>
+    ///<summary>
+    ///Represents a single kill contribution in attribution analysis.
+    ///</summary>
     public class KillContribution
     {
         public int HazardId { get; set; }
@@ -78,9 +80,9 @@ namespace SASZombieAssaultTD.Engine.Systems.Hazards.Analytics
         }
     }
 
-    /// <summary>
-    /// Validation result for occupancy tracking analytics.
-    /// </summary>
+    ///<summary>
+    ///Validation result for occupancy tracking analytics.
+    ///</summary>
     public class OccupancyTrackingValidationResult : AnalyticsValidationResult
     {
         public List<string> Warnings { get; set; } = new();
@@ -108,9 +110,9 @@ namespace SASZombieAssaultTD.Engine.Systems.Hazards.Analytics
         }
     }
 
-    /// <summary>
-    /// Represents a single occupancy sample in tracking analytics.
-    /// </summary>
+    ///<summary>
+    ///Represents a single occupancy sample in tracking analytics.
+    ///</summary>
     public class OccupancySample
     {
         public DateTime SampleTime { get; set; } = DateTime.Now;
@@ -134,9 +136,9 @@ namespace SASZombieAssaultTD.Engine.Systems.Hazards.Analytics
         }
     }
 
-    /// <summary>
-    /// Validation result for effectiveness scoring analytics.
-    /// </summary>
+    ///<summary>
+    ///Validation result for effectiveness scoring analytics.
+    ///</summary>
     public class EffectivenessScoringValidationResult : AnalyticsValidationResult
     {
         public List<string> Warnings { get; set; } = new();
@@ -163,9 +165,9 @@ namespace SASZombieAssaultTD.Engine.Systems.Hazards.Analytics
         }
     }
 
-    /// <summary>
-    /// Represents a hazard occupancy tracker for analytics.
-    /// </summary>
+    ///<summary>
+    ///Represents a hazard occupancy tracker for analytics.
+    ///</summary>
     public class HazardOccupancyTracker
     {
         public int HazardId { get; set; }

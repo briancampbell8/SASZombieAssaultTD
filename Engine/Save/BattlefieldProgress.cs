@@ -1,4 +1,4 @@
-/*
+﻿/*
 Program Name: SASZombieAssaultTD
 File Path: Engine\Save\BattlefieldProgress.cs
 Purpose: Battlefield progress data structure for save/load system.
@@ -6,16 +6,17 @@ Features: P120 Integration for battlefield-specific progress tracking.
 */
 
 using System;
-using SASZombieAssaultTD.Engine.Gameplay;
+//
+
+
 using SASZombieAssaultTD.Engine.Diagnostics;
-
-
+using SASZombieAssaultTD.Engine.Gameplay;
 namespace SASZombieAssaultTD.Engine.Save
 {
-    /// <summary>
-    /// Battlefield progress information.
-    /// P140-04: P120 Integration for battlefield-specific progress tracking.
-    /// </summary>
+    ///<summary>
+    ///Battlefield progress information.
+    ///P140-04: P120 Integration for battlefield-specific progress tracking.
+    ///</summary>
     public class BattlefieldProgress
     {
         public BattlefieldType Battlefield { get; set; }
@@ -36,15 +37,15 @@ namespace SASZombieAssaultTD.Engine.Save
             PlayTime = 0f;
             Attempts = 0;
 
-            Engine.Diagnostics.DebugLogger.Log("Debug", $"BattlefieldProgress: Created for {battlefield.GetDisplayName()}");
+            DLogger.Log(LogSubsystems.Save, LogLevel.Debug, "Debug", $"BattlefieldProgress: Created for {battlefield.GetDisplayName()}");
         }
 
-        /// <summary>
-        /// Updates the battlefield progress.
-        /// </summary>
-        /// <param name="completed">Whether the battlefield was completed.</param>
-        /// <param name="highestWave">The highest wave reached.</param>
-        /// <param name="highScore">The high score achieved.</param>
+        ///<summary>
+        ///Updates the battlefield progress.
+        ///</summary>
+        ///<param name="completed">Whether the battlefield was completed.</param>
+        ///<param name="highestWave">The highest wave reached.</param>
+        ///<param name="highScore">The high score achieved.</param>
         public void UpdateProgress(bool completed, int highestWave, int highScore)
         {
             Completed = completed;
@@ -53,23 +54,29 @@ namespace SASZombieAssaultTD.Engine.Save
             Attempts++;
             LastPlayed = DateTime.UtcNow;
 
-            Engine.Diagnostics.DebugLogger.Log(DiagnosticLevel.Info, "INFO", 
-                $"BattlefieldProgress: Updated {Battlefield.GetDisplayName()} - Completed={completed}, HighestWave={HighestWave}, HighScore={HighScore}");
+            DLogger.Log(
+                LogSubsystems.Save,
+                LogLevel.Info,
+                "Info",
+                $"BattlefieldProgress: Updated {Battlefield.GetDisplayName()} - Completed={completed}, " +
+                $"HighestWave={HighestWave}, HighScore={HighScore}");
+
+
         }
 
-        /// <summary>
-        /// Adds play time to the total.
-        /// </summary>
-        /// <param name="playTime">Play time to add in seconds.</param>
+        ///<summary>
+        ///Adds play time to the total.
+        ///</summary>
+        ///<param name="playTime">Play time to add in seconds.</param>
         public void AddPlayTime(float playTime)
         {
             PlayTime += System.Math.Max(0f, playTime);
         }
 
-        /// <summary>
-        /// Creates a clone of this battlefield progress.
-        /// </summary>
-        /// <returns>A new BattlefieldProgress instance with the same values.</returns>
+        ///<summary>
+        ///Creates a clone of this battlefield progress.
+        ///</summary>
+        ///<returns>A new BattlefieldProgress instance with the same values.</returns>
         public BattlefieldProgress Clone()
         {
             return new BattlefieldProgress(Battlefield)
@@ -83,9 +90,9 @@ namespace SASZombieAssaultTD.Engine.Save
             };
         }
 
-        /// <summary>
-        /// Gets battlefield progress information as a string.
-        /// </summary>
+        ///<summary>
+        ///Gets battlefield progress information as a string.
+        ///</summary>
         public override string ToString()
         {
             return $"BattlefieldProgress: {Battlefield.GetDisplayName()}, Completed={Completed}, " +

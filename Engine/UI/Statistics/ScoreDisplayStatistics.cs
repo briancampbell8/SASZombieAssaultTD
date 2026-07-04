@@ -1,8 +1,10 @@
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
-    /// <summary>
-    /// Statistics about the score display system state.
-    /// </summary>
+    ///<summary>
+    ///Statistics about the score display system state.
+    ///</summary>
     public class ScoreDisplayStatistics
     {
         public int CurrentScore { get; set; }

@@ -1,12 +1,13 @@
-using SASZombieAssaultTD.Engine.Diagnostics;
+////using SASZombieAssaultTD.Engine.Diagnostics;
 using System;
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.UI.Widgets
 {
-    /// <summary>
-    /// A basic panel element with background color and optional border
-    /// P80-04-02: UIPanel providing a basic panel element with background color and optional border
-    /// </summary>
+    ///<summary>
+    ///A basic panel element with background color and optional border
+    ///P80-04-02: UIPanel providing a basic panel element with background color and optional border
+    ///</summary>
     public class UIPanel : UIWidgetBase
     {
         private System.Drawing.Color _backgroundColor = System.Drawing.Color.Gray;
@@ -16,9 +17,9 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
         private object TheContainingType;
         private object TheContainingMember;
 
-        /// <summary>
-        /// Gets or sets the background color
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the background color
+        ///</summary>
         public System.Drawing.Color BackgroundColor
         {
             get => _backgroundColor;
@@ -32,9 +33,9 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Gets or sets the border color
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the border color
+        ///</summary>
         public System.Drawing.Color BorderColor
         {
             get => _borderColor;
@@ -48,9 +49,9 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Gets or sets the border thickness
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the border thickness
+        ///</summary>
         public float BorderThickness
         {
             get => _borderThickness;
@@ -65,34 +66,34 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Gets whether the panel has a border
-        /// </summary>
+        ///<summary>
+        ///Gets whether the panel has a border
+        ///</summary>
         public bool HasBorder => _hasBorder;
 
-        /// <summary>
-        /// Initializes a new UIPanel
-        /// </summary>
+        ///<summary>
+        ///Initializes a new UIPanel
+        ///</summary>
         public UIPanel() : base()
         {
             System.Diagnostics.Debug.WriteLine("UIPanel: Created new panel element");
         }
 
-        /// <summary>
-        /// Initializes a new UIPanel with background color
-        /// </summary>
-        /// <param name="backgroundColor">Background color</param>
+        ///<summary>
+        ///Initializes a new UIPanel with background color
+        ///</summary>
+        ///<param name="backgroundColor">Background color</param>
         public UIPanel(System.Drawing.Color backgroundColor) : this()
         {
             BackgroundColor = backgroundColor;
             System.Diagnostics.Debug.WriteLine($"UIPanel: Created panel with background color {backgroundColor}");
         }
 
-        /// <summary>
-        /// Sets the border properties
-        /// </summary>
-        /// <param name="color">Border color</param>
-        /// <param name="thickness">Border thickness</param>
+        ///<summary>
+        ///Sets the border properties
+        ///</summary>
+        ///<param name="color">Border color</param>
+        ///<param name="thickness">Border thickness</param>
         public void SetBorder(System.Drawing.Color color, float thickness)
         {
             try
@@ -109,9 +110,9 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Removes the border from the panel
-        /// </summary>
+        ///<summary>
+        ///Removes the border from the panel
+        ///</summary>
         public void RemoveBorder()
         {
             try
@@ -127,17 +128,17 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Updates the panel
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds</param>
+        ///<summary>
+        ///Updates the panel
+        ///</summary>
+        ///<param name="deltaTime">Time since last update in seconds</param>
         public override void Update(float deltaTime)
         {
             try
             {
                 base.Update(deltaTime);
 
-                // Update panel-specific animations or effects here
+                //Update panel-specific animations or effects here
                 UpdatePanelAnimation(deltaTime);
             }
             catch (Exception ex)
@@ -146,9 +147,9 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Renders the panel
-        /// </summary>
+        ///<summary>
+        ///Renders the panel
+        ///</summary>
         public override void Render()
         {
             try
@@ -156,16 +157,16 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
                 if (!IsVisible)
                     return;
 
-                // Render background
+                //Render background
                 RenderBackground();
 
-                // Render border if present
+                //Render border if present
                 if (_hasBorder)
                 {
                     RenderBorder();
                 }
 
-                // Render child elements
+                //Render child elements
                 base.Render();
             }
             catch (Exception ex)
@@ -174,15 +175,15 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Renders the panel background
-        /// </summary>
+        ///<summary>
+        ///Renders the panel background
+        ///</summary>
         protected virtual void RenderBackground()
         {
             try
             {
-                // This would use the actual rendering system
-                // For now, just log the background color
+                //This would use the actual rendering system
+                //For now, just log the background color
                 System.Diagnostics.Debug.WriteLine($"UIPanel: Rendering background {_backgroundColor} at {AbsolutePosition}");
             }
             catch (Exception ex)
@@ -191,15 +192,15 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Renders the panel border
-        /// </summary>
+        ///<summary>
+        ///Renders the panel border
+        ///</summary>
         protected virtual void RenderBorder()
         {
             try
             {
-                // This would use the actual rendering system
-                // For now, just log the border properties
+                //This would use the actual rendering system
+                //For now, just log the border properties
                 System.Diagnostics.Debug.WriteLine($"UIPanel: Rendering border {_borderColor}, thickness {_borderThickness} at {AbsolutePosition}");
             }
             catch (Exception ex)
@@ -208,14 +209,14 @@ namespace SASZombieAssaultTD.Engine.UI.Widgets
             }
         }
 
-        /// <summary>
-        /// Updates panel animations (placeholder implementation)
-        /// </summary>
-        /// <param name="deltaTime">Time since last update in seconds</param>
+        ///<summary>
+        ///Updates panel animations (placeholder implementation)
+        ///</summary>
+        ///<param name="deltaTime">Time since last update in seconds</param>
         protected virtual void UpdatePanelAnimation(float deltaTime)
         {
-            // Override in derived classes for panel animations
-            // Examples: fade in/out, color transitions, pulse effects
+            //Override in derived classes for panel animations
+            //Examples: fade in/out, color transitions, pulse effects
         }
 
         internal void SetBorder(Color currentColor, float v)

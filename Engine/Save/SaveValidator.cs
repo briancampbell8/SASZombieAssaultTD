@@ -8,28 +8,30 @@ Features: Version compatibility, data range validation, required field validatio
 using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Gameplay;
 
+//
+using SASZombieAssaultTD.Engine.Gameplay;
+using SASZombieAssaultTD.Engine.Scenes.Battlefields;
 namespace SASZombieAssaultTD.Engine.Save
 {
-    /// <summary>
-    /// Comprehensive save data validator.
-    /// P140-05: Implements validation for save data including P120/P100 integration fields.
-    /// </summary>
+    ///<summary>
+    ///Comprehensive save data validator.
+    ///P140-05: Implements validation for save data including P120/P100 integration fields.
+    ///</summary>
     public class SaveValidator
     {
         private readonly int _currentSaveVersion;
         private readonly List<ValidationRule> _validationRules;
 
-        /// <summary>
-        /// Gets the current save version.
-        /// </summary>
+        ///<summary>
+        ///Gets the current save version.
+        ///</summary>
         public int CurrentSaveVersion => _currentSaveVersion;
 
-        /// <summary>
-        /// Initializes a new save validator.
-        /// </summary>
-        /// <param name="currentSaveVersion">The current save version.</param>
+        ///<summary>
+        ///Initializes a new save validator.
+        ///</summary>
+        ///<param name="currentSaveVersion">The current save version.</param>
         public SaveValidator(int currentSaveVersion = 2)
         {
             _currentSaveVersion = currentSaveVersion;
@@ -37,12 +39,12 @@ namespace SASZombieAssaultTD.Engine.Save
             InitializeValidationRules();
         }
 
-        /// <summary>
-        /// Initializes validation rules.
-        /// </summary>
+        ///<summary>
+        ///Initializes validation rules.
+        ///</summary>
         private void InitializeValidationRules()
         {
-            // Basic SaveData validation rules
+            //Basic SaveData validation rules
             _validationRules.Add(new ValidationRule
             {
                 Category = ValidationCategory.RequiredField,
@@ -85,7 +87,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 Validate = (data) => data.TotalPlayTime >= 0
             });
 
-            // Settings validation rules
+            //Settings validation rules
             _validationRules.Add(new ValidationRule
             {
                 Category = ValidationCategory.DataRange,
@@ -128,14 +130,14 @@ namespace SASZombieAssaultTD.Engine.Save
                 Validate = (data) => data.Settings.QualityLevel >= 0 && data.Settings.QualityLevel <= 3
             });
 
-            DebugLogger.Log(DiagnosticLevel.Info, "INFO", $"SaveValidator: Initialized {_validationRules.Count} validation rules");
+            Dlogger.Log(LogSubsystems.Save, LogLevel.Info, $"SaveValidator: Initialized {_validationRules.Count} validation rules");
         }
 
-        /// <summary>
-        /// Validates save data.
-        /// </summary>
-        /// <param name="saveData">The save data to validate.</param>
-        /// <returns>Validation result.</returns>
+        ///<summary>
+        ///Validates save data.
+        ///</summary>
+        ///<param name="saveData">The save data to validate.</param>
+        ///<returns>Validation result.</returns>
         public ValidationResult Validate(SaveData saveData)
         {
             if (saveData == null)
@@ -149,14 +151,14 @@ namespace SASZombieAssaultTD.Engine.Save
 
             var result = new ValidationResult { IsValid = true };
 
-            // Check version compatibility
+            //Check version compatibility
             if (!IsVersionCompatible(saveData.Version))
             {
                 result.IsValid = false;
                 result.AddError($"Save version {saveData.Version} is not compatible with current version {_currentSaveVersion}");
             }
 
-            // Run validation rules
+            //Run validation rules
             foreach (var rule in _validationRules)
             {
                 try
@@ -174,26 +176,26 @@ namespace SASZombieAssaultTD.Engine.Save
                 }
             }
 
-            // Validate extended data if present
+            //Validate extended data if present
             if (saveData is SaveDataExtended extendedData)
             {
                 ValidateExtendedData(extendedData, result);
             }
 
-            DebugLogger.Log(DiagnosticLevel.Info, "INFO", 
+            Dlogger.Log(LogSubsystems.Save, LogLevel.Info,
                 $"SaveValidator: Validation {(result.IsValid ? "passed" : "failed")} - Errors: {result.Errors.Count}, Warnings: {result.Warnings.Count}");
 
             return result;
         }
 
-        /// <summary>
-        /// Validates extended save data (P120/P100 integration).
-        /// </summary>
-        /// <param name="extendedData">The extended save data.</param>
-        /// <param name="result">The validation result to update.</param>
+        ///<summary>
+        ///Validates extended save data (P120/P100 integration).
+        ///</summary>
+        ///<param name="extendedData">The extended save data.</param>
+        ///<param name="result">The validation result to update.</param>
         private void ValidateExtendedData(SaveDataExtended extendedData, ValidationResult result)
         {
-            // Validate battlefield progress
+            //Validate battlefield progress
             foreach (var kvp in extendedData.BattlefieldProgress)
             {
                 var battlefield = kvp.Key;
@@ -220,7 +222,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 }
             }
 
-            // Validate wave progress
+            //Validate wave progress
             foreach (var kvp in extendedData.WaveProgress)
             {
                 var waveNumber = kvp.Key;
@@ -247,13 +249,13 @@ namespace SASZombieAssaultTD.Engine.Save
                 }
             }
 
-            // Validate current wave
+            //Validate current wave
             if (extendedData.CurrentWave < 0)
             {
                 result.AddError("Current wave is negative");
             }
 
-            // Validate unlocked battlefields
+            //Validate unlocked battlefields
             foreach (var kvp in extendedData.UnlockedBattlefields)
             {
                 if (!Enum.IsDefined(typeof(BattlefieldType), kvp.Key))
@@ -263,22 +265,22 @@ namespace SASZombieAssaultTD.Engine.Save
             }
         }
 
-        /// <summary>
-        /// Checks if a save version is compatible.
-        /// </summary>
-        /// <param name="version">The save version.</param>
-        /// <returns>True if compatible.</returns>
+        ///<summary>
+        ///Checks if a save version is compatible.
+        ///</summary>
+        ///<param name="version">The save version.</param>
+        ///<returns>True if compatible.</returns>
         private bool IsVersionCompatible(int version)
         {
-            // Support versions 1 and 2
+            //Support versions 1 and 2
             return version >= 1 && version <= _currentSaveVersion;
         }
 
-        /// <summary>
-        /// Validates all saves in a directory.
-        /// </summary>
-        /// <param name="saveDirectory">The save directory.</param>
-        /// <returns>Validation result for all saves.</returns>
+        ///<summary>
+        ///Validates all saves in a directory.
+        ///</summary>
+        ///<param name="saveDirectory">The save directory.</param>
+        ///<returns>Validation result for all saves.</returns>
         public ValidationResult ValidateAllSaves(string saveDirectory)
         {
             var result = new ValidationResult { IsValid = true };
@@ -318,16 +320,16 @@ namespace SASZombieAssaultTD.Engine.Save
                 }
             }
 
-            DebugLogger.Log(DiagnosticLevel.Info, "INFO", 
+            Dlogger.Log(LogSubsystems.Save, LogLevel.Info,
                 $"SaveValidator: Validated {files.Length} saves - {(result.IsValid ? "All valid" : "Some invalid")}");
 
             return result;
         }
     }
 
-    /// <summary>
-    /// Validation rule definition.
-    /// </summary>
+    ///<summary>
+    ///Validation rule definition.
+    ///</summary>
     public class ValidationRule
     {
         public ValidationCategory Category { get; set; }
@@ -335,9 +337,9 @@ namespace SASZombieAssaultTD.Engine.Save
         public Func<SaveData, bool> Validate { get; set; }
     }
 
-    /// <summary>
-    /// Validation category.
-    /// </summary>
+    ///<summary>
+    ///Validation category.
+    ///</summary>
     public enum ValidationCategory
     {
         RequiredField,
@@ -347,9 +349,9 @@ namespace SASZombieAssaultTD.Engine.Save
         P100Integration
     }
 
-    /// <summary>
-    /// Validation result.
-    /// </summary>
+    ///<summary>
+    ///Validation result.
+    ///</summary>
     public class ValidationResult
     {
         public bool IsValid { get; set; }

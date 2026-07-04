@@ -1,17 +1,23 @@
+﻿// =========================================================
+//  FILE: MainMenuScene.cs
+//  PATH: Engine/Platform/BaseScene.cs
+//  SUBSYSTEM: Platform Abstraction Layer
+//  ROLE: Defines the deterministic lifecycle contract
+//  =========================================================
+
+using System.Collections.Generic;
+using System.Drawing;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Rendering;
 using SASZombieAssaultTD.Engine.UI;
-using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.VectorMath;
-using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Extensions;
-using System.Drawing;
-
 namespace SASZombieAssaultTD.Engine.Scenes
+
 {
-    /// <summary>
-    /// Main menu scene for the game.
-    /// Implements main menu UI and navigation.
-    /// </summary>
+    ///<summary>
+    ///Main menu scene for the game.
+    ///Implements main menu UI and navigation.
+    ///</summary>
     public class MainMenuScene : BaseScene
     {
         private readonly List<UIElementBase> _menuElements = new();
@@ -23,7 +29,7 @@ namespace SASZombieAssaultTD.Engine.Scenes
             if (_isInitialized)
                 return;
 
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuScene: Initializing main menu");
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info, "MainMenuScene: Initializing main menu");
             CreateMenuElements();
             _isInitialized = true;
         }
@@ -95,26 +101,26 @@ namespace SASZombieAssaultTD.Engine.Scenes
             object v = InputRouter.GetMenuInput();
             var input = v;
 
-            // TODO: Fix input property access - MenuInput may not have these properties
-            // if (input.IsUpPressed)
-            // {
-            //     _selectedOption = (_selectedOption - 1 + _menuElements.Count) % _menuElements.Count;
-            //     Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"MainMenuScene: Selected option {_selectedOption}");
-            // }
-            // else if (input.IsDownPressed)
-            // {
-            //     _selectedOption = (_selectedOption + 1) % _menuElements.Count;
-            //     Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"MainMenuScene: Selected option {_selectedOption}");
-            // }
-            // else if (input.IsSelectPressed && _selectedOption >= 0 && _selectedOption < _menuElements.Count)
-            // {
-            //     if (_menuElements[_selectedOption] is Button button)
-            //     {
-            //         button.OnClick?.Invoke();
-            //     }
-            // }
-            
-            // Placeholder implementation to prevent compilation errors
+            //TODO: Fix input property access - MenuInput may not have these properties
+            //if (input.IsUpPressed)
+            //{
+            //    _selectedOption = (_selectedOption - 1 + _menuElements.Count) % _menuElements.Count;
+            //    DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"MainMenuScene: Selected option {_selectedOption}");
+            //}
+            //else if (input.IsDownPressed)
+            //{
+            //    _selectedOption = (_selectedOption + 1) % _menuElements.Count;
+            //    DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"MainMenuScene: Selected option {_selectedOption}");
+            //}
+            //else if (input.IsSelectPressed && _selectedOption >= 0 && _selectedOption < _menuElements.Count)
+            //{
+            //    if (_menuElements[_selectedOption] is Button button)
+            //    {
+            //        button.OnClick?.Invoke();
+            //    }
+            //}
+
+            //Placeholder implementation to prevent compilation errors
             _selectedOption = 0;
         }
 
@@ -133,25 +139,35 @@ namespace SASZombieAssaultTD.Engine.Scenes
 
         private void OnStartGameClick()
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuScene: Start Game clicked - transitioning to Gameplay");
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info, "MainMenuScene: Start Game clicked - transitioning to Gameplay");
         }
 
         private void OnOptionsClick()
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuScene: Options clicked - opening options menu");
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info, "MainMenuScene: Options clicked - opening options menu");
         }
 
         private void OnQuitClick()
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuScene: Quit clicked - initiating shutdown");
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info, "MainMenuScene: Quit clicked - initiating shutdown");
         }
 
         public override void Cleanup()
         {
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "MainMenuScene: Cleaning up main menu");
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info, "MainMenuScene: Cleaning up main menu");
             _menuElements.Clear();
             _selectedOption = 0;
             _isInitialized = false;
+        }
+
+        internal override void OnLoad()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        internal override void OnStart()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -8,18 +8,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Towers
 {
-    /// <summary>
-    /// Registry for managing all tower instances in the game.
-    /// Provides centralized access to tower data and statistics.
-    /// </summary>
+    ///<summary>
+    ///Registry for managing all tower instances in the game.
+    ///Provides centralized access to tower data and statistics.
+    ///</summary>
     public class TowerRegistry
     {
-        /// <summary>
-        /// Global instance of the tower registry.
-        /// Assigned when the registry is constructed.
-        /// </summary>
+        ///<summary>
+        ///Global instance of the tower registry.
+        ///Assigned when the registry is constructed.
+        ///</summary>
         public static TowerRegistry Instance { get; private set; }
 
         private readonly Dictionary<uint, Tower> _towers = new Dictionary<uint, Tower>();

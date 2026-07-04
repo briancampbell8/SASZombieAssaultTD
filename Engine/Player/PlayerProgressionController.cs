@@ -1,46 +1,48 @@
-// ============================================================================
-// File: PlayerProgressionController.cs
-// FilePath: Engine/Player/PlayerProgressionController.cs
-// Purpose: Runtime driver for player progression. Performs all progression
-// actions, updates state, triggers events, and coordinates unlock logic.
-// Integration: 
-//   - Uses ProgressionCore for XP math and unlock rules.
-//   - Uses PlayerSystem for event dispatch.
-//   - Uses PlayerProgressionData as the persistence container.
-//   - Uses PlayerState for runtime player context.
-// Data Flow:
-//   - XP enters through AddExperience().
-//   - Level changes propagate through LevelUp().
-//   - Unlocks propagate through CheckTowerUnlocks().
-//   - Save/load systems interact through GetData() and RestoreFromData().
-// ============================================================================
+//============================================================================
+//File: PlayerProgressionController.cs
+//FilePath: Engine/Player/PlayerProgressionController.cs
+//Purpose: Runtime driver for player progression. Performs all progression
+//actions, updates state, triggers events, and coordinates unlock logic.
+//Integration: 
+//  - Uses ProgressionCore for XP math and unlock rules.
+//  - Uses PlayerSystem for event dispatch.
+//  - Uses PlayerProgressionData as the persistence container.
+//  - Uses PlayerState for runtime player context.
+//Data Flow:
+//  - XP enters through AddExperience().
+//  - Level changes propagate through LevelUp().
+//  - Unlocks propagate through CheckTowerUnlocks().
+//  - Save/load systems interact through GetData() and RestoreFromData().
+//============================================================================
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.Snapshot;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Player
 {
-    /// <summary>
-    /// Orchestrates all progression operations. Executes XP updates, level
-    /// transitions, unlock checks, and event dispatch. No math is performed
-    /// directly; all rules are delegated to ProgressionCore.
-    /// </summary>
+    ///<summary>
+    ///Orchestrates all progression operations. Executes XP updates, level
+    ///transitions, unlock checks, and event dispatch. No math is performed
+    ///directly; all rules are delegated to ProgressionCore.
+    ///</summary>
     public class PlayerProgressionController
     {
-        private readonly PlayerProgressionData _data;      // Persistent progression values
-        private readonly PlayerState _playerState;         // Runtime player context
+        private readonly PlayerProgressionData _data;      //Persistent progression values
+        private readonly PlayerState _playerState;         //Runtime player context
 
-        private int _experienceToNextLevel;                // Cached XP requirement
-        private long _totalExperienceEarned;               // Cumulative XP across all levels
+        private int _experienceToNextLevel;                //Cached XP requirement
+        private long _totalExperienceEarned;               //Cumulative XP across all levels
 
-        private readonly object _lock = new object();      // Thread-safety gate
+        private readonly object _lock = new object();      //Thread-safety gate
 
-        // --------------------------------------------------------------------
-        // Properties
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Properties
+        //--------------------------------------------------------------------
 
         public int CurrentLevel
         {
@@ -78,9 +80,9 @@ namespace SASZombieAssaultTD.Engine.Player
             }
         }
 
-        // --------------------------------------------------------------------
-        // Constructors
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Constructors
+        //--------------------------------------------------------------------
 
         public PlayerProgressionController(PlayerState playerState)
         {
@@ -108,9 +110,9 @@ namespace SASZombieAssaultTD.Engine.Player
                 "Info");
         }
 
-        // --------------------------------------------------------------------
-        // Experience Handling
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Experience Handling
+        //--------------------------------------------------------------------
 
         public void AddExperience(int amount, string source)
         {
@@ -126,24 +128,24 @@ namespace SASZombieAssaultTD.Engine.Player
                 {
                     int initialLevel = _data.CurrentLevel;
 
-                    _data.CurrentExperience += amount;     // XP increment
-                    _totalExperienceEarned += amount;      // Cumulative XP
+                    _data.CurrentExperience += amount;     //XP increment
+                    _totalExperienceEarned += amount;      //Cumulative XP
 
-                    // Level-up loop (supports multi-level jumps)
+                    //Level-up loop (supports multi-level jumps)
                     while (_data.CurrentExperience >= _experienceToNextLevel &&
                            _data.CurrentLevel < ProgressionCore.MAX_LEVEL)
                     {
                         LevelUp();
                     }
 
-                    // Max-level clamp
+                    //Max-level clamp
                     if (_data.CurrentLevel >= ProgressionCore.MAX_LEVEL)
                     {
                         _data.CurrentExperience = 0;
                         _experienceToNextLevel = int.MaxValue;
                     }
 
-                    // Diagnostics
+                    //Diagnostics
                     if (initialLevel < _data.CurrentLevel)
                     {
                         Debug.WriteLine(
@@ -167,9 +169,9 @@ namespace SASZombieAssaultTD.Engine.Player
             }
         }
 
-        // --------------------------------------------------------------------
-        // Level-Up Processing
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Level-Up Processing
+        //--------------------------------------------------------------------
 
         private void LevelUp()
         {
@@ -204,9 +206,9 @@ namespace SASZombieAssaultTD.Engine.Player
             }
         }
 
-        // --------------------------------------------------------------------
-        // Unlock Processing
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Unlock Processing
+        //--------------------------------------------------------------------
 
         private void CheckTowerUnlocks(int newLevel)
         {
@@ -248,9 +250,9 @@ namespace SASZombieAssaultTD.Engine.Player
             }
         }
 
-        // --------------------------------------------------------------------
-        // Reset / Restore
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Reset / Restore
+        //--------------------------------------------------------------------
 
         public void Reset()
         {
@@ -335,9 +337,9 @@ namespace SASZombieAssaultTD.Engine.Player
             }
         }
 
-        // --------------------------------------------------------------------
-        // Data Accessors
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //Data Accessors
+        //--------------------------------------------------------------------
 
         public long GetTotalExperienceEarned()
         {

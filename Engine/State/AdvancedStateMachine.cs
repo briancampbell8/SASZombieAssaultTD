@@ -1,15 +1,15 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SASZombieAssaultTD.Engine.Dictionary;
-using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.State
+
 {
-    /// <summary>
-    /// Advanced state machine with history, validation, and enhanced features.
-    /// P20-02-Enhancement: Extended StateMachine with additional capabilities.
-    /// </summary>
+    ///<summary>
+    ///Advanced state machine with history, validation, and enhanced features.
+    ///P20-02-Enhancement: Extended StateMachine with additional capabilities.
+    ///</summary>
     public class AdvancedStateMachine : StateMachine
     {
         private readonly List<StateTransition> _transitionHistory;
@@ -17,41 +17,41 @@ namespace SASZombieAssaultTD.Engine.State
         private readonly Dictionary<GameStateType, DateTime> _stateEnterTimes;
         private StateFactory _stateFactory;
 
-        /// <summary>
-        /// Gets the transition history.
-        /// </summary>
+        ///<summary>
+        ///Gets the transition history.
+        ///</summary>
         public IReadOnlyList<StateTransition> TransitionHistory => _transitionHistory.AsReadOnly();
 
-        /// <summary>
-        /// Gets the time the current state was entered.
-        /// </summary>
+        ///<summary>
+        ///Gets the time the current state was entered.
+        ///</summary>
         public DateTime CurrentStateEnterTime =>
         _stateEnterTimes.TryGetValue(CurrentStateType, out var time) ? time : DateTime.MinValue;
 
-        /// <summary>
-        /// Gets the duration the current state has been active.
-        /// </summary>
+        ///<summary>
+        ///Gets the duration the current state has been active.
+        ///</summary>
         public TimeSpan CurrentStateDuration => DateTime.UtcNow - CurrentStateEnterTime;
 
-        /// <summary>
-        /// Event fired when a state transition is about to occur.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a state transition is about to occur.
+        ///</summary>
         public event Action<StateTransition> OnTransitionStarted;
 
-        /// <summary>
-        /// Event fired when a state transition has completed.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a state transition has completed.
+        ///</summary>
         public event Action<StateTransition> OnTransitionCompleted;
 
-        /// <summary>
-        /// Event fired when a state transition fails.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a state transition fails.
+        ///</summary>
         public event Action<StateTransition, Exception> OnTransitionFailed;
 
-        /// <summary>
-        /// Initializes a new advanced state machine.
-        /// </summary>
-        /// <param name="maxHistorySize">Maximum number of transitions to keep in history.</param>
+        ///<summary>
+        ///Initializes a new advanced state machine.
+        ///</summary>
+        ///<param name="maxHistorySize">Maximum number of transitions to keep in history.</param>
         public AdvancedStateMachine(int maxHistorySize = 100) : base()
         {
             _maxHistorySize = maxHistorySize;
@@ -59,64 +59,75 @@ namespace SASZombieAssaultTD.Engine.State
             _stateEnterTimes = new Dictionary<GameStateType, DateTime>();
         }
 
-        /// <summary>
-        /// Sets the state factory for advanced state creation.
-        /// </summary>
-        /// <param name="stateFactory">The state factory to use.</param>
-        public void SetStateFactory(StateFactory stateFactory)
+        ///<summary>
+        ///Sets the state factory for advanced state creation.
+        ///</summary>
+        ///<param name="stateFactory">The state factory to use.</param>
+        public void SetStateFactory(StateFactory stateFactory, object ex)
         {
             _stateFactory = stateFactory ?? throw new ArgumentNullException(nameof(stateFactory));
-            Engine.Diagnostics.DebugLogger.LogDebug("INFO", "AdvancedStateMachine: StateFactory set");
+            DLogger.Log(
+                LogSubsystems.State,
+                LogLevel.Info,
+                $"AdvancedStateMachine: StateFactory set to {stateFactory.GetType().Name}");
+
+
+
         }
 
-        /// <summary>
-        /// Changes state with enhanced tracking and validation.
-        /// </summary>
-        /// <param name="type">The target state type.</param>
-        /// <param name="triggerEvent">The event that triggered the transition.</param>
+        ///<summary>
+        ///Changes state with enhanced tracking and validation.
+        ///</summary>
+        ///<param name="type">The target state type.</param>
+        ///<param name="triggerEvent">The event that triggered the transition.</param>
         public override void ChangeState(GameStateType type, GameEvent? triggerEvent = null)
         {
             var transition = new StateTransition(CurrentStateType, type, triggerEvent);
 
             try
             {
-                // Validate transition
+                //Validate transition
                 if (!StateTransitionRules.IsTransitionAllowed(CurrentStateType, type))
                 {
                     var message = StateTransitionRules.GetValidationMessage(CurrentStateType, type);
                     throw new InvalidOperationException(message);
                 }
 
-                // Fire transition started event
+                //Fire transition started event
                 OnTransitionStarted?.Invoke(transition);
 
-                // Record state enter time
+                //Record state enter time
                 _stateEnterTimes[type] = DateTime.UtcNow;
 
-                // Perform the actual transition
+                //Perform the actual transition
                 base.ChangeState(type);
 
-                // Complete the transition
+                //Complete the transition
                 transition.Complete();
                 AddToHistory(transition);
 
-                // Fire transition completed event
+                //Fire transition completed event
                 OnTransitionCompleted?.Invoke(transition);
 
-                Engine.Diagnostics.DebugLogger.LogDebug("INFO", $"AdvancedStateMachine: Transition completed - {transition}");
+                DLogger.Log(
+                    LogSubsystems.State,
+                    LogLevel.Info,
+                     $"AdvancedStateMachine: Transition completed - {transition}");
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("ERROR", $"AdvancedStateMachine: Transition failed - {ex.Message}");
+                DLogger.Log(
+                LogSubsystems.Unknown, LogLevel.Info,
+                    $"AdvancedStateMachine: Transition failed - {ex.Message}");
                 OnTransitionFailed?.Invoke(transition, ex);
                 throw;
             }
         }
 
-        /// <summary>
-        /// Gets statistics about state machine usage.
-        /// </summary>
-        /// <returns>Advanced state machine statistics.</returns>
+        ///<summary>
+        ///Gets statistics about state machine usage.
+        ///</summary>
+        ///<returns>Advanced state machine statistics.</returns>
         public AdvancedStateMachineStatistics GetAdvancedStatistics()
         {
             var baseStats = GetStatistics();
@@ -137,15 +148,15 @@ namespace SASZombieAssaultTD.Engine.State
             };
         }
 
-        /// <summary>
-        /// Gets the duration each state has been active.
-        /// </summary>
-        /// <returns>Dictionary of state types and their total durations.</returns>
+        ///<summary>
+        ///Gets the duration each state has been active.
+        ///</summary>
+        ///<returns>Dictionary of state types and their total durations.</returns>
         public Dictionary<GameStateType, TimeSpan> GetStateDurations()
         {
             var durations = new Dictionary<GameStateType, TimeSpan>();
 
-            // Calculate durations from transition history
+            //Calculate durations from transition history
             for (int i = 0; i < _transitionHistory.Count; i++)
             {
                 var transition = _transitionHistory[i];
@@ -156,7 +167,7 @@ namespace SASZombieAssaultTD.Engine.State
                 durations[transition.FromState] = durations[transition.FromState].Add(TimeSpan.FromMilliseconds(transition.DurationMs));
             }
 
-            // Add current state duration
+            //Add current state duration
             if (CurrentState != null)
             {
                 if (!durations.ContainsKey(CurrentStateType))
@@ -168,11 +179,11 @@ namespace SASZombieAssaultTD.Engine.State
             return durations;
         }
 
-        /// <summary>
-        /// Gets the most frequent state transitions.
-        /// </summary>
-        /// <param name="topCount">Number of top transitions to return.</param>
-        /// <returns>List of most frequent transitions with their counts.</returns>
+        ///<summary>
+        ///Gets the most frequent state transitions.
+        ///</summary>
+        ///<param name="topCount">Number of top transitions to return.</param>
+        ///<returns>List of most frequent transitions with their counts.</returns>
         public List<(StateTransition Transition, int Count)> GetMostFrequentTransitions(int topCount = 5)
         {
             var transitionCounts = new Dictionary<string, int>();
@@ -198,9 +209,9 @@ namespace SASZombieAssaultTD.Engine.State
             .ToList();
         }
 
-        /// <summary>
-        /// Clears the transition history.
-        /// </summary>
+        ///<summary>
+        ///Clears the transition history.
+        ///</summary>
         public void ClearHistory()
         {
             _transitionHistory.Clear();
@@ -208,10 +219,10 @@ namespace SASZombieAssaultTD.Engine.State
             System.Diagnostics.Debug.WriteLine("AdvancedStateMachine: Transition history cleared");
         }
 
-        /// <summary>
-        /// Exports the transition history to a string format.
-        /// </summary>
-        /// <returns>String representation of transition history.</returns>
+        ///<summary>
+        ///Exports the transition history to a string format.
+        ///</summary>
+        ///<returns>String representation of transition history.</returns>
         public string ExportHistory()
         {
             var lines = new List<string>
@@ -230,9 +241,9 @@ namespace SASZombieAssaultTD.Engine.State
             return string.Join(Environment.NewLine, lines);
         }
 
-        /// <summary>
-        /// Configures the state machine using a state factory.
-        /// </summary>
+        ///<summary>
+        ///Configures the state machine using a state factory.
+        ///</summary>
         public void ConfigureWithFactory()
         {
             if (_stateFactory == null)
@@ -245,15 +256,15 @@ namespace SASZombieAssaultTD.Engine.State
             System.Diagnostics.Debug.WriteLine("AdvancedStateMachine: Configured with StateFactory");
         }
 
-        /// <summary>
-        /// Adds a transition to the history.
-        /// </summary>
-        /// <param name="transition">The transition to add.</param>
+        ///<summary>
+        ///Adds a transition to the history.
+        ///</summary>
+        ///<param name="transition">The transition to add.</param>
         private void AddToHistory(StateTransition transition)
         {
             _transitionHistory.Add(transition);
 
-            // Maintain maximum history size
+            //Maintain maximum history size
             while (_transitionHistory.Count > _maxHistorySize)
             {
                 _transitionHistory.RemoveAt(0);
@@ -261,39 +272,39 @@ namespace SASZombieAssaultTD.Engine.State
         }
     }
 
-    /// <summary>
-    /// Advanced statistics for the StateMachine.
-    /// </summary>
+    ///<summary>
+    ///Advanced statistics for the StateMachine.
+    ///</summary>
     public class AdvancedStateMachineStatistics : StateMachineStatistics
     {
-        /// <summary>
-        /// Duration the current state has been active.
-        /// </summary>
+        ///<summary>
+        ///Duration the current state has been active.
+        ///</summary>
         public TimeSpan CurrentStateDuration { get; set; }
 
-        /// <summary>
-        /// Total number of transitions performed.
-        /// </summary>
+        ///<summary>
+        ///Total number of transitions performed.
+        ///</summary>
         public int TotalTransitions { get; set; }
 
-        /// <summary>
-        /// Average state duration in milliseconds.
-        /// </summary>
+        ///<summary>
+        ///Average state duration in milliseconds.
+        ///</summary>
         public double AverageStateDuration { get; set; }
 
-        /// <summary>
-        /// The most frequent transition.
-        /// </summary>
+        ///<summary>
+        ///The most frequent transition.
+        ///</summary>
         public (StateTransition Transition, int Count) MostFrequentTransition { get; set; }
 
-        /// <summary>
-        /// Dictionary of state enter times.
-        /// </summary>
+        ///<summary>
+        ///Dictionary of state enter times.
+        ///</summary>
         public Dictionary<GameStateType, DateTime> StateEnterTimes { get; set; }
 
-        /// <summary>
-        /// Returns a string representation of the advanced statistics.
-        /// </summary>
+        ///<summary>
+        ///Returns a string representation of the advanced statistics.
+        ///</summary>
         public override string ToString()
         {
             return $"Advanced StateMachine Stats: Current={CurrentState} ({CurrentStateDuration.TotalSeconds:F1}s), " +

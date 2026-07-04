@@ -17,11 +17,13 @@ using SASZombieAssaultTD.Engine.Core;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Audio
 {
-    /// <summary>
-    /// Audio state information for tracking playing sounds.
-    /// </summary>
+    ///<summary>
+    ///Audio state information for tracking playing sounds.
+    ///</summary>
     public struct AudioState
     {
         public uint SoundId;
@@ -36,14 +38,14 @@ namespace SASZombieAssaultTD.Engine.Audio
         public uint PlaybackCount;
     }
 
-    /// <summary>
-    /// Unified AudioEngine implementation for SASZombieAssaultTD engine.
-    /// Provides comprehensive audio management with unified math integration.
-    /// This is the single authoritative AudioEngine type across the entire engine.
-    /// </summary>
+    ///<summary>
+    ///Unified AudioEngine implementation for SASZombieAssaultTD engine.
+    ///Provides comprehensive audio management with unified math integration.
+    ///This is the single authoritative AudioEngine type across the entire engine.
+    ///</summary>
     public class CoreAudioEngine
     {
-        ///  Private Fields
+        /// Private Fields
         private readonly ConcurrentDictionary<uint, AudioState> _activeSounds = new();
         private readonly Queue<uint> _availableIds = new();
         private uint _nextId = 1;
@@ -55,9 +57,9 @@ namespace SASZombieAssaultTD.Engine.Audio
         private float _maxDistance = 100f;
         private float _referenceDistance = 10f;
         private float _dopplerFactor = 1f;
-        /// 
+        ///
 
-        ///  Public Properties
+        /// Public Properties
         public float MasterVolume
         {
             get => _masterVolume;
@@ -108,20 +110,20 @@ namespace SASZombieAssaultTD.Engine.Audio
 
         public int ActiveSoundCount => _activeSounds.Count;
         public bool IsInitialized => true;
-        /// 
+        ///
 
-        ///  Constructor
+        /// Constructor
         public CoreAudioEngine()
         {
-            // Preload available IDs
+            //Preload available IDs
             for (uint i = 1; i <= 100; i++)
             {
                 _availableIds.Enqueue(i);
             }
         }
-        /// 
+        ///
 
-        ///  Public Methods
+        /// Public Methods
         public uint PlaySound(string soundName, Vector3 position, float volume = 1f, float pitch = 1f, bool loop = false)
         {
             uint soundId = GetNextId();
@@ -281,9 +283,9 @@ namespace SASZombieAssaultTD.Engine.Audio
             _listenerForward = Vector3.Forward;
             _listenerUp = Vector3.Up;
         }
-        /// 
+        ///
 
-        ///  Private Methods
+        /// Private Methods
         private uint GetNextId()
         {
             return _availableIds.TryDequeue(out var id) ? id : _nextId++;
@@ -308,7 +310,7 @@ namespace SASZombieAssaultTD.Engine.Audio
 
             if (distance > 0f)
             {
-                var relativeSpeed = 0f; // Placeholder for velocity-based calculation
+                var relativeSpeed = 0f; //Placeholder for velocity-based calculation
                 var dopplerPitch = 1f + (_dopplerFactor * relativeSpeed) / (340f * distance);
                 state.Pitch = System.Math.Clamp(dopplerPitch * _globalPitch, 0.1f, 3f);
             }
@@ -316,8 +318,8 @@ namespace SASZombieAssaultTD.Engine.Audio
 
         private float GetSoundDuration(string soundName)
         {
-            return 2f; // Default duration for now
+            return 2f; //Default duration for now
         }
-        /// 
+        ///
     }
 }

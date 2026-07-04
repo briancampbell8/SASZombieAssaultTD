@@ -16,23 +16,21 @@ Notes:    This is the main partial class that external systems interact with.
          No deep implementation details - pure orchestration.
 */
 
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Timing;
-using SASZombieAssaultTD.Engine.UI.Input;
+//
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
-
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Timing;
+using SASZombieAssaultTD.Engine.UI.Input;
 namespace SASZombieAssaultTD.Engine.Systems
 {
-    /// <summary>
-    /// Authoritative game loop that orchestrates the entire frame lifecycle.
-    /// Implements P11-09-01: Single authoritative game loop with no secondary loops.
-    /// </summary>
+    ///<summary>
+    ///Authoritative game loop that orchestrates the entire frame lifecycle.
+    ///Implements P11-09-01: Single authoritative game loop with no secondary loops.
+    ///</summary>
     public partial class GameLoop
     {
         private readonly GameRoot _gameRoot;
@@ -40,12 +38,12 @@ namespace SASZombieAssaultTD.Engine.Systems
         private readonly FrameDiagnostics _diagnostics;
         private readonly UIInputRouter _input;
 
-        // Game loop state
+        //Game loop state
         private bool _isRunning = false;
         private bool _isInitialized = false;
         private readonly object _stateLock = new();
 
-        // Performance tracking
+        //Performance tracking
         private int _frameCount = 0;
         private float _totalFrameTime = 0f;
         private float _averageFrameTime = 0f;
@@ -59,9 +57,9 @@ namespace SASZombieAssaultTD.Engine.Systems
         private object TheType;
         private object TheMember;
 
-        /// <summary>
-        /// Initializes a new instance of GameLoop with all required dependencies.
-        /// </summary>
+        ///<summary>
+        ///Initializes a new instance of GameLoop with all required dependencies.
+        ///</summary>
         public GameLoop(
             GameRoot gameRoot,
             TimingModule timing,
@@ -73,47 +71,50 @@ namespace SASZombieAssaultTD.Engine.Systems
             _diagnostics = diagnostics ?? throw new ArgumentNullException(nameof(diagnostics));
             _input = input;
 
-            Engine.Diagnostics.DebugLogger.LogInfo("GameLoop initialized with all dependencies");
+            DLogger.Log(
+                LogSubsystems.GameLoop,
+                LogLevel.Info,
+                "GameLoop initialized with all dependencies");
         }
 
-        /// <summary>
-        /// Gets whether the game loop is currently initialized.
-        /// </summary>
+        ///<summary>
+        ///Gets whether the game loop is currently initialized.
+        ///</summary>
         public bool IsInitialized => _isInitialized;
 
-        /// <summary>
-        /// Gets whether the game loop is currently running.
-        /// </summary>
+        ///<summary>
+        ///Gets whether the game loop is currently running.
+        ///</summary>
         public bool IsRunning => _isRunning;
 
-        /// <summary>
-        /// Gets the current game loop state.
-        /// </summary>
+        ///<summary>
+        ///Gets the current game loop state.
+        ///</summary>
         public GameLoopState State => _isInitialized ? (_isRunning ? GameLoopState.Running : GameLoopState.Stopped) : GameLoopState.Uninitialized;
 
-        /// <summary>
-        /// Gets the current frame count.
-        /// </summary>
+        ///<summary>
+        ///Gets the current frame count.
+        ///</summary>
         public int FrameCount => _frameCount;
 
-        /// <summary>
-        /// Gets the average frame time.
-        /// </summary>
+        ///<summary>
+        ///Gets the average frame time.
+        ///</summary>
         public float AverageFrameTime => _averageFrameTime;
 
-        /// <summary>
-        /// Gets the minimum frame time.
-        /// </summary>
+        ///<summary>
+        ///Gets the minimum frame time.
+        ///</summary>
         public float MinFrameTime => _minFrameTime;
 
-        /// <summary>
-        /// Gets the maximum frame time.
-        /// </summary>
+        ///<summary>
+        ///Gets the maximum frame time.
+        ///</summary>
         public float MaxFrameTime => _maxFrameTime;
 
-        /// <summary>
-        /// Initializes the game loop and all dependencies.
-        /// </summary>
+        ///<summary>
+        ///Initializes the game loop and all dependencies.
+        ///</summary>
         public void Initialize()
         {
             lock (_stateLock)
@@ -123,21 +124,27 @@ namespace SASZombieAssaultTD.Engine.Systems
 
                 try
                 {
-                    Engine.Diagnostics.DebugLogger.LogInfo("Starting GameLoop initialization...");
+                    DLogger.Log(
+                        LogSubsystems.GameLoop,
+                        "Starting GameLoop initialization...");
 
-                    // Delegate to Initialization partial
+                    //Delegate to Initialization partial
                     PerformInitialization();
 
                     _isInitialized = true;
-                    Engine.Diagnostics.DebugLogger.LogInfo("GameLoop initialization completed successfully");
+                    DLogger.Log(
+                        LogSubsystems.GameLoop,
+                        "GameLoop initialization completed successfully");
                 }
                 catch (Exception ex)
                 {
-                    Engine.Diagnostics.DebugLogger.Trace($"DIAG:{nameof(YourMethodName)}.Checkpoint",
+                    DLogger.Log($"DIAG:{nameof(YourMethodName)}.Checkpoint",
                     $"Reached checkpoint at line {LineNumber}, state={{ {optionalState} }}");
 
-                    Engine.Diagnostics.DebugLogger.LogError($"GameLoop initialization failed: {ex.Message}");
-                    Shutdown(); // Cleanup on failure
+                    DLogger.Log(
+                        LogSubsystems.GameLoop,
+                        $"GameLoop initialization failed: {ex.Message}");
+                    Shutdown(); //Cleanup on failure
                     throw;
                 }
             }
@@ -150,9 +157,9 @@ namespace SASZombieAssaultTD.Engine.Systems
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Shuts down the game loop and all dependencies.
-        /// </summary>
+        ///<summary>
+        ///Shuts down the game loop and all dependencies.
+        ///</summary>
         public void Shutdown()
         {
             lock (_stateLock)
@@ -162,24 +169,30 @@ namespace SASZombieAssaultTD.Engine.Systems
 
                 try
                 {
-                    Engine.Diagnostics.DebugLogger.LogInfo("Starting GameLoop shutdown...");
+                    DLogger.Log(
+                        LogSubsystems.GameLoop,
+                        "Starting GameLoop shutdown...");
 
-                    // Delegate to Initialization partial
+                    //Delegate to Initialization partial
                     PerformShutdown();
 
                     _isInitialized = false;
-                    Engine.Diagnostics.DebugLogger.LogInfo("GameLoop shutdown completed successfully");
+                    DLogger.Log(
+                        LogSubsystems.GameLoop,
+                        "GameLoop shutdown completed successfully");
                 }
                 catch (Exception ex)
                 {
-                    Engine.Diagnostics.DebugLogger.LogError($"GameLoop shutdown failed: {ex.Message}");
+                    DLogger.Log(
+                        LogSubsystems.GameLoop,
+                        $"GameLoop shutdown failed: {ex.Message}");
                 }
             }
         }
 
-        /// <summary>
-        /// Runs the main game loop until shutdown is requested.
-        /// </summary>
+        ///<summary>
+        ///Runs the main game loop until shutdown is requested.
+        ///</summary>
         public void Run()
         {
             if (!_isInitialized)
@@ -194,7 +207,7 @@ namespace SASZombieAssaultTD.Engine.Systems
 
             try
             {
-                // Delegate to Timing partial
+                //Delegate to Timing partial
                 PerformMainLoop();
             }
             finally
@@ -203,9 +216,9 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
         }
 
-        /// <summary>
-        /// Stops the game loop gracefully.
-        /// </summary>
+        ///<summary>
+        ///Stops the game loop gracefully.
+        ///</summary>
         public void Stop()
         {
             lock (_stateLock)
@@ -217,70 +230,70 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
         }
 
-        /// <summary>
-        /// Render the game loop.
-        /// </summary>
+        ///<summary>
+        ///Render the game loop.
+        ///</summary>
         public void Render()
         {
             System.Diagnostics.Debug.WriteLine("Rendering game loop...");
         }
 
-        /// <summary>
-        /// Starts the game loop.
-        /// </summary>
+        ///<summary>
+        ///Starts the game loop.
+        ///</summary>
         public void Start()
         {
             if (!_isInitialized)
                 throw new InvalidOperationException("GameLoop must be initialized before starting.");
-            
+
             lock (_stateLock)
             {
                 if (_isRunning) return;
-                
+
                 _isRunning = true;
                 System.Diagnostics.Debug.WriteLine("Starting game loop...");
             }
         }
 
-        /// <summary>
-        /// Pauses the game loop.
-        /// </summary>
+        ///<summary>
+        ///Pauses the game loop.
+        ///</summary>
         public void Pause()
         {
             lock (_stateLock)
             {
                 if (!_isRunning) return;
-                
+
                 _isRunning = false;
                 System.Diagnostics.Debug.WriteLine("Pausing game loop...");
             }
         }
 
-        /// <summary>
-        /// Updates the game loop.
-        /// </summary>
-        /// <param name="deltaTime">Time since last update.</param>
+        ///<summary>
+        ///Updates the game loop.
+        ///</summary>
+        ///<param name="deltaTime">Time since last update.</param>
         public void Update(float deltaTime)
         {
             if (!_isRunning) return;
-            
+
             System.Diagnostics.Debug.WriteLine($"Updating game loop with delta time: {deltaTime}");
         }
 
-        /// <summary>
-        /// Handles input for the game loop.
-        /// </summary>
+        ///<summary>
+        ///Handles input for the game loop.
+        ///</summary>
         public void HandleInput()
         {
             if (!_isRunning) return;
-            
+
             System.Diagnostics.Debug.WriteLine("Handling game loop input...");
         }
 
-        /// <summary>
-        /// Gets diagnostic information about the game loop.
-        /// </summary>
-        /// <returns>Game loop diagnostic information.</returns>
+        ///<summary>
+        ///Gets diagnostic information about the game loop.
+        ///</summary>
+        ///<returns>Game loop diagnostic information.</returns>
         public GameLoopDiagnostics GetDiagnostics()
         {
             lock (_stateLock)
@@ -302,34 +315,38 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
         }
 
-        /// <summary>
-        /// Performs complete engine initialization sequence.
-        /// </summary>
+        ///<summary>
+        ///Performs complete engine initialization sequence.
+        ///</summary>
         private void PerformInitialization()
         {
-            // Initialize all engine subsystems
-            Engine.Diagnostics.DebugLogger.LogInfo("Performing complete engine initialization...");
+            //Initialize all engine subsystems
+            DLogger.Log(
+                LogSubsystems.GameLoop,
+                "Performing complete engine initialization...");
         }
 
-        /// <summary>
-        /// Performs complete engine shutdown sequence.
-        /// </summary>
+        ///<summary>
+        ///Performs complete engine shutdown sequence.
+        ///</summary>
         private void PerformShutdown()
         {
-            // Shutdown all engine subsystems
-            Engine.Diagnostics.DebugLogger.LogInfo("Performing complete engine shutdown...");
+            //Shutdown all engine subsystems
+            DLogger.Log(
+                LogSubsystems.GameLoop,
+                "Performing complete engine shutdown...");
         }
 
-        /// <summary>
-        /// Advanced game loop system with sophisticated frame timing and adaptive performance management.
-        /// </summary>
+        ///<summary>
+        ///Advanced game loop system with sophisticated frame timing and adaptive performance management.
+        ///</summary>
         public class AdvancedGameLoopSystem
         {
             private readonly GameLoop _gameLoop;
             private readonly FrameTimingManager _timingManager = new();
             private readonly PerformanceMonitor _performanceMonitor = new();
             public readonly AdaptiveQualityManager _qualityManager = new();
-            private volatile float _targetFrameTime = 16.67f; // 60 FPS
+            private volatile float _targetFrameTime = 16.67f; //60 FPS
             private volatile bool _adaptiveQualityEnabled = true;
 
             public AdvancedGameLoopSystem(GameLoop gameLoop)
@@ -337,9 +354,9 @@ namespace SASZombieAssaultTD.Engine.Systems
                 _gameLoop = gameLoop ?? throw new ArgumentNullException(nameof(gameLoop));
             }
 
-            /// <summary>
-            /// Advanced game loop execution with sophisticated timing and performance management.
-            /// </summary>
+            ///<summary>
+            ///Advanced game loop execution with sophisticated timing and performance management.
+            ///</summary>
             public async Task RunAdvancedLoopAsync(CancellationToken cancellationToken = default)
             {
                 var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -352,11 +369,11 @@ namespace SASZombieAssaultTD.Engine.Systems
                     var deltaTime = currentTime - lastFrameTime;
                     lastFrameTime = currentTime;
 
-                    // Advanced frame timing management
+                    //Advanced frame timing management
                     var adjustedDeltaTime = _timingManager.ProcessFrameTiming(deltaTime);
                     frameAccumulator += adjustedDeltaTime;
 
-                    // Fixed timestep for physics and deterministic updates
+                    //Fixed timestep for physics and deterministic updates
                     const float fixedTimeStep = 1f / 60f;
                     while (frameAccumulator >= fixedTimeStep)
                     {
@@ -364,22 +381,22 @@ namespace SASZombieAssaultTD.Engine.Systems
                         frameAccumulator -= fixedTimeStep;
                     }
 
-                    // Variable timestep for rendering and interpolation
+                    //Variable timestep for rendering and interpolation
                     var interpolationFactor = frameAccumulator / fixedTimeStep;
                     await ProcessVariableUpdate(adjustedDeltaTime, interpolationFactor);
 
-                    // Performance monitoring and adaptive quality
+                    //Performance monitoring and adaptive quality
                     _performanceMonitor.RecordFrameTime(adjustedDeltaTime);
-              
 
-                    // Frame rate limiting and sleep management
+
+                    //Frame rate limiting and sleep management
                     await ManageFrameTiming(stopwatch);
                 }
             }
 
-            /// <summary>
-            /// Sophisticated frame timing management with sleep precision optimization.
-            /// </summary>
+            ///<summary>
+            ///Sophisticated frame timing management with sleep precision optimization.
+            ///</summary>
             private async Task ManageFrameTiming(System.Diagnostics.Stopwatch stopwatch)
             {
                 var frameTime = (float)stopwatch.Elapsed.TotalSeconds;
@@ -395,26 +412,26 @@ namespace SASZombieAssaultTD.Engine.Systems
                 }
             }
 
-            /// <summary>
-            /// Processes fixed timestep updates for deterministic behavior.
-            /// </summary>
+            ///<summary>
+            ///Processes fixed timestep updates for deterministic behavior.
+            ///</summary>
             private async Task ProcessFixedUpdate(float fixedDeltaTime)
             {
                 await Task.CompletedTask;
             }
 
-            /// <summary>
-            /// Processes variable timestep updates for rendering.
-            /// </summary>
+            ///<summary>
+            ///Processes variable timestep updates for rendering.
+            ///</summary>
             private async Task ProcessVariableUpdate(float deltaTime, float interpolationFactor)
             {
                 await Task.CompletedTask;
             }
         }
 
-        /// <summary>
-        /// Performance monitoring system for frame time analysis.
-        /// </summary>
+        ///<summary>
+        ///Performance monitoring system for frame time analysis.
+        ///</summary>
         public class PerformanceMonitor
         {
             private readonly CircularBuffer<float> _frameTimeBuffer = new(120);
@@ -423,9 +440,9 @@ namespace SASZombieAssaultTD.Engine.Systems
             private volatile float _currentFPS;
             private volatile int _frameCount;
 
-            /// <summary>
-            /// Records frame time for performance analysis.
-            /// </summary>
+            ///<summary>
+            ///Records frame time for performance analysis.
+            ///</summary>
             public void RecordFrameTime(float frameTime)
             {
                 _frameTimeBuffer.Add(frameTime);
@@ -436,9 +453,9 @@ namespace SASZombieAssaultTD.Engine.Systems
                 _currentFPS = _fpsBuffer.Average();
             }
 
-            /// <summary>
-            /// Gets comprehensive performance metrics.
-            /// </summary>
+            ///<summary>
+            ///Gets comprehensive performance metrics.
+            ///</summary>
             public PerformanceMetrics GetMetrics()
             {
                 return new PerformanceMetrics
@@ -479,9 +496,9 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
         }
 
-        /// <summary>
-        /// Advanced adaptive quality management for dynamic performance optimization.
-        /// </summary>
+        ///<summary>
+        ///Advanced adaptive quality management for dynamic performance optimization.
+        ///</summary>
         public class AdaptiveQualityManager
         {
             private readonly Dictionary<QualitySetting, float> _qualityThresholds = new();
@@ -496,9 +513,9 @@ namespace SASZombieAssaultTD.Engine.Systems
                 _qualityThresholds[QualitySetting.Low] = 0.55f;
             }
 
-            /// <summary>
-            /// Adjusts quality settings based on performance metrics.
-            /// </summary>
+            ///<summary>
+            ///Adjusts quality settings based on performance metrics.
+            ///</summary>
             private async Task AdjustQualityAsync(PerformanceMetrics metrics)
             {
                 if (_adjustmentCooldown > 0) return;
@@ -509,7 +526,7 @@ namespace SASZombieAssaultTD.Engine.Systems
                 {
                     await ApplyQualitySetting(targetQuality);
                     _currentQuality = targetQuality;
-                    _adjustmentCooldown = 5f; // 5 second cooldown
+                    _adjustmentCooldown = 5f; //5 second cooldown
                 }
             }
 
@@ -525,7 +542,7 @@ namespace SASZombieAssaultTD.Engine.Systems
 
             private async Task ApplyQualitySetting(QualitySetting quality)
             {
-                // Apply quality settings to various systems
+                //Apply quality settings to various systems
                 await ApplyRenderingQuality(quality);
                 await ApplyPhysicsQuality(quality);
                 await ApplyAudioQuality(quality);
@@ -534,20 +551,20 @@ namespace SASZombieAssaultTD.Engine.Systems
 
             private async Task ApplyRenderingQuality(QualitySetting quality)
             {
-                // Adjust rendering quality settings
+                //Adjust rendering quality settings
                 switch (quality)
                 {
                     case QualitySetting.Ultra:
-                        // Enable all advanced rendering features
+                        //Enable all advanced rendering features
                         break;
                     case QualitySetting.High:
-                        // Enable most features with minor optimizations
+                        //Enable most features with minor optimizations
                         break;
                     case QualitySetting.Medium:
-                        // Moderate quality settings
+                        //Moderate quality settings
                         break;
                     case QualitySetting.Low:
-                        // Minimal quality for maximum performance
+                        //Minimal quality for maximum performance
                         break;
                 }
 
@@ -556,45 +573,45 @@ namespace SASZombieAssaultTD.Engine.Systems
 
             private async Task ApplyPhysicsQuality(QualitySetting quality)
             {
-                // Adjust physics simulation quality
+                //Adjust physics simulation quality
                 await Task.CompletedTask;
             }
 
             private async Task ApplyAudioQuality(QualitySetting quality)
             {
-                // Adjust audio processing quality
+                //Adjust audio processing quality
                 await Task.CompletedTask;
             }
 
             private async Task ApplyUIQuality(QualitySetting quality)
             {
-                // Adjust UI rendering quality
+                //Adjust UI rendering quality
                 await Task.CompletedTask;
             }
 
-                }
+        }
 
-        /// <summary>
-        /// Advanced frame timing manager with sophisticated time management.
-        /// </summary>
+        ///<summary>
+        ///Advanced frame timing manager with sophisticated time management.
+        ///</summary>
         public class FrameTimingManager
         {
             private readonly CircularBuffer<float> _frameTimeHistory = new(10);
             private volatile float _timeScale = 1f;
-            private volatile float _maxDeltaTime = 0.1f; // Cap at 100ms
+            private volatile float _maxDeltaTime = 0.1f; //Cap at 100ms
 
-            /// <summary>
-            /// Processes frame timing with advanced smoothing and capping.
-            /// </summary>
+            ///<summary>
+            ///Processes frame timing with advanced smoothing and capping.
+            ///</summary>
             public float ProcessFrameTiming(float rawDeltaTime)
             {
-                // Apply time scale
+                //Apply time scale
                 var scaledTime = rawDeltaTime * _timeScale;
 
-                // Cap maximum delta time to prevent spiral of death
+                //Cap maximum delta time to prevent spiral of death
                 var cappedTime = System.Math.Min(scaledTime, _maxDeltaTime);
 
-                // Smooth frame time to reduce jitter
+                //Smooth frame time to reduce jitter
                 var smoothedTime = SmoothFrameTime(cappedTime);
 
                 _frameTimeHistory.Add(smoothedTime);
@@ -605,7 +622,7 @@ namespace SASZombieAssaultTD.Engine.Systems
             {
                 if (_frameTimeHistory.Count < 3) return frameTime;
 
-                // Weighted average with more weight on recent frames
+                //Weighted average with more weight on recent frames
                 var weights = new[] { 0.1f, 0.2f, 0.3f, 0.4f };
                 var values = _frameTimeHistory.TakeLast(4).ToArray();
 
@@ -622,9 +639,9 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
         }
 
-        /// <summary>
-        /// Advanced Game Loop Classes
-        /// </summary>
+        ///<summary>
+        ///Advanced Game Loop Classes
+        ///</summary>
 
         private sealed class CircularBuffer<T>
         {
@@ -708,6 +725,6 @@ namespace SASZombieAssaultTD.Engine.Systems
             Ultra
         }
 
-        /// 
+        ///
     }
 }

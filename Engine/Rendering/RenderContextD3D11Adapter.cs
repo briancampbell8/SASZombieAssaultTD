@@ -1,3 +1,29 @@
+// ====================================================================================================
+//  FILE: RenderContextD3D11Adapter.cs
+//  PATH: Engine/Rendering/ 
+//  PROGRAM: RenderContextD3D11Adapter.cs
+//  MODULE: Resource Management Framework
+//  ROLE:
+//      Defines the structures, loaders, and integration points responsible for discovering, validating, and providing engine resources in a deterministic manner.
+//
+//  RESPONSIBILITIES:
+//      - Provide a unified API for loading, caching, and resolving engine resources.
+//      - Enforce deterministic resource lookup and lifecycle rules.
+//      - Abstract file formats, storage locations, and integration layers behind a stable interface.
+//      - Ensure resource availability for all engine subsystems (Rendering, Audio, Gameplay, UI).
+//
+//  NON-RESPONSIBILITIES:
+//      - Performing rendering or GPU upload operations.
+//      - Managing gameplay logic or scene entities.
+//      - Handling diagnostics, logging, or performance metrics.
+//      - Encoding or authoring resource files.
+//
+//  ARCHITECTURAL NOTES:
+//      - The Resource Management Framework acts as the central authority for all asset retrieval.
+//      - Resource modules must remain pure: no side effects outside resource acquisition and validation.
+//      - All resource types (textures, data files, definitions, metadata) must follow deterministic load rules.
+//  ====================================================================================================
+
 /*
 File:    RenderContextD3D11Adapter.cs
 Folder:  Engine/Rendering/
@@ -5,17 +31,18 @@ Purpose: Minimal D3D11-backed implementation of IRenderContext with NI-instrumen
 */
 
 using System;
-using System.Drawing;
 using SASZombieAssaultTD.Engine.Diagnostics;
+
+//
 using SASZombieAssaultTD.Engine.Interfaces;
 using SASZombieAssaultTD.Engine.VectorMath;
 
 namespace SASZombieAssaultTD.Engine.Rendering
 {
-    /// <summary>
-    /// Stub implementation of IRenderTarget for RenderContextD3D11Adapter.
-    /// BGFX is quarantined, so this provides a minimal non-BGFX implementation.
-    /// </summary>
+    ///<summary>
+    ///Stub implementation of IRenderTarget for RenderContextD3D11Adapter.
+    ///BGFX is quarantined, so this provides a minimal non-BGFX implementation.
+    ///</summary>
     internal class StubRenderTarget : IRenderTarget
     {
         public int Width => 1920;
@@ -32,10 +59,10 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public byte[] GetTextureData() => new byte[Width * Height * 4];
     }
 
-    /// <summary>
-    /// Adapter to make RenderContextD3D11 compatible with IRenderContext interface.
-    /// Provides minimal, NI-instrumented implementations for all required members.
-    /// </summary>
+    ///<summary>
+    ///Adapter to make RenderContextD3D11 compatible with IRenderContext interface.
+    ///Provides minimal, NI-instrumented implementations for all required members.
+    ///</summary>
     public class RenderContextD3D11Adapter : IRenderContext
     {
         private readonly D3D11.RenderContextD3D11 _inner;
@@ -47,9 +74,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
             _viewportSize = new Vector3(1920f, 1080f, 0f);
         }
 
-        // --------------------------------------------------------------------
-        //  IRenderContext implementation
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        // IRenderContext implementation
+        //--------------------------------------------------------------------
 
         public void Clear(Color color)
         {
@@ -132,13 +159,13 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
         public void ClearScreen()
         {
-            // Default to black clear
+            //Default to black clear
             Clear(Color.Black);
         }
 
         public void Present()
         {
-            // If inner has an explicit Present, call it; otherwise NI.
+            //If inner has an explicit Present, call it; otherwise NI.
             NI.Hit();
         }
 
@@ -160,8 +187,8 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
         public void Initialize()
         {
-            // Inner context is assumed to be initialized by its owner.
-            // No-op here.
+            //Inner context is assumed to be initialized by its owner.
+            //No-op here.
         }
 
         public void Shutdown()
@@ -202,6 +229,16 @@ namespace SASZombieAssaultTD.Engine.Rendering
         public void DrawText(string text, int x, int y)
         {
             NI.Hit();
+        }
+
+        public void DrawText(string displayText, int v1, int v2, System.Drawing.Color sysText)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawFilledRectangle(int x, int y, int width, int height, System.Drawing.Color sysFill)
+        {
+            throw new NotImplementedException();
         }
     }
 }

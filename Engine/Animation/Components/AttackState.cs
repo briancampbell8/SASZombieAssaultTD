@@ -9,12 +9,14 @@ using SASZombieAssaultTD.Engine.Utility;
 using SASZombieAssaultTD.Engine.Animation.Core;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Animation.Components
+//
 {
-    /// <summary>
-    /// P11-17-05: Attack state implementation with deterministic transitions.
-    /// Implements IAnimationState with explicit transition conditions and deterministic Update behavior.
-    /// </summary>
+    ///<summary>
+    ///P11-17-05: Attack state implementation with deterministic transitions.
+    ///Implements IAnimationState with explicit transition conditions and deterministic Update behavior.
+    ///</summary>
     public class AttackState : IAnimationState
     {
         public string Name => "Attack";
@@ -41,14 +43,14 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             AttackTime = 0f;
             IsAttacking = true;
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AttackState: Entering attack state with duration {AttackDuration:F2}s");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AttackState: Entering attack state with duration {AttackDuration:F2}s");
         }
 
         public void Exit()
         {
             IsAttacking = false;
             AttackDamage = 0f;
-            Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", $"AttackState: Exiting attack state after {AttackTime:F2}s");
+            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AttackState: Exiting attack state after {AttackTime:F2}s");
         }
 
         public void Update(float deltaTime, float timeInState)
@@ -57,11 +59,11 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
 
             if (AttackTime < AttackDuration * ATTACK_COMPLETION_THRESHOLD)
             {
-                AttackDamage = 0f; // Winding up
+                AttackDamage = 0f; //Winding up
             }
             else
             {
-                AttackDamage = 10f; // Fixed damage for deterministic behavior
+                AttackDamage = 10f; //Fixed damage for deterministic behavior
             }
         }
 
@@ -69,19 +71,19 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         {
             if (_jumpState.IsJumping)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "AttackState: Transition condition met for JumpState");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, "AttackState: Transition condition met for JumpState");
                 return _jumpState;
             }
 
             if (_moveState.IsMoving)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "AttackState: Transition condition met for MoveState");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, "AttackState: Transition condition met for MoveState");
                 return _moveState;
             }
 
             if (AttackTime >= AttackDuration)
             {
-                Engine.Diagnostics.DebugLogger.LogDebug("DEBUG", "AttackState: Transition condition met for IdleState (attack completed)");
+                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, "AttackState: Transition condition met for IdleState (attack completed)");
                 return _idleState;
             }
 

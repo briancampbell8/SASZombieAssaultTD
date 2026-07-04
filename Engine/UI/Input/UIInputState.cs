@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.Input
 {
-    /// <summary>
-    /// Input state data used by UIInputRouter
-    /// P80-05-02: UIInputState defining input state data used by UIInputRouter
-    /// </summary>
+    ///<summary>
+    ///Input state data used by UIInputRouter
+    ///P80-05-02: UIInputState defining input state data used by UIInputRouter
+    ///</summary>
     public class UIInputState
     {
         private System.Drawing.PointF _mousePosition;
@@ -17,46 +19,46 @@ namespace SASZombieAssaultTD.Engine.UI.Input
         private System.Drawing.PointF _mouseDelta;
         private float _mouseWheelDelta;
 
-        /// <summary>
-        /// Gets the current mouse position
-        /// </summary>
+        ///<summary>
+        ///Gets the current mouse position
+        ///</summary>
         public System.Drawing.PointF MousePosition => _mousePosition;
 
-        /// <summary>
-        /// Gets the current mouse delta
-        /// </summary>
+        ///<summary>
+        ///Gets the current mouse delta
+        ///</summary>
         public System.Drawing.PointF MouseDelta => _mouseDelta;
 
-        /// <summary>
-        /// Gets the current mouse wheel delta
-        /// </summary>
+        ///<summary>
+        ///Gets the current mouse wheel delta
+        ///</summary>
         public float MouseWheelDelta => _mouseWheelDelta;
 
-        /// <summary>
-        /// Gets the current mouse button states
-        /// </summary>
+        ///<summary>
+        ///Gets the current mouse button states
+        ///</summary>
         public IReadOnlyList<bool> MouseButtons => Array.AsReadOnly(_mouseButtons);
 
-        /// <summary>
-        /// Gets the current key states
-        /// </summary>
+        ///<summary>
+        ///Gets the current key states
+        ///</summary>
         public IReadOnlyList<bool> Keys => Array.AsReadOnly(_keys);
 
-        /// <summary>
-        /// Gets the number of mouse buttons supported
-        /// </summary>
+        ///<summary>
+        ///Gets the number of mouse buttons supported
+        ///</summary>
         public int MouseButtonCount => _mouseButtons?.Length ?? 0;
 
-        /// <summary>
-        /// Gets the number of keys supported
-        /// </summary>
+        ///<summary>
+        ///Gets the number of keys supported
+        ///</summary>
         public int KeyCount => _keys?.Length ?? 0;
 
-        /// <summary>
-        /// Initializes a new UIInputState
-        /// </summary>
-        /// <param name="mouseButtonCount">Number of mouse buttons to track</param>
-        /// <param name="keyCount">Number of keys to track</param>
+        ///<summary>
+        ///Initializes a new UIInputState
+        ///</summary>
+        ///<param name="mouseButtonCount">Number of mouse buttons to track</param>
+        ///<param name="keyCount">Number of keys to track</param>
         public UIInputState(int mouseButtonCount = 5, int keyCount = 256)
         {
             _mousePosition = new System.Drawing.PointF(0, 0);
@@ -70,17 +72,17 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             System.Diagnostics.Debug.WriteLine($"UIInputState: Initialized with {mouseButtonCount} mouse buttons and {keyCount} keys");
         }
 
-        /// <summary>
-        /// Updates the input state
-        /// </summary>
-        /// <param name="mousePosition">New mouse position</param>
-        /// <param name="mouseButtons">New mouse button states</param>
-        /// <param name="keys">New key states</param>
+        ///<summary>
+        ///Updates the input state
+        ///</summary>
+        ///<param name="mousePosition">New mouse position</param>
+        ///<param name="mouseButtons">New mouse button states</param>
+        ///<param name="keys">New key states</param>
         public void Update(System.Drawing.PointF mousePosition, bool[] mouseButtons, bool[] keys)
         {
             try
             {
-                // Calculate deltas
+                //Calculate deltas
                 _mouseDelta = new System.Drawing.PointF(
                 mousePosition.X - _mousePosition.X,
                 mousePosition.Y - _mousePosition.Y
@@ -88,11 +90,11 @@ namespace SASZombieAssaultTD.Engine.UI.Input
 
                 _mousePosition = mousePosition;
 
-                // Store previous states
+                //Store previous states
                 Array.Copy(_mouseButtons, _previousMouseButtons, System.Math.Min(_mouseButtons.Length, _previousMouseButtons.Length));
                 Array.Copy(_keys, _previousKeys, System.Math.Min(_keys.Length, _previousKeys.Length));
 
-                // Update current states
+                //Update current states
                 Array.Copy(mouseButtons, _mouseButtons, System.Math.Min(mouseButtons.Length, _mouseButtons.Length));
                 Array.Copy(keys, _keys, System.Math.Min(keys.Length, _keys.Length));
 
@@ -104,11 +106,11 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Checks if a mouse button is currently pressed
-        /// </summary>
-        /// <param name="buttonIndex">Mouse button index</param>
-        /// <returns>True if button is pressed</returns>
+        ///<summary>
+        ///Checks if a mouse button is currently pressed
+        ///</summary>
+        ///<param name="buttonIndex">Mouse button index</param>
+        ///<returns>True if button is pressed</returns>
         public bool IsMouseButtonPressed(int buttonIndex)
         {
             try
@@ -128,11 +130,11 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Checks if a mouse button was just pressed
-        /// </summary>
-        /// <param name="buttonIndex">Mouse button index</param>
-        /// <returns>True if button was just pressed</returns>
+        ///<summary>
+        ///Checks if a mouse button was just pressed
+        ///</summary>
+        ///<param name="buttonIndex">Mouse button index</param>
+        ///<returns>True if button was just pressed</returns>
         public bool IsMouseButtonJustPressed(int buttonIndex)
         {
             try
@@ -153,11 +155,11 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Checks if a mouse button was just released
-        /// </summary>
-        /// <param name="buttonIndex">Mouse button index</param>
-        /// <returns>True if button was just released</returns>
+        ///<summary>
+        ///Checks if a mouse button was just released
+        ///</summary>
+        ///<param name="buttonIndex">Mouse button index</param>
+        ///<returns>True if button was just released</returns>
         public bool IsMouseButtonJustReleased(int buttonIndex)
         {
             try
@@ -178,11 +180,11 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Checks if a key is currently pressed
-        /// </summary>
-        /// <param name="keyCode">Key code</param>
-        /// <returns>True if key is pressed</returns>
+        ///<summary>
+        ///Checks if a key is currently pressed
+        ///</summary>
+        ///<param name="keyCode">Key code</param>
+        ///<returns>True if key is pressed</returns>
         public bool IsKeyPressed(int keyCode)
         {
             try
@@ -202,11 +204,11 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Checks if a key was just pressed
-        /// </summary>
-        /// <param name="keyCode">Key code</param>
-        /// <returns>True if key was just pressed</returns>
+        ///<summary>
+        ///Checks if a key was just pressed
+        ///</summary>
+        ///<param name="keyCode">Key code</param>
+        ///<returns>True if key was just pressed</returns>
         public bool IsKeyJustPressed(int keyCode)
         {
             try
@@ -227,11 +229,11 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Checks if a key was just released
-        /// </summary>
-        /// <param name="keyCode">Key code</param>
-        /// <returns>True if key was just released</returns>
+        ///<summary>
+        ///Checks if a key was just released
+        ///</summary>
+        ///<param name="keyCode">Key code</param>
+        ///<returns>True if key was just released</returns>
         public bool IsKeyJustReleased(int keyCode)
         {
             try
@@ -252,9 +254,9 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Clears all input state
-        /// </summary>
+        ///<summary>
+        ///Clears all input state
+        ///</summary>
         public void Clear()
         {
             try
@@ -276,10 +278,10 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
         }
 
-        /// <summary>
-        /// Gets a string representation of the current input state
-        /// </summary>
-        /// <returns>String representation</returns>
+        ///<summary>
+        ///Gets a string representation of the current input state
+        ///</summary>
+        ///<returns>String representation</returns>
         public override string ToString()
         {
             try

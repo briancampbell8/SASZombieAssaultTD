@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.State
 {
-    /// <summary>
-    /// Builder for creating state machines with fluent API.
-    /// </summary>
+    ///<summary>
+    ///Builder for creating state machines with fluent API.
+    ///</summary>
     public class StateMachineBuilder
     {
         private readonly List<GameStateType> _states = new List<GameStateType>();
@@ -21,7 +23,7 @@ namespace SASZombieAssaultTD.Engine.State
 
         public StateMachineBuilder WithDefaultStates()
         {
-            // Implementation would add default states
+            //Implementation would add default states
             return this;
         }
 
@@ -45,19 +47,19 @@ namespace SASZombieAssaultTD.Engine.State
 
         public EnhancedStateMachine Build()
         {
-            // Implementation would build the state machine
+            //Implementation would build the state machine
             return new EnhancedStateMachine();
         }
 
         public EnhancedStateMachine BuildEnhanced()
         {
-            // Implementation would build the enhanced state machine
+            //Implementation would build the enhanced state machine
             return new EnhancedStateMachine();
         }
 
         public StateMachineBuilder WithMaxHistorySize(int size)
         {
-            // Implementation would set max history size
+            //Implementation would set max history size
             return this;
         }
     }

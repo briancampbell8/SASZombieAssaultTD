@@ -16,73 +16,75 @@ using System.Collections.Generic;
 using static System.Math;
 
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
-    /// <summary>
-    /// Renders health bars above entities that have HealthComponent and TransformComponent.
-    /// P11-04-09-B: Supports configurable bar size, color, offset, health ratio clamping,
-    /// and optional hiding for full-health entities.
-    /// </summary>
+    ///<summary>
+    ///Renders health bars above entities that have HealthComponent and TransformComponent.
+    ///P11-04-09-B: Supports configurable bar size, color, offset, health ratio clamping,
+    ///and optional hiding for full-health entities.
+    ///</summary>
     public class HealthBarRenderer
     {
         private readonly EntityManager _entityManager;
         private readonly bool _debugOutput = true;
 
-        /// <summary>
-        /// Gets or sets the width of health bars in pixels.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the width of health bars in pixels.
+        ///</summary>
         public int BarWidth { get; set; } = 40;
 
-        /// <summary>
-        /// Gets or sets the height of health bars in pixels.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the height of health bars in pixels.
+        ///</summary>
         public int BarHeight { get; set; } = 4;
 
-        /// <summary>
-        /// Gets or sets the vertical offset above entity position for health bar rendering.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the vertical offset above entity position for health bar rendering.
+        ///</summary>
         public float VerticalOffset { get; set; } = 10.0f;
 
-        /// <summary>
-        /// Gets or sets the color for healthy portions of health bars.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the color for healthy portions of health bars.
+        ///</summary>
         public System.Drawing.Color HealthyColor { get; set; } = System.Drawing.Color.Green;
 
-        /// <summary>
-        /// Gets or sets the color for damaged portions of health bars.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the color for damaged portions of health bars.
+        ///</summary>
         public System.Drawing.Color DamagedColor { get; set; } = System.Drawing.Color.Red;
 
-        /// <summary>
-        /// Gets or sets the color for health bar borders.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the color for health bar borders.
+        ///</summary>
         public System.Drawing.Color BorderColor { get; set; } = System.Drawing.Color.Black;
 
-        /// <summary>
-        /// Gets or sets whether to hide health bars for entities at full health.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets whether to hide health bars for entities at full health.
+        ///</summary>
         public bool HideFullHealth { get; set; } = true;
 
-        /// <summary>
-        /// Gets or sets the health threshold (0-1) below which health bars are always shown.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the health threshold (0-1) below which health bars are always shown.
+        ///</summary>
         public float AlwaysShowThreshold { get; set; } = 0.95f;
 
-        /// <summary>
-        /// Initializes a new instance of the HealthBarRenderer class.
-        /// </summary>
-        /// <param name="entityManager">Entity manager for component access</param>
+        ///<summary>
+        ///Initializes a new instance of the HealthBarRenderer class.
+        ///</summary>
+        ///<param name="entityManager">Entity manager for component access</param>
         public HealthBarRenderer(EntityManager entityManager)
         {
             _entityManager = entityManager ?? throw new ArgumentNullException(nameof(entityManager));
             DebugLog("HealthBarRenderer: Initialized with EntityManager");
         }
 
-        /// <summary>
-        /// Renders health bars for all entities with HealthComponent and TransformComponent.
-        /// P11-04-09-B: Renders health bars with configurable properties and health ratio clamping.
-        /// </summary>
-        /// <param name="context">Render context for drawing operations</param>
+        ///<summary>
+        ///Renders health bars for all entities with HealthComponent and TransformComponent.
+        ///P11-04-09-B: Renders health bars with configurable properties and health ratio clamping.
+        ///</summary>
+        ///<param name="context">Render context for drawing operations</param>
         public void RenderHealthBars(IRenderContext context)
         {
             if (context == null)
@@ -108,9 +110,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Gets all entities that have both HealthComponent and TransformComponent.
-        /// </summary>
+        ///<summary>
+        ///Gets all entities that have both HealthComponent and TransformComponent.
+        ///</summary>
         private IReadOnlyList<object> GetEntitiesWithHealthAndTransform()
         {
             var result = new List<object>();
@@ -129,10 +131,10 @@ namespace SASZombieAssaultTD.Engine.UI
             return result;
         }
 
-        /// <summary>
-        /// Renders a health bar for a single entity.
-        /// P11-04-09-B: Clamps health bar width to current/max health ratio.
-        /// </summary>
+        ///<summary>
+        ///Renders a health bar for a single entity.
+        ///P11-04-09-B: Clamps health bar width to current/max health ratio.
+        ///</summary>
         private void RenderEntityHealthBar(uint entity, IRenderContext context)
         {
             try
@@ -145,20 +147,20 @@ namespace SASZombieAssaultTD.Engine.UI
                 float healthRatio = (float)(healthComponent.CurrentHealth / (float)healthComponent.MaxHealth);
                 float clampedRatio = Clamp(healthRatio, 0f, 1f);
 
-                // Skip rendering if hiding full health and entity is healthy
+                //Skip rendering if hiding full health and entity is healthy
                 if (HideFullHealth && healthRatio >= AlwaysShowThreshold)
                     return;
 
-                // Calculate health bar position
+                //Calculate health bar position
                 var entityPosition = transformComponent.Position;
                 var barX = entityPosition.X - (BarWidth / 2f);
                 var barY = entityPosition.Y - VerticalOffset;
 
-                // Render health bar background (damaged portion)
+                //Render health bar background (damaged portion)
                 var backgroundRect = new Rectangle(barX, barY, BarWidth, BarHeight);
                 context.DrawRectangle(backgroundRect.X, backgroundRect.Y, backgroundRect.Width, backgroundRect.Height, new Color(DamagedColor.R, DamagedColor.G, DamagedColor.B, DamagedColor.A));
 
-                // Render health bar foreground (healthy portion)
+                //Render health bar foreground (healthy portion)
                 if (clampedRatio > 0f)
                 {
                     var healthWidth = BarWidth * clampedRatio;
@@ -166,7 +168,7 @@ namespace SASZombieAssaultTD.Engine.UI
                     context.DrawRectangle(healthRect.X, healthRect.Y, healthRect.Width, healthRect.Height, new Color(HealthyColor.R, HealthyColor.G, HealthyColor.B, HealthyColor.A));
                 }
 
-                // Render health bar border
+                //Render health bar border
                 context.DrawRectangle(barX, barY, BarWidth, BarHeight, new Color(BorderColor.R, BorderColor.G, BorderColor.B, BorderColor.A));
 
                 DebugLog($"HealthBarRenderer: Rendered health bar for entity - Health: {healthComponent.CurrentHealth}/{healthComponent.MaxHealth} ({healthRatio:P0})");
@@ -177,9 +179,9 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        /// <summary>
-        /// Gets statistics about the health bar renderer.
-        /// </summary>
+        ///<summary>
+        ///Gets statistics about the health bar renderer.
+        ///</summary>
         public HealthBarRendererStatistics GetStatistics()
         {
             var entitiesWithHealth = GetEntitiesWithHealthAndTransform();
@@ -202,9 +204,9 @@ namespace SASZombieAssaultTD.Engine.UI
         }
     }
 
-    /// <summary>
-    /// Statistics about the health bar renderer state.
-    /// </summary>
+    ///<summary>
+    ///Statistics about the health bar renderer state.
+    ///</summary>
     public class HealthBarRendererStatistics
     {
         public int BarWidth { get; set; }

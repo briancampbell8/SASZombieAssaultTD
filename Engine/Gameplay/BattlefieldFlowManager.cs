@@ -1,21 +1,35 @@
-/*
-Program Name: SASZombieAssaultTD
-File Path: Engine\Gameplay\BattlefieldFlowManager.cs
-Purpose: Centralized management of battlefield selection and loading.
-Features: Battlefield selection menu, loading with progress, difficulty scaling, completion tracking, unlock system.
-*/
+﻿// ====================================================================================================
+//  FILE: BattlefieldFlowManager.cs
+//  PATH: Engine/Gameplay/
+//  MODULE: Gameplay (Battlefield Flow)
+//
+//  ROLE:
+//      Coordinates battlefield selection, loading, progress tracking, and unlock progression.
+//
+//  RESPONSIBILITIES:
+//      - Provide APIs for selecting and loading battlefields with progress callbacks.
+//      - Track unlocked and completed battlefields and report completion state.
+//      - Integrate with SceneManager for level transitions.
+//
+//  NON-RESPONSIBILITIES:
+//      - Rendering or UI presentation of selection screens (UI systems handle visuals).
+//
+//  ARCHITECTURAL NOTES:
+//      - Keep loading operations asynchronous-friendly and report deterministic progress values.
+// ====================================================================================================
 
 using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Scenes;
 
+//
+using SASZombieAssaultTD.Engine.Scenes;
 namespace SASZombieAssaultTD.Engine.Gameplay
 {
-    /// <summary>
-    /// Manages battlefield selection, loading, and completion tracking.
-    /// P120-11: Provides centralized battlefield flow management with unlock system and progress tracking.
-    /// </summary>
+    ///<summary>
+    ///Manages battlefield selection, loading, and completion tracking.
+    ///P120-11: Provides centralized battlefield flow management with unlock system and progress tracking.
+    ///</summary>
     public class BattlefieldFlowManager
     {
         private SceneManager? _sceneManager;
@@ -26,49 +40,49 @@ namespace SASZombieAssaultTD.Engine.Gameplay
         private float _loadingProgress;
         private Action<float>? _loadingProgressCallback;
 
-        /// <summary>
-        /// Gets the currently selected battlefield.
-        /// </summary>
+        ///<summary>
+        ///Gets the currently selected battlefield.
+        ///</summary>
         public BattlefieldType? SelectedBattlefield => _selectedBattlefield;
 
-        /// <summary>
-        /// Gets whether a battlefield is currently loading.
-        /// </summary>
+        ///<summary>
+        ///Gets whether a battlefield is currently loading.
+        ///</summary>
         public bool IsLoading => _isLoading;
 
-        /// <summary>
-        /// Gets the current loading progress (0.0 to 1.0).
-        /// </summary>
+        ///<summary>
+        ///Gets the current loading progress (0.0 to 1.0).
+        ///</summary>
         public float LoadingProgress => _loadingProgress;
 
-        /// <summary>
-        /// Event fired when battlefield selection changes.
-        /// </summary>
+        ///<summary>
+        ///Event fired when battlefield selection changes.
+        ///</summary>
         public event Action<BattlefieldType?>? OnBattlefieldSelected;
 
-        /// <summary>
-        /// Event fired when battlefield loading starts.
-        /// </summary>
+        ///<summary>
+        ///Event fired when battlefield loading starts.
+        ///</summary>
         public event Action<BattlefieldType>? OnBattlefieldLoadingStarted;
 
-        /// <summary>
-        /// Event fired when battlefield loading completes.
-        /// </summary>
+        ///<summary>
+        ///Event fired when battlefield loading completes.
+        ///</summary>
         public event Action<BattlefieldType>? OnBattlefieldLoadingCompleted;
 
-        /// <summary>
-        /// Event fired when a battlefield is unlocked.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a battlefield is unlocked.
+        ///</summary>
         public event Action<BattlefieldType>? OnBattlefieldUnlocked;
 
-        /// <summary>
-        /// Event fired when a battlefield is completed.
-        /// </summary>
+        ///<summary>
+        ///Event fired when a battlefield is completed.
+        ///</summary>
         public event Action<BattlefieldType>? OnBattlefieldCompleted;
 
-        /// <summary>
-        /// Initializes a new battlefield flow manager.
-        /// </summary>
+        ///<summary>
+        ///Initializes a new battlefield flow manager.
+        ///</summary>
         public BattlefieldFlowManager()
         {
             _unlockedBattlefields = new Dictionary<BattlefieldType, bool>();
@@ -76,64 +90,67 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             _isLoading = false;
             _loadingProgress = 0f;
 
-            // Unlock Mean Street by default (first battlefield)
+            //Unlock Mean Street by default (first battlefield)
             _unlockedBattlefields[BattlefieldType.MeanStreet] = true;
 
-            Engine.Diagnostics.DebugLogger.Log("INFO", "BattlefieldFlowManager: Initialized");
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "INFO", "BattlefieldFlowManager: Initialized");
         }
 
-        /// <summary>
-        /// Sets the scene manager for scene operations.
-        /// </summary>
-        /// <param name="sceneManager">The scene manager instance.</param>
+        ///<summary>
+        ///Sets the scene manager for scene operations.
+        ///</summary>
+        ///<param name="sceneManager">The scene manager instance.</param>
         public void SetSceneManager(SceneManager sceneManager)
         {
             _sceneManager = sceneManager;
-            Engine.Diagnostics.DebugLogger.Log("INFO", "BattlefieldFlowManager: SceneManager set");
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "INFO", "BattlefieldFlowManager: SceneManager set");
         }
 
-        /// <summary>
-        /// Selects a battlefield for loading.
-        /// </summary>
-        /// <param name="battlefield">The battlefield to select.</param>
-        /// <returns>True if the battlefield was selected successfully.</returns>
+        ///<summary>
+        ///Selects a battlefield for loading.
+        ///</summary>
+        ///<param name="battlefield">The battlefield to select.</param>
+        ///<returns>True if the battlefield was selected successfully.</returns>
         public bool SelectBattlefield(BattlefieldType battlefield)
         {
             if (!IsBattlefieldUnlocked(battlefield))
             {
-                Engine.Diagnostics.DebugLogger.Log("Warning", $"BattlefieldFlowManager: Cannot select {battlefield.GetDisplayName()} - not unlocked");
+                DLogger.Log(LogSubsystems.Gameplay,
+                    LogLevel.Info,
+                    "Warning",
+                    $"BattlefieldFlowManager: Cannot select {battlefield.GetDisplayName()} - not unlocked");
                 return false;
             }
 
             _selectedBattlefield = battlefield;
-            Engine.Diagnostics.DebugLogger.Log("INFO", $"BattlefieldFlowManager: Selected {battlefield.GetDisplayName()}");
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "INFO", $"BattlefieldFlowManager: Selected {battlefield.GetDisplayName()}");
             OnBattlefieldSelected?.Invoke(battlefield);
 
             return true;
         }
 
-        /// <summary>
-        /// Loads the selected battlefield.
-        /// </summary>
-        /// <param name="progressCallback">Optional callback for loading progress.</param>
-        /// <returns>True if loading was initiated successfully.</returns>
+        ///<summary>
+        ///Loads the selected battlefield.
+        ///</summary>
+        ///<param name="progressCallback">Optional callback for loading progress.</param>
+        ///<returns>True if loading was initiated successfully.</returns>
         public bool LoadBattlefield(Action<float>? progressCallback = null)
         {
             if (_selectedBattlefield == null)
             {
-                Engine.Diagnostics.DebugLogger.Log("ERROR", "BattlefieldFlowManager: Cannot load - no battlefield selected");
+                DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "ERROR", "BattlefieldFlowManager: Cannot load - no battlefield selected");
                 return false;
             }
 
             if (_isLoading)
             {
-                Engine.Diagnostics.DebugLogger.Log("Warning", "BattlefieldFlowManager: Cannot load - already loading");
+                DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "Warning", "BattlefieldFlowManager: Cannot load - already loading");
                 return false;
             }
 
             if (_sceneManager == null)
             {
-                Engine.Diagnostics.DebugLogger.Log("ERROR", "BattlefieldFlowManager: Cannot load - SceneManager not set");
+                DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "ERROR", "BattlefieldFlowManager: Cannot load - SceneManager not set");
                 return false;
             }
 
@@ -141,29 +158,29 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             _isLoading = true;
             _loadingProgress = 0f;
 
-            Engine.Diagnostics.DebugLogger.Log("INFO", $"BattlefieldFlowManager: Starting load for {_selectedBattlefield.Value.GetDisplayName()}");
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "INFO", $"BattlefieldFlowManager: Starting load for {_selectedBattlefield.Value.GetDisplayName()}");
             OnBattlefieldLoadingStarted?.Invoke(_selectedBattlefield.Value);
 
-            // Simulate loading progress (in real implementation, this would load assets)
+            //Simulate loading progress (in real implementation, this would load assets)
             SimulateLoading();
 
             return true;
         }
 
-        /// <summary>
-        /// Simulates loading progress.
-        /// In a real implementation, this would load actual assets.
-        /// </summary>
+        ///<summary>
+        ///Simulates loading progress.
+        ///In a real implementation, this would load actual assets.
+        ///</summary>
         private void SimulateLoading()
         {
-            // TODO: Implement actual asset loading
-            // For now, simulate immediate completion
+            //TODO: Implement actual asset loading
+            //For now, simulate immediate completion
             CompleteLoading();
         }
 
-        /// <summary>
-        /// Completes the battlefield loading.
-        /// </summary>
+        ///<summary>
+        ///Completes the battlefield loading.
+        ///</summary>
         private void CompleteLoading()
         {
             if (_selectedBattlefield == null || _sceneManager == null)
@@ -175,37 +192,38 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             _loadingProgress = 1.0f;
             _loadingProgressCallback?.Invoke(_loadingProgress);
 
-            // Switch to the battlefield scene
+            //Switch to the battlefield scene
             var sceneName = _selectedBattlefield.Value.ToString();
             var success = _sceneManager.SwitchToScene(sceneName);
 
             if (success)
             {
-                Engine.Diagnostics.DebugLogger.Log("INFO", $"BattlefieldFlowManager: Successfully loaded {_selectedBattlefield.Value.GetDisplayName()}");
+                DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "INFO", $"BattlefieldFlowManager: Successfully loaded {_selectedBattlefield.Value.GetDisplayName()}");
                 OnBattlefieldLoadingCompleted?.Invoke(_selectedBattlefield.Value);
             }
             else
             {
-                Engine.Diagnostics.DebugLogger.Log("ERROR", $"BattlefieldFlowManager: Failed to load {_selectedBattlefield.Value.GetDisplayName()}");
+                DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info,
+                                       "ERROR", $"BattlefieldFlowManager: Failed to load {_selectedBattlefield.Value.GetDisplayName()}");
             }
 
             _isLoading = false;
         }
 
-        /// <summary>
-        /// Checks if a battlefield is unlocked.
-        /// </summary>
-        /// <param name="battlefield">The battlefield to check.</param>
-        /// <returns>True if the battlefield is unlocked.</returns>
+        ///<summary>
+        ///Checks if a battlefield is unlocked.
+        ///</summary>
+        ///<param name="battlefield">The battlefield to check.</param>
+        ///<returns>True if the battlefield is unlocked.</returns>
         public bool IsBattlefieldUnlocked(BattlefieldType battlefield)
         {
             return _unlockedBattlefields.TryGetValue(battlefield, out var unlocked) && unlocked;
         }
 
-        /// <summary>
-        /// Unlocks a battlefield.
-        /// </summary>
-        /// <param name="battlefield">The battlefield to unlock.</param>
+        ///<summary>
+        ///Unlocks a battlefield.
+        ///</summary>
+        ///<param name="battlefield">The battlefield to unlock.</param>
         public void UnlockBattlefield(BattlefieldType battlefield)
         {
             if (IsBattlefieldUnlocked(battlefield))
@@ -214,24 +232,24 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             }
 
             _unlockedBattlefields[battlefield] = true;
-            Engine.Diagnostics.DebugLogger.Log("INFO", $"BattlefieldFlowManager: Unlocked {battlefield.GetDisplayName()}");
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "INFO", $"BattlefieldFlowManager: Unlocked {battlefield.GetDisplayName()}");
             OnBattlefieldUnlocked?.Invoke(battlefield);
         }
 
-        /// <summary>
-        /// Checks if a battlefield has been completed.
-        /// </summary>
-        /// <param name="battlefield">The battlefield to check.</param>
-        /// <returns>True if the battlefield has been completed.</returns>
+        ///<summary>
+        ///Checks if a battlefield has been completed.
+        ///</summary>
+        ///<param name="battlefield">The battlefield to check.</param>
+        ///<returns>True if the battlefield has been completed.</returns>
         public bool IsBattlefieldCompleted(BattlefieldType battlefield)
         {
             return _completedBattlefields.TryGetValue(battlefield, out var completed) && completed;
         }
 
-        /// <summary>
-        /// Marks a battlefield as completed.
-        /// </summary>
-        /// <param name="battlefield">The battlefield to mark as completed.</param>
+        ///<summary>
+        ///Marks a battlefield as completed.
+        ///</summary>
+        ///<param name="battlefield">The battlefield to mark as completed.</param>
         public void CompleteBattlefield(BattlefieldType battlefield)
         {
             if (IsBattlefieldCompleted(battlefield))
@@ -240,9 +258,9 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             }
 
             _completedBattlefields[battlefield] = true;
-            Engine.Diagnostics.DebugLogger.Log("INFO", $"BattlefieldFlowManager: Completed {battlefield.GetDisplayName()}");
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "INFO", $"BattlefieldFlowManager: Completed {battlefield.GetDisplayName()}");
 
-            // Unlock next battlefield if not the last one
+            //Unlock next battlefield if not the last one
             var nextBattlefield = GetNextBattlefield(battlefield);
             if (nextBattlefield.HasValue && !IsBattlefieldUnlocked(nextBattlefield.Value))
             {
@@ -252,11 +270,11 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             OnBattlefieldCompleted?.Invoke(battlefield);
         }
 
-        /// <summary>
-        /// Gets the next battlefield in the progression.
-        /// </summary>
-        /// <param name="currentBattlefield">The current battlefield.</param>
-        /// <returns>The next battlefield, or null if current is the last one.</returns>
+        ///<summary>
+        ///Gets the next battlefield in the progression.
+        ///</summary>
+        ///<param name="currentBattlefield">The current battlefield.</param>
+        ///<returns>The next battlefield, or null if current is the last one.</returns>
         private BattlefieldType? GetNextBattlefield(BattlefieldType currentBattlefield)
         {
             return currentBattlefield switch
@@ -268,15 +286,15 @@ namespace SASZombieAssaultTD.Engine.Gameplay
                 BattlefieldType.Killtop => BattlefieldType.Touchdown,
                 BattlefieldType.Touchdown => BattlefieldType.Cleanup,
                 BattlefieldType.Cleanup => BattlefieldType.OutbreakMansion,
-                BattlefieldType.OutbreakMansion => null, // Last battlefield
+                BattlefieldType.OutbreakMansion => null, //Last battlefield
                 _ => null
             };
         }
 
-        /// <summary>
-        /// Gets all unlocked battlefields.
-        /// </summary>
-        /// <returns>List of unlocked battlefield types.</returns>
+        ///<summary>
+        ///Gets all unlocked battlefields.
+        ///</summary>
+        ///<returns>List of unlocked battlefield types.</returns>
         public List<BattlefieldType> GetUnlockedBattlefields()
         {
             var unlocked = new List<BattlefieldType>();
@@ -290,10 +308,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             return unlocked;
         }
 
-        /// <summary>
-        /// Gets all completed battlefields.
-        /// </summary>
-        /// <returns>List of completed battlefield types.</returns>
+        ///<summary>
+        ///Gets all completed battlefields.
+        ///</summary>
+        ///<returns>List of completed battlefield types.</returns>
         public List<BattlefieldType> GetCompletedBattlefields()
         {
             var completed = new List<BattlefieldType>();
@@ -307,28 +325,28 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             return completed;
         }
 
-        /// <summary>
-        /// Gets the total number of battlefields.
-        /// </summary>
-        /// <returns>Total battlefield count.</returns>
+        ///<summary>
+        ///Gets the total number of battlefields.
+        ///</summary>
+        ///<returns>Total battlefield count.</returns>
         public int GetTotalBattlefieldCount()
         {
             return Enum.GetValues(typeof(BattlefieldType)).Length;
         }
 
-        /// <summary>
-        /// Gets the number of completed battlefields.
-        /// </summary>
-        /// <returns>Completed battlefield count.</returns>
+        ///<summary>
+        ///Gets the number of completed battlefields.
+        ///</summary>
+        ///<returns>Completed battlefield count.</returns>
         public int GetCompletedBattlefieldCount()
         {
             return _completedBattlefields.Count;
         }
 
-        /// <summary>
-        /// Gets the overall completion progress (0.0 to 1.0).
-        /// </summary>
-        /// <returns>Completion progress.</returns>
+        ///<summary>
+        ///Gets the overall completion progress (0.0 to 1.0).
+        ///</summary>
+        ///<returns>Completion progress.</returns>
         public float GetOverallProgress()
         {
             var total = GetTotalBattlefieldCount();
@@ -336,23 +354,23 @@ namespace SASZombieAssaultTD.Engine.Gameplay
             return total > 0 ? (float)completed / total : 0f;
         }
 
-        /// <summary>
-        /// Resets all battlefield progress.
-        /// </summary>
+        ///<summary>
+        ///Resets all battlefield progress.
+        ///</summary>
         public void ResetProgress()
         {
             _unlockedBattlefields.Clear();
             _completedBattlefields.Clear();
 
-            // Unlock Mean Street by default
+            //Unlock Mean Street by default
             _unlockedBattlefields[BattlefieldType.MeanStreet] = true;
 
-            Engine.Diagnostics.DebugLogger.Log("INFO", "BattlefieldFlowManager: Reset all progress");
+            DLogger.Log(LogSubsystems.Gameplay, LogLevel.Info, "INFO", "BattlefieldFlowManager: Reset all progress");
         }
 
-        /// <summary>
-        /// Gets battlefield flow manager information as a string.
-        /// </summary>
+        ///<summary>
+        ///Gets battlefield flow manager information as a string.
+        ///</summary>
         public override string ToString()
         {
             return $"BattlefieldFlowManager: Selected={_selectedBattlefield?.GetDisplayName() ?? "None"}, " +

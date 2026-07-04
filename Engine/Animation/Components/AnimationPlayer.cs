@@ -1,12 +1,14 @@
 using System;
 using SASZombieAssaultTD.Engine.Animation.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Animation.Components
 {
-    /// <summary>
-    /// Plays an AnimationClip by advancing frames over time.
-    /// Rendering code is expected to query the CurrentFrameIndex.
-    /// </summary>
+    ///<summary>
+    ///Plays an AnimationClip by advancing frames over time.
+    ///Rendering code is expected to query the CurrentFrameIndex.
+    ///</summary>
     public sealed class AnimationPlayer
     {
         public AnimationClip? Clip { get; private set; }
@@ -14,10 +16,10 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
         public bool IsPlaying { get; private set; }
         private float _frameTime;
 
-        /// <summary>
-        /// Starts playing the specified animation clip.
-        /// </summary>
-        /// <param name="clip">The animation clip to play.</param>
+        ///<summary>
+        ///Starts playing the specified animation clip.
+        ///</summary>
+        ///<param name="clip">The animation clip to play.</param>
         public void Play(AnimationClip clip)
         {
             Clip = clip ?? throw new ArgumentNullException(nameof(clip));
@@ -25,19 +27,19 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             IsPlaying = true;
         }
 
-        /// <summary>
-        /// Stops the animation playback.
-        /// </summary>
+        ///<summary>
+        ///Stops the animation playback.
+        ///</summary>
         public void Stop()
         {
             Reset();
             IsPlaying = false;
         }
 
-        /// <summary>
-        /// Advances the animation by the specified delta time (in seconds).
-        /// </summary>
-        /// <param name="deltaSeconds">Time elapsed since the last update.</param>
+        ///<summary>
+        ///Advances the animation by the specified delta time (in seconds).
+        ///</summary>
+        ///<param name="deltaSeconds">Time elapsed since the last update.</param>
         public void Update(float deltaSeconds)
         {
             if (!IsPlaying || Clip is null || Clip.FrameCount == 0) return;
@@ -51,18 +53,18 @@ namespace SASZombieAssaultTD.Engine.Animation.Components
             }
         }
 
-        /// <summary>
-        /// Resets the animation player to its initial state.
-        /// </summary>
+        ///<summary>
+        ///Resets the animation player to its initial state.
+        ///</summary>
         private void Reset()
         {
             _frameTime = 0f;
             CurrentFrameIndex = 0;
         }
 
-        /// <summary>
-        /// Advances to the next frame, handling looping or stopping as needed.
-        /// </summary>
+        ///<summary>
+        ///Advances to the next frame, handling looping or stopping as needed.
+        ///</summary>
         private void AdvanceFrame()
         {
             if (Clip is null) return;

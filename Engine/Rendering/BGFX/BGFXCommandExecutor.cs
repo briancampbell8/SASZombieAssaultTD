@@ -1,8 +1,8 @@
 //
-// * File:    BGFXCommandExecutor.cs
-// * Path:    Engine/Rendering/BGFX/BGFXCommandExecutor.cs
-// * Purpose: Backend command execution - translates high-level commands to GPU operations.
-// //
+//* File:    BGFXCommandExecutor.cs
+//* Path:    Engine/Rendering/BGFX/BGFXCommandExecutor.cs
+//* Purpose: Backend command execution - translates high-level commands to GPU operations.
+////
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -13,9 +13,9 @@ using System.Runtime.InteropServices;
 
 namespace SASZombieAssaultTD.Engine.Rendering.BGFX
 {
-    // =======================================================================
-    // DIAGNOSTIC STUBS (FORCE COMPILE)
-    // =======================================================================
+    //=======================================================================
+    //DIAGNOSTIC STUBS (FORCE COMPILE)
+    //=======================================================================
 
     internal enum BackendOpType
     {
@@ -67,10 +67,10 @@ namespace SASZombieAssaultTD.Engine.Rendering.BGFX
         }
     }
 
-    // internal struct VertexBufferHandle { } Already defined in BGFXResourceCache.cs
-    // internal struct IndexBufferHandle { } Already defined in BGFXResourceCache.cs
-    // internal struct TextureHandle { } Already defined in BGFXResourceCache.cs
-    // internal struct ProgramHandle { } Already defined in BGFXResourceCache.cs
+    //internal struct VertexBufferHandle { } Already defined in BGFXResourceCache.cs
+    //internal struct IndexBufferHandle { } Already defined in BGFXResourceCache.cs
+    //internal struct TextureHandle { } Already defined in BGFXResourceCache.cs
+    //internal struct ProgramHandle { } Already defined in BGFXResourceCache.cs
 
     internal class BGFXState
     {
@@ -81,15 +81,15 @@ namespace SASZombieAssaultTD.Engine.Rendering.BGFX
     internal class BGFXCommandMap
     { }
 
-    // =======================================================================
-    // BGFX COMMAND EXECUTOR
-    // =======================================================================
+    //=======================================================================
+    //BGFX COMMAND EXECUTOR
+    //=======================================================================
 
     internal sealed class BGFXCommandExecutor
     {
-        /// <summary>
-        ///   private readonly BGFXDeviceCore _core;
-        /// </summary>
+        ///<summary>
+        ///  private readonly BGFXDeviceCore _core;
+        ///</summary>
         private readonly BGFXShaderManager _shaders;
 
         private readonly BGFXResourceCache _resources;
@@ -133,13 +133,13 @@ namespace SASZombieAssaultTD.Engine.Rendering.BGFX
         }
 
         public BGFXCommandExecutor(
-            ///   BGFXDeviceCore core, not used yet but will be needed for actual GPU operations
+            ///  BGFXDeviceCore core, not used yet but will be needed for actual GPU operations
             BGFXShaderManager shaders,
             BGFXResourceCache resources,
             BGFXActivationGuard guard,
             BGFXState state)
         {
-            ///   _core = core; not used yet but will be needed for actual GPU operations
+            ///  _core = core; not used yet but will be needed for actual GPU operations
             _shaders = shaders;
             _resources = resources;
             _guard = guard;

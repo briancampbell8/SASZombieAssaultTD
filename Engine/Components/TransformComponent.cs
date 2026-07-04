@@ -1,11 +1,13 @@
 using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.VectorMath;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Components
 {
-    /// <summary>
-    /// Represents the position of an entity.
-    /// </summary>
+    ///<summary>
+    ///Represents the position of an entity.
+    ///</summary>
     public class TransformComponent : BaseComponent
     {
         public TransformComponent()
@@ -20,19 +22,19 @@ namespace SASZombieAssaultTD.Engine.Components
         public float Y { get; set; }
         public float Z { get; set; }
 
-        /// <summary>
-        /// Gets whether this component has a valid value.
-        /// </summary>
+        ///<summary>
+        ///Gets whether this component has a valid value.
+        ///</summary>
         public bool HasValue => true;
 
-        /// <summary>
-        /// Gets the value of this component.
-        /// </summary>
+        ///<summary>
+        ///Gets the value of this component.
+        ///</summary>
         public TransformComponent Value => this;
 
-        /// <summary>
-        /// Gets or sets the position as a Vector3.
-        /// </summary>
+        ///<summary>
+        ///Gets or sets the position as a Vector3.
+        ///</summary>
         public Vector3 Position
         {
             get => new Vector3(X, Y, Z);

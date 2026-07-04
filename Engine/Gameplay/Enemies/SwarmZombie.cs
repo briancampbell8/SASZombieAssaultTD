@@ -14,84 +14,86 @@ Notes:   This is a placeholder implementation for swarm-type enemies.
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
 {
-    /// <summary>
-    /// Fast, weak enemy that appears in groups.
-    /// Represents swarm-type enemies with high numbers but low individual threat.
-    /// </summary>
+    ///<summary>
+    ///Fast, weak enemy that appears in groups.
+    ///Represents swarm-type enemies with high numbers but low individual threat.
+    ///</summary>
     public class SwarmZombie
     {
-        ///  Properties
+        /// Properties
         
-        /// <summary>Unique identifier for this enemy instance.</summary>
+        ///<summary>Unique identifier for this enemy instance.</summary>
         public string Id { get; private set; }
         
-        /// <summary>Type identifier for this enemy.</summary>
+        ///<summary>Type identifier for this enemy.</summary>
         public string EnemyType => "SwarmZombie";
         
-        /// <summary>Category of this enemy (swarm type).</summary>
+        ///<summary>Category of this enemy (swarm type).</summary>
         public string Category => "Swarm";
         
-        /// <summary>Display name for this enemy.</summary>
+        ///<summary>Display name for this enemy.</summary>
         public string DisplayName => "Swarm Zombie";
         
-        /// <summary>Base health value for this enemy type.</summary>
+        ///<summary>Base health value for this enemy type.</summary>
         public float BaseHealth => 50f;
         
-        /// <summary>Base movement speed multiplier.</summary>
+        ///<summary>Base movement speed multiplier.</summary>
         public float BaseSpeed => 1.2f;
         
-        /// <summary>Base damage value for this enemy type.</summary>
+        ///<summary>Base damage value for this enemy type.</summary>
         public float BaseDamage => 10f;
         
-        /// <summary>Recommended group size for this enemy type.</summary>
+        ///<summary>Recommended group size for this enemy type.</summary>
         public int RecommendedGroupSize => 8;
         
-        /// <summary>Threat level rating (1-10).</summary>
+        ///<summary>Threat level rating (1-10).</summary>
         public int ThreatLevel => 2;
         
-        /// <summary>Whether this enemy appears in groups.</summary>
+        ///<summary>Whether this enemy appears in groups.</summary>
         public bool AppearsInGroups => true;
         
-        /// <summary>Preferred spawn pattern for this enemy.</summary>
+        ///<summary>Preferred spawn pattern for this enemy.</summary>
         public string PreferredSpawnPattern => "Cluster";
         
-        /// <summary>Weakness type for this enemy.</summary>
+        ///<summary>Weakness type for this enemy.</summary>
         public string Weakness => "AreaDamage";
         
-        /// <summary>Resistance type for this enemy.</summary>
+        ///<summary>Resistance type for this enemy.</summary>
         public string Resistance => "SingleTarget";
         
-        /// 
+        ///
 
-        ///  Constructors
+        /// Constructors
         
-        /// <summary>
-        /// Creates a new swarm zombie instance.
-        /// </summary>
+        ///<summary>
+        ///Creates a new swarm zombie instance.
+        ///</summary>
         public SwarmZombie()
         {
             Id = GenerateId();
         }
         
-        /// <summary>
-        /// Creates a new swarm zombie instance with specified ID.
-        /// </summary>
-        /// <param name="id">Unique identifier.</param>
+        ///<summary>
+        ///Creates a new swarm zombie instance with specified ID.
+        ///</summary>
+        ///<param name="id">Unique identifier.</param>
         public SwarmZombie(string id)
         {
             Id = id ?? GenerateId();
         }
         
-        /// 
+        ///
 
-        ///  Enemy Behavior (Placeholder)
+        /// Enemy Behavior (Placeholder)
         
-        /// <summary>
-        /// Gets the behavior characteristics for this enemy type.
-        /// </summary>
-        /// <returns>Behavior characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the behavior characteristics for this enemy type.
+        ///</summary>
+        ///<returns>Behavior characteristics dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetBehaviorCharacteristics()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -104,10 +106,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             };
         }
         
-        /// <summary>
-        /// Gets the spawn requirements for this enemy type.
-        /// </summary>
-        /// <returns>Spawn requirements dictionary.</returns>
+        ///<summary>
+        ///Gets the spawn requirements for this enemy type.
+        ///</summary>
+        ///<returns>Spawn requirements dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetSpawnRequirements()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -120,10 +122,10 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             };
         }
         
-        /// <summary>
-        /// Gets the combat characteristics for this enemy type.
-        /// </summary>
-        /// <returns>Combat characteristics dictionary.</returns>
+        ///<summary>
+        ///Gets the combat characteristics for this enemy type.
+        ///</summary>
+        ///<returns>Combat characteristics dictionary.</returns>
         public virtual System.Collections.Generic.Dictionary<string, object> GetCombatCharacteristics()
         {
             return new System.Collections.Generic.Dictionary<string, object>
@@ -136,37 +138,37 @@ namespace SASZombieAssaultTD.Engine.Gameplay.Enemies
             };
         }
         
-        /// 
+        ///
 
-        ///  Utility Methods
+        /// Utility Methods
         
-        /// <summary>
-        /// Generates a unique ID for this enemy instance.
-        /// </summary>
-        /// <returns>Unique identifier string.</returns>
+        ///<summary>
+        ///Generates a unique ID for this enemy instance.
+        ///</summary>
+        ///<returns>Unique identifier string.</returns>
         private static string GenerateId()
         {
             return $"SwarmZombie_{Guid.NewGuid():N}";
         }
         
-        /// <summary>
-        /// Creates a copy of this enemy instance.
-        /// </summary>
-        /// <returns>New swarm zombie instance.</returns>
+        ///<summary>
+        ///Creates a copy of this enemy instance.
+        ///</summary>
+        ///<returns>New swarm zombie instance.</returns>
         public SwarmZombie Clone()
         {
             return new SwarmZombie();
         }
         
-        /// <summary>
-        /// Gets a summary of this enemy type.
-        /// </summary>
-        /// <returns>Summary string.</returns>
+        ///<summary>
+        ///Gets a summary of this enemy type.
+        ///</summary>
+        ///<returns>Summary string.</returns>
         public override string ToString()
         {
             return $"{DisplayName} (ID: {Id}, Threat: {ThreatLevel}, Group: {RecommendedGroupSize})";
         }
         
-        /// 
+        ///
     }
 }

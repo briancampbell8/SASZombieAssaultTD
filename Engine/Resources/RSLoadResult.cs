@@ -6,31 +6,33 @@ Purpose: Represents the result of an asset loading operation.
 Notes:   Immutable. Used by loaders, registries, and validation systems.
 */
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Assets
 {
-    /// <summary>
-    /// Represents the outcome of loading an asset.
-    /// </summary>
+    ///<summary>
+    ///Represents the outcome of loading an asset.
+    ///</summary>
     public sealed class AssetLoadResult
     {
-        /// <summary>
-        /// Whether the load operation succeeded.
-        /// </summary>
+        ///<summary>
+        ///Whether the load operation succeeded.
+        ///</summary>
         public bool Success { get; }
 
-        /// <summary>
-        /// The loaded asset instance, if successful.
-        /// </summary>
+        ///<summary>
+        ///The loaded asset instance, if successful.
+        ///</summary>
         public object? Instance { get; }
 
-        /// <summary>
-        /// Optional error message if loading failed.
-        /// </summary>
+        ///<summary>
+        ///Optional error message if loading failed.
+        ///</summary>
         public string? Error { get; }
 
-        /// <summary>
-        /// The key associated with the asset.
-        /// </summary>
+        ///<summary>
+        ///The key associated with the asset.
+        ///</summary>
         public AssetKey Key { get; }
 
         private AssetLoadResult(AssetKey key, bool success, object? instance, string? error)

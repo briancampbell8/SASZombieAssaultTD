@@ -1,11 +1,13 @@
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Projectiles
 {
-    /// <summary>
-    /// Damage element types used by projectiles.
-    /// Added to resolve CS0246 when referenced by ProjectileFactory.
-    /// </summary>
+    ///<summary>
+    ///Damage element types used by projectiles.
+    ///Added to resolve CS0246 when referenced by ProjectileFactory.
+    ///</summary>
     public enum ElementDamageType
     {
         Physical = 0,

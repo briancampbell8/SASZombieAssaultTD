@@ -8,22 +8,24 @@ using SASZombieAssaultTD.Engine.Waves;
 using EnemyType = SASZombieAssaultTD.Engine.Dictionary.EnemyType;
 using ZombieType = SASZombieAssaultTD.Engine.Dictionary.ZombieType;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Save.SAS
 {
-    /// <summary>
-    /// Enemy save data container for SAS TD.
-    /// Handles serialization and deserialization of enemy state.
-    /// </summary>
+    ///<summary>
+    ///Enemy save data container for SAS TD.
+    ///Handles serialization and deserialization of enemy state.
+    ///</summary>
     public class EnemySaveData
     {
-        // Basic enemy information
+        //Basic enemy information
         public int TotalSpawned { get; set; }
         public int TotalKilled { get; set; }
         public int TotalEscaped { get; set; }
         public int ActiveEnemies { get; set; }
         public DateTime LastUpdated { get; set; }
 
-        // Enemy collection data
+        //Enemy collection data
         public List<EnemySaveInfo> Enemies { get; set; }
         public Dictionary<uint, EnemyType> EnemyTypes { get; set; }
         public Dictionary<uint, Vector3> EnemyPositions { get; set; }
@@ -31,18 +33,18 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         public Dictionary<uint, Vector3> EnemyVelocities { get; set; }
         public Dictionary<uint, object> EnemyWaves { get; set; }
 
-        // Enemy statistics
+        //Enemy statistics
         public Dictionary<uint, EnemyStatistics> EnemyStats { get; set; }
         public Dictionary<uint, int> EnemyKills { get; set; }
         public Dictionary<uint, float> EnemyDamage { get; set; }
         public Dictionary<uint, float> EnemyLifetime { get; set; }
 
-        // Wave-specific data
+        //Wave-specific data
         public Dictionary<int, List<uint>> WaveEnemies { get; set; }
         public Dictionary<int, Dictionary<uint, EnemyType>> WaveEnemyTypes { get; set; }
         public Dictionary<int, Dictionary<uint, Vector3>> WaveSpawnPositions { get; set; }
 
-        // Custom enemy data
+        //Custom enemy data
         public Dictionary<uint, Dictionary<string, object>> CustomData { get; set; }
 
         public EnemySaveData()
@@ -63,10 +65,10 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             CustomData = new Dictionary<uint, Dictionary<string, object>>();
         }
 
-        /// <summary>
-        /// Validate enemy save data.
-        /// </summary>
-        /// <returns>True if data is valid.</returns>
+        ///<summary>
+        ///Validate enemy save data.
+        ///</summary>
+        ///<returns>True if data is valid.</returns>
         public bool Validate()
         {
             if (TotalSpawned < 0)
@@ -84,21 +86,21 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             if (LastUpdated == default)
                 return false;
 
-            // Validate enemy collection
+            //Validate enemy collection
             if (Enemies == null)
                 return false;
 
-            // Validate consistency
+            //Validate consistency
             if (TotalSpawned != TotalKilled + TotalEscaped + ActiveEnemies)
                 return false;
 
             return true;
         }
 
-        /// <summary>
-        /// Clone this enemy save data.
-        /// </summary>
-        /// <returns>Cloned data.</returns>
+        ///<summary>
+        ///Clone this enemy save data.
+        ///</summary>
+        ///<returns>Cloned data.</returns>
         public EnemySaveData Clone()
         {
             return new EnemySaveData
@@ -125,10 +127,10 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             };
         }
 
-        /// <summary>
-        /// Apply enemy save data to current game state.
-        /// </summary>
-        /// <returns>True if applied successfully.</returns>
+        ///<summary>
+        ///Apply enemy save data to current game state.
+        ///</summary>
+        ///<returns>True if applied successfully.</returns>
         public bool ApplyToGame()
         {
             try
@@ -137,10 +139,10 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 if (enemyManager == null)
                     return false;
 
-                // Clear existing enemies
+                //Clear existing enemies
                 enemyManager.ClearAllEnemies();
 
-                // Restore enemies
+                //Restore enemies
                 foreach (var enemyInfo in Enemies)
                 {
                     var enemy = CreateEnemyFromSaveInfo(enemyInfo);
@@ -150,7 +152,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     }
                 }
 
-                // Restore enemy states
+                //Restore enemy states
                 foreach (var kvp in EnemyHealth)
                 {
                     var enemyId = kvp.Key;
@@ -162,7 +164,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     }
                 }
 
-                // Restore enemy velocities
+                //Restore enemy velocities
                 foreach (var kvp in EnemyVelocities)
                 {
                     var enemyId = kvp.Key;
@@ -174,7 +176,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     }
                 }
 
-                // Restore enemy waves
+                //Restore enemy waves
                 foreach (var kvp in EnemyWaves)
                 {
                     var enemyId = kvp.Key;
@@ -186,7 +188,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     }
                 }
 
-                // Restore enemy statistics
+                //Restore enemy statistics
                 foreach (var kvp in EnemyStats)
                 {
                     var enemyId = kvp.Key;
@@ -197,7 +199,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                         enemy.TotalKills = stats.TotalKills;
                         enemy.DamageDealt = stats.DamageDealt;
 
-                        // Bypasses the read-only property restriction by using a custom setter method
+                        //Bypasses the read-only property restriction by using a custom setter method
                         enemy.SetCustomProperty("Lifetime", stats.Lifetime);
                     }
                 }
@@ -213,10 +215,10 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Capture current enemy state.
-        /// </summary>
-        /// <returns>Captured enemy save data.</returns>
+        ///<summary>
+        ///Capture current enemy state.
+        ///</summary>
+        ///<returns>Captured enemy save data.</returns>
         public static EnemySaveData CaptureCurrentState()
         {
             var enemyManager = EnemyManager.Instance;
@@ -232,7 +234,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 LastUpdated = DateTime.Now
             };
 
-            // Capture enemy information
+            //Capture enemy information
             var enemies = enemyManager.GetAllEnemies();
             foreach (var enemy in enemies)
             {
@@ -258,14 +260,14 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
 
                 saveData.Enemies.Add(enemyInfo);
 
-                // Add to collections
+                //Add to collections
                 saveData.EnemyTypes[enemy.Id] = (SASZombieAssaultTD.Engine.Dictionary.EnemyType)Enum.Parse<SASZombieAssaultTD.Engine.Dictionary.EnemyType>(enemy.Type.ToString());
                 saveData.EnemyPositions[enemy.Id] = enemy.Position;
                 saveData.EnemyHealth[enemy.Id] = enemy.Health;
                 saveData.EnemyVelocities[enemy.Id] = enemy.Velocity;
                 saveData.EnemyWaves[enemy.Id] = enemy.SourceWave;
 
-                // Add to wave collections
+                //Add to wave collections
                 var wave = enemy.SourceWave;
                 var waveId = wave is int w ? w : (int)wave;
                 if (!saveData.WaveEnemies.ContainsKey(waveId))
@@ -279,7 +281,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 saveData.WaveEnemyTypes[waveId][enemy.Id] = (SASZombieAssaultTD.Engine.Dictionary.EnemyType)Enum.Parse<SASZombieAssaultTD.Engine.Dictionary.EnemyType>(enemy.Type.ToString());
                 saveData.WaveSpawnPositions[waveId][enemy.Id] = enemy.Position;
 
-                // Capture statistics
+                //Capture statistics
                 saveData.EnemyStats[enemy.Id] = new EnemyStatistics
                 {
                     TotalKills = enemy.TotalKills,
@@ -298,27 +300,27 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return saveData;
         }
 
-        /// <summary>
-        /// Get enemy save information by ID.
-        /// </summary>
-        /// <param name="enemyId">Enemy ID.</param>
-        /// <returns>Enemy save info, or null if not found.</returns>
+        ///<summary>
+        ///Get enemy save information by ID.
+        ///</summary>
+        ///<param name="enemyId">Enemy ID.</param>
+        ///<returns>Enemy save info, or null if not found.</returns>
         public EnemySaveInfo GetEnemyInfo(string enemyId)
         {
             return Enemies.FirstOrDefault(e => e.Id == enemyId);
         }
 
-        /// <summary>
-        /// Get enemy type by ID.
-        /// </summary>
-        /// <param name="enemyId">Enemy ID.</param>
-        /// <returns>Enemy type, or default if not found.</returns>
+        ///<summary>
+        ///Get enemy type by ID.
+        ///</summary>
+        ///<param name="enemyId">Enemy ID.</param>
+        ///<returns>Enemy type, or default if not found.</returns>
         public EnemyType GetEnemyType(uint enemyId)
         {
             if (EnemyTypes.TryGetValue(enemyId, out var type))
                 return type;
 
-            // Fallback conversion from ZombieType to EnemyType
+            //Fallback conversion from ZombieType to EnemyType
             if (Enum.TryParse<ZombieType>(enemyId.ToString(), out var zombieType))
             {
                 return zombieType switch
@@ -338,72 +340,72 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             return EnemyType.BasicZombie;
         }
 
-        /// <summary>
-        /// Get enemy position by ID.
-        /// </summary>
-        /// <param name="enemyId">Enemy ID.</param>
-        /// <returns>Enemy position, or Vector3.Zero if not found.</returns>
+        ///<summary>
+        ///Get enemy position by ID.
+        ///</summary>
+        ///<param name="enemyId">Enemy ID.</param>
+        ///<returns>Enemy position, or Vector3.Zero if not found.</returns>
         public Vector3 GetEnemyPosition(uint enemyId)
         {
             return EnemyPositions.TryGetValue(enemyId, out var position) ? position : Vector3.Zero;
         }
 
-        /// <summary>
-        /// Get enemy health by ID.
-        /// </summary>
-        /// <param name="enemyId">Enemy ID.</param>
-        /// <returns>Enemy health, or 0 if not found.</returns>
+        ///<summary>
+        ///Get enemy health by ID.
+        ///</summary>
+        ///<param name="enemyId">Enemy ID.</param>
+        ///<returns>Enemy health, or 0 if not found.</returns>
         public float GetEnemyHealth(uint enemyId)
         {
             return EnemyHealth.TryGetValue(enemyId, out var health) ? health : 0f;
         }
 
-        /// <summary>
-        /// Get enemy velocity by ID.
-        /// </summary>
-        /// <param name="enemyId">Enemy ID.</param>
-        /// <returns>Enemy velocity, or Vector3.Zero if not found.</returns>
+        ///<summary>
+        ///Get enemy velocity by ID.
+        ///</summary>
+        ///<param name="enemyId">Enemy ID.</param>
+        ///<returns>Enemy velocity, or Vector3.Zero if not found.</returns>
         public Vector3 GetEnemyVelocity(uint enemyId)
         {
             return EnemyVelocities.TryGetValue(enemyId, out var velocity) ? velocity : Vector3.Zero;
         }
 
-        /// <summary>
-        /// Get enemy wave by ID.
-        /// </summary>
-        /// <param name="enemyId">Enemy ID.</param>
-        /// <returns>Enemy wave, or 0 if not found.</returns>
+        ///<summary>
+        ///Get enemy wave by ID.
+        ///</summary>
+        ///<param name="enemyId">Enemy ID.</param>
+        ///<returns>Enemy wave, or 0 if not found.</returns>
         public int GetEnemyWave(uint enemyId)
         {
             return EnemyWaves.TryGetValue(enemyId, out var wave) && wave is int w ? w : 0;
         }
 
-        /// <summary>
-        /// Get enemy statistics by ID.
-        /// </summary>
-        /// <param name="enemyId">Enemy ID.</param>
-        /// <returns>Enemy statistics, or null if not found.</returns>
+        ///<summary>
+        ///Get enemy statistics by ID.
+        ///</summary>
+        ///<param name="enemyId">Enemy ID.</param>
+        ///<returns>Enemy statistics, or null if not found.</returns>
         public EnemyStatistics GetEnemyStatistics(uint enemyId)
         {
             return EnemyStats.TryGetValue(enemyId, out var stats) ? stats : null;
         }
 
-        /// <summary>
-        /// Add or update enemy statistics.
-        /// </summary>
-        /// <param name="enemyId">Enemy ID.</param>
-        /// <param name="statistics">Enemy statistics.</param>
+        ///<summary>
+        ///Add or update enemy statistics.
+        ///</summary>
+        ///<param name="enemyId">Enemy ID.</param>
+        ///<param name="statistics">Enemy statistics.</param>
         public void SetEnemyStatistics(uint enemyId, EnemyStatistics statistics)
         {
             EnemyStats[enemyId] = statistics;
         }
 
-        /// <summary>
-        /// Add custom data for an enemy.
-        /// </summary>
-        /// <param name="enemyId">Enemy ID.</param>
-        /// <param name="key">Data key.</param>
-        /// <param name="value">Data value.</param>
+        ///<summary>
+        ///Add custom data for an enemy.
+        ///</summary>
+        ///<param name="enemyId">Enemy ID.</param>
+        ///<param name="key">Data key.</param>
+        ///<param name="value">Data value.</param>
         public void SetCustomData(uint enemyId, string key, object value)
         {
             if (!CustomData.ContainsKey(enemyId))
@@ -413,51 +415,51 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             CustomData[enemyId][key] = value;
         }
 
-        /// <summary>
-        /// Get custom data for an enemy.
-        /// </summary>
-        /// <param name="enemyId">Enemy ID.</param>
-        /// <param name="key">Data key.</param>
-        /// <returns>Data value, or null if not found.</returns>
+        ///<summary>
+        ///Get custom data for an enemy.
+        ///</summary>
+        ///<param name="enemyId">Enemy ID.</param>
+        ///<param name="key">Data key.</param>
+        ///<returns>Data value, or null if not found.</returns>
         public object GetCustomData(uint enemyId, string key)
         {
             return CustomData.TryGetValue(enemyId, out var data) && data.TryGetValue(key, out var value) ? value : null;
         }
 
-        /// <summary>
-        /// Get enemies for a specific wave.
-        /// </summary>
-        /// <param name="wave">Wave number.</param>
-        /// <returns>List of enemy IDs in the wave.</returns>
+        ///<summary>
+        ///Get enemies for a specific wave.
+        ///</summary>
+        ///<param name="wave">Wave number.</param>
+        ///<returns>List of enemy IDs in the wave.</returns>
         public List<string> GetWaveEnemies(int wave)
         {
             return WaveEnemies.TryGetValue(wave, out var enemies) ? enemies.Select(id => id.ToString()).ToList() : new List<string>();
         }
 
-        /// <summary>
-        /// Get enemy types for a specific wave.
-        /// </summary>
-        /// <param name="wave">Wave number.</param>
-        /// <returns>Dictionary of enemy types by ID.</returns>
+        ///<summary>
+        ///Get enemy types for a specific wave.
+        ///</summary>
+        ///<param name="wave">Wave number.</param>
+        ///<returns>Dictionary of enemy types by ID.</returns>
         public Dictionary<string, EnemyType> GetWaveEnemyTypes(int wave)
         {
             return WaveEnemyTypes.TryGetValue(wave, out var types) ? types.ToDictionary(innerKvp => innerKvp.Key.ToString(), innerKvp => innerKvp.Value) : new Dictionary<string, EnemyType>();
         }
 
-        /// <summary>
-        /// Get spawn positions for a specific wave.
-        /// </summary>
-        /// <param name="wave">Wave number.</param>
-        /// <returns>Dictionary of spawn positions by ID.</returns>
+        ///<summary>
+        ///Get spawn positions for a specific wave.
+        ///</summary>
+        ///<param name="wave">Wave number.</param>
+        ///<returns>Dictionary of spawn positions by ID.</returns>
         public Dictionary<string, Vector3> GetWaveSpawnPositions(int wave)
         {
             return WaveSpawnPositions.TryGetValue(wave, out var positions) ? positions.ToDictionary(innerKvp => innerKvp.Key.ToString(), innerKvp => innerKvp.Value) : new Dictionary<string, Vector3>();
         }
 
-        /// <summary>
-        /// Get save summary.
-        /// </summary>
-        /// <returns>Save summary string.</returns>
+        ///<summary>
+        ///Get save summary.
+        ///</summary>
+        ///<returns>Save summary string.</returns>
         public string GetSummary()
         {
             return $"Enemy Save Data:\n" +
@@ -472,11 +474,11 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                    $"Last Updated: {LastUpdated:yyyy-MM-dd HH:mm:ss}";
         }
 
-        /// <summary>
-        /// Get wave summary.
-        /// </summary>
-        /// <param name="wave">Wave number.</param>
-        /// <returns>Wave summary string.</returns>
+        ///<summary>
+        ///Get wave summary.
+        ///</summary>
+        ///<param name="wave">Wave number.</param>
+        ///<returns>Wave summary string.</returns>
         public string GetWaveSummary(int wave)
         {
             var enemies = GetWaveEnemies(wave);
@@ -489,16 +491,16 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                    $"Spawn Positions: {positions.Count}";
         }
 
-        ///  Private Methods
+        /// Private Methods
 
-        /// <summary>
-        /// Create an enemy from save information.
-        /// </summary>
+        ///<summary>
+        ///Create an enemy from save information.
+        ///</summary>
         private Enemy CreateEnemyFromSaveInfo(EnemySaveInfo enemyInfo)
         {
             try
             {
-                // Create basic enemy using saved id so Entity/Id are preserved
+                //Create basic enemy using saved id so Entity/Id are preserved
                 if (!uint.TryParse(enemyInfo.Id, out var parsedId))
                     return null;
 
@@ -516,7 +518,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                     enemy.IsActive = enemyInfo.IsActive;
                     enemy.SourceWave = enemyInfo.SourceWave;
                     enemy.SpawnTime = (float)(enemyInfo.SpawnTime - DateTime.Now).TotalSeconds;
-                    // enemy.DeathTime = enemyInfo.DeathTime.HasValue ? (float?)(enemyInfo.DeathTime.Value - DateTime.Now).TotalSeconds : null; // Read-only property
+                    //enemy.DeathTime = enemyInfo.DeathTime.HasValue ? (float?)(enemyInfo.DeathTime.Value - DateTime.Now).TotalSeconds : null; //Read-only property
                     enemy.PathProgress = enemyInfo.PathProgress;
                 }
 
@@ -529,12 +531,12 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
             }
         }
 
-        /// <summary>
-        /// Create an enemy by type.
-        /// </summary>
+        ///<summary>
+        ///Create an enemy by type.
+        ///</summary>
         private Enemy CreateEnemyByType(ZombieType enemyType)
         {
-            // Implementation would create appropriate enemy based on type
+            //Implementation would create appropriate enemy based on type
             switch (enemyType)
             {
                 case ZombieType.Swarm:
@@ -552,18 +554,18 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
                 case ZombieType.Devastator:
                     return new Enemy();
                 case ZombieType.RobotClown:
-                    return new Enemy(); // TODO: Implement RobotClownZombie
+                    return new Enemy(); //TODO: Implement RobotClownZombie
                 default:
                     return new Enemy();
             }
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// Individual enemy save information.
-    /// </summary>
+    ///<summary>
+    ///Individual enemy save information.
+    ///</summary>
     public class EnemySaveInfo
     {
         public string Id { get; set; }
@@ -592,9 +594,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         }
     }
 
-    /// <summary>
-    /// Enemy statistics for save data.
-    /// </summary>
+    ///<summary>
+    ///Enemy statistics for save data.
+    ///</summary>
     public class EnemyStatistics
     {
         public int TotalKills { get; set; }
@@ -618,9 +620,9 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         public DateTime CreatedTime { get; set; }
     }
 
-    /// <summary>
-    /// Enemy manager for handling enemy operations.
-    /// </summary>
+    ///<summary>
+    ///Enemy manager for handling enemy operations.
+    ///</summary>
     public class EnemyManager
     {
         private static EnemyManager _instance;

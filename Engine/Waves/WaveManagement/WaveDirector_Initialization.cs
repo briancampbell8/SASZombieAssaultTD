@@ -24,18 +24,20 @@
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
 {
     public partial class WaveDirector
     {
-        // ===============================================================================================
-        //  INITIALIZATION ENTRY POINT
-        // ===============================================================================================
+        //===============================================================================================
+        // INITIALIZATION ENTRY POINT
+        //===============================================================================================
 
-        /// <summary>
-        /// Internal implementation for Initialize().
-        /// Loads wave scripts and prepares the wave queue.
-        /// </summary>
+        ///<summary>
+        ///Internal implementation for Initialize().
+        ///Loads wave scripts and prepares the wave queue.
+        ///</summary>
         internal void Initialize_Internal()
         {
             if (_isInitialized)
@@ -58,14 +60,14 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        // ===============================================================================================
-        //  LOAD WAVE SCRIPTS
-        // ===============================================================================================
+        //===============================================================================================
+        // LOAD WAVE SCRIPTS
+        //===============================================================================================
 
-        /// <summary>
-        /// Loads all wave scripts using WaveLoader.
-        /// Falls back to default scripts if loading fails.
-        /// </summary>
+        ///<summary>
+        ///Loads all wave scripts using WaveLoader.
+        ///Falls back to default scripts if loading fails.
+        ///</summary>
         internal void LoadWaveScripts_Internal()
         {
             try
@@ -89,13 +91,13 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        // ===============================================================================================
-        //  INITIALIZE WAVE QUEUE
-        // ===============================================================================================
+        //===============================================================================================
+        // INITIALIZE WAVE QUEUE
+        //===============================================================================================
 
-        /// <summary>
-        /// Builds the wave queue in ascending wave order.
-        /// </summary>
+        ///<summary>
+        ///Builds the wave queue in ascending wave order.
+        ///</summary>
         internal void InitializeWaveQueue_Internal()
         {
             _upcomingWaves.Clear();
@@ -109,13 +111,13 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        // ===============================================================================================
-        //  DEFAULT WAVE SCRIPT GENERATION
-        // ===============================================================================================
+        //===============================================================================================
+        // DEFAULT WAVE SCRIPT GENERATION
+        //===============================================================================================
 
-        /// <summary>
-        /// Creates a full set of default wave scripts when loading fails.
-        /// </summary>
+        ///<summary>
+        ///Creates a full set of default wave scripts when loading fails.
+        ///</summary>
         internal void CreateDefaultWaveScripts_Internal()
         {
             System.Diagnostics.Debug.WriteLine("Creating default wave scripts");
@@ -131,9 +133,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             _totalWaves = _waveScripts.Count;
         }
 
-        /// <summary>
-        /// Creates a single default wave script with simple scaling.
-        /// </summary>
+        ///<summary>
+        ///Creates a single default wave script with simple scaling.
+        ///</summary>
         internal WaveScript CreateDefaultWaveScript_Internal(int waveNumber)
         {
             var waveScript = new WaveScript
@@ -144,7 +146,7 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
                     DifficultyMultiplier.Instance.GetMultiplier(DifficultyMode.Normal))
             };
 
-            // Basic enemy scaling: 5 + (2 × waveNumber)
+            //Basic enemy scaling: 5 + (2 × waveNumber)
             var enemyCount = 5 + (waveNumber * 2);
 
             var spawnGroup = new WaveSpawnGroup

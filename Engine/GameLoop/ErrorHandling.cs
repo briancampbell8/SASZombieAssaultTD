@@ -15,43 +15,42 @@ Notes:    Contains all error handling logic extracted from GameLoop.
          Ensures graceful error handling without polluting main loop.
          Provides comprehensive error recovery strategies.
 */
-
 using System;
-using SASZombieAssaultTD.Engine.Core;
-
+using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Systems
+//
 {
-    /// <summary>
-    /// Partial class containing error handling logic for GameLoop.
-    /// </summary>
+    ///<summary>
+    ///Partial class containing error handling logic for GameLoop.
+    ///</summary>
     public partial class GameLoop
     {
-        // Error tracking
+        //Error tracking
         private int _criticalErrorCount = 0;
         private int _totalErrorCount = 0;
         private DateTime _lastErrorTime = DateTime.MinValue;
         private readonly object _errorLock = new();
 
-        /// <summary>
-        /// Gets the number of critical errors encountered.
-        /// </summary>
+        ///<summary>
+        ///Gets the number of critical errors encountered.
+        ///</summary>
         public int CriticalErrorCount => _criticalErrorCount;
 
-        /// <summary>
-        /// Gets the total number of errors encountered.
-        /// </summary>
+        ///<summary>
+        ///Gets the total number of errors encountered.
+        ///</summary>
         public int TotalErrorCount => _totalErrorCount;
 
-        /// <summary>
-        /// Gets the time of the last error.
-        /// </summary>
+        ///<summary>
+        ///Gets the time of the last error.
+        ///</summary>
         public DateTime LastErrorTime => _lastErrorTime;
 
-        /// <summary>
-        /// Handles frame processing errors.
-        /// </summary>
-        /// <param name="ex">The exception that occurred.</param>
-        /// <param name="context">The context in which the error occurred.</param>
+        ///<summary>
+        ///Handles frame processing errors.
+        ///</summary>
+        ///<param name="ex">The exception that occurred.</param>
+        ///<param name="context">The context in which the error occurred.</param>
         private void HandleFrameError(Exception ex, string context)
         {
             lock (_errorLock)
@@ -59,13 +58,13 @@ namespace SASZombieAssaultTD.Engine.Systems
                 _totalErrorCount++;
                 _lastErrorTime = DateTime.Now;
 
-                // Record error in diagnostics
+                //Record error in diagnostics
                 _diagnostics.RecordFrameError(ex);
 
-                // Log error with context
+                //Log error with context
                 LogFrameError(ex, context);
 
-                // Determine error severity and response
+                //Determine error severity and response
                 var severity = DetermineErrorSeverity(ex);
 
                 switch (severity)
@@ -83,11 +82,11 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
         }
 
-        /// <summary>
-        /// Determines the severity of an error.
-        /// </summary>
-        /// <param name="ex">The exception to evaluate.</param>
-        /// <returns>The error severity.</returns>
+        ///<summary>
+        ///Determines the severity of an error.
+        ///</summary>
+        ///<param name="ex">The exception to evaluate.</param>
+        ///<returns>The error severity.</returns>
         private ErrorSeverity DetermineErrorSeverity(Exception ex)
         {
             return ex switch
@@ -96,7 +95,7 @@ namespace SASZombieAssaultTD.Engine.Systems
                 StackOverflowException => ErrorSeverity.Critical,
                 AccessViolationException => ErrorSeverity.Critical,
                 System.Security.SecurityException => ErrorSeverity.Critical,
-                // InvalidOperationException when ex.Message.Contains("critical") => ErrorSeverity.Critical, // Already handled below
+                //InvalidOperationException when ex.Message.Contains("critical") => ErrorSeverity.Critical, //Already handled below
 
                 ArgumentException => ErrorSeverity.Serious,
                 TimeoutException => ErrorSeverity.Serious,
@@ -105,178 +104,240 @@ namespace SASZombieAssaultTD.Engine.Systems
             };
         }
 
-        /// <summary>
-        /// Handles critical errors that require immediate shutdown.
-        /// </summary>
-        /// <param name="ex">The critical exception.</param>
-        /// <param name="context">The error context.</param>
+        ///<summary>
+        ///Handles critical errors that require immediate shutdown.
+        ///</summary>
+        ///<param name="ex">The critical exception.</param>
+        ///<param name="context">The error context.</param>
         private void HandleCriticalError(Exception ex, string context)
         {
             _criticalErrorCount++;
 
-            Engine.Diagnostics.DebugLogger.LogError($"CRITICAL ERROR in {context}: {ex.Message}");
-            Engine.Diagnostics.DebugLogger.LogError("Initiating emergency shutdown due to critical error");
+            DLogger.Log(LogSubsystems.Unknown, LogLevel.Critical, "CRITICAL", $"CRITICAL ERROR in {context}: {ex.Message}");
+            DLogger.Log(
+                LogSubsystems.Unknown,
+                LogLevel.Critical,
+                "Initiating emergency shutdown due to critical error");
 
-            // Perform emergency shutdown
+            //Perform emergency shutdown
             PerformEmergencyShutdown(ex);
         }
 
-        /// <summary>
-        /// Handles serious errors that may require special handling.
-        /// </summary>
-        /// <param name="ex">The serious exception.</param>
-        /// <param name="context">The error context.</param>
+        ///<summary>
+        ///Handles serious errors that may require special handling.
+        ///</summary>
+        ///<param name="ex">The serious exception.</param>
+        ///<param name="context">The error context.</param>
         private void HandleSeriousError(Exception ex, string context)
         {
-            Engine.Diagnostics.DebugLogger.LogError($"SERIOUS ERROR in {context}: {ex.Message}");
+            DLogger.Log(
+                LogSubsystems.Unknown,
+                LogLevel.Warning,
+                "SERIOUS",
+                $"SERIOUS ERROR in {context}: {ex.Message}");
 
-            // Attempt recovery
+            //Attempt recovery
             if (AttemptErrorRecovery(ex))
             {
-                Engine.Diagnostics.DebugLogger.LogInfo("Error recovery successful, continuing game loop");
+                DLogger.Log(
+                    LogSubsystems.Unknown,
+                    LogLevel.Error,
+                    "DEBUG",
+                    "Error recovery successful, continuing game loop");
             }
             else
             {
-                Engine.Diagnostics.DebugLogger.LogWarning("Error recovery failed, considering shutdown");
+                DLogger.Log(
+                    LogSubsystems.Unknown,
+                    LogLevel.Error,
+                    "DEBUG",
+                    "Error recovery failed, considering shutdown");
 
-                // Check if we've had too many serious errors
-                if (_totalErrorCount > 10) // Arbitrary threshold
+                //Check if we've had too many serious errors
+                if (_totalErrorCount > 10) //Arbitrary threshold
                 {
-                    Engine.Diagnostics.DebugLogger.LogError("Too many serious errors, shutting down");
+                    DLogger.Log(
+                        LogSubsystems.Unknown,
+                        LogLevel.Critical,
+                        "Too many serious errors, shutting down");
                     PerformGracefulShutdown();
                 }
             }
         }
 
-        /// <summary>
-        /// Handles minor errors that can be logged and ignored.
-        /// </summary>
-        /// <param name="ex">The minor exception.</param>
-        /// <param name="context">The error context.</param>
+        ///<summary>
+        ///Handles minor errors that can be logged and ignored.
+        ///</summary>
+        ///<param name="ex">The minor exception.</param>
+        ///<param name="context">The error context.</param>
         private void HandleMinorError(Exception ex, string context)
         {
-            Engine.Diagnostics.DebugLogger.LogWarning($"Minor error in {context}: {ex.Message}");
+            DLogger.Log(
+                LogSubsystems.Unknown,
+                LogLevel.Error,
+                "MINOR",
+                $"Minor error in {context}: {ex.Message}");
 
-            // Minor errors are just logged and ignored
-            // Game loop continues normally
+            //Minor errors are just logged and ignored
+            //Game loop continues normally
         }
 
-        /// <summary>
-        /// Attempts to recover from an error.
-        /// </summary>
-        /// <param name="ex">The exception that occurred.</param>
-        /// <returns>True if recovery was successful.</returns>
+        ///<summary>
+        ///Attempts to recover from an error.
+        ///</summary>
+        ///<param name="ex">The exception that occurred.</param>
+        ///<returns>True if recovery was successful.</returns>
         private bool AttemptErrorRecovery(Exception ex)
         {
             try
             {
-                Engine.Diagnostics.DebugLogger.LogInfo("Attempting error recovery...");
+                DLogger.Log(LogSubsystems.Unknown, LogLevel.Error, "Attempting error recovery...");
 
-                // Recovery strategies based on error type
+                //Recovery strategies based on error type
                 if (ex is InvalidOperationException)
                 {
-                    // Try to reset game state
+                    //Try to reset game state
                     return ResetGameState();
                 }
 
                 if (ex is TimeoutException)
                 {
-                    // Try to increase timeout tolerance
+                    //Try to increase timeout tolerance
                     return IncreaseTimeoutTolerance();
                 }
 
-                // Generic recovery attempt
+                //Generic recovery attempt
                 return PerformGenericRecovery();
             }
             catch (Exception recoveryEx)
             {
-                Engine.Diagnostics.DebugLogger.LogError($"Error recovery failed: {recoveryEx.Message}");
+                DLogger.Log(
+                    LogSubsystems.Unknown,
+                    LogLevel.Exception,
+                    "EXCEPTION",
+                    $"Error recovery failed: {recoveryEx.Message}");
                 return false;
             }
         }
 
-        /// <summary>
-        /// Resets the game state as a recovery strategy.
-        /// </summary>
-        /// <returns>True if reset was successful.</returns>
+        ///<summary>
+        ///Resets the game state as a recovery strategy.
+        ///</summary>
+        ///<returns>True if reset was successful.</returns>
         private bool ResetGameState()
         {
             try
             {
-                Engine.Diagnostics.DebugLogger.LogInfo("Resetting game state for error recovery");
+                DLogger.Log(
+                    LogSubsystems.Unknown,
+                    LogLevel.Error,
+                    "RESET",
+                    "Resetting game state for error recovery");
 
-                // This would implement game state reset logic
-                // For now, just return true as a placeholder
+                //This would implement game state reset logic
+                //For now, just return true as a placeholder
 
                 return true;
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogError($"Game state reset failed: {ex.Message}");
+                DLogger.Log(
+                    LogSubsystems.Unknown,
+                    LogLevel.Error,
+                    "RESET FAILED",
+                    $"Game state reset failed: {ex.Message}");
                 return false;
             }
         }
 
-        /// <summary>
-        /// Increases timeout tolerance as a recovery strategy.
-        /// </summary>
-        /// <returns>True if timeout tolerance was increased.</returns>
+        ///<summary>
+        ///Increases timeout tolerance as a recovery strategy.
+        ///</summary>
+        ///<returns>True if timeout tolerance was increased.</returns>
         private bool IncreaseTimeoutTolerance()
         {
             try
             {
-                Engine.Diagnostics.DebugLogger.LogInfo("Increasing timeout tolerance for error recovery");
+                DLogger.Log(
+                    LogSubsystems.Unknown,
+                    LogLevel.Debug,
+                    "INCREASE TIMEOUT TOLERANCE",
+                    "Increasing timeout tolerance for error recovery");
 
-                // This would implement timeout tolerance increase
-                // For now, just return true as a placeholder
+                //This would implement timeout tolerance increase
+                //For now, just return true as a placeholder
 
                 return true;
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogError($"Timeout tolerance increase failed: {ex.Message}");
+                DLogger.Log(
+                    LogSubsystems.Unknown,
+                    LogLevel.Error,
+                    "INCREASE TIMEOUT TOLERANCE FAILED",
+                    $"Timeout tolerance increase failed: {ex.Message}");
                 return false;
             }
         }
 
-        /// <summary>
-        /// Performs generic error recovery.
-        /// </summary>
-        /// <returns>True if generic recovery was successful.</returns>
+        ///<summary>
+        ///Performs generic error recovery.
+        ///</summary>
+        ///<returns>True if generic recovery was successful.</returns>
         private bool PerformGenericRecovery()
         {
             try
             {
-                Engine.Diagnostics.DebugLogger.LogInfo("Performing generic error recovery");
+                DLogger.Log(
+                    LogSubsystems.Unknown,
+                    LogLevel.Recovery,
+                    "GENERIC RECOVERY",
+                    "Performing generic error recovery");
 
-                // Generic recovery: pause briefly and continue
+                //Generic recovery: pause briefly and continue
                 System.Threading.Thread.Sleep(100);
 
                 return true;
             }
             catch (Exception ex)
             {
-                Engine.Diagnostics.DebugLogger.LogError($"Generic error recovery failed: {ex.Message}");
+                DLogger.Log(
+                    LogSubsystems.Unknown,
+                    LogLevel.Error,
+                    "GENERIC RECOVERY FAILED",
+                    $"Generic error recovery failed: {ex.Message}");
                 return false;
             }
         }
 
-        /// <summary>
-        /// Logs frame error with detailed context.
-        /// </summary>
-        /// <param name="ex">The exception.</param>
-        /// <param name="context">The error context.</param>
+        ///<summary>
+        ///Logs frame error with detailed context.
+        ///</summary>
+        ///<param name="ex">The exception.</param>
+        ///<param name="context">The error context.</param>
         private void LogFrameError(Exception ex, string context)
         {
-            Engine.Diagnostics.DebugLogger.LogError($"Frame error in {context} at frame {_frameCount}: {ex.Message}");
-            Engine.Diagnostics.DebugLogger.LogError($"Error details - Type: {ex.GetType().Name}, Stack: {ex.StackTrace}");
-            Engine.Diagnostics.DebugLogger.LogError($"Context - FPS: {FramesPerSecond:F2}, Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
+            DLogger.Log(
+                LogSubsystems.Unknown,
+                LogLevel.Error,
+                "FRAME ERROR",
+                $"Frame error in {context} at frame {_frameCount}: {ex.Message}");
+            DLogger.Log(
+                LogSubsystems.Unknown,
+                LogLevel.Error,
+                "FRAME ERROR",
+                $"Error details - Type: {ex.GetType().Name}, Stack: {ex.StackTrace}");
+            DLogger.Log(
+                LogSubsystems.Unknown,
+                LogLevel.Error,
+                "FRAME TIMING",
+                $"Context - FPS: {FramesPerSecond:F2}, Memory: {GC.GetTotalMemory(false) / 1024 / 1024}MB");
         }
 
-        /// <summary>
-        /// Gets error statistics.
-        /// </summary>
-        /// <returns>Error statistics.</returns>
+        ///<summary>
+        ///Gets error statistics.
+        ///</summary>
+        ///<returns>Error statistics.</returns>
         public ErrorStatistics GetErrorStatistics()
         {
             lock (_errorLock)
@@ -292,9 +353,9 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
         }
 
-        /// <summary>
-        /// Resets error statistics.
-        /// </summary>
+        ///<summary>
+        ///Resets error statistics.
+        ///</summary>
         public void ResetErrorStatistics()
         {
             lock (_errorLock)
@@ -306,24 +367,24 @@ namespace SASZombieAssaultTD.Engine.Systems
         }
     }
 
-    /// <summary>
-    /// Error severity enumeration.
-    /// </summary>
+    ///<summary>
+    ///Error severity enumeration.
+    ///</summary>
     public enum ErrorSeverity
     {
-        /// <summary>Minor error that can be ignored.</summary>
+        ///<summary>Minor error that can be ignored.</summary>
         Minor,
 
-        /// <summary>Serious error that requires attention.</summary>
+        ///<summary>Serious error that requires attention.</summary>
         Serious,
 
-        /// <summary>Critical error that requires immediate shutdown.</summary>
+        ///<summary>Critical error that requires immediate shutdown.</summary>
         Critical
     }
 
-    /// <summary>
-    /// Error statistics for monitoring.
-    /// </summary>
+    ///<summary>
+    ///Error statistics for monitoring.
+    ///</summary>
     public class ErrorStatistics
     {
         public int TotalErrors { get; set; }

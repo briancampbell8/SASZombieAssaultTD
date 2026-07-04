@@ -11,12 +11,14 @@ using Tower = SASZombieAssaultTD.Engine.Towers.Tower;
 using PlacementInfo = SASZombieAssaultTD.Engine.Towers.PlacementInfo;
 using SASZombieAssaultTD.Engine.Extensions;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI.HUD
 {
-    /// <summary>
-    /// HUD controller for SAS Zombie Assault TD.
-    /// Manages all HUD elements and player interface.
-    /// </summary>
+    ///<summary>
+    ///HUD controller for SAS Zombie Assault TD.
+    ///Manages all HUD elements and player interface.
+    ///</summary>
     public class HUDController
     {
         private readonly Dictionary<string, HUDComponent> _components;
@@ -25,7 +27,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         private bool _isVisible;
         private bool _isPaused;
 
-        // Core HUD components
+        //Core HUD components
         private CashDisplay _cashDisplay;
         private WaveDisplay _waveDisplay;
         private LivesDisplay _livesDisplay;
@@ -33,7 +35,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         private UpgradePanel _upgradePanel;
         private PlacementInfoDisplay _placementInfoDisplay;
 
-        // Events
+        //Events
         public event Action<int> OnCashChanged;
         public event Action<int> OnLivesChanged;
         public event Action<int> OnWaveStarted;
@@ -42,12 +44,12 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         public event Action OnPlacementStarted;
         public event Action OnPlacementCancelled;
 
-        // Properties
+        //Properties
         public bool IsVisible => _isVisible;
         public bool IsPaused => _isPaused;
         public bool IsInitialized => _isInitialized;
 
-        // Singleton
+        //Singleton
         private static HUDController _instance;
         public static HUDController Instance => _instance ??= new HUDController();
 
@@ -57,9 +59,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _notifications = new List<HUDNotification>();
         }
 
-        /// <summary>
-        /// Initialize the HUD controller.
-        /// </summary>
+        ///<summary>
+        ///Initialize the HUD controller.
+        ///</summary>
         public void Initialize()
         {
             if (_isInitialized) return;
@@ -68,13 +70,13 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
 
             try
             {
-                // Initialize core components
+                //Initialize core components
                 InitializeComponents();
 
-                // Subscribe to game events
+                //Subscribe to game events
                 SubscribeToEvents();
 
-                // Set initial visibility
+                //Set initial visibility
                 SetVisibility(true);
 
                 _isInitialized = true;
@@ -87,23 +89,23 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Update all HUD components.
-        /// </summary>
-        /// <param name="deltaTime">Time since last frame.</param>
+        ///<summary>
+        ///Update all HUD components.
+        ///</summary>
+        ///<param name="deltaTime">Time since last frame.</param>
         public void Update(float deltaTime)
         {
             if (!_isInitialized || !_isVisible || _isPaused) return;
 
             try
             {
-                // Update all components
+                //Update all components
                 foreach (var component in _components.Values)
                 {
                     component.Update(deltaTime);
                 }
 
-                // Update notifications
+                //Update notifications
                 UpdateNotifications(deltaTime);
             }
             catch (Exception ex)
@@ -112,23 +114,23 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Render all HUD components.
-        /// </summary>
+        ///<summary>
+        ///Render all HUD components.
+        ///</summary>
         public void Render()
         {
             if (!_isInitialized || !_isVisible) return;
 
             try
             {
-                // Render all components
+                //Render all components
                 foreach (var component in _components.Values)
                 {
                     if (component.IsVisible)
                         component.Render();
                 }
 
-                // Render notifications
+                //Render notifications
                 RenderNotifications();
             }
             catch (Exception ex)
@@ -137,10 +139,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Set HUD visibility.
-        /// </summary>
-        /// <param name="visible">Whether HUD should be visible.</param>
+        ///<summary>
+        ///Set HUD visibility.
+        ///</summary>
+        ///<param name="visible">Whether HUD should be visible.</param>
         public void SetVisibility(bool visible)
         {
             _isVisible = visible;
@@ -151,10 +153,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Set HUD pause state.
-        /// </summary>
-        /// <param name="paused">Whether HUD should be paused.</param>
+        ///<summary>
+        ///Set HUD pause state.
+        ///</summary>
+        ///<param name="paused">Whether HUD should be paused.</param>
         public void SetPaused(bool paused)
         {
             _isPaused = paused;
@@ -165,18 +167,18 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <param name="name">Name of the component.</param>
-        /// <returns>HUD component, or null if not found.</returns>
+        ///<param name="name">Name of the component.</param>
+        ///<returns>HUD component, or null if not found.</returns>
         public HUDComponent GetComponent(string name)
         {
             return _components.TryGetValue(name, out var component) ? component : null;
         }
 
-        /// <summary>
-        /// Add a custom HUD component.
-        /// </summary>
-        /// <param name="name">Name of the component.</param>
-        /// <param name="component">Component to add.</param>
+        ///<summary>
+        ///Add a custom HUD component.
+        ///</summary>
+        ///<param name="name">Name of the component.</param>
+        ///<param name="component">Component to add.</param>
         public void AddComponent(string name, HUDComponent component)
         {
             if (_components.ContainsKey(name))
@@ -190,11 +192,11 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             System.Diagnostics.Debug.WriteLine($"Added HUD component: {name}");
         }
 
-        /// <summary>
-        /// Remove a HUD component.
-        /// </summary>
-        /// <param name="name">Name of the component to remove.</param>
-        /// <returns>True if component was removed.</returns>
+        ///<summary>
+        ///Remove a HUD component.
+        ///</summary>
+        ///<param name="name">Name of the component to remove.</param>
+        ///<returns>True if component was removed.</returns>
         public bool RemoveComponent(string name)
         {
             if (_components.TryGetValue(name, out var component))
@@ -208,109 +210,109 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             return false;
         }
 
-        /// <summary>
-        /// Show a notification.
-        /// </summary>
-        /// <param name="notification">Notification to show.</param>
+        ///<summary>
+        ///Show a notification.
+        ///</summary>
+        ///<param name="notification">Notification to show.</param>
         public void ShowNotification(HUDNotification notification)
         {
             if (notification == null) return;
 
             _notifications.Add(notification);
 
-            // Limit notifications to prevent overflow
+            //Limit notifications to prevent overflow
             if (_notifications.Count > 5)
             {
                 _notifications.RemoveAt(0);
             }
 
-            // Play notification sound
+            //Play notification sound
             SASZombieAssaultTD.Engine.Audio.AudioSystem.PlaySound("notification");
         }
 
-        /// <summary>
-        /// Show cash display.
-        /// </summary>
-        /// <param name="amount">Cash amount to display.</param>
+        ///<summary>
+        ///Show cash display.
+        ///</summary>
+        ///<param name="amount">Cash amount to display.</param>
         public void ShowCashDisplay(int amount)
         {
             _cashDisplay?.SetAmount(amount);
             _cashDisplay?.SetVisibility(true);
         }
 
-        /// <summary>
-        /// Show wave display.
-        /// </summary>
-        /// <param name="waveNumber">Current wave number.</param>
-        /// <param name="totalWaves">Total number of waves.</param>
-        /// <param name="progress">Wave progress (0-1).</param>
+        ///<summary>
+        ///Show wave display.
+        ///</summary>
+        ///<param name="waveNumber">Current wave number.</param>
+        ///<param name="totalWaves">Total number of waves.</param>
+        ///<param name="progress">Wave progress (0-1).</param>
         public void ShowWaveDisplay(int waveNumber, int totalWaves, float progress)
         {
             _waveDisplay?.SetWaveInfo(waveNumber, totalWaves, progress);
             _waveDisplay?.SetVisibility(true);
         }
 
-        /// <summary>
-        /// Show lives display.
-        /// </summary>
-        /// <param name="lives">Current lives.</param>
-        /// <param name="maxLives">Maximum lives.</param>
+        ///<summary>
+        ///Show lives display.
+        ///</summary>
+        ///<param name="lives">Current lives.</param>
+        ///<param name="maxLives">Maximum lives.</param>
         public void ShowLivesDisplay(int lives, int maxLives)
         {
             _livesDisplay?.SetLives(lives, maxLives);
             _livesDisplay?.SetVisibility(true);
         }
 
-        /// <summary>
-        /// Show tower info panel.
-        /// </summary>
-        /// <param name="tower">Tower to show info for.</param>
+        ///<summary>
+        ///Show tower info panel.
+        ///</summary>
+        ///<param name="tower">Tower to show info for.</param>
         public void ShowTowerInfoPanel(Tower tower)
         {
             _towerInfoPanel?.SetTower(tower);
             _towerInfoPanel?.SetVisibility(true);
         }
 
-        /// <summary>
-        /// Show upgrade panel.
-        /// </summary>
-        /// <param name="tower">Tower to show upgrades for.</param>
+        ///<summary>
+        ///Show upgrade panel.
+        ///</summary>
+        ///<param name="tower">Tower to show upgrades for.</param>
         public void ShowUpgradePanel(Tower tower)
         {
             _upgradePanel?.SetTower(tower);
             _upgradePanel?.SetVisibility(true);
         }
 
-        /// <summary>
-        /// Show placement info display.
-        /// </summary>
-        /// <param name="info">Placement information.</param>
+        ///<summary>
+        ///Show placement info display.
+        ///</summary>
+        ///<param name="info">Placement information.</param>
         public void ShowPlacementInfo(PlacementInfo info)
         {
             _placementInfoDisplay?.SetPlacementInfo(info);
             _placementInfoDisplay?.SetVisibility(true);
         }
 
-        /// <summary>
-        /// Update placement info display.
-        /// </summary>
-        /// <param name="info">Updated placement information.</param>
+        ///<summary>
+        ///Update placement info display.
+        ///</summary>
+        ///<param name="info">Updated placement information.</param>
         public void UpdatePlacementInfo(PlacementInfo info)
         {
             _placementInfoDisplay?.SetPlacementInfo(info);
         }
 
-        /// <summary>
-        /// Hide placement info display.
-        /// </summary>
+        ///<summary>
+        ///Hide placement info display.
+        ///</summary>
         public void HidePlacementInfo()
         {
             _placementInfoDisplay?.SetVisibility(false);
         }
 
-        /// <summary>
-        /// Show minimap.
-        /// </summary>
+        ///<summary>
+        ///Show minimap.
+        ///</summary>
         public void UpdateGameStates()
         {
             try
@@ -333,10 +335,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Show wave notification.
-        /// </summary>
-        /// <param name="notification">Wave notification to show.</param>
+        ///<summary>
+        ///Show wave notification.
+        ///</summary>
+        ///<param name="notification">Wave notification to show.</param>
         public void ShowWaveNotification(WaveNotification notification)
         {
             var hudNotification = new HUDNotification
@@ -351,10 +353,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             ShowNotification(hudNotification);
         }
 
-        /// <summary>
-        /// Show error notification.
-        /// </summary>
-        /// <param name="message">Error message.</param>
+        ///<summary>
+        ///Show error notification.
+        ///</summary>
+        ///<param name="message">Error message.</param>
         public void ShowError(string message)
         {
             var notification = new HUDNotification
@@ -369,10 +371,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             ShowNotification(notification);
         }
 
-        /// <summary>
-        /// Show success notification.
-        /// </summary>
-        /// <param name="message">Success message.</param>
+        ///<summary>
+        ///Show success notification.
+        ///</summary>
+        ///<param name="message">Success message.</param>
         public void ShowSuccess(string message)
         {
             var notification = new HUDNotification
@@ -387,10 +389,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             ShowNotification(notification);
         }
 
-        /// <summary>
-        /// Show warning notification.
-        /// </summary>
-        /// <param name="message">Warning message.</param>
+        ///<summary>
+        ///Show warning notification.
+        ///</summary>
+        ///<param name="message">Warning message.</param>
         public void ShowWarning(string message)
         {
             var notification = new HUDNotification
@@ -405,10 +407,10 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             ShowNotification(notification);
         }
 
-        /// <summary>
-        /// Show info notification.
-        /// </summary>
-        /// <param name="message">Info message.</param>
+        ///<summary>
+        ///Show info notification.
+        ///</summary>
+        ///<param name="message">Info message.</param>
         public void ShowInfo(string message)
         {
             var notification = new HUDNotification
@@ -423,13 +425,13 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             ShowNotification(notification);
         }
 
-        /// <summary>
-        /// Show message dialog.
-        /// </summary>
-        /// <param name="title">Dialog title.</param>
-        /// <param name="message">Dialog message.</param>
-        /// <param name="onConfirm">Action when confirmed.</param>
-        /// <param name="onCancel">Action when cancelled.</param>
+        ///<summary>
+        ///Show message dialog.
+        ///</summary>
+        ///<param name="title">Dialog title.</param>
+        ///<param name="message">Dialog message.</param>
+        ///<param name="onConfirm">Action when confirmed.</param>
+        ///<param name="onCancel">Action when cancelled.</param>
         public void ShowMessageDialog(string title, string message, Action onConfirm, Action onCancel = null)
         {
             var dialog = new MessageDialog
@@ -442,17 +444,17 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
                 OnCancel = onCancel
             };
 
-            // Show dialog implementation would go here
+            //Show dialog implementation would go here
             System.Diagnostics.Debug.WriteLine($"Showing message dialog: {title} - {message}");
         }
 
-        /// <summary>
-        /// Show confirmation dialog.
-        /// </summary>
-        /// <param name="title">Dialog title.</param>
-        /// <param name="message">Dialog message.</param>
-        /// <param name="onConfirm">Action when confirmed.</param>
-        /// <param name="onCancel">Action when cancelled.</param>
+        ///<summary>
+        ///Show confirmation dialog.
+        ///</summary>
+        ///<param name="title">Dialog title.</param>
+        ///<param name="message">Dialog message.</param>
+        ///<param name="onConfirm">Action when confirmed.</param>
+        ///<param name="onCancel">Action when cancelled.</param>
         public void ShowConfirmationDialog(string title, string message, Action onConfirm, Action onCancel = null)
         {
             var dialog = new MessageDialog
@@ -465,14 +467,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
                 OnCancel = onCancel
             };
 
-            // Show dialog implementation would go here
+            //Show dialog implementation would go here
             System.Diagnostics.Debug.WriteLine($"Showing confirmation dialog: {title} - {message}");
         }
 
-        /// <summary>
-        /// Get HUD statistics.
-        /// </summary>
-        /// <returns>HUD statistics.</returns>
+        ///<summary>
+        ///Get HUD statistics.
+        ///</summary>
+        ///<returns>HUD statistics.</returns>
         public HUDStatistics GetStatistics()
         {
             return new HUDStatistics
@@ -486,14 +488,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             };
         }
 
-        /// <summary>
-        /// Cleanup all HUD components.
-        /// </summary>
+        ///<summary>
+        ///Cleanup all HUD components.
+        ///</summary>
         public void Cleanup()
         {
             System.Diagnostics.Debug.WriteLine("Cleaning up HUD Controller");
 
-            // Cleanup all components
+            //Cleanup all components
             foreach (var component in _components.Values)
             {
                 component.Cleanup();
@@ -507,14 +509,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _isPaused = false;
         }
 
-        ///  Private Methods
+        /// Private Methods
 
-        /// <summary>
-        /// Initialize all HUD components.
-        /// </summary>
+        ///<summary>
+        ///Initialize all HUD components.
+        ///</summary>
         private void InitializeComponents()
         {
-            // Create core HUD components
+            //Create core HUD components
             _cashDisplay = new CashDisplay();
             _waveDisplay = new WaveDisplay();
             _livesDisplay = new LivesDisplay();
@@ -522,7 +524,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _upgradePanel = new UpgradePanel();
             _placementInfoDisplay = new PlacementInfoDisplay(new Vector3(0f, 0f, 0f), new Vector3(100f, 50f, 0f));
 
-            // Add components to dictionary
+            //Add components to dictionary
             AddComponent("CashDisplay", _cashDisplay);
             AddComponent("WaveDisplay", _waveDisplay);
             AddComponent("LivesDisplay", _livesDisplay);
@@ -533,53 +535,53 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             System.Diagnostics.Debug.WriteLine($"Initialized {_components.Count} HUD components");
         }
 
-        /// <summary>
-        /// Subscribe to game events.
-        /// </summary>
+        ///<summary>
+        ///Subscribe to game events.
+        ///</summary>
         private void SubscribeToEvents()
         {
-            // Wave events
+            //Wave events
             var waveDirector = WaveDirector.Instance;
             if (waveDirector != null)
             {
                 waveDirector.OnWaveStarted += (wave) => ShowWaveDisplay(wave, waveDirector.TotalWaves, 0f);
                 waveDirector.OnWaveCompleted += (wave) => ShowSuccess($"Wave {wave} completed!");
-                // TODO: OnWaveProgress is a method group, not an event
-                // waveDirector.OnWaveProgress += (progress) => UpdateWaveProgress(progress);
+                //TODO: OnWaveProgress is a method group, not an event
+                //waveDirector.OnWaveProgress += (progress) => UpdateWaveProgress(progress);
             }
 
-            // Player lives events
+            //Player lives events
             var playerLives = ModernPlayerStateSystem.Instance;
             if (playerLives != null)
             {
                 playerLives.OnLivesChanged += (lives, maxLives) => ShowLivesDisplay(lives, maxLives);
             }
 
-            // Tower events
-            // TODO: Fix TowerRegistry event subscriptions
-            // TowerRegistry.Instance.OnTowerSelected += (tower) => ShowTowerInfoPanel(tower);
-            // TowerRegistry.Instance.OnTowerDeselected += () => HideTowerInfoPanel();
+            //Tower events
+            //TODO: Fix TowerRegistry event subscriptions
+            //TowerRegistry.Instance.OnTowerSelected += (tower) => ShowTowerInfoPanel(tower);
+            //TowerRegistry.Instance.OnTowerDeselected += () => HideTowerInfoPanel();
         }
 
-        /// <summary>
-        /// Update wave progress display.
-        /// </summary>
+        ///<summary>
+        ///Update wave progress display.
+        ///</summary>
         private void UpdateWaveProgress(float progress)
         {
             _waveDisplay?.SetProgress(progress);
         }
 
-        /// <summary>
-        /// Hide tower info panel.
-        /// </summary>
+        ///<summary>
+        ///Hide tower info panel.
+        ///</summary>
         private void HideTowerInfoPanel()
         {
             _towerInfoPanel?.SetVisibility(false);
         }
 
-        /// <summary>
-        /// Update notifications.
-        /// </summary>
+        ///<summary>
+        ///Update notifications.
+        ///</summary>
         private void UpdateNotifications(float deltaTime)
         {
             for (int i = _notifications.Count - 1; i >= 0; i--)
@@ -594,12 +596,12 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Render notifications.
-        /// </summary>
+        ///<summary>
+        ///Render notifications.
+        ///</summary>
         private void RenderNotifications()
         {
-            var yPosition = 100f; // Start from top
+            var yPosition = 100f; //Start from top
 
             foreach (var notification in _notifications)
             {
@@ -608,9 +610,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        /// <summary>
-        /// Get count of visible components.
-        /// </summary>
+        ///<summary>
+        ///Get count of visible components.
+        ///</summary>
         private int GetVisibleComponentCount()
         {
             var count = 0;
@@ -622,9 +624,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             return count;
         }
 
-        /// <summary>
-        /// Get component states.
-        /// </summary>
+        ///<summary>
+        ///Get component states.
+        ///</summary>
         private Dictionary<string, bool> GetComponentStates()
         {
             var states = new Dictionary<string, bool>();
@@ -635,12 +637,12 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             return states;
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// HUD statistics container.
-    /// </summary>
+    ///<summary>
+    ///HUD statistics container.
+    ///</summary>
     public class HUDStatistics
     {
         public int VisibleComponents { get; set; }
@@ -660,9 +662,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         }
     }
 
-    /// <summary>
-    /// HUD notification for displaying messages to the player.
-    /// </summary>
+    ///<summary>
+    ///HUD notification for displaying messages to the player.
+    ///</summary>
     public class HUDNotification
     {
         public string Title { get; set; }
@@ -688,7 +690,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
 
         public void Render(float x, float y)
         {
-            // Render notification background
+            //Render notification background
             var backgroundColor = Type switch
             {
                 NotificationType.Error => new Color(200, 50, 50, 200),
@@ -701,7 +703,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
 
             RenderSystem.DrawRectangle(x, y, 300f, Height, backgroundColor);
 
-            // Render icon
+            //Render icon
             if (!string.IsNullOrEmpty(Icon))
             {
                 var iconSprite = SpriteCache.GetSprite(Icon);
@@ -711,7 +713,7 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
                 }
             }
 
-            // Render text
+            //Render text
             var font = FontCache.GetFont("medium");
             var titleColor = Type switch
             {
@@ -723,21 +725,21 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
                 _ => System.Drawing.Color.White
             };
 
-            // TODO: Implement rendering system
-            // RenderSystem.DrawString(Title, x + 50f, y + 15f, titleColor, font);
+            //TODO: Implement rendering system
+            //RenderSystem.DrawString(Title, x + 50f, y + 15f, titleColor, font);
 
             if (!string.IsNullOrEmpty(Message))
             {
                 var messageColor = System.Drawing.Color.White;
-                // TODO: Implement rendering system
-                // RenderSystem.DrawString(Message, x + 50f, y + 35f, messageColor, font);
+                //TODO: Implement rendering system
+                //RenderSystem.DrawString(Message, x + 50f, y + 35f, messageColor, font);
             }
         }
     }
 
-    /// <summary>
-    /// Notification types.
-    /// </summary>
+    ///<summary>
+    ///Notification types.
+    ///</summary>
     public enum NotificationType
     {
         Info,
@@ -747,9 +749,9 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
         Wave
     }
 
-    /// <summary>
-    /// Message dialog for showing dialogs to the player.
-    /// </summary>
+    ///<summary>
+    ///Message dialog for showing dialogs to the player.
+    ///</summary>
     public class MessageDialog
     {
         public string Title { get; set; }

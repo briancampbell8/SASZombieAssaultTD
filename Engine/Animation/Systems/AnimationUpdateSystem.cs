@@ -10,19 +10,21 @@ using SASZombieAssaultTD.Engine.Animation.Components;
 using SASZombieAssaultTD.Engine.Animation.Core;
 using SASZombieAssaultTD.Engine.Animation.Events;
 using SASZombieAssaultTD.Engine.Animation.Systems;
-using SASZombieAssaultTD.Engine.Diagnostics;
+//
 using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Animation.Systems
 {
-    /// <summary>
-    /// System responsible for updating animation states on entities.
-    /// Processes animation time progression and state machine updates.
-    /// </summary>
+    ///<summary>
+    ///System responsible for updating animation states on entities.
+    ///Processes animation time progression and state machine updates.
+    ///</summary>
     public class AnimationUpdateSystem : AnimationUpdateSystemBase
     {
         private readonly ECSWorld _world;
@@ -30,19 +32,19 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
         private object TheContainingType;
         private object TheContainingMember;
 
-        /// <summary>
-        /// Initializes the animation update system.
-        /// </summary>
-        /// <param name="world">The ECS world to operate on.</param>
+        ///<summary>
+        ///Initializes the animation update system.
+        ///</summary>
+        ///<param name="world">The ECS world to operate on.</param>
         public AnimationUpdateSystem(ECSWorld world)
         {
             _world = world ?? throw new ArgumentNullException(nameof(world));
         }
 
-        /// <summary>
-        /// Updates all animation controllers in the world.
-        /// </summary>
-        /// <param name="deltaTime">Time elapsed since last update.</param>
+        ///<summary>
+        ///Updates all animation controllers in the world.
+        ///</summary>
+        ///<param name="deltaTime">Time elapsed since last update.</param>
         public void Update(float deltaTime)
         {
             var scaledDelta = deltaTime * _timeScale;
@@ -61,28 +63,28 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
             }
         }
 
-        /// <summary>
-        /// Updates animation controller for a specific entity.
-        /// </summary>
-        /// <param name="entity">The entity to update.</param>
-        /// <param name="deltaTime">Time elapsed since last update.</param>
+        ///<summary>
+        ///Updates animation controller for a specific entity.
+        ///</summary>
+        ///<param name="entity">The entity to update.</param>
+        ///<param name="deltaTime">Time elapsed since last update.</param>
         private void UpdateAnimationController(Entity entity, float deltaTime)
         {
             var controller = entity.GetComponent<AnimationControllerComponent>();
             if (controller == null || !controller.IsActive)
                 return;
 
-            // Update animation playback time
+            //Update animation playback time
             controller.UpdatePlaybackTime(deltaTime);
 
-            // Update state machine if present
+            //Update state machine if present
             var stateMachine = entity.GetComponent<AnimationStateMachineComponent>();
             if (stateMachine != null && stateMachine.IsRunning)
             {
                 stateMachine.Update(deltaTime);
             }
 
-            // Process animation events
+            //Process animation events
             ProcessAnimationEvents(entity, controller, GetOnAnimationEventFired());
         }
 
@@ -93,16 +95,16 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
             throw new NotImplementedException();
         }
 
-        //   private Action<AnimationControllerComponent, AnimationEvent> GetOnAnimationEventFired()
-        //   {
-        //       return OnAnimationEventFired;
-        //   }
+        //  private Action<AnimationControllerComponent, AnimationEvent> GetOnAnimationEventFired()
+        //  {
+        //      return OnAnimationEventFired;
+        //  }
 
-        /// <summary>
-        /// Processes animation events for an entity.
-        /// </summary>
-        /// <param name="entity">The entity to process events for.</param>
-        /// <param name="controller">The animation controller.</param>
+        ///<summary>
+        ///Processes animation events for an entity.
+        ///</summary>
+        ///<param name="entity">The entity to process events for.</param>
+        ///<param name="controller">The animation controller.</param>
         private void ProcessAnimationEvents(Entity entity, AnimationControllerComponent controller, Action<AnimationControllerComponent, AnimationEvent> onAnimationEventFired)
         {
             var events = controller.GetPendingEvents();
@@ -113,7 +115,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
             {
                 try
                 {
-                    // Fire animation event using appropriate overload based on event type
+                    //Fire animation event using appropriate overload based on event type
                     if (animationEvent is AnimationStateChangeEvent stateChange)
                     {
                         OnAnimationStateChangeEvent?.Invoke(controller, stateChange);
@@ -150,65 +152,65 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
         }
 
         
-        /// <summary>
-        /// Event fired when an animation state change occurs.
-        /// Adapts AnimationStateChangeEvent calls to the canonical event system.
-        /// </summary>
-        /// <param name="controller">The animation controller.</param>
-        /// <param name="stateChange">The state change event.</param>
+        ///<summary>
+        ///Event fired when an animation state change occurs.
+        ///Adapts AnimationStateChangeEvent calls to the canonical event system.
+        ///</summary>
+        ///<param name="controller">The animation controller.</param>
+        ///<param name="stateChange">The state change event.</param>
         public event Action<AnimationControllerComponent, AnimationStateChangeEvent> OnAnimationStateChangeEvent;
 
-        /// <summary>
-        /// Event fired when an animation clip event occurs.
-        /// Adapts AnimationClipEvent calls to the canonical event system.
-        /// </summary>
-        /// <param name="controller">The animation controller.</param>
-        /// <param name="clipEvent">The clip event.</param>
+        ///<summary>
+        ///Event fired when an animation clip event occurs.
+        ///Adapts AnimationClipEvent calls to the canonical event system.
+        ///</summary>
+        ///<param name="controller">The animation controller.</param>
+        ///<param name="clipEvent">The clip event.</param>
         public event Action<AnimationControllerComponent, AnimationClipEvent> OnAnimationClipEvent;
 
-        /// <summary>
-        /// Event fired when an animation loop event occurs.
-        /// Adapts AnimationLoopEvent calls to the canonical event system.
-        /// </summary>
-        /// <param name="controller">The animation controller.</param>
-        /// <param name="loopEvent">The loop event.</param>
+        ///<summary>
+        ///Event fired when an animation loop event occurs.
+        ///Adapts AnimationLoopEvent calls to the canonical event system.
+        ///</summary>
+        ///<param name="controller">The animation controller.</param>
+        ///<param name="loopEvent">The loop event.</param>
         public event Action<AnimationControllerComponent, AnimationLoopEvent> OnAnimationLoopEvent;
 
-        /// <summary>
-        /// Event fired when an animation parameter event occurs.
-        /// Adapts AnimationParameterEvent calls to the canonical event system.
-        /// </summary>
-        /// <param name="controller">The animation controller.</param>
-        /// <param name="paramEvent">The parameter event.</param>
+        ///<summary>
+        ///Event fired when an animation parameter event occurs.
+        ///Adapts AnimationParameterEvent calls to the canonical event system.
+        ///</summary>
+        ///<param name="controller">The animation controller.</param>
+        ///<param name="paramEvent">The parameter event.</param>
         public event Action<AnimationControllerComponent, AnimationParameterEvent> OnAnimationParameterEvent;
 
-        /// <summary>
-        /// Marks an animation event as fired.
-        /// </summary>
-        /// <param name="controller">The animation controller.</param>
-        /// <param name="animationEvent">The event to mark.</param>
+        ///<summary>
+        ///Marks an animation event as fired.
+        ///</summary>
+        ///<param name="controller">The animation controller.</param>
+        ///<param name="animationEvent">The event to mark.</param>
         private void MarkEventFired(AnimationControllerComponent controller, AnimationEvent animationEvent)
         {
             var eventKey = $"{animationEvent.EventName}_{animationEvent.Timestamp}";
             controller.SetParameter(eventKey, 1f);
         }
 
-        /// <summary>
-        /// Sets the time scale for animation updates.
-        /// </summary>
-        /// <param name="timeScale">The time scale factor.</param>
+        ///<summary>
+        ///Sets the time scale for animation updates.
+        ///</summary>
+        ///<param name="timeScale">The time scale factor.</param>
         public void SetTimeScale(float timeScale)
         {
             _timeScale = System.MathF.Max(0f, timeScale);
         }
 
-        /// <summary>
-        /// Debug logging method.
-        /// </summary>
-        /// <param name="message">The message to log.</param>
+        ///<summary>
+        ///Debug logging method.
+        ///</summary>
+        ///<param name="message">The message to log.</param>
         private void DebugLog(string message)
         {
-            // TODO: Replace with proper logging system when available
+            //TODO: Replace with proper logging system when available
             System.Diagnostics.Debug.WriteLine($"[AnimationUpdateSystem] {message}");
         }
     }

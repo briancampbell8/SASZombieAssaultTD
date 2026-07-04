@@ -1,34 +1,36 @@
 using System;
 using SASZombieAssaultTD.Engine.Core;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.State
 {
-    /// <summary>
-    /// Extension methods for StateMachineBuilder.
-    /// </summary>
+    ///<summary>
+    ///Extension methods for StateMachineBuilder.
+    ///</summary>
     public static class StateMachineBuilderExtensions
     {
-        /// <summary>
-        /// Adds UI system integration to state machine.
-        /// </summary>
+        ///<summary>
+        ///Adds UI system integration to state machine.
+        ///</summary>
         public static StateMachineBuilder WithUISystem(this StateMachineBuilder builder)
         {
-            // Implementation would add UI system
+            //Implementation would add UI system
             return builder;
         }
 
-        /// <summary>
-        /// Adds audio system integration to state machine.
-        /// </summary>
+        ///<summary>
+        ///Adds audio system integration to state machine.
+        ///</summary>
         public static StateMachineBuilder WithAudioSystem(this StateMachineBuilder builder)
         {
-            // Implementation would add audio system
+            //Implementation would add audio system
             return builder;
         }
 
-        /// <summary>
-        /// Creates a development environment state machine builder.
-        /// </summary>
+        ///<summary>
+        ///Creates a development environment state machine builder.
+        ///</summary>
         public static StateMachineBuilder CreateDevelopment()
         {
             return StateMachineBuilder.Create()
@@ -38,9 +40,9 @@ namespace SASZombieAssaultTD.Engine.State
                 .WithDebugging();
         }
 
-        /// <summary>
-        /// Creates a production environment state machine builder.
-        /// </summary>
+        ///<summary>
+        ///Creates a production environment state machine builder.
+        ///</summary>
         public static StateMachineBuilder CreateProduction()
         {
             return StateMachineBuilder.Create()
@@ -48,9 +50,9 @@ namespace SASZombieAssaultTD.Engine.State
                 .WithInitialState(GameStateType.Boot);
         }
 
-        /// <summary>
-        /// Creates a default environment state machine builder.
-        /// </summary>
+        ///<summary>
+        ///Creates a default environment state machine builder.
+        ///</summary>
         public static StateMachineBuilder CreateDefault()
         {
             return StateMachineBuilder.Create()

@@ -16,12 +16,14 @@ using SASZombieAssaultTD.Engine.Components;
 using SASZombieAssaultTD.Engine.Animation.Components;
 using SASZombieAssaultTD.Engine.State;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Animation.Systems
 {
-    /// <summary>
-    /// System responsible for triggering death animations when entities die.
-    /// Subscribes to EntityDiedEvent and manages animation state transitions.
-    /// </summary>
+    ///<summary>
+    ///System responsible for triggering death animations when entities die.
+    ///Subscribes to EntityDiedEvent and manages animation state transitions.
+    ///</summary>
     public class AnimationTriggerSystem
     {
         public bool IsEnabled { get; private set; } = true;
@@ -35,11 +37,11 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
         private bool _initialized;
         private readonly bool _debugOutput = true;
 
-        /// <summary>
-        /// Creates a new AnimationTriggerSystem with required dependencies.
-        /// </summary>
-        /// <param name="entityManager">Entity manager for component access</param>
-        /// <param name="eventRouter">Event routing for EntityDiedEvent subscription</param>
+        ///<summary>
+        ///Creates a new AnimationTriggerSystem with required dependencies.
+        ///</summary>
+        ///<param name="entityManager">Entity manager for component access</param>
+        ///<param name="eventRouter">Event routing for EntityDiedEvent subscription</param>
         public AnimationTriggerSystem(EntityManager entityManager, EventRouter eventRouter)
         {
             _entityManager = entityManager ?? throw new ArgumentNullException(nameof(entityManager));
@@ -47,9 +49,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
             DebugLog("AnimationTriggerSystem: Constructed with required dependencies");
         }
 
-        /// <summary>
-        /// Initializes the animation trigger system and subscribes to death events.
-        /// </summary>
+        ///<summary>
+        ///Initializes the animation trigger system and subscribes to death events.
+        ///</summary>
         public void Initialize()
         {
             if (_initialized) return;
@@ -103,10 +105,10 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
             LastUpdateTime = deltaTime;
         }
 
-        /// <summary>
-        /// Handles EntityDiedEvent by triggering death animations on the deceased entity.
-        /// </summary>
-        /// <param name="deathEvent">The entity death event containing death information</param>
+        ///<summary>
+        ///Handles EntityDiedEvent by triggering death animations on the deceased entity.
+        ///</summary>
+        ///<param name="deathEvent">The entity death event containing death information</param>
         private void OnEntityDied(KillAttributedEvent deathEvent)
         {
             if (deathEvent == null)
@@ -134,11 +136,11 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
             }
         }
 
-        /// <summary>
-        /// Logs animation trigger information for audit purposes.
-        /// </summary>
-        /// <param name="entityId">The ID of the entity whose animation was triggered</param>
-        /// <param name="animationName">The name of the animation that was triggered</param>
+        ///<summary>
+        ///Logs animation trigger information for audit purposes.
+        ///</summary>
+        ///<param name="entityId">The ID of the entity whose animation was triggered</param>
+        ///<param name="animationName">The name of the animation that was triggered</param>
         private void LogAnimationTrigger(object entityId, string animationName)
         {
             var logMessage = $"ANIMATION_TRIGGER: Entity={entityId}, Animation={animationName}, Timestamp={DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}";
@@ -154,9 +156,9 @@ namespace SASZombieAssaultTD.Engine.Animation.Systems
         }
     }
 
-    /// <summary>
-    /// Statistics about the animation trigger system state.
-    /// </summary>
+    ///<summary>
+    ///Statistics about the animation trigger system state.
+    ///</summary>
     public class AnimationTriggerSystemStatistics
     {
         public bool Initialized { get; set; }

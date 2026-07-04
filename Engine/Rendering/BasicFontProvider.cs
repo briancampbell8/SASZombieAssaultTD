@@ -1,35 +1,35 @@
-// ============================================================================
-// File Path: Engine/Rendering/BasicFontProvider.cs
-// File: BasicFontProvider.cs
-// Program: Rendering (Font Provider)
-// Subsystem: Rendering / Text Rendering
+//============================================================================
+//File Path: Engine/Rendering/BasicFontProvider.cs
+//File: BasicFontProvider.cs
+//Program: Rendering (Font Provider)
+//Subsystem: Rendering / Text Rendering
 //
-// Purpose:
-//     Provides a minimal, fixed‑size 6×8 monochrome bitmap font for HUD/UI text.
-//     Used by TextRenderer and debug overlays where a lightweight, dependency‑free
-//     font is required.
+//Purpose:
+//    Provides a minimal, fixed‑size 6×8 monochrome bitmap font for HUD/UI text.
+//    Used by TextRenderer and debug overlays where a lightweight, dependency‑free
+//    font is required.
 //
-// Responsibilities:
-//     - Store glyph definitions for supported characters
-//     - Provide glyph lookup for TextRenderer
-//     - Convert ASCII art glyph definitions into alpha masks
+//Responsibilities:
+//    - Store glyph definitions for supported characters
+//    - Provide glyph lookup for TextRenderer
+//    - Convert ASCII art glyph definitions into alpha masks
 //
-// Architecture:
-//     - Sealed class implementing IFontProvider
-//     - Glyphs stored as Dictionary<char, GlyphData>
-//     - 6×8 fixed‑size grid, monospaced
+//Architecture:
+//    - Sealed class implementing IFontProvider
+//    - Glyphs stored as Dictionary<char, GlyphData>
+//    - 6×8 fixed‑size grid, monospaced
 //
-// Integration Points:
-//     - TextRenderer (Engine/Rendering/TextRenderer.cs)
-//     - HUD elements and debug overlays
+//Integration Points:
+//    - TextRenderer (Engine/Rendering/TextRenderer.cs)
+//    - HUD elements and debug overlays
 //
-// Notes:
-//     - This is intentionally minimal and fast
-//     - Only includes characters required by HUD and debug systems
-//     - Additional glyphs can be added safely
-// ============================================================================
+//Notes:
+//    - This is intentionally minimal and fast
+//    - Only includes characters required by HUD and debug systems
+//    - Additional glyphs can be added safely
+//============================================================================
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+////using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Rendering;
 using System.Collections.Generic;
 
@@ -39,9 +39,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
     {
         private readonly Dictionary<char, GlyphData> _glyphs;
 
-        /// <summary>
-        /// Height of each glyph in pixels.
-        /// </summary>
+        ///<summary>
+        ///Height of each glyph in pixels.
+        ///</summary>
         public int LineHeight { get; }
 
         public BasicFontProvider()
@@ -50,9 +50,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
 
             _glyphs = new Dictionary<char, GlyphData>
             {
-                // --------------------------------------------------------------------
-                // DIGITS
-                // --------------------------------------------------------------------
+                //--------------------------------------------------------------------
+                //DIGITS
+                //--------------------------------------------------------------------
                 ['0'] = MakeGlyph6x8(new[]
                 {
                     " .#### ",
@@ -173,9 +173,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
                     "       ",
                 }),
 
-                // --------------------------------------------------------------------
-                // SYMBOLS
-                // --------------------------------------------------------------------
+                //--------------------------------------------------------------------
+                //SYMBOLS
+                //--------------------------------------------------------------------
                 ['$'] = MakeGlyph6x8(new[]
                 {
                     "  .##  ",
@@ -212,9 +212,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
                     "       ",
                 }),
 
-                // --------------------------------------------------------------------
-                // LETTERS (minimal HUD set)
-                // --------------------------------------------------------------------
+                //--------------------------------------------------------------------
+                //LETTERS (minimal HUD set)
+                //--------------------------------------------------------------------
                 ['A'] = MakeGlyph6x8(new[]
                 {
                     " ####  ",
@@ -301,16 +301,16 @@ namespace SASZombieAssaultTD.Engine.Rendering
             };
         }
 
-        // --------------------------------------------------------------------
-        // GLYPH LOOKUP
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //GLYPH LOOKUP
+        //--------------------------------------------------------------------
 
         public bool TryGetGlyph(char c, out GlyphData glyph)
         {
             if (_glyphs.TryGetValue(c, out glyph))
                 return true;
 
-            // Fallback to space
+            //Fallback to space
             if (_glyphs.TryGetValue(' ', out glyph))
                 return true;
 
@@ -318,9 +318,9 @@ namespace SASZombieAssaultTD.Engine.Rendering
             return false;
         }
 
-        // --------------------------------------------------------------------
-        // GLYPH CREATION
-        // --------------------------------------------------------------------
+        //--------------------------------------------------------------------
+        //GLYPH CREATION
+        //--------------------------------------------------------------------
 
         private static GlyphData MakeGlyph6x8(string[] rows)
         {

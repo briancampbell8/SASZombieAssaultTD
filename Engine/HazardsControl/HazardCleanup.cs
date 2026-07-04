@@ -18,53 +18,55 @@ Notes:    This file ensures hazards don't accumulate or leak.
 using System;
 using System.Collections.Generic;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.HazardsControl
 {
-    /// <summary>
-    /// Cleanup manager for hazard systems.
-    /// Manages automatic removal and memory cleanup.
-    /// </summary>
+    ///<summary>
+    ///Cleanup manager for hazard systems.
+    ///Manages automatic removal and memory cleanup.
+    ///</summary>
     public class HazardCleanup
     {
-        private Rectangle _worldBounds = new Rectangle(0, 0, 10000, 10000); // Default world bounds
+        private Rectangle _worldBounds = new Rectangle(0, 0, 10000, 10000); //Default world bounds
         private readonly List<int> _hazardsToRemove = new();
         private bool _isInitialized;
 
-        /// <summary>
-        /// Initializes the hazard cleanup system.
-        /// </summary>
+        ///<summary>
+        ///Initializes the hazard cleanup system.
+        ///</summary>
         public void Init()
         {
             _hazardsToRemove.Clear();
             _isInitialized = true;
         }
 
-        /// <summary>
-        /// Sets the world bounds for cleanup operations.
-        /// </summary>
+        ///<summary>
+        ///Sets the world bounds for cleanup operations.
+        ///</summary>
         public void SetWorldBounds(Rectangle bounds) => _worldBounds = bounds;
 
-        /// <summary>
-        /// Cleans up expired hazards.
-        /// </summary>
+        ///<summary>
+        ///Cleans up expired hazards.
+        ///</summary>
         public int CleanupExpiredHazards(List<Hazard> hazards) =>
             CleanupHazards(hazards, ShouldRemoveExpired, OnHazardExpired);
 
-        /// <summary>
-        /// Cleans up out-of-bounds hazards.
-        /// </summary>
+        ///<summary>
+        ///Cleans up out-of-bounds hazards.
+        ///</summary>
         public int CleanupOutOfBoundsHazards(List<Hazard> hazards) =>
             CleanupHazards(hazards, IsOutOfBounds, OnHazardOutOfBounds);
 
-        /// <summary>
-        /// Cleans up inactive hazards.
-        /// </summary>
+        ///<summary>
+        ///Cleans up inactive hazards.
+        ///</summary>
         public int CleanupInactiveHazards(List<Hazard> hazards) =>
             CleanupHazards(hazards, ShouldRemoveInactive, OnHazardInactive);
 
-        /// <summary>
-        /// Prunes the hazard list for optimization.
-        /// </summary>
+        ///<summary>
+        ///Prunes the hazard list for optimization.
+        ///</summary>
         public int PruneHazardList(List<Hazard> hazards)
         {
             if (!_isInitialized || hazards == null) return 0;
@@ -85,9 +87,9 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             return prunedCount;
         }
 
-        /// <summary>
-        /// Performs a comprehensive cleanup pass.
-        /// </summary>
+        ///<summary>
+        ///Performs a comprehensive cleanup pass.
+        ///</summary>
         public int PerformComprehensiveCleanup(List<Hazard> hazards)
         {
             if (!_isInitialized || hazards == null) return 0;
@@ -102,19 +104,19 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             return totalRemoved;
         }
 
-        /// <summary>
-        /// Performs cleanup on hazards.
-        /// Adapts single-parameter cleanup calls to the comprehensive cleanup implementation.
-        /// </summary>
-        /// <param name="hazards">List of hazards to clean up.</param>
+        ///<summary>
+        ///Performs cleanup on hazards.
+        ///Adapts single-parameter cleanup calls to the comprehensive cleanup implementation.
+        ///</summary>
+        ///<param name="hazards">List of hazards to clean up.</param>
         public void PerformCleanup(List<Hazard> hazards)
         {
             PerformComprehensiveCleanup(hazards);
         }
 
-        /// <summary>
-        /// Gets cleanup statistics.
-        /// </summary>
+        ///<summary>
+        ///Gets cleanup statistics.
+        ///</summary>
         public CleanupStatistics GetCleanupStatistics() => new()
         {
             WorldBounds = _worldBounds,
@@ -122,46 +124,46 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             LastCleanupTime = DateTime.Now
         };
 
-        /// <summary>
-        /// Cleans up the hazard cleanup system.
-        /// </summary>
+        ///<summary>
+        ///Cleans up the hazard cleanup system.
+        ///</summary>
         public void Cleanup()
         {
             _hazardsToRemove.Clear();
             _isInitialized = false;
         }
 
-        /// <summary>
-        /// Event triggered when a hazard expires.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when a hazard expires.
+        ///</summary>
         public event Action<Hazard> OnHazardExpired;
 
-        /// <summary>
-        /// Event triggered when a hazard goes out of bounds.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when a hazard goes out of bounds.
+        ///</summary>
         public event Action<Hazard> OnHazardOutOfBounds;
 
-        /// <summary>
-        /// Event triggered when a hazard becomes inactive.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when a hazard becomes inactive.
+        ///</summary>
         public event Action<Hazard> OnHazardInactive;
 
-        /// <summary>
-        /// Event triggered when hazards are removed.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when hazards are removed.
+        ///</summary>
         public event Action<Hazard> OnHazardRemoved;
 
-        /// <summary>
-        /// Event triggered when hazards are pruned.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when hazards are pruned.
+        ///</summary>
         public event Action<int> OnHazardsPruned;
 
-        /// <summary>
-        /// Event triggered after comprehensive cleanup.
-        /// </summary>
+        ///<summary>
+        ///Event triggered after comprehensive cleanup.
+        ///</summary>
         public event Action<int> OnComprehensiveCleanup;
 
-        ///  Private Methods
+        /// Private Methods
 
         private int CleanupHazards(List<Hazard> hazards, Func<Hazard, bool> shouldRemove, Action<Hazard> onRemove)
         {
@@ -193,7 +195,7 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
 
         private bool ShouldRemoveInactive(Hazard hazard)
         {
-            const float inactiveThreshold = 30f; // 30 seconds of inactivity
+            const float inactiveThreshold = 30f; //30 seconds of inactivity
             return (hazard.State == HazardState.Pending && hazard.ActivationDelay > inactiveThreshold) ||
                    (hazard.State == HazardState.Active && hazard.CurrentIntensity <= 0.01f);
         }
@@ -217,12 +219,12 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             return removedCount;
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// Statistics for cleanup operations.
-    /// </summary>
+    ///<summary>
+    ///Statistics for cleanup operations.
+    ///</summary>
     public class CleanupStatistics
     {
         public Rectangle WorldBounds { get; set; }

@@ -28,17 +28,19 @@ using SASZombieAssaultTD.Engine.Core.Random;
 using SASZombieAssaultTD.Engine.Enemies;
 using SASZombieAssaultTD.Engine.Navigation;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
 {
     public partial class WaveDirector
     {
-        // ===============================================================================================
-        //  WAVE SPAWNING ENTRY POINT
-        // ===============================================================================================
+        //===============================================================================================
+        // WAVE SPAWNING ENTRY POINT
+        //===============================================================================================
 
-        /// <summary>
-        /// Begins spawning for a wave asynchronously.
-        /// </summary>
+        ///<summary>
+        ///Begins spawning for a wave asynchronously.
+        ///</summary>
         internal async Task StartWaveSpawning_Internal(WaveScript script)
         {
             if (script == null)
@@ -50,13 +52,13 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        // ===============================================================================================
-        //  SPAWN GROUP EXECUTION
-        // ===============================================================================================
+        //===============================================================================================
+        // SPAWN GROUP EXECUTION
+        //===============================================================================================
 
-        /// <summary>
-        /// Executes a single spawn group from a wave script.
-        /// </summary>
+        ///<summary>
+        ///Executes a single spawn group from a wave script.
+        ///</summary>
         internal async Task ExecuteSpawnGroup_Internal(WaveSpawnGroup group, WaveScript script)
         {
             if (group == null)
@@ -72,13 +74,13 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        // ===============================================================================================
-        //  ENEMY SPAWNING
-        // ===============================================================================================
+        //===============================================================================================
+        // ENEMY SPAWNING
+        //===============================================================================================
 
-        /// <summary>
-        /// Spawns a single enemy according to the spawn group and wave script.
-        /// </summary>
+        ///<summary>
+        ///Spawns a single enemy according to the spawn group and wave script.
+        ///</summary>
         internal void SpawnEnemy_Internal(WaveSpawnGroup group, WaveScript script)
         {
             try
@@ -97,8 +99,8 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
 
                 ApplyWaveModifications_Internal(enemy, script);
 
-                // TODO: Wire to EnemyManager when available.
-                // EnemyManager.Instance.AddEnemy(enemy);
+                //TODO: Wire to EnemyManager when available.
+                //EnemyManager.Instance.AddEnemy(enemy);
 
                 InvokeEnemySpawned(enemy);
             }
@@ -108,13 +110,13 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             }
         }
 
-        // ===============================================================================================
-        //  SPAWN POSITION HELPERS
-        // ===============================================================================================
+        //===============================================================================================
+        // SPAWN POSITION HELPERS
+        //===============================================================================================
 
-        /// <summary>
-        /// Determines the spawn position based on the group's pattern.
-        /// </summary>
+        ///<summary>
+        ///Determines the spawn position based on the group's pattern.
+        ///</summary>
         internal Vector2 GetSpawnPosition_Internal(WaveSpawnGroup group)
         {
             return group.Pattern switch
@@ -125,9 +127,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             };
         }
 
-        /// <summary>
-        /// Returns a spawn position for cluster patterns.
-        /// </summary>
+        ///<summary>
+        ///Returns a spawn position for cluster patterns.
+        ///</summary>
         internal Vector2 GetClusterSpawnPosition_Internal(WaveSpawnGroup group)
         {
             var basePos = NavigationGrid.Instance.GetRandomSpawnPoint();
@@ -135,9 +137,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             return basePos + offset;
         }
 
-        /// <summary>
-        /// Returns a spawn position for spread patterns.
-        /// </summary>
+        ///<summary>
+        ///Returns a spawn position for spread patterns.
+        ///</summary>
         internal Vector2 GetSpreadSpawnPosition_Internal(WaveSpawnGroup group)
         {
             var basePos = NavigationGrid.Instance.GetRandomSpawnPoint();
@@ -145,13 +147,13 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             return basePos + offset;
         }
 
-        // ===============================================================================================
-        //  WAVE MODIFIERS & DIFFICULTY
-        // ===============================================================================================
+        //===============================================================================================
+        // WAVE MODIFIERS & DIFFICULTY
+        //===============================================================================================
 
-        /// <summary>
-        /// Applies wave-specific modifications to an enemy.
-        /// </summary>
+        ///<summary>
+        ///Applies wave-specific modifications to an enemy.
+        ///</summary>
         internal void ApplyWaveModifications_Internal(Enemy enemy, WaveScript script)
         {
             if (enemy == null || script == null)
@@ -162,9 +164,9 @@ namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
             enemy.Damage *= script.DifficultyMultiplier.DamageMultiplier;
         }
 
-        /// <summary>
-        /// Applies difficulty multiplier to a spawn count.
-        /// </summary>
+        ///<summary>
+        ///Applies difficulty multiplier to a spawn count.
+        ///</summary>
         internal int ApplyDifficultyMultiplier_Internal(int baseCount, WaveScript script)
         {
             if (script == null)

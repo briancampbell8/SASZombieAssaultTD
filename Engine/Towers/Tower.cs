@@ -12,68 +12,70 @@ using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.Projectiles;
 using SASZombieAssaultTD.Engine.Extensions;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Towers
 {
-    /// <summary>
-    /// Represents a placed tower in the game world, managing its properties, upgrades, and stats.
-    /// </summary>
+    ///<summary>
+    ///Represents a placed tower in the game world, managing its properties, upgrades, and stats.
+    ///</summary>
     public class Tower
     {
-        ///  Properties
+        /// Properties
 
-        /// <summary>
-        /// Unique identifier for this tower instance.
-        /// </summary>
+        ///<summary>
+        ///Unique identifier for this tower instance.
+        ///</summary>
         public uint Id { get; }
 
-        /// <summary>
-        /// Position of the tower in world space.
-        /// </summary>
+        ///<summary>
+        ///Position of the tower in world space.
+        ///</summary>
         public Vector3 Position { get; private set; }
 
-        /// <summary>
-        /// Grid position of the tower.
-        /// </summary>
+        ///<summary>
+        ///Grid position of the tower.
+        ///</summary>
         public Vector3Int GridPosition { get; private set; }
 
-        /// <summary>
-        /// Tower data containing stats and properties.
-        /// </summary>
+        ///<summary>
+        ///Tower data containing stats and properties.
+        ///</summary>
         public TowerData Data { get; }
 
-        /// <summary>
-        /// Whether the tower is currently active.
-        /// </summary>
+        ///<summary>
+        ///Whether the tower is currently active.
+        ///</summary>
         public bool IsActive { get; set; } = true;
 
-        /// <summary>
-        /// Current upgrade level of the tower.
-        /// </summary>
+        ///<summary>
+        ///Current upgrade level of the tower.
+        ///</summary>
         public int UpgradeLevel { get; private set; } = 0;
 
-        /// <summary>
-        /// Entity reference for ECS integration.
-        /// </summary>
+        ///<summary>
+        ///Entity reference for ECS integration.
+        ///</summary>
         public Entity Entity { get; set; }
 
-        /// <summary>
-        /// Tower name for display.
-        /// </summary>
+        ///<summary>
+        ///Tower name for display.
+        ///</summary>
         public string Name => Data?.Name ?? "Unknown Tower";
 
-        /// <summary>
-        /// Tower type for display.
-        /// </summary>
+        ///<summary>
+        ///Tower type for display.
+        ///</summary>
         public TowerType Type => Data?.Type ?? TowerType.Basic;
 
-        /// <summary>
-        /// Current damage based on upgrade level.
-        /// </summary>
+        ///<summary>
+        ///Current damage based on upgrade level.
+        ///</summary>
         public double Damage => Data?.Damage ?? 0.0;
 
-        /// <summary>
-        /// Current range based on upgrade level.
-        /// </summary>
+        ///<summary>
+        ///Current range based on upgrade level.
+        ///</summary>
         public float Range { get; private set; }
         internal void SetRange(float value)
         {
@@ -81,87 +83,87 @@ namespace SASZombieAssaultTD.Engine.Towers
         }
 
 
-        /// <summary>
-        /// Total kills by this tower.
-        /// </summary>
+        ///<summary>
+        ///Total kills by this tower.
+        ///</summary>
         public int TotalKills { get; set; }
 
-        /// <summary>
-        /// Tower accuracy percentage.
-        /// </summary>
+        ///<summary>
+        ///Tower accuracy percentage.
+        ///</summary>
         public double Accuracy => Data?.Accuracy ?? 1.0;
 
-        /// <summary>
-        /// Damage per second.
-        /// </summary>
+        ///<summary>
+        ///Damage per second.
+        ///</summary>
         public double DPS => Damage > 0 ? Damage / (Data?.FireRate ?? 1.0) : 0.0;
 
-        /// <summary>
-        /// Tower uptime in seconds.
-        /// </summary>
+        ///<summary>
+        ///Tower uptime in seconds.
+        ///</summary>
         public float Uptime { get; set; }
 
-        /// <summary>
-        /// Available upgrades for this tower.
-        /// </summary>
+        ///<summary>
+        ///Available upgrades for this tower.
+        ///</summary>
         public List<TowerUpgrade> AvailableUpgrades => Data?.AvailableUpgrades ?? new();
 
-        /// <summary>
-        /// Current targeting mode.
-        /// </summary>
+        ///<summary>
+        ///Current targeting mode.
+        ///</summary>
         public string TargetingMode => Data?.TargetingMode ?? "Closest";
 
-        /// <summary>
-        /// Whether the tower can be upgraded.
-        /// </summary>
+        ///<summary>
+        ///Whether the tower can be upgraded.
+        ///</summary>
         public bool CanUpgrade => UpgradeLevel < 3 && (Data?.AvailableUpgrades?.Count ?? 0) > UpgradeLevel;
 
-        /// <summary>
-        /// Current level of the tower.
-        /// </summary>
+        ///<summary>
+        ///Current level of the tower.
+        ///</summary>
         public int Level { get; set; } = 1;
 
-        /// <summary>
-        /// Current health of the tower.
-        /// </summary>
+        ///<summary>
+        ///Current health of the tower.
+        ///</summary>
         public float Health { get; set; } = 100.0f;
 
-        /// <summary>
-        /// Maximum health of the tower.
-        /// </summary>
+        ///<summary>
+        ///Maximum health of the tower.
+        ///</summary>
         public float MaxHealth { get; set; } = 100.0f;
 
-        /// <summary>
-        /// Cost of the tower.
-        /// </summary>
+        ///<summary>
+        ///Cost of the tower.
+        ///</summary>
         public int Cost => Data?.Cost ?? 0;
 
-        /// <summary>
-        /// Scale of the tower.
-        /// </summary>
+        ///<summary>
+        ///Scale of the tower.
+        ///</summary>
         public float Scale { get; set; } = 1.0f;
 
-        /// <summary>
-        /// Rotation of the tower.
-        /// </summary>
+        ///<summary>
+        ///Rotation of the tower.
+        ///</summary>
         public float Rotation { get; set; } = 0.0f;
 
-        /// <summary>
-        /// Speed of the tower.
-        /// </summary>
+        ///<summary>
+        ///Speed of the tower.
+        ///</summary>
         public float Speed { get; set; } = 1.0f;
 
-        /// <summary>
-        /// Fire rate of the tower.
-        /// </summary>
-        /// 
+        ///<summary>
+        ///Fire rate of the tower.
+        ///</summary>
+        ///
         
 
         public float FireRate { get; private set; }
-        /// <summary>
-        /// Sets the tower's fire rate during save restoration.
-        /// </summary>
-        /// <param name="value">Fire rate value from save data.</param>
+        ///<summary>
+        ///Sets the tower's fire rate during save restoration.
+        ///</summary>
+        ///<param name="value">Fire rate value from save data.</param>
         internal void SetFireRate(float value)
         {
             FireRate = value;
@@ -169,43 +171,43 @@ namespace SASZombieAssaultTD.Engine.Towers
 
 
 
-        /// <summary>
-        /// Total damage dealt by this tower.
-        /// </summary>
+        ///<summary>
+        ///Total damage dealt by this tower.
+        ///</summary>
         public float DamageDealt { get; set; } = 0.0f;
 
-        /// 
+        ///
 
-        ///  Notifications
+        /// Notifications
 
-        /// <summary>
-        /// Notification hook called when a projectile is fired from this tower.
-        /// Kept as a no-op default to avoid widespread code changes; override in
-        /// derived tower types if specific behavior is required.
-        /// </summary>
+        ///<summary>
+        ///Notification hook called when a projectile is fired from this tower.
+        ///Kept as a no-op default to avoid widespread code changes; override in
+        ///derived tower types if specific behavior is required.
+        ///</summary>
         public virtual void OnProjectileFired(Projectile projectile)
         {
-            // Default: do nothing
+            //Default: do nothing
         }
 
-        /// <summary>
-        /// Notification hook called when multiple projectiles are fired.
-        /// </summary>
+        ///<summary>
+        ///Notification hook called when multiple projectiles are fired.
+        ///</summary>
         public virtual void OnProjectilesFired(System.Collections.Generic.List<Projectile> projectiles)
         {
-            // Default: do nothing
+            //Default: do nothing
         }
 
-        /// 
+        ///
 
-        ///  Constructor
+        /// Constructor
 
-        /// <summary>
-        /// Creates a new tower instance with a world position.
-        /// </summary>
-        /// <param name="id">Unique tower identifier.</param>
-        /// <param name="data">Tower data reference.</param>
-        /// <param name="position">World position.</param>
+        ///<summary>
+        ///Creates a new tower instance with a world position.
+        ///</summary>
+        ///<param name="id">Unique tower identifier.</param>
+        ///<param name="data">Tower data reference.</param>
+        ///<param name="position">World position.</param>
         public Tower(uint id, TowerData data, Vector3 position)
         {
             Id = id;
@@ -214,16 +216,16 @@ namespace SASZombieAssaultTD.Engine.Towers
             GridPosition = new Vector3Int((int)position.X, (int)position.Y, 0);
         }
 
-        /// <summary>
-        /// Creates a new tower instance with a tower type and world position.
-        /// </summary>
-        /// <param name="id">Unique tower identifier.</param>
-        /// <param name="towerType">Type of tower.</param>
-        /// <param name="position">World position.</param>
+        ///<summary>
+        ///Creates a new tower instance with a tower type and world position.
+        ///</summary>
+        ///<param name="id">Unique tower identifier.</param>
+        ///<param name="towerType">Type of tower.</param>
+        ///<param name="position">World position.</param>
         public Tower(uint id, TowerType towerType, Vector3 position)
         {
             Id = id;
-            // Create basic tower data from type
+            //Create basic tower data from type
             TowerData.Builder builder = new(towerType)
             {
                 Type = towerType,
@@ -238,12 +240,12 @@ namespace SASZombieAssaultTD.Engine.Towers
             GridPosition = new Vector3Int((int)position.X, (int)position.Y, 0);
         }
 
-        /// <summary>
-        /// Creates a new tower instance with a grid position.
-        /// </summary>
-        /// <param name="id">Unique tower identifier.</param>
-        /// <param name="data">Tower data reference.</param>
-        /// <param name="gridPosition">Grid position.</param>
+        ///<summary>
+        ///Creates a new tower instance with a grid position.
+        ///</summary>
+        ///<param name="id">Unique tower identifier.</param>
+        ///<param name="data">Tower data reference.</param>
+        ///<param name="gridPosition">Grid position.</param>
         public Tower(uint id, TowerData data, Vector3Int gridPosition)
         {
             Id = id;
@@ -252,14 +254,14 @@ namespace SASZombieAssaultTD.Engine.Towers
             Position = new Vector3(gridPosition.X, gridPosition.Y, 0);
         }
 
-        /// 
+        ///
 
-        ///  Methods
+        /// Methods
 
-        /// <summary>
-        /// Upgrades the tower to the next level.
-        /// </summary>
-        /// <returns>True if the upgrade was successful; otherwise, false.</returns>
+        ///<summary>
+        ///Upgrades the tower to the next level.
+        ///</summary>
+        ///<returns>True if the upgrade was successful; otherwise, false.</returns>
         public bool Upgrade()
         {
             if (!CanUpgrade) return false;
@@ -268,50 +270,50 @@ namespace SASZombieAssaultTD.Engine.Towers
             return true;
         }
 
-        /// <summary>
-        /// Gets the current damage based on upgrade level.
-        /// </summary>
-        /// <returns>Current damage value.</returns>
-        public float GetCurrentDamage() => Data.Damage * (1 + (UpgradeLevel * 0.5f)); // 50% damage increase per level
+        ///<summary>
+        ///Gets the current damage based on upgrade level.
+        ///</summary>
+        ///<returns>Current damage value.</returns>
+        public float GetCurrentDamage() => Data.Damage * (1 + (UpgradeLevel * 0.5f)); //50% damage increase per level
 
-        /// <summary>
-        /// Gets the current range based on upgrade level.
-        /// </summary>
-        /// <returns>Current range value.</returns>
-        public float GetCurrentRange() => Data.Range * (1 + (UpgradeLevel * 0.25f)); // 25% range increase per level
+        ///<summary>
+        ///Gets the current range based on upgrade level.
+        ///</summary>
+        ///<returns>Current range value.</returns>
+        public float GetCurrentRange() => Data.Range * (1 + (UpgradeLevel * 0.25f)); //25% range increase per level
 
-        /// <summary>
-        /// Applies an upgrade to the tower.
-        /// </summary>
-        /// <param name="upgrade">The upgrade to apply.</param>
+        ///<summary>
+        ///Applies an upgrade to the tower.
+        ///</summary>
+        ///<param name="upgrade">The upgrade to apply.</param>
         public void ApplyUpgrade(TowerUpgrade upgrade)
         {
             if (!CanUpgrade) throw new InvalidOperationException("Cannot apply upgrade. Maximum upgrade level reached.");
             UpgradeLevel++;
-            // Apply upgrade effects (implementation depends on TowerUpgrade details)
+            //Apply upgrade effects (implementation depends on TowerUpgrade details)
         }
 
-        /// <summary>
-        /// Gets the special abilities of this tower.
-        /// </summary>
-        /// <returns>List of special abilities.</returns>
+        ///<summary>
+        ///Gets the special abilities of this tower.
+        ///</summary>
+        ///<returns>List of special abilities.</returns>
         public List<string> GetSpecialAbilities()
         {
-            return new List<string>(); // Default implementation
+            return new List<string>(); //Default implementation
         }
 
-        /// <summary>
-        /// Gets the available upgrades for this tower.
-        /// </summary>
-        /// <returns>List of available upgrades.</returns>
+        ///<summary>
+        ///Gets the available upgrades for this tower.
+        ///</summary>
+        ///<returns>List of available upgrades.</returns>
         public List<TowerUpgrade> GetAvailableUpgrades() =>
      Data?.AvailableUpgrades?.ConvertAll(static u => new TowerUpgrade(u)) ?? [];
 
-        /// <summary>
-        /// Gets the default damage for a tower type.
-        /// </summary>
-        /// <param name="towerType">Type of tower.</param>
-        /// <returns>Default damage value.</returns>
+        ///<summary>
+        ///Gets the default damage for a tower type.
+        ///</summary>
+        ///<param name="towerType">Type of tower.</param>
+        ///<returns>Default damage value.</returns>
         private static int GetDefaultDamage(TowerType towerType)
         {
             return towerType switch
@@ -328,11 +330,11 @@ namespace SASZombieAssaultTD.Engine.Towers
             };
         }
 
-        /// <summary>
-        /// Gets the default range for a tower type.
-        /// </summary>
-        /// <param name="towerType">Type of tower.</param>
-        /// <returns>Default range value.</returns>
+        ///<summary>
+        ///Gets the default range for a tower type.
+        ///</summary>
+        ///<param name="towerType">Type of tower.</param>
+        ///<returns>Default range value.</returns>
         private static float GetDefaultRange(TowerType towerType)
         {
             return towerType switch
@@ -349,11 +351,11 @@ namespace SASZombieAssaultTD.Engine.Towers
             };
         }
 
-        /// <summary>
-        /// Gets the default fire rate for a tower type.
-        /// </summary>
-        /// <param name="towerType">Type of tower.</param>
-        /// <returns>Default fire rate value.</returns>
+        ///<summary>
+        ///Gets the default fire rate for a tower type.
+        ///</summary>
+        ///<param name="towerType">Type of tower.</param>
+        ///<returns>Default fire rate value.</returns>
         private static float GetDefaultFireRate(TowerType towerType)
         {
             return towerType switch
@@ -370,11 +372,11 @@ namespace SASZombieAssaultTD.Engine.Towers
             };
         }
 
-        /// <summary>
-        /// Gets the default cost for a tower type.
-        /// </summary>
-        /// <param name="towerType">Type of tower.</param>
-        /// <returns>Default cost value.</returns>
+        ///<summary>
+        ///Gets the default cost for a tower type.
+        ///</summary>
+        ///<param name="towerType">Type of tower.</param>
+        ///<returns>Default cost value.</returns>
         private static int GetDefaultCost(TowerType towerType)
         {
             return towerType switch
@@ -391,6 +393,6 @@ namespace SASZombieAssaultTD.Engine.Towers
             };
         }
 
-        /// 
+        ///
     }
 }

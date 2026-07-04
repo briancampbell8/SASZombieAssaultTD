@@ -1,36 +1,38 @@
 //
-// * File:    BGFXShaderManager.cs
-// * Path:    Engine/Rendering/BGFX/BGFXShaderManager.cs
-// * Purpose: BGFX shader management.
-// *          Parallel implementation to BGFXShaderManager.
-// //
-using SASZombieAssaultTD.Engine.Diagnostics;
+//* File:    BGFXShaderManager.cs
+//* Path:    Engine/Rendering/BGFX/BGFXShaderManager.cs
+//* Purpose: BGFX shader management.
+//*          Parallel implementation to BGFXShaderManager.
+////
+//
 
 using System;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Rendering.BGFX
 {
-    /// <summary>
-    /// BGFX shader compilation and caching.
-    /// - Provides same interface as BGFXGraphicsDevice.
-    /// </summary>
+    ///<summary>
+    ///BGFX shader compilation and caching.
+    ///- Provides same interface as BGFXGraphicsDevice.
+    ///</summary>
     internal sealed class BGFXShaderManager : IDisposable
     {
-        //     private BGFXDeviceCore _core;
+        //    private BGFXDeviceCore _core;
 
-        // FUTURE IMPLEMENTATION: exception handling removed during BGFX bypass *************************************
-        // public BGFXShaderManager(BGFXDeviceCore core)
-        // {
-        //     System.Diagnostics.Debug.WriteLine("[DIAG] BGFXShaderManager.constructor - STUB PROCESSED");
-        //     _core = core ?? throw new ArgumentNullException(nameof(core));
-        // }
-        // FUTURE IMPLEMENTATION: exception handling removed during BGFX bypass *************************************
+        //FUTURE IMPLEMENTATION: exception handling removed during BGFX bypass *************************************
+        //public BGFXShaderManager(BGFXDeviceCore core)
+        //{
+        //    System.Diagnostics.Debug.WriteLine("[DIAG] BGFXShaderManager.constructor - STUB PROCESSED");
+        //    _core = core ?? throw new ArgumentNullException(nameof(core));
+        //}
+        //FUTURE IMPLEMENTATION: exception handling removed during BGFX bypass *************************************
 
-        //     public BGFXShaderManager(BGFXDeviceCore core)
-        //    {
-        //         System.Diagnostics.Debug.WriteLine("[DIAG] BGFXShaderManager.constructor - STUB PROCESSED");
-        //         _core = core; // Null check bypassed for BGFX stub implementation
-        //   }
+        //    public BGFXShaderManager(BGFXDeviceCore core)
+        //   {
+        //        System.Diagnostics.Debug.WriteLine("[DIAG] BGFXShaderManager.constructor - STUB PROCESSED");
+        //        _core = core; //Null check bypassed for BGFX stub implementation
+        //  }
 
         public void Initialize()
         {

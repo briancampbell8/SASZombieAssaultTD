@@ -7,15 +7,17 @@ using System.Text.Json;
 using SASZombieAssaultTD.Engine.Audio;
 using SASZombieAssaultTD.Engine.Extensions;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
-    /// <summary>
-    /// Player level progression for SAS Zombie Assault TD.
-    /// Manages experience points, level advancement, and rewards.
-    /// </summary>
+    ///<summary>
+    ///Player level progression for SAS Zombie Assault TD.
+    ///Manages experience points, level advancement, and rewards.
+    ///</summary>
     public class PlayerLevel
     {
-        // Level properties
+        //Level properties
         private int _currentLevel;
         private int _currentExperience;
         private int _experienceToNextLevel;
@@ -23,19 +25,19 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         private bool _isInitialized;
         private static PlayerLevel _instance;
 
-        // Level configuration
+        //Level configuration
         private readonly Dictionary<int, LevelData> _levelData;
         private readonly List<PlayerReward> _levelUpRewards;
         private readonly List<PlayerUnlock> _levelUpUnlocks;
 
-        // Events
+        //Events
         public event Action<int> OnLevelUp;
         public event Action<int, int> OnExperienceGained;
         public event Action<PlayerReward> OnRewardUnlocked;
         public event Action<PlayerUnlock> OnUnlockUnlocked;
         public event Action OnMaxLevelReached;
 
-        // Properties
+        //Properties
         public int CurrentLevel => _currentLevel;
         public int CurrentExperience => _currentExperience;
         public int ExperienceToNextLevel => _experienceToNextLevel;
@@ -45,7 +47,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public bool IsInitialized => _isInitialized;
         public static PlayerLevel Instance => _instance ??= new PlayerLevel();
 
-        // Singleton
+        //Singleton
         private PlayerLevel()
         {
             _currentLevel = 1;
@@ -59,9 +61,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             InitializeUnlocks();
         }
 
-        /// <summary>
-        /// Initialize the player level system.
-        /// </summary>
+        ///<summary>
+        ///Initialize the player level system.
+        ///</summary>
         public void Initialize()
         {
             if (_isInitialized) return;
@@ -70,10 +72,10 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
 
             try
             {
-                // Load saved progress
+                //Load saved progress
                 LoadProgress();
 
-                // Set up event subscriptions
+                //Set up event subscriptions
                 SetupEventSubscriptions();
 
                 _isInitialized = true;
@@ -86,11 +88,11 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        /// <summary>
-        /// Add experience points.
-        /// </summary>
-        /// <param name="experience">Experience points to add.</param>
-        /// <param name="source">Source of experience (kill, wave, etc.).</param>
+        ///<summary>
+        ///Add experience points.
+        ///</summary>
+        ///<param name="experience">Experience points to add.</param>
+        ///<param name="source">Source of experience (kill, wave, etc.).</param>
         public void AddExperience(int experience, string source = "Unknown")
         {
             if (experience <= 0) return;
@@ -102,24 +104,24 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 _totalExperienceEarned += experience;
                 _currentExperience += experience;
 
-                // Check for level up
+                //Check for level up
                 while (_currentExperience >= _experienceToNextLevel && _currentLevel < GetMaxLevel())
                 {
                     _currentExperience -= _experienceToNextLevel;
                     _currentLevel++;
                     _experienceToNextLevel = CalculateExperienceForNextLevel(_currentLevel);
 
-                    // Trigger level up events
+                    //Trigger level up events
                     OnLevelUp?.Invoke(_currentLevel);
                     OnExperienceGained?.Invoke(_currentLevel, _experienceToNextLevel);
 
-                    // Check for unlocks
+                    //Check for unlocks
                     CheckLevelUnlocks(_currentLevel);
 
                     System.Diagnostics.Debug.WriteLine($"Level up! Now level {_currentLevel}");
                 }
 
-                // Trigger experience gained event
+                //Trigger experience gained event
                 OnExperienceGained?.Invoke(_currentLevel, experience);
 
                 System.Diagnostics.Debug.WriteLine($"Added {experience} XP from {source}. Total: {_totalExperienceEarned}");
@@ -130,11 +132,11 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        /// <summary>
-        /// Set player level directly.
-        /// </summary>
-        /// <param name="level">Level to set.</param>
-        /// <param name="experience">Experience points for the level.</param>
+        ///<summary>
+        ///Set player level directly.
+        ///</summary>
+        ///<param name="level">Level to set.</param>
+        ///<param name="experience">Experience points for the level.</param>
         public void SetLevel(int level, int experience = 0)
         {
             if (level < 1 || level > GetMaxLevel()) return;
@@ -162,50 +164,50 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        /// <summary>
-        /// Get experience required for next level.
-        /// </summary>
-        /// <param name="level">Current level.</param>
-        /// <returns>Experience needed for next level.</returns>
+        ///<summary>
+        ///Get experience required for next level.
+        ///</summary>
+        ///<param name="level">Current level.</param>
+        ///<returns>Experience needed for next level.</returns>
         public int GetExperienceForNextLevel(int level)
         {
             return _levelData.TryGetValue(level, out var data) ? data.ExperienceRequired : 100 * level;
         }
 
-        /// <summary>
-        /// Get level data.
-        /// </summary>
-        /// <param name="level">Level to get data for.</param>
-        /// <returns>Level data, or null if not found.</returns>
+        ///<summary>
+        ///Get level data.
+        ///</summary>
+        ///<param name="level">Level to get data for.</param>
+        ///<returns>Level data, or null if not found.</returns>
         public LevelData GetLevelData(int level)
         {
             return _levelData.TryGetValue(level, out var data) ? data : null;
         }
 
-        /// <summary>
-        /// Get all available rewards for a level.
-        /// </summary>
-        /// <param name="level">Level to get rewards for.</param>
-        /// <returns>List of available rewards.</returns>
+        ///<summary>
+        ///Get all available rewards for a level.
+        ///</summary>
+        ///<param name="level">Level to get rewards for.</param>
+        ///<returns>List of available rewards.</returns>
         public IReadOnlyList<PlayerReward> GetAvailableRewards(int level)
         {
             return _levelUpRewards.Where(r => r.RequiredLevel <= level).ToList();
         }
 
-        /// <summary>
-        /// Get all available unlocks for a level.
-        /// </summary>
-        /// <param name="level">Level to get unlocks for.</param>
-        /// <returns>List of available unlocks.</returns>
+        ///<summary>
+        ///Get all available unlocks for a level.
+        ///</summary>
+        ///<param name="level">Level to get unlocks for.</param>
+        ///<returns>List of available unlocks.</returns>
         public IReadOnlyList<PlayerUnlock> GetAvailableUnlocks(int level)
         {
             return _levelUpUnlocks.Where(u => u.RequiredLevel <= level).ToList();
         }
 
-        /// <summary>
-        /// Get player statistics.
-        /// </summary>
-        /// <returns>Player level statistics.</returns>
+        ///<summary>
+        ///Get player statistics.
+        ///</summary>
+        ///<returns>Player level statistics.</returns>
         public PlayerLevelStatistics GetStatistics()
         {
             return new PlayerLevelStatistics
@@ -223,9 +225,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             };
         }
 
-        /// <summary>
-        /// Reset player progress.
-        /// </summary>
+        ///<summary>
+        ///Reset player progress.
+        ///</summary>
         public void ResetProgress()
         {
             try
@@ -245,10 +247,10 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        /// <summary>
-        /// Save player progress.
-        /// </summary>
-        /// <returns>True if saved successfully.</returns>
+        ///<summary>
+        ///Save player progress.
+        ///</summary>
+        ///<returns>True if saved successfully.</returns>
         public bool SaveProgress()
         {
             try
@@ -278,10 +280,10 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        /// <summary>
-        /// Load player progress.
-        /// </summary>
-        /// <returns>True if loaded successfully.</returns>
+        ///<summary>
+        ///Load player progress.
+        ///</summary>
+        ///<returns>True if loaded successfully.</returns>
         public bool LoadProgress()
         {
             try
@@ -306,7 +308,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 _currentExperience = saveData.CurrentExperience;
                 _totalExperienceEarned = saveData.TotalExperienceEarned;
 
-                // Restore unlocked rewards
+                //Restore unlocked rewards
                 if (saveData.UnlockedRewardsData != null)
                 {
                     foreach (var kvp in saveData.UnlockedRewardsData)
@@ -329,16 +331,16 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        ///  Private Methods
+        /// Private Methods
 
-        /// <summary>
-        /// Initialize level data.
-        /// </summary>
-        /// 
+        ///<summary>
+        ///Initialize level data.
+        ///</summary>
+        ///
 
         private void InitializeLevelData()
         {
-            _levelData.Clear(); // instead of = new Dictionary<>()
+            _levelData.Clear(); //instead of = new Dictionary<>()
 
             for (int level = 1; level <= GetMaxLevel(); level++)
             {
@@ -358,14 +360,14 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        /// <summary>
-        /// Initialize rewards.
-        /// </summary>
+        ///<summary>
+        ///Initialize rewards.
+        ///</summary>
         private void InitializeRewards()
         {
-            _levelUpRewards.Clear(); // instead of = new List<PlayerReward>()
+            _levelUpRewards.Clear(); //instead of = new List<PlayerReward>()
 
-            // Add level up rewards
+            //Add level up rewards
             _levelUpRewards.Add(new PlayerReward
             {
                 Id = "level_up_cash",
@@ -397,14 +399,14 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             });
         }
 
-        /// <summary>
-        /// Initialize unlocks.
-        /// </summary>
+        ///<summary>
+        ///Initialize unlocks.
+        ///</summary>
         private void InitializeUnlocks()
         {
-            _levelUpUnlocks.Clear(); // instead of = new List<PlayerUnlock>()
+            _levelUpUnlocks.Clear(); //instead of = new List<PlayerUnlock>()
 
-            // Add tower unlocks
+            //Add tower unlocks
 
             _levelUpUnlocks.Add(new PlayerUnlock
             {
@@ -442,7 +444,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 RequiredLevel = 7
             });
 
-            // Add ability unlocks
+            //Add ability unlocks
             _levelUpUnlocks.Add(new PlayerUnlock
             {
                 Id = "double_damage",
@@ -462,18 +464,18 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             });
         }
 
-        /// <summary>
-        /// Calculate experience for next level.
-        /// </summary>
+        ///<summary>
+        ///Calculate experience for next level.
+        ///</summary>
         private int CalculateExperienceForNextLevel(int level)
         {
-            // Exponential experience curve
+            //Exponential experience curve
             return (int)(100 * System.Math.Pow(1.5, level - 1));
         }
 
-        /// <summary>
-        /// Get level title.
-        /// </summary>
+        ///<summary>
+        ///Get level title.
+        ///</summary>
         private string GetLevelTitle(int level)
         {
             return level switch
@@ -492,9 +494,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             };
         }
 
-        /// <summary>
-        /// Get level description.
-        /// </summary>
+        ///<summary>
+        ///Get level description.
+        ///</summary>
         private string GetLevelDescription(int level)
         {
             return level switch
@@ -513,41 +515,41 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             };
         }
 
-        /// <summary>
-        /// Get level icon path.
-        /// </summary>
+        ///<summary>
+        ///Get level icon path.
+        ///</summary>
         private string GetLevelIconPath(int level)
         {
             return $"UI/Icons/Level_{level}.png";
         }
 
-        /// <summary>
-        /// Get maximum level.
-        /// </summary>
+        ///<summary>
+        ///Get maximum level.
+        ///</summary>
         private int GetMaxLevel()
         {
             return 10;
         }
 
-        /// <summary>
-        /// Get rewards for level.
-        /// </summary>
+        ///<summary>
+        ///Get rewards for level.
+        ///</summary>
         private List<PlayerReward> GetLevelRewards(int level)
         {
             return _levelUpRewards.Where(r => r.RequiredLevel == level).ToList();
         }
 
-        /// <summary>
-        /// Get unlocks for level.
-        /// </summary>
+        ///<summary>
+        ///Get unlocks for level.
+        ///</summary>
         private List<PlayerUnlock> GetLevelUnlocks(int level)
         {
             return _levelUpUnlocks.Where(u => u.RequiredLevel == level).ToList();
         }
 
-        /// <summary>
-        /// Check for level unlocks.
-        /// </summary>
+        ///<summary>
+        ///Check for level unlocks.
+        ///</summary>
         private void CheckLevelUnlocks(int level)
         {
             var availableUnlocks = GetAvailableUnlocks(level);
@@ -558,16 +560,16 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                     unlock.IsUnlocked = true;
                     OnUnlockUnlocked?.Invoke(unlock);
 
-                    // Convert unlock to reward for reward event
+                    //Convert unlock to reward for reward event
                     var reward = new PlayerReward
                     {
-                        Type = RewardType.Ability, // or appropriate type
+                        Type = RewardType.Ability, //or appropriate type
                         Amount = 1,
                         Description = unlock.Description ?? $"Unlocked: {unlock.Name}"
                     };
                     OnRewardUnlocked?.Invoke(reward);
 
-                    // Play unlock sound
+                    //Play unlock sound
                     AudioSystem.PlaySound("unlock");
 
                     System.Diagnostics.Debug.WriteLine($"Unlocked: {unlock.Name}");
@@ -575,21 +577,21 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        /// <summary>
-        /// Set up event subscriptions.
-        /// </summary>
+        ///<summary>
+        ///Set up event subscriptions.
+        ///</summary>
         private void SetupEventSubscriptions()
         {
-            // Economy events
+            //Economy events
             EconomyManager.OnCashChanged += OnCashChanged;
         }
 
-        /// <summary>
-        /// Handle cash changed event.
-        /// </summary>
+        ///<summary>
+        ///Handle cash changed event.
+        ///</summary>
         private void OnCashChanged(int newCash)
         {
-            // Award experience for cash milestones
+            //Award experience for cash milestones
             if (newCash > 0 && newCash % 500 == 0)
             {
                 var experienceBonus = newCash / 500;
@@ -597,32 +599,32 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        /// <summary>
-        /// Calculate levels gained.
-        /// </summary>
+        ///<summary>
+        ///Calculate levels gained.
+        ///</summary>
         private int CalculateLevelsGained()
         {
-            // This would be calculated from saved data
-            // For now, return current level - 1 (starting from level 1)
+            //This would be calculated from saved data
+            //For now, return current level - 1 (starting from level 1)
             return System.Math.Max(0, _currentLevel - 1);
         }
 
-        /// <summary>
-        /// Calculate time to next level.
-        /// </summary>
+        ///<summary>
+        ///Calculate time to next level.
+        ///</summary>
         private TimeSpan CalculateTimeToNextLevel()
         {
-            // This would be calculated from saved data
-            // For now, return a reasonable default
+            //This would be calculated from saved data
+            //For now, return a reasonable default
             return TimeSpan.FromHours(2);
         }
 
-        /// 
+        ///
     }
 
-    /// <summary>
-    /// Level data for progression.
-    /// </summary>
+    ///<summary>
+    ///Level data for progression.
+    ///</summary>
     public class LevelData
     {
         public int Level { get; set; }
@@ -634,9 +636,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public List<PlayerUnlock> Unlocks { get; set; }
     }
 
-    /// <summary>
-    /// Player reward for level progression.
-    /// </summary>
+    ///<summary>
+    ///Player reward for level progression.
+    ///</summary>
     public class PlayerReward
     {
         public string Id { get; set; }
@@ -653,9 +655,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         }
     }
 
-    /// <summary>
-    /// Player unlock for progression.
-    /// </summary>
+    ///<summary>
+    ///Player unlock for progression.
+    ///</summary>
     public class PlayerUnlock
     {
         public string Id { get; set; }
@@ -671,9 +673,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         }
     }
 
-    /// <summary>
-    /// Player level save data.
-    /// </summary>
+    ///<summary>
+    ///Player level save data.
+    ///</summary>
     public class PlayerLevelSaveData
     {
         public int CurrentLevel { get; set; }
@@ -685,9 +687,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public DateTime LastSaved { get; set; }
     }
 
-    /// <summary>
-    /// Player level statistics.
-    /// </summary>
+    ///<summary>
+    ///Player level statistics.
+    ///</summary>
     public class PlayerLevelStatistics
     {
         public int CurrentLevel { get; set; }
@@ -714,9 +716,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         }
     }
 
-    /// <summary>
-    /// Reward type enumeration.
-    /// </summary>
+    ///<summary>
+    ///Reward type enumeration.
+    ///</summary>
     public enum RewardType
     {
         Cash,
@@ -726,9 +728,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         Ability
     }
 
-    /// <summary>
-    /// Unlock type enumeration.
-    /// </summary>
+    ///<summary>
+    ///Unlock type enumeration.
+    ///</summary>
     public enum UnlockType
     {
         Tower,

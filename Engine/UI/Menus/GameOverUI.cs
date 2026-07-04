@@ -9,127 +9,129 @@ using System;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Rendering;
 
+using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
-    /// <summary>
-    /// Game over UI component for SAS Zombie Assault TD.
-    /// Manages game over screen display and user interactions.
-    /// </summary>
+    ///<summary>
+    ///Game over UI component for SAS Zombie Assault TD.
+    ///Manages game over screen display and user interactions.
+    ///</summary>
     public class GameOverUI
     {
-        ///  Properties
+        /// Properties
 
-        /// <summary>
-        /// Whether the game over UI is visible.
-        /// </summary>
+        ///<summary>
+        ///Whether the game over UI is visible.
+        ///</summary>
         public bool IsVisible { get; set; }
 
-        /// <summary>
-        /// Current game over message.
-        /// </summary>
+        ///<summary>
+        ///Current game over message.
+        ///</summary>
         public string Message { get; set; } = string.Empty;
 
-        /// 
+        ///
 
-        ///  Events
+        /// Events
 
-        /// <summary>
-        /// Event triggered when retry is selected.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when retry is selected.
+        ///</summary>
         public event Action OnRetry;
 
-        /// <summary>
-        /// Event triggered when main menu is selected.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when main menu is selected.
+        ///</summary>
         public event Action OnMainMenu;
 
-        /// <summary>
-        /// Event triggered when high scores is selected.
-        /// </summary>
+        ///<summary>
+        ///Event triggered when high scores is selected.
+        ///</summary>
         public event Action OnHighScores;
 
-        /// 
+        ///
 
-        ///  Constructor
+        /// Constructor
 
-        /// <summary>
-        /// Creates a new GameOverUI instance.
-        /// </summary>
+        ///<summary>
+        ///Creates a new GameOverUI instance.
+        ///</summary>
         public GameOverUI()
         {
             IsVisible = false;
         }
 
-        /// 
+        ///
 
-        ///  Public Methods
+        /// Public Methods
 
-        /// <summary>
-        /// Shows the game over screen with specified message.
-        /// </summary>
-        /// <param name="message">The game over message.</param>
+        ///<summary>
+        ///Shows the game over screen with specified message.
+        ///</summary>
+        ///<param name="message">The game over message.</param>
         public void Show(string message)
         {
             Message = message ?? "Game Over";
             IsVisible = true;
         }
 
-        /// <summary>
-        /// Hides the game over screen.
-        /// </summary>
+        ///<summary>
+        ///Hides the game over screen.
+        ///</summary>
         public void Hide()
         {
             IsVisible = false;
         }
 
-        /// <summary>
-        /// Updates the game over UI.
-        /// </summary>
-        /// <param name="deltaTime">Time since last update.</param>
+        ///<summary>
+        ///Updates the game over UI.
+        ///</summary>
+        ///<param name="deltaTime">Time since last update.</param>
         public void Update(float deltaTime)
         {
-            // Handle input and animations
+            //Handle input and animations
         }
 
-        /// <summary>
-        /// Renders the game over UI.
-        /// </summary>
-        /// <param name="context">Render context.</param>
+        ///<summary>
+        ///Renders the game over UI.
+        ///</summary>
+        ///<param name="context">Render context.</param>
         public void Render(IRenderContext context)
         {
             if (!IsVisible) return;
 
-            // Render game over screen
+            //Render game over screen
         }
 
-        /// <summary>
-        /// Initializes the game over UI.
-        /// </summary>
+        ///<summary>
+        ///Initializes the game over UI.
+        ///</summary>
         public void Initialize()
         {
             IsVisible = false;
             Message = string.Empty;
         }
 
-        /// <summary>
-        /// Shows an error message.
-        /// </summary>
-        /// <param name="error">The error message.</param>
+        ///<summary>
+        ///Shows an error message.
+        ///</summary>
+        ///<param name="error">The error message.</param>
         public void ShowError(string error)
         {
             Message = $"ERROR: {error}";
             IsVisible = true;
         }
 
-        /// <summary>
-        /// Shows the high scores screen.
-        /// </summary>
+        ///<summary>
+        ///Shows the high scores screen.
+        ///</summary>
         public void ShowHighScores()
         {
             Message = "High Scores";
             IsVisible = true;
         }
 
-        /// 
+        ///
     }
 }
