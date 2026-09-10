@@ -1,4 +1,22 @@
-﻿// ============================================================================
+// ====================================================================================================
+//  FILE: DLoggerArg3.cs
+//  PATH: ./Engine/Diagnostics/
+//  MODULE: Diagnostics
+//
+//  ROLE:
+//      Provide logging, profiling, or diagnostic instrumentation.
+//
+//  RESPONSIBILITIES:
+//      - Provide Log() behavior for the Diagnostics subsystem.
+//      - Provide Log() behavior for the Diagnostics subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+// ============================================================================
 //  FILE: DLoggerArg3.cs
 //  MODULE: Diagnostics Pattern Library
 //  PARTIAL: DLogger
@@ -23,7 +41,7 @@
 //  VERSION: 1.0 (Pattern Module)
 // ============================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
@@ -68,3 +86,4 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         }
     }
 }
+

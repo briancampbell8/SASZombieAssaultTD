@@ -1,7 +1,38 @@
+// ====================================================================================================
+//  FILE: KillAttributionValidationResult.cs
+//  PATH: ./Engine/Systems/Hazards/Analytics/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the KillAttributionValidationResult module.
+//
+//  RESPONSIBILITIES:
+//      - Provide AddWarning() behavior for the Core subsystem.
+//      - Provide AddError() behavior for the Core subsystem.
+//      - Provide CalculateScore() behavior for the Core subsystem.
+//      - Provide Clone() behavior for the Core subsystem.
+//      - Provide AddWarning() behavior for the Core subsystem.
+//      - Provide AddError() behavior for the Core subsystem.
+//      - Provide CalculateScore() behavior for the Core subsystem.
+//      - Provide Clone() behavior for the Core subsystem.
+//      - Provide AddWarning() behavior for the Core subsystem.
+//      - Provide AddError() behavior for the Core subsystem.
+//      - Provide CalculateScore() behavior for the Core subsystem.
+//      - Provide Clone() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 using System;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Generic;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Systems.Hazards.Analytics
 {
@@ -195,3 +226,4 @@ namespace SASZombieAssaultTD.Engine.Systems.Hazards.Analytics
         }
     }
 }
+

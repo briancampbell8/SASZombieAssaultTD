@@ -1,4 +1,4 @@
-﻿// ====================================================================================================
+// ====================================================================================================
 //  FILE: DiagnosticReportUI.cs
 //  PATH: Engine/Diagnostics/UI/
 //  MODULE: Diagnostics Pipeline (UI Rendering Stage)
@@ -15,18 +15,16 @@
 //      - Must NOT depend on DiagnosticEntry or JSON.
 // ====================================================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Windows.Forms;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics.UI
 {
     public partial class DiagnosticReportUI : UserControl
     {
-        public DiagnosticReportUI()
-        {
+        public DiagnosticReportUI() =>
             //    InitializeComponent(); Already handled by SetupViewer() to avoid designer issues.
             SetupViewer();
-        }
 
         private void SetupViewer()
         {

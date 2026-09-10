@@ -1,13 +1,24 @@
-﻿//============================================================================
-// FILE: Engine/Diagnostics/DiagnosticsManager.cs
-// FILE PATH: Engine\Diagnostics\DiagnosticsManager.cs
-// PURPOSE: Manages the path to the diagnostics database.
+//====================================================================================================
+//  FILE: DiagnosticsManager.cs
+//  PATH: ./Engine/Diagnostics/
+//  MODULE: Diagnostics
 //
-// VERSION: 1.0
-// DATE: 2026-06-26
-//============================================================================
+//  ROLE:
+//      Provide logging, profiling, or diagnostic instrumentation.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Diagnostics subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+//====================================================================================================
 
-using System;
+
+
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
@@ -18,3 +29,4 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             Path.Combine(AppContext.BaseDirectory, "Engine", "Diagnostics", "Diagnostics.db");
     }
 }
+

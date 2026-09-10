@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: RSManager_Validation.cs
+//  PATH: ./Engine/Resources/Manager/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSManager_Validation module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //File: RSManager_Validation.cs
 
@@ -52,26 +69,26 @@
 //var validation = rsManager.ValidateResources();
 //if (!validation.IsValid)
 //{
-//System.Diagnostics.Debug.WriteLine($"RSManager validation failed: {string.Join(", ", validation.Errors)}");
+//DLogger.Log($"RSManager validation failed: {string.Join(", ", validation.Errors)}");
 //}
 
 ////Validate specific resource
 //var resourceValidation = rsManager.ValidateResource("textures/player.png");
 //if (!resourceValidation.IsValid)
 //{
-//System.Diagnostics.Debug.WriteLine($"Resource validation failed: {string.Join(", ", resourceValidation.Errors)}");
+//DLogger.Log($"Resource validation failed: {string.Join(", ", resourceValidation.Errors)}");
 //}
 
 ////Monitor validation performance
 //var stats = rsManager.GetValidationStats();
-//System.Diagnostics.Debug.WriteLine($"Validated {stats.ValidatedResources} resources, found {stats.IssuesFound} issues");
+//DLogger.Log($"Validated {stats.ValidatedResources} resources, found {stats.IssuesFound} issues");
 
 ////Batch validate multiple resources
 //var resourcePaths = new[] { "textures/player.png", "audio/explosion.wav", "models/character.fbx" };
 //var batchValidation = rsManager.ValidateResources(resourcePaths);
 //if (!batchValidation.IsValid)
 //{
-//System.Diagnostics.Debug.WriteLine($"Batch validation failed: {string.Join(", ", batchValidation.Errors)}");
+//DLogger.Log($"Batch validation failed: {string.Join(", ", batchValidation.Errors)}");
 //}
 
 ////Configure validation settings
@@ -86,19 +103,19 @@
 
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Audio;
+// using SASZombieAssaultTD.Engine.Extensions; // Extensions Removed
+using SASZombieAssaultTD.Engine.Render;
+using SASZombieAssaultTD.Engine.ECS;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -119,7 +136,7 @@ namespace SASZombieAssaultTD.Engine.Resources
     ///var validation = rsManager.ValidateResources();
     ///if (!validation.IsValid)
     ///{
-    ///    System.Diagnostics.Debug.WriteLine($"RSManager validation failed: {string.Join(", ", validation.Errors)}");
+    ///    DLogger.Log($"RSManager validation failed: {string.Join(", ", validation.Errors)}");
     ///}
     ///</code>
     ///</example>
@@ -145,7 +162,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                     return true;
                 }
 
-                DebugLog($"AssetManager: Validating asset '{key}'");
+                DLogger.Log($"AssetManager: Validating asset '{key}'");
 
                 //Validate file existence
                 if (!File.Exists(metadata.Path))
@@ -194,14 +211,14 @@ namespace SASZombieAssaultTD.Engine.Resources
                 //Validation passed
                 _validationErrors[key] = string.Empty;
                 _validatedAssets[key] = true;
-                DebugLog($"AssetManager: Asset '{key}' validation passed");
+                DLogger.Log($"AssetManager: Asset '{key}' validation passed");
                 return true;
             }
             catch (Exception ex)
             {
                 _validationErrors[key] = $"Validation error: {ex.Message}";
                 _validatedAssets[key] = false;
-                DebugLog($"AssetManager: Asset '{key}' validation failed with exception: {ex.Message}");
+                DLogger.Log($"AssetManager: Asset '{key}' validation failed with exception: {ex.Message}");
                 return false;
             }
         }
@@ -384,3 +401,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+

@@ -1,3 +1,24 @@
+// ====================================================================================================
+//  FILE: ResourceDisplayRenderer.cs
+//  PATH: ./Engine/UI/Rendering/
+//  MODULE: Rendering
+//
+//  ROLE:
+//      Provide rendering logic, draw calls, batching, or GPU resource management.
+//
+//  RESPONSIBILITIES:
+//      - Provide UpdateResources() behavior for the Rendering subsystem.
+//      - Provide SetVisibility() behavior for the Rendering subsystem.
+//      - Provide Update() behavior for the Rendering subsystem.
+//      - Provide Render() behavior for the Rendering subsystem.
+//      - Provide GetStatistics() behavior for the Rendering subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    ResourceDisplayRenderer.cs
 Purpose: UI renderer for player resource display (gold, credits, etc.).
@@ -7,14 +28,13 @@ P11-04-12-I: Renders resource display with proper layering in HUD.
 Uses UIElementBase for consistent UI behavior and supports multiple resource types.
 */
 
-using SASZombieAssaultTD.Engine.Rendering;
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.State;
-using SASZombieAssaultTD.Engine.Resources;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.Resources;
+using SASZombieAssaultTD.Engine.TextRendering;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
@@ -47,7 +67,7 @@ namespace SASZombieAssaultTD.Engine.UI
             _textRenderer = textRenderer ?? throw new ArgumentNullException(nameof(textRenderer));
             _resourceAnimations = new Dictionary<string, float>();
 
-            DebugLog("ResourceDisplayRenderer: Initialized");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "ResourceDisplayRenderer: Initialized");
         }
 
         ///<summary>
@@ -60,7 +80,7 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 _currentResourceData = resourceData;
 
-                DebugLog("ResourceDisplayRenderer: Updating resource display");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "ResourceDisplayRenderer: Updating resource display");
 
                 //In a full implementation, this would:
                 //1. Parse resource data (gold, credits, scrap, etc.)
@@ -71,7 +91,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                DebugLog($"ResourceDisplayRenderer: Failed to update resources - {ex.Message}");
+                DLogger.Log($"ResourceDisplayRenderer: Failed to update resources - {ex.Message}");
             }
         }
 
@@ -85,7 +105,7 @@ namespace SASZombieAssaultTD.Engine.UI
             {
                 _isVisible = isVisible;
 
-                DebugLog($"ResourceDisplayRenderer: Set visibility to {isVisible}");
+                DLogger.Log($"ResourceDisplayRenderer: Set visibility to {isVisible}");
 
                 //In a full implementation, this would:
                 //1. Show/hide resource display UI element
@@ -94,7 +114,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                DebugLog($"ResourceDisplayRenderer: Failed to set visibility - {ex.Message}");
+                DLogger.Log($"ResourceDisplayRenderer: Failed to set visibility - {ex.Message}");
             }
         }
 
@@ -118,7 +138,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                DebugLog($"ResourceDisplayRenderer: Update failed - {ex.Message}");
+                DLogger.Log($"ResourceDisplayRenderer: Update failed - {ex.Message}");
             }
         }
 
@@ -126,9 +146,9 @@ namespace SASZombieAssaultTD.Engine.UI
         ///Renders the resource display.
         ///</summary>
         ///<param name="context">Render context for drawing</param>
-        public void Render(IRenderContext context)
+        public void Render(D3D11Adapter_Core adapter_Core)
         {
-            if (!_isVisible || context == null) return;
+            if (!_isVisible || adapter_Core == null) return;
 
             try
             {
@@ -139,11 +159,11 @@ namespace SASZombieAssaultTD.Engine.UI
                 //4. Draw resource change notifications
                 //5. Apply visual effects for low resources
 
-                DebugLog("ResourceDisplayRenderer: Rendering resource display");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "ResourceDisplayRenderer: Rendering resource display");
             }
             catch (Exception ex)
             {
-                DebugLog($"ResourceDisplayRenderer: Render failed - {ex.Message}");
+                DLogger.Log($"ResourceDisplayRenderer: Render failed - {ex.Message}");
             }
         }
 
@@ -172,15 +192,16 @@ namespace SASZombieAssaultTD.Engine.UI
             //for resource value changes and notification animations
         }
 
-        private void DebugLog(string message)
+        private void Log(string message)
         {
             if (_debugOutput)
             {
-                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
+                DLogger.Log($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
             }
         }
     }
 }
+
 
 
 

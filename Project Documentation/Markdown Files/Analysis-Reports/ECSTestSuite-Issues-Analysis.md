@@ -9,7 +9,7 @@
 
 ### 1. **Missing DebugLogger Reference**
 **Location:** Line 66  
-**Issue:** `DebugLogger.Log("TEST", $"Test '{name}' threw exception: {ex}");`  
+**Issue:** `DebugLogger.Log(LogSubsystems.ResourcesPipeline, "TEST", $"Test '{name}' threw exception: {ex}");`  
 **Problem:** `DebugLogger` class is referenced but not defined or imported  
 **Impact:** Compilation error - test suite cannot run  
 **Severity:** Critical  

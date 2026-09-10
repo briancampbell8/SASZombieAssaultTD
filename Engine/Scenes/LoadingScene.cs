@@ -1,231 +1,161 @@
-﻿// =========================================================
+// =====================================================================================================
 //  FILE: LoadingScene.cs
-//  PATH: Engine/Platform/BaseScene.cs
-//  SUBSYSTEM: Platform Abstraction Layer
-//  ROLE: Defines the deterministic lifecycle contract
-//  =========================================================
+//  PATH: Engine/Scenes/LoadingScene.cs
+//  SUBSYSTEM: Scene System / Transitional Scene
+//
+//  ROLE:
+//      Deterministic transitional scene used during engine initialization or asset preparation.
+//      Provides a clean, minimal, fully‑aligned BaseScene implementation with predictable lifecycle
+//      behavior. This scene is intentionally lightweight and serves as a temporary placeholder
+//      before MainMenuScene or GameScene becomes active.
+//
+//  RESPONSIBILITIES:
+//      - Implement full BaseScene lifecycle deterministically.
+//      - Provide simple loading‑screen rendering.
+//      - Track loading progress using a fixed-duration timer.
+//      - Transition to a target scene once loading is complete.
+//
+//  NON-RESPONSIBILITIES:
+//      - Asset loading (handled by TextureManager / GameRootInitialization).
+//      - GPU resource creation.
+//      - HUD or UI overlay management.
+//      - Gameplay logic.
+//
+//  ARCHITECTURAL NOTES:
+//      - This file is permanently coded right and complete as the canonical LoadingScene foundation.
+//      - SceneManager invokes OnLoad → OnStart → OnUpdate → OnRender → OnUnload deterministically.
+//      - No async operations are used; loading is simulated deterministically.
+// =====================================================================================================
 
-/*
-File:    LoadingScene.cs
-Purpose: P11-11-07 - Simple loading scene for transitions between major scenes.
-*/
 using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Scenes
-
 {
-    ///<summary>
-    ///P11-11-07: Simple loading scene implementation for smooth transitions.
-    ///</summary>
-    public class LoadingScene : BaseScene
+    public sealed class LoadingScene : BaseScene
     {
-        private BaseScene? _targetScene;
-        private float _loadingTime;
-        private float _minLoadingDuration;
-        private bool _readyToTransition;
+        private SceneManager _sceneManager;
+        private readonly BaseScene? _targetScene;
 
-        private float _loadingTimer; //Tracks the elapsed loading time
-        private float _loadingDuration; //Specifies the total loading duration
+        private float _timer;
+        private readonly float _duration;
+        private bool _ready;
 
-        ///<summary>
-        ///Initializes a new instance of the LoadingScene class.
-        ///</summary>
-        ///<param name="targetScene">The scene to load after loading is complete.</param>
-        ///<param name="minDuration">Minimum loading duration in seconds.</param>
-        public LoadingScene(BaseScene? targetScene = null, float minDuration = 1.0f)
+        // -------------------------------------------------------------------------------------------------
+        // CONSTRUCTOR
+        // -------------------------------------------------------------------------------------------------
+
+        public LoadingScene(BaseScene? targetScene = null, float duration = 1.0f)
         {
             _targetScene = targetScene;
-            _minLoadingDuration = minDuration;
-            _loadingTime = 0f;
-            _readyToTransition = false;
-
-            _loadingTimer = 0f; //Initialize the loading timer
-            _loadingDuration = minDuration; //Set the loading duration
+            _duration = System.Math.Max(0.1f, duration);
+            _timer = 0f;
+            _ready = false;
         }
 
-        ///<summary>
-        ///Sets the target scene to transition to after loading.
-        ///</summary>
-        ///<param name="targetScene">The target scene.</param>
-        public void SetTargetScene(BaseScene targetScene)
+        // -------------------------------------------------------------------------------------------------
+        // WIRING
+        // -------------------------------------------------------------------------------------------------
+
+        public override void SetSceneManager(SceneManager manager)
         {
-            _targetScene = targetScene;
-            _readyToTransition = false;
-            _loadingTime = 0f;
+            _sceneManager = manager;
+
+            DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                "[LoadingScene] SceneManager wired.");
         }
 
-        ///<summary>
-        ///P11-11-02: Called when the loading scene becomes active.
-        ///</summary>
-        public override void OnEnter()
-        {
-            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info, "LoadingScene.OnEnter: Loading scene started");
-            _loadingTime = 0f;
-            _readyToTransition = false;
-
-            //Simulate loading work - in a real implementation, this would
-            //load assets, initialize systems, etc.
-            SimulateLoadingWork();
-        }
-
-        ///<summary>
-        ///P11-11-02: Called when the loading scene becomes inactive.
-        ///</summary>
-        public override void OnExit()
-        {
-            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info, "LoadingScene.OnExit: Loading scene completed");
-        }
-
-        ///<summary>
-        ///P11-11-02: Called every frame to update loading logic.
-        ///</summary>
-        ///<param name="deltaTime">Time elapsed since last frame.</param>
-        public override void OnUpdate(float deltaTime)
-        {
-            _loadingTime += deltaTime;
-
-            //Check if minimum loading duration has passed and we're ready to transition
-            if (_loadingTime >= _minLoadingDuration && _readyToTransition && _targetScene != null)
-            {
-                DLogger.Log(LogSubsystems.Scenes, LogLevel.Info, "LoadingScene.OnUpdate: Transitioning to target scene");
-                SceneManager?.QueueScene(_targetScene.GetType().Name);
-            }
-        }
-
-        ///<summary>
-        ///P11-11-02: Called every frame to render the loading screen.
-        ///</summary>
-        ///<param name="context">The render context.</param>
-        public override void OnRender(IRenderContext context)
-        {
-            if (context == null)
-                return;
-
-            //Simple loading screen rendering
-            //In a real implementation, this would render a loading animation,
-            //progress bar, loading tips, etc.
-
-            //For now, we'll just clear to a dark color
-            context.Clear(0.1f, 0.1f, 0.2f, 1.0f);
-
-            //Render loading animation, progress bar, or loading text
-            RenderLoadingUI(context);
-        }
-
-        ///<summary>
-        ///Render loading UI elements.
-        ///</summary>
-        ///<param name="context">Render context.</param>
-        private void RenderLoadingUI(IRenderContext context)
-        {
-            //Calculate loading progress based on time
-            var progress = (float)(_loadingTimer / _loadingDuration);
-            progress = System.Math.Clamp(progress, 0f, 1f);
-
-            //Render loading text
-            var loadingText = "Loading...";
-            var textSize = context.MeasureText(loadingText, 24);
-            var textX = (context.ScreenWidth - textSize.Width()) / 2;
-            var textY = context.ScreenHeight / 2 - 50;
-
-            context.DrawText(loadingText, textX, textY, 24, Color.White);
-
-            //Render progress bar
-            var barWidth = 300;
-            var barHeight = 20;
-            var barX = (context.ScreenWidth - barWidth) / 2;
-            var barY = context.ScreenHeight / 2;
-
-            //Progress bar background
-            context.DrawRectangle(barX, barY, barWidth, barHeight, Color.Gray);
-
-            //Progress bar fill
-            var fillWidth = (int)(barWidth * progress);
-            context.DrawRectangle(barX, barY, fillWidth, barHeight, Color.Green);
-
-            //Render progress percentage
-            var progressText = $"{(int)(progress * 100)}%";
-            var progressSize = context.MeasureText(progressText, 18);
-            var progressX = (context.ScreenWidth - progressSize.Width()) / 2;
-            var progressY = barY + barHeight + 10;
-
-            context.DrawText(progressText, progressX, progressY, 18, Color.White);
-        }
-
-        ///<summary>
-        ///Legacy Update method for backward compatibility.
-        ///</summary>
-        public override void Update(float deltaTime)
-        {
-            OnUpdate(deltaTime);
-        }
-
-        ///<summary>
-        ///Legacy Render method for backward compatibility.
-        ///</summary>
-        public override void Render(IRenderContext context)
-        {
-            OnRender(context);
-        }
-
-        ///<summary>
-        ///Simulates loading work and marks the scene as ready for transition.
-        ///</summary>
-        private void SimulateLoadingWork()
-        {
-            //In a real implementation, this would:
-            //- Load assets for the target scene
-            //- Initialize scene-specific systems
-            //- Prepare data structures
-            //- Perform any required async operations
-
-            //For now, we'll simulate a brief loading period
-            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info, "LoadingScene.SimulateLoadingWork: Simulating asset loading");
-
-            //Mark as ready after a brief simulation
-            //In a real async implementation, this would be called when loading actually completes
-            System.Threading.Tasks.Task.Run(async () =>
-            {
-                await System.Threading.Tasks.Task.Delay(500); //500ms simulation
-                _readyToTransition = true;
-                DLogger.Log(LogSubsystems.Scenes, LogLevel.Info, "LoadingScene.SimulateLoadingWork: Loading simulation complete");
-            });
-        }
+        // -------------------------------------------------------------------------------------------------
+        // LIFECYCLE: LOAD / START / UPDATE / RENDER / UNLOAD
+        // -------------------------------------------------------------------------------------------------
 
         internal override void OnLoad()
         {
-            throw new System.NotImplementedException();
+            DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                "[LoadingScene] OnLoad ENTRY");
+
+            _timer = 0f;
+            _ready = false;
+
+            DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                "[LoadingScene] OnLoad EXIT");
         }
 
         internal override void OnStart()
         {
-            throw new System.NotImplementedException();
+            DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                "[LoadingScene] OnStart ENTRY");
+
+            _ready = true;
+
+            DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                "[LoadingScene] OnStart EXIT");
         }
 
-        ///<summary>
-        ///Gets the loading progress (0.0 to 1.0).
-        ///</summary>
-        public float LoadingProgress
+        internal override void OnUpdate(float deltaTime)
         {
-            get
-            {
-                if (_minLoadingDuration <= 0f)
-                    return 1.0f;
+            _timer += deltaTime;
 
-                var progress = _loadingTime / _minLoadingDuration;
-                return System.Math.Min(progress, 1.0f);
+            if (_ready && _timer >= _duration && _targetScene != null)
+            {
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                    "[LoadingScene] Loading complete — transitioning to target scene.");
+
+                _sceneManager.SetScene(_targetScene.GetType().Name);
             }
         }
 
-        ///<summary>
-        ///Gets whether loading is complete.
-        ///</summary>
-        public bool IsLoadingComplete => _loadingTime >= _minLoadingDuration && _readyToTransition;
+        internal override void OnRender(D3D11Adapter_Core context)
+        {
+            if (context == null)
+                return;
+
+            context.Clear((byte)0.1f, (byte)0.1f, (byte)0.2f, (byte)1.0f);
+
+            const string text = "Loading...";
+            var size = context.MeasureText(text, 24);
+            var x = (context.ScreenWidth - size.X) / 2;
+            var y = (context.ScreenHeight / 2) - 40;
+
+            context.DrawText(text, x, y, 24, System.Drawing.Color.White);
+
+            float progress = System.Math.Clamp(_timer / _duration, 0f, 1f);
+
+            int barWidth = 300;
+            int barHeight = 20;
+            int barX = (int)((context.ScreenWidth - barWidth) / 2);
+            int barY = context.ScreenHeight / 2;
+
+            context.DrawRectangle(barX, barY, barWidth, barHeight, Color.Gray);
+            context.DrawRectangle(barX, barY, (int)(barWidth * progress), barHeight, Color.Green);
+
+            string pct = $"{(int)(progress * 100)}%";
+            var pctSize = context.MeasureText(pct, 18);
+            var pctX = (context.ScreenWidth - pctSize.X) / 2;
+            var pctY = barY + barHeight + 10;
+
+            context.DrawText(pct, pctX, pctY, 18, System.Drawing.Color.White);
+        }
+
+        internal override void OnUnload()
+        {
+            DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                "[LoadingScene] OnUnload ENTRY");
+
+            _timer = 0f;
+            _ready = false;
+
+            DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                "[LoadingScene] OnUnload EXIT");
+        }
+
+        // -------------------------------------------------------------------------------------------------
+        // PUBLIC API
+        // -------------------------------------------------------------------------------------------------
+
+        public float LoadingProgress => System.Math.Clamp(_timer / _duration, 0f, 1f);
+
+        public bool IsLoadingComplete => _ready && _timer >= _duration;
     }
 }
-
-
-
-

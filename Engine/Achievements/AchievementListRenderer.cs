@@ -1,133 +1,186 @@
+// ====================================================================================================
+//  FILE: AchievementListRenderer.cs
+//  PATH: ./Engine/Achievements/
+//  MODULE: Core
+//
+//  ROLE:
+//      Deterministic GPU‑only achievement list renderer.
+//
+//  RESPONSIBILITIES:
+//      - Initialize()
+//      - Render()
+//      - AddAchievement()
+//      - RemoveAchievement()
+//      - ClearAchievements()
+//      - Update()
+//      - Cleanup()
+//
+//  NOTES:
+//      Modernized for GPU pipeline (D3D11Adapter_Core).
+// ====================================================================================================
+
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.VectorMath;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using System.Numerics;
+using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.TextureRendering.UI;
 
 namespace SASZombieAssaultTD.Engine.Achievements
 {
-    ///<summary>
-    ///Achievement list renderer for SAS Zombie Assault TD.
-    ///Handles rendering of achievement lists and progress indicators.
-    ///</summary>
-    public class AchievementListRenderer
+    public sealed class AchievementListRenderer
     {
         private bool _isVisible = true;
-        private Vector3 _position;
+        private Vector2 _position;
         private float _width = 400f;
         private float _height = 300f;
-        private List<AchievementItem> _achievements = new();
 
-        ///<summary>
-        ///Whether the achievement list is visible.
-        ///</summary>
+        private readonly List<AchievementItem> _achievements = new();
+
         public bool IsVisible
         {
             get => _isVisible;
             set => _isVisible = value;
         }
 
-        ///<summary>
-        ///Position of the achievement list.
-        ///</summary>
-        public Vector3 Position
+        public Vector2 Position
         {
             get => _position;
             set => _position = value;
         }
 
-        ///<summary>
-        ///Width of the achievement list.
-        ///</summary>
         public float Width
         {
             get => _width;
-            set => _width = Math.Math.Max(100f, value);
+            set => _width = MathF.Max(100f, value);
         }
 
-        ///<summary>
-        ///Height of the achievement list.
-        ///</summary>
         public float Height
         {
             get => _height;
-            set => _height = Math.Math.Max(100f, value);
+            set => _height = MathF.Max(100f, value);
         }
 
-        ///<summary>
-        ///Initialize the achievement list renderer.
-        ///</summary>
+        // -------------------------------------------------------------------------------------------------
+        // Initialization
+        // -------------------------------------------------------------------------------------------------
+
         public void Initialize()
         {
-            _position = new Vector3(50f, 50f, 0f);
+            _position = new Vector2(50f, 50f);
             LoadAchievements();
         }
 
-        ///<summary>
-        ///Render the achievement list.
-        ///</summary>
-        ///<param name="renderContext">Render context.</param>
-        public void Render(IRenderContext renderContext)
+        // -------------------------------------------------------------------------------------------------
+        // Render (GPU‑only)
+        // -------------------------------------------------------------------------------------------------
+
+        public void Render(D3D11Adapter_Core adapter)
         {
-            if (!_isVisible) return;
+            if (!_isVisible)
+                return;
 
-            //Render background
-            var backgroundRect = Rectangle.FromPositionAndSize(_position.X, _position.Y, _width, _height);
-            renderContext.FillRectangle(backgroundRect, new Color(0, 0, 0, 180));
+            var backgroundRect = Rectangle.FromPositionAndSize(
+                (int)_position.X,
+                (int)_position.Y,
+                (int)_width,
+                (int)_height);
 
-            //Render border
-            renderContext.DrawRectangle(backgroundRect, new Color(255, 255, 255, 255), 2f);
+            // Background
+            adapter.FillRectangle(backgroundRect, new ColorRGBA(0, 0, 0, 180));
 
-            //Render header
-            renderContext.DrawText("Achievements", new Vector3(_position.X + 10f, _position.Y + 10f, 0),
-                new Color(255, 255, 255, 255), 16f);
+            // Border
+            adapter.DrawRectangle(
+                backgroundRect,
+                new ColorRGBA(255, 255, 255, 255),
+                2f);
 
-            //Render achievement items
+            // Header
+            adapter.DrawText(
+                "Achievements",
+                new Vector2(_position.X + 10f, _position.Y + 10f),
+                16f,
+                (ColorRGBA)ColorRGBA.White);
+
+            // Items
             float yOffset = 40f;
             foreach (var achievement in _achievements)
             {
-                RenderAchievement(renderContext, achievement, _position.X + 10f,
-                    _position.Y + yOffset);
+                RenderAchievement(adapter, achievement, _position.X + 10f, _position.Y + yOffset);
                 yOffset += 30f;
             }
         }
 
-        ///<summary>
-        ///Add an achievement to the list.
-        ///</summary>
-        ///<param name="achievement">Achievement to add.</param>
-        public void AddAchievement(AchievementItem achievement)
+        // -------------------------------------------------------------------------------------------------
+        // Render Single Achievement
+        // -------------------------------------------------------------------------------------------------
+
+        private void RenderAchievement(D3D11Adapter_Core adapter, AchievementItem achievement, float x, float y)
         {
-            if (achievement != null && !_achievements.Contains(achievement))
+            var nameColor = achievement.IsCompleted
+                ? (object)new ColorRGBA(0, 255, 0, 255)
+                : ColorRGBA.White;
+
+            // Name
+            adapter.DrawText(
+                achievement.Name,
+                new Vector2(x, y),
+                12f,
+                (ColorRGBA)nameColor);
+
+            // Description
+            adapter.DrawText(
+                achievement.Description,
+                new Vector2(x + 10f, y + 15f),
+                10f,
+                new ColorRGBA(200, 200, 200, 255));
+
+            if (!achievement.IsCompleted)
             {
-                _achievements.Add(achievement);
+                float barWidth = 100f;
+                float barHeight = 4f;
+                float progress = achievement.Progress / achievement.MaxProgress;
+
+                var backgroundBar = Rectangle.FromPositionAndSize(
+                    (int)(x + 200f),
+                    (int)(y + 10f),
+                    (int)barWidth,
+                    (int)barHeight);
+
+                adapter.FillRectangle(backgroundBar, new ColorRGBA(100, 100, 100, 255));
+
+                var progressBar = Rectangle.FromPositionAndSize(
+                    (int)(x + 200f),
+                    (int)(y + 10f),
+                    (int)(barWidth * progress),
+                    (int)barHeight);
+
+                adapter.FillRectangle(progressBar, new ColorRGBA(255, 255, 0, 255));
             }
         }
 
-        ///<summary>
-        ///Remove an achievement from the list.
-        ///</summary>
-        ///<param name="achievement">Achievement to remove.</param>
+        // -------------------------------------------------------------------------------------------------
+        // Achievement Management
+        // -------------------------------------------------------------------------------------------------
+
+        public void AddAchievement(AchievementItem achievement)
+        {
+            if (achievement != null && !_achievements.Contains(achievement))
+                _achievements.Add(achievement);
+        }
+
         public void RemoveAchievement(AchievementItem achievement)
         {
             _achievements.Remove(achievement);
         }
 
-        ///<summary>
-        ///Clear all achievements.
-        ///</summary>
         public void ClearAchievements()
         {
             _achievements.Clear();
         }
 
-        ///<summary>
-        ///Load achievements from data source.
-        ///</summary>
         private void LoadAchievements()
         {
-            //Placeholder - would load from achievement system
             _achievements.Add(new AchievementItem
             {
                 Name = "First Blood",
@@ -138,56 +191,18 @@ namespace SASZombieAssaultTD.Engine.Achievements
             });
         }
 
-        ///<summary>
-        ///Render a single achievement item.
-        ///</summary>
-        private void RenderAchievement(IRenderContext context, AchievementItem achievement,
-            float x, float y)
-        {
-            var color = achievement.IsCompleted ?
-                new Color(0, 255, 0, 255) : new Color(255, 255, 255, 255);
-
-            context.DrawText(achievement.Name, new Vector3(x, y, 0), color, 12f);
-            context.DrawText(achievement.Description, new Vector3(x + 10f, y + 15f, 0),
-                new Color(200, 200, 200, 255), 10f);
-
-            if (!achievement.IsCompleted)
-            {
-                //Render progress bar
-                var barWidth = 100f;
-                var barHeight = 4f;
-                var progress = achievement.Progress / achievement.MaxProgress;
-
-                var backgroundBar = Rectangle.FromPositionAndSize(x + 200f, y + 10f, barWidth, barHeight);
-                context.DrawRectangle(backgroundBar, new Color(100, 100, 100, 255));
-
-                var progressBar = Rectangle.FromPositionAndSize(x + 200f, y + 10f, barWidth * progress, barHeight);
-                context.FillRectangle(progressBar, new Color(255, 255, 0, 255));
-            }
-        }
-
-        ///<summary>
-        ///Update the achievement list.
-        ///</summary>
-        ///<param name="deltaTime">Time since last frame.</param>
         public void Update(float deltaTime)
         {
-            //Update animations, tooltips, etc.
+            // Future animations or tooltip logic
         }
 
-        ///<summary>
-        ///Cleanup resources.
-        ///</summary>
         public void Cleanup()
         {
             _achievements.Clear();
         }
     }
 
-    ///<summary>
-    ///Achievement item data.
-    ///</summary>
-    public class AchievementItem
+    public sealed class AchievementItem
     {
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
@@ -197,7 +212,3 @@ namespace SASZombieAssaultTD.Engine.Achievements
         public DateTime UnlockDate { get; set; }
     }
 }
-
-
-
-

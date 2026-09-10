@@ -1,4 +1,21 @@
-using System;
+// ====================================================================================================
+//  FILE: BasicChaseBehavior.cs
+//  PATH: ./Engine/AI/Behaviors/
+//  MODULE: AI
+//
+//  ROLE:
+//      Provide deterministic AI behavior, decision logic, or state evaluation.
+//
+//  RESPONSIBILITIES:
+//      - Provide Tick() behavior for the AI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Drawing;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -45,6 +62,7 @@ namespace SASZombieAssaultTD.Engine.AI.Behaviors
         PointF Position { get; }
     }
 }
+
 
 
 

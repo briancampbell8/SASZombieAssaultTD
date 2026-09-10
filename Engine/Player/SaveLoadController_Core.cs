@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: SaveLoadController_Core.cs
+//  PATH: ./Engine/Player/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the SaveLoadController_Core module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 ///File:    E:\BDC\Projects\SASZombieAssaultTD\Engine\Player\SaveLoadController_Core.cs
 ///Purpose: Player action validation and execution system for SAS Zombie Assault TD.
 ///Features: Tower placement validation, upgrade processing, damage handling, and game state management.
@@ -9,7 +26,7 @@
 ///****************************************************************************************************
 //
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -58,3 +75,4 @@ namespace SASZombieAssaultTD.Engine.Player
         }
     }
 }
+

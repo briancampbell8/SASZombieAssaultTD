@@ -1,4 +1,23 @@
-using System;
+// ====================================================================================================
+//  FILE: ChallengeDefinition.cs
+//  PATH: ./Engine/Achievements/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ChallengeDefinition module.
+//
+//  RESPONSIBILITIES:
+//      - Provide IsValid() behavior for the Core subsystem.
+//      - Provide MatchesCriteria() behavior for the Core subsystem.
+//      - Provide GetTotalRewardValue() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Runtime.Serialization;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -45,13 +64,13 @@ namespace SASZombieAssaultTD.Engine.Achievements
         ///Checks if this challenge matches the given criteria for progress evaluation.
         ///</summary>
         ///<param name="requirementType">Type of requirement to check.</param>
-        ///<param name="entityType">Optional entity type filter.</param>
+        ///<param name="ECSEntityCoreType">Optional ECSEntityCore type filter.</param>
         ///<param name="deathType">Optional death type filter.</param>
         ///<returns>True if this challenge matches the criteria.</returns>
-        public bool MatchesCriteria(ChallengeRequirementType requirementType, string entityType = "", string deathType = "")
+        public bool MatchesCriteria(ChallengeRequirementType requirementType, string ECSEntityCoreType = "", string deathType = "")
         {
             if (RequirementType != requirementType) return false;
-            if (!string.IsNullOrEmpty(EntityTypeFilter) && EntityTypeFilter != entityType) return false;
+            if (!string.IsNullOrEmpty(EntityTypeFilter) && EntityTypeFilter != ECSEntityCoreType) return false;
             if (!string.IsNullOrEmpty(DeathTypeFilter) && DeathTypeFilter != deathType) return false;
 
             return true;
@@ -115,6 +134,7 @@ namespace SASZombieAssaultTD.Engine.Achievements
         Extreme
     }
 }
+
 
 
 

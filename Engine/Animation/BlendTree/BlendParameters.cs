@@ -1,7 +1,28 @@
-using System.Collections.Generic;
+// ====================================================================================================
+//  FILE: BlendParameters.cs
+//  PATH: ./Engine/Animation/BlendTree/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the BlendParameters module.
+//
+//  RESPONSIBILITIES:
+//      - Provide SetParameter() behavior for the Core subsystem.
+//      - Provide GetParameter() behavior for the Core subsystem.
+//      - Provide TryGetFloat() behavior for the Core subsystem.
+//      - Provide GetParameterNames() behavior for the Core subsystem.
+//      - Provide Clear() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Animation.BlendTree
 {
@@ -69,3 +90,4 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
         public void Clear() => _parameters.Clear();
     }
 }
+

@@ -1,289 +1,229 @@
-﻿// =========================================================
+// =====================================================================================================
 //  FILE: SceneManager.cs
-//  PATH: Engine/Platform/BaseScene.cs
-//  SUBSYSTEM: Platform Abstraction Layer
-//  ROLE: Defines the deterministic lifecycle contract
-//  =========================================================
+//  PATH: Engine/Scenes/SceneManager.cs
+//  SUBSYSTEM: Scene System / Deterministic Scene Pipeline Manager
+//
+//  ROLE:
+//      Serves as the authoritative coordinator for the entire scene processing pipeline.
+//      Ensures all scene subsystems (BaseScene, SceneFactory, SceneTransitions, and all concrete scenes)
+//      remain synchronized deterministically. SceneManager does NOT perform rendering, creation,
+//      caching, unloading, or transition timing itself.
+//
+//  RESPONSIBILITIES:
+//      - Maintain deterministic synchronization between all scene subsystems.
+//      - Coordinate scene lifecycle sequencing across the pipeline.
+//      - Delegate scene creation, caching, and unloading to SceneFactory.
+//      - Delegate transition timing and progress to SceneTransitions.
+//      - Delegate rendering to RenderManager via BaseScene / StateMachine.
+//      - Emit processing flags confirming subsystem completion states.
+//      - Serve as the single point of orchestration for scene state consistency.
+//
+//  NON-RESPONSIBILITIES:
+//      - Creating or destroying scenes directly.
+//      - Performing transition timing or visual effects.
+//      - Managing GameRootMain wiring or asset registration.
+//      - Executing render commands or frame updates.
+//      - Handling diagnostics or logging beyond synchronization events.
+//
+//  ARCHITECTURAL NOTES:
+//      - SceneManager is the synchronization nucleus of the scene system.
+//      - SceneFactory, SceneTransitions, BaseScene, and StateMachine operate as independent subsystems.
+//      - All scene state changes flow through SceneManager for deterministic sequencing.
+//      - StateMachine owns the active scene and its Update/Render; SceneManager coordinates transitions.
+//
+//  CHANGE HISTORY:
+//      2026-07-30 — Removed invalid GameRootMain-only constructor; enforced SceneFactory-based construction.
+//      2026-07-31 — Wired SceneManager.SetScene(...) to StateMachine.SetScene(BaseScene) for active scene.
+// =====================================================================================================
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.State;
+using static SASZombieAssaultTD.Engine.Scenes.SceneTransitions;
 
 namespace SASZombieAssaultTD.Engine.Scenes
 {
-    public class SceneManager
+    // -------------------------------------------------------------------------------------------------
+    //  ENUM: SceneProcessingFlags
+    // -------------------------------------------------------------------------------------------------
+    public enum SceneProcessingFlags
     {
+        None = 0,
+
+        // Scene lifecycle confirmations
+        SceneLoaded = 1,
+        SceneStarted = 2,
+        SceneUpdated = 4,
+        SceneRendered = 8,
+        SceneUnloaded = 16,
+
+        // Transition confirmations
+        TransitionStarted = 32,
+        TransitionCompleted = 64,
+
+        // Factory confirmations
+        FactoryCreated = 128,
+        FactoryCached = 256,
+        FactoryUnloaded = 512,
+
+        // Error or diagnostic conditions
+        ErrorDetected = 1024,
+        RecoveryAttempted = 2048,
+        RecoverySucceeded = 4096,
+
+        // Pipeline synchronization
+        PipelineSynchronized = 8192,
+        PipelineDesynchronized = 16384
+    }
+
+    // -------------------------------------------------------------------------------------------------
+    //  CLASS: SceneManager
+    // -------------------------------------------------------------------------------------------------
+    public sealed class SceneManager
+    {
+        private readonly SceneFactory _factory;
+        private readonly StateMachine _stateMachine;
+
         private BaseScene? _currentScene;
-        private BaseScene? _nextScene;
-        private readonly Dictionary<string, BaseScene> _loadedScenes;
+        private SceneTransitions? _activeTransition;
+        private string? _nextSceneName;
 
-        private bool _isTransitioning;
-        private float _transitionTimer;
-        private float _transitionDuration = 1.0f;
-
-        private GameRoot? _gameRoot;
-        internal string GameStateType;
+        private SceneProcessingFlags _processingFlags = SceneProcessingFlags.None;
+        private SceneFactory sceneFactory;
 
         public BaseScene? CurrentScene => _currentScene;
-        public BaseScene? ActiveScene => _currentScene;
-        public bool IsTransitioning => _isTransitioning;
-        public float TransitionDuration => _transitionDuration;
-
-        public string GameState =>
-            _currentScene?.GetType().Name.Replace("Scene", "") ?? "Unknown";
+        public SceneProcessingFlags ProcessingState => _processingFlags;
 
         public event Action<string, string>? OnSceneTransitionStarted;
         public event Action<string, string>? OnSceneTransitionCompleted;
 
-        public SceneManager()
+        public SceneManager(SceneFactory factory, StateMachine stateMachine)
         {
-            _loadedScenes = new Dictionary<string, BaseScene>();
+            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+            _stateMachine = stateMachine ?? throw new ArgumentNullException(nameof(stateMachine));
         }
 
-        // ---------------------------------------------------------------------
-        // GameRoot Wiring
-        // ---------------------------------------------------------------------
-        public void SetGameRoot(GameRoot root)
+        //public SceneManager(SceneFactory sceneFactory) => this.sceneFactory = sceneFactory;
+
+        //public SceneManager() invalid constructor removed in 2026-07-30 refactor
+        //{
+
+        //}
+
+        // -------------------------------------------------------------------------------------------------
+        //  FLAG MANAGEMENT
+        // -------------------------------------------------------------------------------------------------
+        private void SetFlag(SceneProcessingFlags flag)
         {
-            _gameRoot = root;
+            _processingFlags |= flag;
         }
 
-        // ---------------------------------------------------------------------
-        // Transition Configuration
-        // ---------------------------------------------------------------------
-        public void SetTransitionDuration(float duration)
+        private void ClearFlags()
         {
-            _transitionDuration = System.Math.Max(0.1f, duration);
-            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
-                $"SceneManager: Transition duration set to {_transitionDuration:F2}s");
+            _processingFlags = SceneProcessingFlags.None;
         }
 
-        // ---------------------------------------------------------------------
-        // Scene Loading (Deterministic Lifecycle: OnLoad)
-        // ---------------------------------------------------------------------
-        public BaseScene? LoadScene(string sceneName)
-        {
-            if (string.IsNullOrWhiteSpace(sceneName))
-            {
-                DLogger.Log(LogSubsystems.Scenes, LogLevel.Error,
-                    "SceneManager: Cannot load scene with null or empty name");
-                return null;
-            }
-
-            if (_loadedScenes.TryGetValue(sceneName, out var existing))
-                return existing;
-
-            BaseScene? scene = CreateScene(sceneName);
-            if (scene == null)
-            {
-                DLogger.Log(LogSubsystems.Scenes, LogLevel.Error,
-                    $"SceneManager: Unknown scene '{sceneName}'");
-                return null;
-            }
-
-            try
-            {
-                if (_gameRoot != null)
-                    scene.SetGameRoot(_gameRoot);
-
-                scene.SetSceneManager(this);
-
-                // Deterministic preload lifecycle
-                scene.OnLoad();
-
-                _loadedScenes[sceneName] = scene;
-
-                DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
-                    $"SceneManager: Scene '{sceneName}' loaded (OnLoad completed)");
-
-                return scene;
-            }
-            catch (Exception ex)
-            {
-                DLogger.Log(LogSubsystems.Scenes, LogLevel.Error,
-                    $"SceneManager: Exception loading scene '{sceneName}': {ex.Message}");
-                return null;
-            }
-        }
-
-        // ---------------------------------------------------------------------
-        // Scene Unloading (Deterministic Lifecycle: OnUnload)
-        // ---------------------------------------------------------------------
-        public bool UnloadScene(string sceneName)
-        {
-            if (!_loadedScenes.ContainsKey(sceneName))
-                return false;
-
-            if (_currentScene != null &&
-                GetSceneName(_currentScene) == sceneName)
-            {
-                DLogger.Log(LogSubsystems.Scenes, LogLevel.Error,
-                    $"SceneManager: Cannot unload active scene '{sceneName}'");
-                return false;
-            }
-
-            var scene = _loadedScenes[sceneName];
-            scene.OnUnload();
-            _loadedScenes.Remove(sceneName);
-
-            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
-                $"SceneManager: Scene '{sceneName}' unloaded (OnUnload completed)");
-
-            return true;
-        }
-
-        // ---------------------------------------------------------------------
-        // Scene Switching (Immediate)
-        // ---------------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------------
+        //  IMMEDIATE SCENE SWITCHING
+        // -------------------------------------------------------------------------------------------------
         public bool SetScene(string sceneName)
         {
-            var scene = LoadScene(sceneName);
-            if (scene == null)
+            ClearFlags();
+
+            var newScene = _factory.Create(sceneName);
+            if (newScene == null)
+            {
+                SetFlag(SceneProcessingFlags.ErrorDetected);
                 return false;
+            }
 
-            string fromName = _currentScene != null ? GetSceneName(_currentScene) : "None";
-            string toName = GetSceneName(scene);
+            SetFlag(SceneProcessingFlags.FactoryCreated);
+            SetFlag(SceneProcessingFlags.FactoryCached);
+            SetFlag(SceneProcessingFlags.SceneLoaded);
 
-            _currentScene?.OnUnload();
-
-            _currentScene = scene;
-            _currentScene.OnStart();
-
-            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
-                $"SceneManager: Immediate switch from '{fromName}' to '{toName}'");
+            string fromName = _currentScene?.GetType().Name.Replace("Scene", "") ?? "None";
+            string toName = newScene.GetType().Name.Replace("Scene", "");
 
             OnSceneTransitionStarted?.Invoke(fromName, toName);
-            OnSceneTransitionCompleted?.Invoke(fromName, toName);
+            SetFlag(SceneProcessingFlags.TransitionStarted);
 
+            // Previous scene cleanup is handled by StateMachine.SetScene(...)
+            _currentScene = newScene;
+
+            // Hand off active scene ownership to StateMachine
+            _stateMachine.SetScene(_currentScene);
+            SetFlag(SceneProcessingFlags.SceneStarted);
+
+            OnSceneTransitionCompleted?.Invoke(fromName, toName);
+            SetFlag(SceneProcessingFlags.TransitionCompleted);
+
+            SetFlag(SceneProcessingFlags.PipelineSynchronized);
             return true;
         }
 
-        // ---------------------------------------------------------------------
-        // Scene Switching (Timed Transition)
-        // ---------------------------------------------------------------------
-        public bool SwitchToScene(string sceneName)
+        // -------------------------------------------------------------------------------------------------
+        //  TIMED SCENE SWITCHING (via SceneTransitions)
+        // -------------------------------------------------------------------------------------------------
+        public bool SwitchSceneWithTransition(string sceneName, SceneTransitionType type, float duration)
         {
-            if (_isTransitioning)
+            ClearFlags();
+
+            if (_activeTransition?.IsPlaying == true)
+            {
+                SetFlag(SceneProcessingFlags.ErrorDetected);
                 return false;
+            }
 
-            var next = LoadScene(sceneName);
-            if (next == null)
-                return false;
+            _nextSceneName = sceneName;
+            _activeTransition = new SceneTransitions(type, duration);
 
-            return StartTransition(_currentScene, next);
-        }
+            _activeTransition.OnTransitionCompleted += () =>
+            {
+                SetFlag(SceneProcessingFlags.TransitionCompleted);
 
-        public bool StartTransition(BaseScene? fromScene, BaseScene toScene)
-        {
-            if (_isTransitioning)
-                return false;
+                if (_nextSceneName != null)
+                    SetScene(_nextSceneName);
 
-            _nextScene = toScene;
-            _isTransitioning = true;
-            _transitionTimer = 0f;
+                _nextSceneName = null;
+            };
 
-            string fromName = fromScene != null ? GetSceneName(fromScene) : "None";
-            string toName = GetSceneName(toScene);
+            _activeTransition.Execute(() =>
+            {
+                SetFlag(SceneProcessingFlags.TransitionCompleted);
+            });
 
-            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
-                $"SceneManager: Transition started from '{fromName}' to '{toName}' " +
-                $"(duration {_transitionDuration:F2}s)");
-
-            OnSceneTransitionStarted?.Invoke(fromName, toName);
-
+            SetFlag(SceneProcessingFlags.TransitionStarted);
             return true;
         }
 
-        private void CompleteTransition()
-        {
-            if (!_isTransitioning || _nextScene == null)
-                return;
-
-            string fromName = _currentScene != null ? GetSceneName(_currentScene) : "None";
-            string toName = GetSceneName(_nextScene);
-
-            _currentScene?.OnUnload();
-
-            _currentScene = _nextScene;
-            _nextScene = null;
-
-            _currentScene.OnStart();
-
-            _isTransitioning = false;
-            _transitionTimer = 0f;
-
-            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
-                $"SceneManager: Transition completed from '{fromName}' to '{toName}'");
-
-            OnSceneTransitionCompleted?.Invoke(fromName, toName);
-        }
-
-        // ---------------------------------------------------------------------
-        // Update & Render (Deterministic Lifecycle)
-        // ---------------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------------
+        //  UPDATE & RENDER DELEGATION (TRANSITION ONLY)
+        // -------------------------------------------------------------------------------------------------
         public void Update(float deltaTime)
         {
-            if (_isTransitioning && _nextScene != null)
+            if (_activeTransition?.IsPlaying == true)
             {
-                _transitionTimer += deltaTime;
-                if (_transitionTimer >= _transitionDuration)
-                    CompleteTransition();
-            }
-            else
-            {
-                _currentScene?.OnUpdate(deltaTime);
+                _activeTransition.Update(deltaTime);
+                SetFlag(SceneProcessingFlags.SceneUpdated);
             }
         }
 
-        public void Render(IRenderContext context)
+        public void Render(D3D11Adapter_Core adapter_Core)
         {
-            _currentScene?.OnRender(context);
-        }
-
-        // ---------------------------------------------------------------------
-        // Helpers
-        // ---------------------------------------------------------------------
-        private BaseScene? CreateScene(string sceneName)
-        {
-            return sceneName switch
+            if (_activeTransition?.IsPlaying == true)
             {
-                "MainMenu" => new MainMenuScene(),
-                "Gameplay" => new GameScene(),
-                "Loading" => new LoadingScene(),
-                "Pause" => new PauseScene(),
-                _ => null
-            };
+                _activeTransition.Render(adapter_Core);
+                SetFlag(SceneProcessingFlags.SceneRendered);
+            }
         }
 
-        private string GetSceneName(BaseScene scene)
-        {
-            return scene.GetType().Name.Replace("Scene", "");
-        }
+        // -------------------------------------------------------------------------------------------------
+        //  TRANSITION HELPERS (for UI/HUD renderers)
+        // -------------------------------------------------------------------------------------------------
+        public float GetFadeAlpha() =>
+            _activeTransition?.GetFadeAlpha() ?? 0f;
 
-        public string[] GetLoadedSceneNames() => _loadedScenes.Keys.ToArray();
-        public int GetLoadedSceneCount() => _loadedScenes.Count;
-        public bool IsSceneLoaded(string name) => _loadedScenes.ContainsKey(name);
-
-        public void Cleanup()
-        {
-            foreach (var scene in _loadedScenes.Values)
-                scene.OnUnload();
-
-            _loadedScenes.Clear();
-            _currentScene = null;
-            _nextScene = null;
-            _isTransitioning = false;
-            _transitionTimer = 0f;
-
-            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
-                "SceneManager: Cleanup completed, all scenes unloaded");
-        }
-
-        internal void QueueScene(string name)
-        {
-            throw new NotImplementedException();
-        }
+        public float GetSlideOffset() =>
+            _activeTransition?.GetSlideOffset() ?? 0f;
     }
 }

@@ -1,3 +1,29 @@
+// ====================================================================================================
+//  FILE: PauseMenuUI.cs
+//  PATH: ./Engine/UI/Menus/
+//  MODULE: UI
+//
+//  ROLE:
+//      Provide UI layout, interaction logic, or HUD rendering.
+//
+//  RESPONSIBILITIES:
+//      - Provide Show() behavior for the UI subsystem.
+//      - Provide Hide() behavior for the UI subsystem.
+//      - Provide Update() behavior for the UI subsystem.
+//      - Provide Render() behavior for the UI subsystem.
+//      - Provide Initialize() behavior for the UI subsystem.
+//      - Provide ShowMessage() behavior for the UI subsystem.
+//      - Provide ShowError() behavior for the UI subsystem.
+//      - Provide ShowLoadGameDialog() behavior for the UI subsystem.
+//      - Provide ShowQuitConfirmation() behavior for the UI subsystem.
+//      - Provide HandleInput() behavior for the UI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    PauseMenuUI.cs
 Folder:  Engine/UI/
@@ -6,13 +32,7 @@ Features: Display pause options and handle user interactions.
 */
 
 using System;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Input;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
@@ -65,10 +85,7 @@ namespace SASZombieAssaultTD.Engine.UI
         ///<summary>
         ///Creates a new PauseMenuUI instance.
         ///</summary>
-        public PauseMenuUI()
-        {
-            IsVisible = false;
-        }
+        public PauseMenuUI() => IsVisible = false;
 
         ///
 
@@ -103,7 +120,7 @@ namespace SASZombieAssaultTD.Engine.UI
         ///Renders the pause menu.
         ///</summary>
         ///<param name="context">Render context.</param>
-        public void Render(IRenderContext context)
+        public void Render(D3D11Adapter_Core context)
         {
             if (!IsVisible) return;
 
@@ -156,7 +173,7 @@ namespace SASZombieAssaultTD.Engine.UI
         ///Handles input for the pause menu.
         ///</summary>
         ///<param name="input">Input data to handle.</param>
-        public void HandleInput(SASZombieAssaultTD.Engine.InputData input)
+        public void HandleInput(InputData input)
         {
             //Handle pause menu input
         }
@@ -164,3 +181,4 @@ namespace SASZombieAssaultTD.Engine.UI
         ///
     }
 }
+

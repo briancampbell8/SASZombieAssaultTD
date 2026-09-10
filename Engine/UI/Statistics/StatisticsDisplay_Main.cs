@@ -1,3 +1,26 @@
+// ====================================================================================================
+//  FILE: StatisticsDisplay_Main.cs
+//  PATH: ./Engine/UI/Statistics/
+//  MODULE: UI
+//
+//  ROLE:
+//      Provide UI layout, interaction logic, or HUD rendering.
+//
+//  RESPONSIBILITIES:
+//      - Provide Show() behavior for the UI subsystem.
+//      - Provide Hide() behavior for the UI subsystem.
+//      - Provide Update() behavior for the UI subsystem.
+//      - Provide Render() behavior for the UI subsystem.
+//      - Provide Initialize() behavior for the UI subsystem.
+//      - Provide Initialize() behavior for the UI subsystem.
+//      - Provide Initialize() behavior for the UI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    StatisticsDisplay.cs
 Folder:  Engine/UI/
@@ -6,11 +29,7 @@ Features: Display game statistics, scores, and performance metrics.
 */
 
 using System;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.State;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
@@ -23,6 +42,8 @@ namespace SASZombieAssaultTD.Engine.UI
         public int WavesCompleted { get; set; }
         public int EnemiesDefeated { get; set; }
         public float TimeElapsed { get; set; }
+        public int TotalScore { get; internal set; }
+        public int TotalKills { get; internal set; }
     }
 
     public class GameStatistics
@@ -31,6 +52,7 @@ namespace SASZombieAssaultTD.Engine.UI
         public int HighScore { get; set; }
         public int GamesPlayed { get; set; }
         public int GamesWon { get; set; }
+        public int TotalKills { get; internal set; }
     }
 
     ///<summary>
@@ -109,7 +131,7 @@ namespace SASZombieAssaultTD.Engine.UI
         ///Renders the statistics display.
         ///</summary>
         ///<param name="context">Render context.</param>
-        public void Render(IRenderContext context)
+        public void Render(D3D11Adapter_Core adapter_Core)
         {
             if (!IsVisible) return;
 
@@ -134,9 +156,8 @@ namespace SASZombieAssaultTD.Engine.UI
         public void Initialize(VictoryStatistics victoryStats)
         {
             IsVisible = false;
-            //TODO: Fix VictoryStatistics properties - TotalScore and TotalKills don't exist
-            //Score = victoryStats?.TotalScore ?? 0;
-            //Kills = victoryStats?.TotalKills ?? 0;
+            Score = victoryStats?.TotalScore ?? 0;
+            Kills = victoryStats?.TotalKills ?? 0;
             Score = 0;
             Kills = 0;
             Time = TimeSpan.Zero;
@@ -149,14 +170,14 @@ namespace SASZombieAssaultTD.Engine.UI
         public void Initialize(GameStatistics gameStats)
         {
             IsVisible = false;
-            //TODO: Fix GameStatistics properties - TotalScore and TotalKills don't exist
-            //Score = gameStats?.TotalScore ?? 0;
-            //Kills = gameStats?.TotalKills ?? 0;
+            Score = gameStats?.TotalScore ?? 0;
+            Kills = gameStats?.TotalKills ?? 0;
             Score = 0;
             Kills = 0;
             Time = TimeSpan.Zero;
         }
 
-        ///
+
     }
 }
+

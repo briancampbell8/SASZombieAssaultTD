@@ -1,6 +1,24 @@
-using System.Collections.Generic;
+// ====================================================================================================
+//  FILE: Blackboard.cs
+//  PATH: ./Engine/AI/Blackboard/
+//  MODULE: AI
+//
+//  ROLE:
+//      Provide deterministic AI behavior, decision logic, or state evaluation.
+//
+//  RESPONSIBILITIES:
+//      - Provide Set() behavior for the AI subsystem.
+//      - Provide Get() behavior for the AI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.AI.Blackboard
 {
@@ -32,6 +50,7 @@ namespace SASZombieAssaultTD.Engine.AI.Blackboard
         }
     }
 }
+
 
 
 

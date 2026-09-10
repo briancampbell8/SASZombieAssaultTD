@@ -1,3 +1,23 @@
+// ====================================================================================================
+//  FILE: AssetBundle_Processors.cs
+//  PATH: ./Engine/Resources/Assets/Bundle/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetBundle_Processors module.
+//
+//  RESPONSIBILITIES:
+//      - Provide CompressAsync() behavior for the Core subsystem.
+//      - Provide DecompressAsync() behavior for the Core subsystem.
+//      - Provide Dispose() behavior for the Core subsystem.
+//      - Provide Dispose() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //============================================================================
 //File:        AssetBundle_Processors.cs
@@ -46,16 +66,10 @@
 */
 
 
-using System;
-//
+using System;   //
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
-
-
-
-
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -115,3 +129,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+

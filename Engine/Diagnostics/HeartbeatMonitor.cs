@@ -28,7 +28,7 @@
 // ====================================================================================================
 
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {

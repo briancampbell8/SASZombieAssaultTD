@@ -1,450 +1,327 @@
-/*
-File:    NavigationGrid.cs
-Purpose: Grid-based navigation system for pathfinding.
-*/
-using SASZombieAssaultTD.Engine.Core;
+// ====================================================================================================
+//  FILE: NavigationGrid.cs
+//  PATH: Engine/Navigation/NavigationGrid.cs
+//  SUBSYSTEM: Navigation
 //
-using SASZombieAssaultTD.Engine.Towers;
-using SASZombieAssaultTD.Engine.VectorMath;
+//  ROLE:
+//      NavigationGrid Pipeline Manager.
+//      Provides the gameplay-facing navigation API and orchestrates the pipeline between
+//      NavigationGridCore (grid storage), NavigationGridUtility (stateless helpers),
+//      and NavigationGridStats (analytics).
+//
+//  RESPONSIBILITIES:
+//      - Maintain a singleton instance for gameplay systems.
+//      - Manage high-level navigation state (CurrentPath, HasPath, occupancy flags, spawn points).
+//      - Delegate cell access to NavigationGridCore.
+//      - Delegate coordinate conversion and neighbor retrieval to NavigationGridUtility.
+//      - Delegate analytics to NavigationGridStats.
+//      - Provide gameplay-level operations such as IsWalkable, SetWalkable, UpdateEntityArea, SetOccupied.
+//      - Emit DLogger.Log trace statements for pipeline-level operations.
+//
+//  NON-RESPONSIBILITIES:
+//      - Storing grid cells (handled by NavigationGridCore).
+//      - Performing low-level math (handled by NavigationGridUtility).
+//      - Computing statistics (handled by NavigationGridStats).
+//      - Performing A* pathfinding (handled by AStarPathfinder).
+//
+//  ARCHITECTURAL NOTES:
+//      - Must remain a thin pipeline manager.
+//      - Must not duplicate low-level logic from Core or Utility.
+//      - Must not mutate NavigationGridCore cell arrays directly.
+// ====================================================================================================
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
-using Vector3 = SASZombieAssaultTD.Engine.VectorMath.Vector3;
-using Vector3Int = SASZombieAssaultTD.Engine.VectorMath.Vector3Int;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.VectorMath;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Navigation
 {
-    ///<summary>
-    ///Grid-based navigation system for pathfinding.
-    ///Represents a 2D grid where cells can be walkable or blocked.
-    ///</summary>
+    /// <summary>
+    /// NavigationGrid Pipeline Manager. Orchestrates NavigationGridCore, NavigationGridUtility, and
+    /// NavigationGridStats.
+    /// </summary>
     public sealed class NavigationGrid
     {
-        //Singleton instance to satisfy callers that expect NavigationGrid.Instance
+        // ----------------------------------------------------------------------------------------------------
+        // Singleton Pipeline Manager
+        // ----------------------------------------------------------------------------------------------------
         private static NavigationGrid? _instance;
-        private object TheType;
-        private object TheMember;
 
-        public static NavigationGrid? Instance
-        {
-            get => _instance;
-            set => _instance = value;
-        }
+        public static NavigationGrid Instance => _instance ??= new NavigationGrid();
 
-        ///<summary>
-        ///Helper to create and assign a global instance.
-        ///Call once during initialization (e.g. GameRoot/Bootstrap).
-        ///</summary>
-        public static void InitializeInstance(int width, int height) => Instance = new NavigationGrid(width, height);
+        private NavigationGridCore _core;
+        private int v1;
+        private int v2;
+        private object cellSize;
+        private object seed;
 
-        ///<summary>
-        ///Clears the global instance (useful for tests or shutdown).
-        ///</summary>
-        public static void ClearInstance() => Instance = null;
-
-        private readonly bool[,] _walkable;
-        private readonly int _width;
-        private readonly int _height;
-
-        ///<summary>
-        ///Gets or sets whether the grid has a path.
-        ///</summary>
-        public bool HasPath { get; set; } = false;
-
-        ///<summary>
-        ///Gets the current path through the grid.
-        ///</summary>
+        // ----------------------------------------------------------------------------------------------------
+        // Gameplay-Level State
+        // ----------------------------------------------------------------------------------------------------
         public IReadOnlyList<Vector3Int> CurrentPath { get; private set; } = Array.Empty<Vector3Int>();
 
-        ///<summary>
-        ///Clears the current path.
-        ///</summary>
-        public void ClearPath()
+        public bool HasPath { get; private set; }
+        public bool IsInitialized { get; private set; }
+
+        //public bool IsTileOccupied { get; private set; }
+        // Change this:
+        // public bool IsTileOccupied { get; private set; }
+
+        // To this:
+
+
+
+        public bool IsOccupied { get; private set; }
+        private readonly List<Vector3> _spawnPoints = new();
+        public IReadOnlyList<Vector3> SpawnPoints => _spawnPoints;
+
+        public int Width { get; internal set; }
+        public int Height { get; internal set; }
+        public int CellSize { get; internal set; }
+        public Vector3 WorldOrigin { get; set; }
+        public int[,] Terrain { get; internal set; }
+
+
+
+        // ----------------------------------------------------------------------------------------------------
+        // Initialization
+        // ----------------------------------------------------------------------------------------------------
+        private NavigationGrid(int x = 0, int y = 0)
         {
-            CurrentPath = Array.Empty<Vector3Int>();
-        }
-
-        ///<summary>
-        ///Gets navigation grid statistics.
-        ///</summary>
-        ///<returns>Navigation grid statistics.</returns>
-        public NavigationGridStats GetStats()
-        {
-            int totalCells = Width * Height;
-            int blockedCells = 0;
-            int occupiedCells = 0;
-
-            for (int x = 0; x < Width; x++)
-            {
-                for (int y = 0; y < Height; y++)
-                {
-                    if (!_walkable[x, y])
-                    {
-                        blockedCells++;
-                    }
-                    else if (IsOccupied(new Vector3Int(x, y)))
-                    {
-                        occupiedCells++;
-                    }
-                }
-            }
-
-            int freeCells = totalCells - blockedCells - occupiedCells;
-            float occupancyRatio = totalCells > 0 ? (float)occupiedCells / totalCells : 0f;
-
-            return new NavigationGridStats
-            {
-                TotalCells = totalCells,
-                BlockedCells = blockedCells,
-                OccupiedCells = occupiedCells,
-                FreeCells = freeCells,
-                OccupancyRatio = occupancyRatio
-            };
-        }
-
-        ///<summary>
-        ///Gets the width of the grid.
-        ///</summary>
-        public int Width => _width;
-
-        ///<summary>
-        ///Gets the height of the grid.
-        ///</summary>
-        public int Height => _height;
-
-        ///<summary>
-        ///Gets the size of each grid cell in world units.
-        ///Phase 3: Navigation System Completion - Fix CS1061 errors
-        ///</summary>
-        public float CellSize { get; } = 1.0f;
-
-        ///<summary>
-        ///Initializes a new NavigationGrid.
-        ///</summary>
-        ///<param name="width">Grid width.</param>
-        ///<param name="height">Grid height.</param>
-        ///<exception cref="ArgumentOutOfRangeException">Thrown when width or height is less than or equal to zero.</exception>
-        public NavigationGrid(int width, int height)
-        {
-            if (width <= 0 || height <= 0)
-                throw new ArgumentOutOfRangeException(nameof(width), "Grid dimensions must be positive.");
-
-            _width = width;
-            _height = height;
-            _walkable = new bool[width, height];
-
-            InitializeGrid();
+            Width = x;
+            Height = y;
         }
 
         public NavigationGrid()
         {
+            int width = 0;
+            int height = 0;
+            Width = width;
+            Height = height;
         }
 
-        private void InitializeGrid()
+        public NavigationGrid(int v1, int v2, object cellSize, object seed)
         {
-            //Initialize all cells as walkable
-            for (int y = 0; y < _height; y++)
-            {
-                for (int x = 0; x < _width; x++)
-                {
-                    _walkable[x, y] = true;
-                }
-            }
+            this.v1 = v1;
+            this.v2 = v2;
+            this.cellSize = cellSize;
+            this.seed = seed;
         }
 
-        ///<summary>
-        ///Checks if a position is walkable.
-        ///</summary>
-        ///<param name="position">Position to check.</param>
-        ///<returns>True if walkable.</returns>
-        public bool IsWalkable(Vector3Int position) =>
-            IsInBounds(position) && _walkable[position.X, position.Y];
-
-        ///<summary>
-        ///Checks if a world position is walkable.
-        ///</summary>
-        ///<param name="position">World position to check.</param>
-        ///<returns>True if walkable.</returns>
-        public bool IsWalkable(Vector3 position) =>
-            IsWalkable(new Vector3Int((int)position.X, (int)position.Y));
-
-        ///<summary>
-        ///Checks if a grid position is walkable using coordinate components.
-        ///Adapts component-based walkability calls to the canonical IsWalkable implementation.
-        ///</summary>
-        ///<param name="x">X coordinate.</param>
-        ///<param name="y">Y coordinate.</param>
-        ///<returns>True if walkable.</returns>
-        public bool IsWalkable(int x, int y)
+        public class UseNavigationGrid()
         {
-            var position = new Vector3Int(x, y);
-            return IsWalkable(position);
+
+            public object GetRandomNavigablePoint { get; private set; }
         }
 
-        ///<summary>
-        ///Sets a cell as walkable or blocked.
-        ///</summary>
-        ///<param name="position">Cell position.</param>
-        ///<param name="walkable">Whether the cell is walkable.</param>
-        public void SetWalkable(Vector3Int position, bool walkable)
+        public void InitializeInstance(int width, int height, float cellSize = 1.0f)
         {
-            if (IsInBounds(position))
-            {
-                _walkable[position.X, position.Y] = walkable;
-            }
+            _core = new NavigationGridCore(width, height, cellSize);
+            IsInitialized = true;
+
+            DLogger.Log(
+                $"Navigation.NavigationGrid.InitializeInstance: Width={width} Height={height} CellSize={cellSize}");
         }
 
-        ///<summary>
-        ///Updates an area on the grid to be walkable or blocked.
-        ///</summary>
-        ///<param name="position">Top-left position of the area.</param>
-        ///<param name="size">Size of the area.</param>
-        ///<param name="isWalkable">Whether the area is walkable.</param>
-        public void UpdateEntityArea(Vector3 position, Vector3 size, bool isWalkable)
+        public void ClearInstance()
         {
-            var startX = System.Math.Max(0, (int)position.X);
-            var startY = System.Math.Max(0, (int)position.Y);
-            var endX = System.Math.Min(Width, startX + (int)size.X);
-            var endY = System.Math.Min(Height, startY + (int)size.Y);
+            _core = null;
+            IsInitialized = false;
+            CurrentPath = Array.Empty<Vector3Int>();
+            HasPath = false;
 
-            for (int x = startX; x < endX; x++)
-            {
-                for (int y = startY; y < endY; y++)
-                {
-                    _walkable[x, y] = isWalkable;
-                }
-            }
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Navigation.NavigationGrid.ClearInstance: Core cleared.");
         }
 
-        ///<summary>
-        ///Gets the total number of cells in the grid.
-        ///</summary>
-        public int TotalCells => Width * Height;
+        // ----------------------------------------------------------------------------------------------------
+        // Pipeline Delegation: Core Access
+        // ----------------------------------------------------------------------------------------------------
+        public NavigationCellGridCore GetCell(int x, int y)
+        {
+            return _core?.GetCell(x, y);
+        }
 
-        ///<summary>
-        ///Converts a world position to a grid position.
-        ///Phase 3: Navigation System Completion - Fix CS1061 errors
-        ///</summary>
-        ///<param name="worldPosition">The world position.</param>
-        ///<returns>The corresponding grid position.</returns>
+        public NavigationCellGridCore GetCell(Vector3Int pos)
+        {
+            return _core?.GetCell(pos);
+        }
+
+        public bool IsInBounds(int x, int y)
+        {
+            return _core?.IsInBounds(x, y) ?? false;
+        }
+
+        public bool IsInBounds(Vector3Int pos)
+        {
+            return _core?.IsInBounds(pos) ?? false;
+        }
+        public bool IsTileOccupied(int x, int y)
+        {
+            return _core?.IsTileOccupied(x, y) ?? false;
+        }
+
+        public bool IsTileOccupied(Vector3Int pos)
+        {
+            return _core?.IsTileOccupied(pos) ?? false;
+        }
+        // ----------------------------------------------------------------------------------------------------
+        // Pipeline Delegation: Utility Operations
+        // ----------------------------------------------------------------------------------------------------
         public Vector3Int WorldToGrid(Vector3 worldPosition)
         {
-            int gx = (int)(worldPosition.X / CellSize);
-            int gy = (int)(worldPosition.Y / CellSize);
-            return new Vector3Int(gx, gy, 0);
+            return NavigationGridUtility.WorldToGrid(worldPosition, _core.CellSize);
         }
 
-        ///<summary>
-        ///Converts grid coordinates to world coordinates.
-        ///</summary>
-        ///<param name="gridPosition">The grid position.</param>
-        ///<returns>The corresponding world position.</returns>
         public Vector3 GridToWorld(Vector3Int gridPosition)
         {
-            float wx = gridPosition.X * CellSize;
-            float wy = gridPosition.Y * CellSize;
-            return new Vector3(wx, wy, 0);
+            return NavigationGridUtility.GridToWorld(gridPosition, _core.CellSize);
         }
 
-        ///<summary>
-        ///Gets the cell at the specified grid position.
-        ///Phase 3: Navigation System Completion - Fix CS1061 errors
-        ///</summary>
-        ///<param name="x">Grid X coordinate.</param>
-        ///<param name="y">Grid Y coordinate.</param>
-        ///<returns>The NavigationCell at the position.</returns>
-        public NavigationCell GetCell(int x, int y)
+        public List<NavigationCellGridCore> GetNeighbors(Vector3Int pos, bool allowDiagonal)
         {
-            if (x >= 0 && x < Width && y >= 0 && y < Height)
+            return NavigationGridUtility.GetNeighbors(_core, pos, allowDiagonal);
+        }
+
+        // ----------------------------------------------------------------------------------------------------
+        // Gameplay-Level Operations
+        // ----------------------------------------------------------------------------------------------------
+        /// <summary>
+        /// Determines whether the specified cell is walkable.
+        /// </summary>
+        public bool IsWalkable(int x, int y)
+        {
+            var pos = new Vector3Int(x, y, 0);
+            var cell = _core?.GetCell(pos);
+            return cell != null && cell.IsWalkable;
+        }
+
+        /// <summary>
+        /// Determines whether the specified cell is walkable.
+        /// </summary>
+        public bool IsWalkable(Vector3Int pos)
+        {
+            var cell = _core?.GetCell(pos);
+            return cell != null && cell.IsWalkable;
+        }
+
+        /// <summary>
+        /// Determines whether the specified cell is walkable.
+        /// </summary>
+        public bool IsWalkable(int x, int y, Vector3Int pos)
+        {
+            var cell = _core?.GetCell(pos);
+            return !(cell == null || !cell.IsWalkable);
+        }
+
+        /// <summary>
+        /// Determines whether the specified cell is walkable.
+        /// </summary>
+        public bool IsWalkable(int x, int y, Vector3 worldPos)
+        {
+            return IsWalkable(
+                x,
+                y,
+                WorldToGrid(worldPos));
+        }
+
+        public void SetWalkable(Vector3Int pos, bool walkable)
+        {
+            var cell = _core?.GetCell(pos);
+            if (cell != null)
             {
-                return new NavigationCell(new Vector3Int(x, y), _walkable[x, y]);
+                cell.IsWalkable = walkable;
+
+                DLogger.Log(
+                    $"Navigation.NavigationGrid.SetWalkable: Pos=({pos.X},{pos.Y}) Walkable={walkable}");
             }
-            return null;
         }
 
-        ///<summary>
-        ///Gets the cell at the specified grid position.
-        ///</summary>
-        ///<param name="gridPosition">The grid position.</param>
-        ///<returns>The NavigationCell at the position, or null if out of bounds.</returns>
-        public NavigationCell GetCell(Vector3Int gridPosition)
+        public void UpdateEntityArea(Vector3 worldPos, Vector3 size, bool walkable)
         {
-            if (IsInBounds(gridPosition))
+            var start = WorldToGrid(worldPos);
+
+            for (int x = 0; x < (int)size.X; x++)
             {
-                return new NavigationCell(gridPosition, _walkable[gridPosition.X, gridPosition.Y]);
-            }
-            return null;
-        }
-
-        ///<summary>
-        ///Gets the neighbors of the specified grid position.
-        ///</summary>
-        ///<param name="gridPosition">The grid position.</param>
-        ///<param name="allowDiagonal">Whether to include diagonal neighbors.</param>
-        ///<returns>A list of neighboring cells.</returns>
-        public List<NavigationCell> GetNeighbors(Vector3Int gridPosition, bool allowDiagonal)
-        {
-            var neighbors = new List<NavigationCell>();
-
-            int[,] directions = allowDiagonal
-                ? new int[,] { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } }
-                : new int[,] { { -1, 0 }, { 0, -1 }, { 0, 1 }, { 1, 0 } };
-
-            for (int i = 0; i < directions.GetLength(0); i++)
-            {
-                var neighborPosition = new Vector3Int(gridPosition.X + directions[i, 0], gridPosition.Y + directions[i, 1]);
-                if (IsInBounds(neighborPosition))
+                for (int y = 0; y < (int)size.Y; y++)
                 {
-                    neighbors.Add(new NavigationCell(neighborPosition, _walkable[neighborPosition.X, neighborPosition.Y]));
+                    var pos = new Vector3Int(start.X + x, start.Y + y, 0);
+
+                    if (IsInBounds(pos))
+                        SetWalkable(pos, walkable);
                 }
             }
 
-            return neighbors;
+            DLogger.Log(
+                $"Navigation.NavigationGrid.UpdateEntityArea: Start=({start.X},{start.Y}) Size=({size.X},{size.Y}) Walkable={walkable}");
         }
 
-        public bool IsInBounds(int x, Vector3Int position) =>
-            position.X >= 0 && position.X < Width && position.Y >= 0 && position.Y < Height;
-
-        ///<summary>
-        ///Checks if a grid position is within bounds.
-        ///Adapts single-parameter bounds checking calls to the canonical IsInBounds implementation.
-        ///</summary>
-        ///<param name="position">Grid position to check.</param>
-        ///<returns>True if position is within grid bounds.</returns>
-        public bool IsInBounds(Vector3Int position)
+        public void SetOccupied(int startX, int startY, Vector3Int size, bool occupied)
         {
-            return position.X >= 0 && position.X < Width && position.Y >= 0 && position.Y < Height;
-        }
-
-        //Placeholder: detect if a cell is occupied (implementation project-specific)
-        private bool IsOccupied(Vector3Int pos) => false;
-
-        ///<summary>
-        ///Sets a cell as occupied or unoccupied.
-        ///Adapts multi-parameter occupancy calls to the grid occupancy system.
-        ///</summary>
-        ///<param name="x">X coordinate.</param>
-        ///<param name="y">Y coordinate.</param>
-        ///<param name="gridSize">Size of the grid area to mark.</param>
-        ///<param name="occupied">Whether the area is occupied.</param>
-        public void SetOccupied(int x, int y, Vector3Int gridSize, bool occupied)
-        {
-            //Mark the area covered by the grid size as occupied/unoccupied
-            for (int dx = 0; dx < gridSize.X; dx++)
+            for (int x = 0; x < size.X; x++)
             {
-                for (int dy = 0; dy < gridSize.Y; dy++)
+                for (int y = 0; y < size.Y; y++)
                 {
-                    var pos = new Vector3Int(x + dx, y + dy);
+                    var pos = new Vector3Int(startX + x, startY + y, 0);
+
                     if (IsInBounds(pos))
+                        SetWalkable(pos, !occupied);
+                }
+            }
+
+            DLogger.Log(
+                $"Navigation.NavigationGrid.SetOccupied: Start=({startX},{startY}) Size=({size.X},{size.Y}) Occupied={occupied}");
+        }
+
+        // ----------------------------------------------------------------------------------------------------
+        // Path State
+        // ----------------------------------------------------------------------------------------------------
+        public void ClearPath()
+        {
+            CurrentPath = Array.Empty<Vector3Int>();
+            HasPath = false;
+
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Navigation.NavigationGrid.ClearPath: Path cleared.");
+        }
+
+        // ----------------------------------------------------------------------------------------------------
+        // Pipeline Delegation: Stats
+        // ----------------------------------------------------------------------------------------------------
+        public NavigationGridStats GetStats()
+        {
+            return new NavigationGridStats(_core, this);
+        }
+
+        internal Vector3 GetRandomNavigablePoint()
+        {
+            // Prefer configured spawn points if any exist
+            if (_spawnPoints != null && _spawnPoints.Count > 0)
+            {
+                var rnd = new Random();
+                int idx = rnd.Next(0, _spawnPoints.Count);
+                return _spawnPoints[idx];
+            }
+
+            // Otherwise, attempt to find a random walkable tile within the grid bounds
+            if (_core != null && Width > 0 && Height > 0)
+            {
+                var rnd = new Random();
+                const int maxAttempts = 50;
+                for (int i = 0; i < maxAttempts; i++)
+                {
+                    int x = rnd.Next(0, Width);
+                    int y = rnd.Next(0, Height);
+                    if (IsWalkable(x, y))
                     {
-                        //This would need to be integrated with an actual occupancy system
-                        //For now, this is a placeholder implementation
+                        var gridPos = new Vector3Int(x, y, 0);
+                        return GridToWorld(gridPos);
                     }
                 }
             }
-        }
 
-        internal bool IsOccupied(int x, int y)
-        {
-            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
-
-            throw new NotImplementedException();
-        }
-
-        internal bool IsInBounds(int x, int y)
-        {
-            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
-
-            throw new NotImplementedException();
-        }
-
-        internal TerrainType GetTerrainType(Vector3Int gridPosition)
-        {
-            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
-
-            throw new NotImplementedException();
-        }
-
-        internal System.Numerics.Vector2 GetRandomSpawnPoint()
-        {
-            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
-
-            throw new NotImplementedException();
+            // If nothing found, return the world origin as a safe fallback
+            return WorldOrigin;
         }
     }
-
-    ///<summary>
-    ///Represents a cell in the navigation grid.
-    ///</summary>
-    public class NavigationCell
-    {
-        internal object FCost;
-
-        public Vector3Int Position { get; }
-        public bool IsWalkable { get; }
-        public float MovementCost { get; }
-
-        //Updated to class to avoid cyclic dependency
-        public float GCost { get; set; }
-        public float HCost { get; set; }
-        public NavigationCell Parent { get; set; }
-        public int HeapIndex { get; set; }
-
-        ///<summary>
-        ///Gets or sets the grid position of the cell.
-        ///</summary>
-        public Vector3Int GridPosition { get; set; }
-
-        public NavigationCell(Vector3Int position, bool isWalkable, float movementCost = 1.0f)
-        {
-            Position = position;
-            IsWalkable = isWalkable;
-            MovementCost = movementCost;
-            GridPosition = position;
-            GCost = 0;
-            HCost = 0;
-            Parent = null;
-            HeapIndex = 0;
-        }
-
-        internal bool IsInOpenSet()
-        {
-            NotImplementedGuard.Hit("NOT_IMPLEMENTED"); return true;
-            throw new NotImplementedException();
-        }
-    }
-}
-
-///<summary>
-///Statistics for navigation grid analysis.
-///</summary>
-public class NavigationGridStats
-{
-    ///<summary>
-    ///Total number of cells in the grid.
-    ///</summary>
-    public int TotalCells { get; set; }
-
-    ///<summary>
-    ///Number of blocked cells.
-    ///</summary>
-    public int BlockedCells { get; set; }
-
-    ///<summary>
-    ///Number of occupied cells.
-    ///</summary>
-    public int OccupiedCells { get; set; }
-
-    ///<summary>
-    ///Number of free cells.
-    ///</summary>
-    public int FreeCells { get; set; }
-
-    ///<summary>
-    ///Ratio of occupied cells (0.0 to 1.0).
-    ///</summary>
-    public float OccupancyRatio { get; set; }
 }

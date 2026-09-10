@@ -1,3 +1,21 @@
+// ====================================================================================================
+//  FILE: AssetIntegration_Bundles.cs
+//  PATH: ./Engine/Resources/Assets/Integration/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetIntegration_Bundles module.
+//
+//  RESPONSIBILITIES:
+//      - Provide LoadBundle() behavior for the Core subsystem.
+//      - Provide UnloadBundle() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetIntegration_Bundles.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Integration\AssetIntegration_Bundles.cs
@@ -56,12 +74,12 @@
 //
 //    //Get bundle metadata
 //    var metadata = AssetSystem.GetBundleMetadata();
-//    Debug.WriteLine($"Bundle: {metadata.Name}, Assets: {metadata.AssetCount}");
+//    DLogger.Log($"Bundle: {metadata.Name}, Assets: {metadata.AssetCount}");
 //
 //    //Validate bundle integrity
 //    var validation = await AssetSystem.ValidateBundleAsync();
 //    if (!validation.IsValid)
-//        Debug.WriteLine($"Bundle validation failed: {string.Join(", ", validation.Errors)}");
+//        DLogger.Log($"Bundle validation failed: {string.Join(", ", validation.Errors)}");
 //============================================================================
 
 
@@ -69,8 +87,8 @@
 
 using System;
 using System.Linq;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -100,7 +118,8 @@ namespace SASZombieAssaultTD.Engine.Resources
                 _currentBundle?.Dispose();
                 _currentBundle = null;
 
-                System.Diagnostics.Debug.WriteLine("Info", "AssetSystem: Unloaded bundle");
+                DLogger.Log(LogSubsystems.ResourcesAssetsIntegration,
+                    "Info", "AssetSystem: Unloaded bundle");
             }
         }
 
@@ -116,19 +135,23 @@ namespace SASZombieAssaultTD.Engine.Resources
                 {
                     _currentBundle?.Dispose();
 
-                    System.Diagnostics.Debug.WriteLine("Info", $"AssetSystem: Loading bundle '{bundlePath}'");
+                    DLogger.Log(LogSubsystems.ResourcesAssetsIntegration,
+                        "Info", $"AssetSystem: Loading bundle '{bundlePath}'");
 
                     _currentBundle = AssetBundle.LoadFromFile(bundlePath);
 
-                    System.Diagnostics.Debug.WriteLine("Info",
+                    DLogger.Log(LogSubsystems.ResourcesAssetsIntegration,
+                        "Info",
                         $"AssetSystem: Bundle loaded ({_currentBundle.Entries.Count()} assets)");
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error", $"AssetSystem: Failed to load bundle '{bundlePath}': {ex.Message}");
+                    DLogger.Log(LogSubsystems.ResourcesAssetsIntegration,
+                        "Error", $"AssetSystem: Failed to load bundle '{bundlePath}': {ex.Message}");
                     throw;
                 }
             }
         }
     }
 }
+

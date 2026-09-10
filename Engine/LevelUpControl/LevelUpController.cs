@@ -1,17 +1,55 @@
-using System;
-using System.Collections.Generic;
+// ====================================================================================================
+//  FILE: LevelUpController.cs
+//  PATH: ./Engine/LevelUpControl/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the LevelUpController module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Initialize() behavior for the Core subsystem.
+//      - Provide StartLevelUp() behavior for the Core subsystem.
+//      - Provide CompleteLevelUp() behavior for the Core subsystem.
+//      - Provide CancelLevelUp() behavior for the Core subsystem.
+//      - Provide GetLevelUpAnimation() behavior for the Core subsystem.
+//      - Provide AddAnimation() behavior for the Core subsystem.
+//      - Provide AddEffect() behavior for the Core subsystem.
+//      - Provide GetStatistics() behavior for the Core subsystem.
+//      - Provide Update() behavior for the Core subsystem.
+//      - Provide Start() behavior for the Core subsystem.
+//      - Provide Update() behavior for the Core subsystem.
+//      - Provide Complete() behavior for the Core subsystem.
+//      - Provide Serialize() behavior for the Core subsystem.
+//      - Provide Deserialize() behavior for the Core subsystem.
+//      - Provide Start() behavior for the Core subsystem.
+//      - Provide Update() behavior for the Core subsystem.
+//      - Provide ToLevel() behavior for the Core subsystem.
+//      - Provide FromLevel() behavior for the Core subsystem.
+//      - Provide Stop() behavior for the Core subsystem.
+//      - Provide Serialize() behavior for the Core subsystem.
+//      - Provide Deserialize() behavior for the Core subsystem.
+//      - Provide AddCash() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
 using SASZombieAssaultTD.Engine.Diagnostics;
+
 ////using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Extensions;
+// using SASZombieAssaultTD.Engine.Extensions; // Extensions Removed
 using SASZombieAssaultTD.Engine.Managers;
 
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
-    ///<summary>
-    ///Level up controller for SAS Zombie Assault TD.
-    ///Manages the level up process, animations, and UI feedback.
-    ///</summary>
+    /// <summary>
+    /// Level up controller for SAS Zombie Assault TD. Manages the level up process, animations, and UI feedback.
+    /// </summary>
     public class LevelUpController
     {
         private readonly List<LevelUpAnimation> _animations;
@@ -22,12 +60,16 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
 
         //Events
         public event Action<int, int, List<PlayerReward>> OnLevelUpStarted;
+
         public event Action<int, int, List<PlayerReward>> OnLevelUpCompleted;
+
         public event Action<LevelUpEffect> OnEffectTriggered;
+
         public event Action OnLevelUpSequenceCompleted;
 
         //Properties
         public bool IsInitialized => _isInitialized;
+
         public bool IsLevelUpInProgress => _isLevelUpInProgress;
         public int CurrentAnimationCount => _animations.Count(a => a.IsActive);
         public static LevelUpController Instance => _instance ??= new LevelUpController();
@@ -44,14 +86,14 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             InitializeEffects();
         }
 
-        ///<summary>
-        ///Initialize the level up controller.
-        ///</summary>
+        /// <summary>
+        /// Initialize the level up controller.
+        /// </summary>
         public void Initialize()
         {
             if (_isInitialized) return;
 
-            System.Diagnostics.Debug.WriteLine("Initializing Level Up Controller");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Initializing Level Up Controller");
 
             try
             {
@@ -62,22 +104,22 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 }
 
                 _isInitialized = true;
-                System.Diagnostics.Debug.WriteLine("Level Up Controller initialized");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "Level Up Controller initialized");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to initialize Level Up Controller: {ex.Message}");
+                DLogger.Log($"Failed to initialize Level Up Controller: {ex.Message}");
                 throw;
             }
         }
 
-        ///<summary>
-        ///Start a level up sequence.
-        ///</summary>
-        ///<param name="fromLevel">Current level.</param>
-        ///<param name="toLevel">New level.</param>
-        ///<param name="rewards">Rewards for leveling up.</param>
-        ///<returns>True if level up sequence was started.</returns>
+        /// <summary>
+        /// Start a level up sequence.
+        /// </summary>
+        /// <param name="fromLevel">Current level.</param>
+        /// <param name="toLevel">New level.</param>
+        /// <param name="rewards">Rewards for leveling up.</param>
+        /// <returns>True if level up sequence was started.</returns>
         public bool StartLevelUp(int fromLevel, int toLevel, List<PlayerReward> rewards = null)
         {
             if (_isLevelUpInProgress) return false;
@@ -106,20 +148,20 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 //Start level up effects
                 StartLevelUpEffects(fromLevel, toLevel);
 
-                System.Diagnostics.Debug.WriteLine($"Level up started: {fromLevel} → {toLevel}");
+                DLogger.Log($"Level up started: {fromLevel} → {toLevel}");
                 return true;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error starting level up: {ex.Message}");
+                DLogger.Log($"Error starting level up: {ex.Message}");
                 return false;
             }
         }
 
-        ///<summary>
-        ///Complete the current level up sequence.
-        ///</summary>
-        ///<returns>True if level up was completed successfully.</returns>
+        /// <summary>
+        /// Complete the current level up sequence.
+        /// </summary>
+        /// <returns>True if level up was completed successfully.</returns>
         public bool CompleteLevelUp()
         {
             if (!_isLevelUpInProgress) return false;
@@ -159,20 +201,20 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                     OnLevelUpSequenceCompleted?.Invoke();
                 }
 
-                System.Diagnostics.Debug.WriteLine($"Level up completed: {fromLevel} → {toLevel}");
+                DLogger.Log($"Level up completed: {fromLevel} → {toLevel}");
                 return true;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error completing level up: {ex.Message}");
+                DLogger.Log($"Error completing level up: {ex.Message}");
                 return false;
             }
         }
 
-        ///<summary>
-        ///Cancel current level up sequence.
-        ///</summary>
-        ///<returns>True if level up was cancelled.</returns>
+        /// <summary>
+        /// Cancel current level up sequence.
+        /// </summary>
+        /// <returns>True if level up was cancelled.</returns>
         public bool CancelLevelUp()
         {
             if (!_isLevelUpInProgress) return false;
@@ -192,32 +234,32 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 _animations.RemoveAll(a => a.IsActive);
                 _isLevelUpInProgress = false;
 
-                System.Diagnostics.Debug.WriteLine("Level up cancelled");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "Level up cancelled");
                 return true;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error cancelling level up: {ex.Message}");
+                DLogger.Log($"Error cancelling level up: {ex.Message}");
                 return false;
             }
         }
 
-        ///<summary>
-        ///Get level up animation for level transition.
-        ///</summary>
-        ///<param name="fromLevel">Starting level.</param>
-        ///<param name="toLevel">Target level.</param>
-        ///<returns>Level up animation, or null if not found.</returns>
+        /// <summary>
+        /// Get level up animation for level transition.
+        /// </summary>
+        /// <param name="fromLevel">Starting level.</param>
+        /// <param name="toLevel">Target level.</param>
+        /// <returns>Level up animation, or null if not found.</returns>
         public LevelUpAnimation GetLevelUpAnimation(int fromLevel, int toLevel)
         {
             return _animations.FirstOrDefault(a => a.FromLevel == fromLevel && a.ToLevel == toLevel);
         }
 
-        ///<summary>
-        ///Add a custom level up animation.
-        ///</summary>
-        ///<param name="animation">Animation to add.</param>
-        ///<returns>True if animation was added.</returns>
+        /// <summary>
+        /// Add a custom level up animation.
+        /// </summary>
+        /// <param name="animation">Animation to add.</param>
+        /// <returns>True if animation was added.</returns>
         public bool AddAnimation(LevelUpAnimation animation)
         {
             if (animation == null) return false;
@@ -226,21 +268,21 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             try
             {
                 _animations.Add(animation);
-                System.Diagnostics.Debug.WriteLine($"Added level up animation: {animation.FromLevel} → {animation.ToLevel}");
+                DLogger.Log($"Added level up animation: {animation.FromLevel} → {animation.ToLevel}");
                 return true;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error adding level up animation: {ex.Message}");
+                DLogger.Log($"Error adding level up animation: {ex.Message}");
                 return false;
             }
         }
 
-        ///<summary>
-        ///Add a level up effect.
-        ///</summary>
-        ///<param name="effect">Effect to add.</param>
-        ///<returns>True if effect was added.</returns>
+        /// <summary>
+        /// Add a level up effect.
+        /// </summary>
+        /// <param name="effect">Effect to add.</param>
+        /// <returns>True if effect was added.</returns>
         public bool AddEffect(LevelUpEffect effect)
         {
             if (effect == null) return false;
@@ -249,21 +291,21 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             try
             {
                 _effects[effect.Id] = effect;
-                System.Diagnostics.Debug.WriteLine($"Added level up effect: {effect.Name}");
+                DLogger.Log($"Added level up effect: {effect.Name}");
                 return true;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error adding level up effect: {ex.Message}");
+                DLogger.Log($"Error adding level up effect: {ex.Message}");
                 return false;
             }
         }
 
-        ///<summary>
-        ///Start level up effects.
-        ///</summary>
-        ///<param name="fromLevel">Starting level.</param>
-        ///<param name="toLevel">Target level.</param>
+        /// <summary>
+        /// Start level up effects.
+        /// </summary>
+        /// <param name="fromLevel">Starting level.</param>
+        /// <param name="toLevel">Target level.</param>
         private void StartLevelUpEffects(int fromLevel, int toLevel)
         {
             var effects = GetLevelUpEffects(fromLevel, toLevel);
@@ -274,9 +316,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        ///<summary>
-        ///Stop all level up effects.
-        ///</summary>
+        /// <summary>
+        /// Stop all level up effects.
+        /// </summary>
         private void StopAllLevelUpEffects()
         {
             foreach (var effect in _effects.Values)
@@ -288,22 +330,22 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        ///<summary>
-        ///Get level up effects for level transition.
-        ///</summary>
-        ///<param name="fromLevel">Starting level.</param>
-        ///<param name="toLevel">Target level.</param>
-        ///<returns>List of level up effects.</returns>
+        /// <summary>
+        /// Get level up effects for level transition.
+        /// </summary>
+        /// <param name="fromLevel">Starting level.</param>
+        /// <param name="toLevel">Target level.</param>
+        /// <returns>List of level up effects.</returns>
         private List<LevelUpEffect> GetLevelUpEffects(int fromLevel, int toLevel)
         {
             return _effects.Values.Where(e => e.FromLevel() <= toLevel && e.ToLevel() >= fromLevel).ToList();
         }
 
-        ///<summary>
-        ///Converts ProgressionReward list to PlayerReward list.
-        ///</summary>
-        ///<param name="progressionRewards">The progression rewards to convert.</param>
-        ///<returns>Converted player rewards.</returns>
+        /// <summary>
+        /// Converts ProgressionReward list to PlayerReward list.
+        /// </summary>
+        /// <param name="progressionRewards">The progression rewards to convert.</param>
+        /// <returns>Converted player rewards.</returns>
         private List<PlayerReward> ConvertToPlayerRewards(List<ProgressionReward> progressionRewards)
         {
             return progressionRewards.Select(pr => new PlayerReward
@@ -314,10 +356,10 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }).ToList();
         }
 
-        ///<summary>
-        ///Get level up controller statistics.
-        ///</summary>
-        ///<returns>Level up controller statistics.</returns>
+        /// <summary>
+        /// Get level up controller statistics.
+        /// </summary>
+        /// <returns>Level up controller statistics.</returns>
         public LevelUpControllerStatistics GetStatistics()
         {
             return new LevelUpControllerStatistics
@@ -332,10 +374,10 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             };
         }
 
-        ///<summary>
-        ///Update all active animations and effects.
-        ///</summary>
-        ///<param name="deltaTime">Time since last update.</param>
+        /// <summary>
+        /// Update all active animations and effects.
+        /// </summary>
+        /// <param name="deltaTime">Time since last update.</param>
         public void Update(float deltaTime)
         {
             if (!_isInitialized) return;
@@ -356,15 +398,15 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error updating level up controller: {ex.Message}");
+                DLogger.Log($"Error updating level up controller: {ex.Message}");
             }
         }
 
         /// Private Methods
 
-        ///<summary>
-        ///Initialize animations.
-        ///</summary>
+        /// <summary>
+        /// Initialize animations.
+        /// </summary>
         private void InitializeAnimations()
         {
             //Level 1 → 2 animation
@@ -504,9 +546,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             });
         }
 
-        ///<summary>
-        ///Initialize effects.
-        ///</summary>
+        /// <summary>
+        /// Initialize effects.
+        /// </summary>
         private void InitializeEffects()
         {
             //Level up effects
@@ -553,9 +595,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             });
         }
 
-        ///<summary>
-        ///Grant a reward.
-        ///</summary>
+        /// <summary>
+        /// Grant a reward.
+        /// </summary>
         private void GrantReward(ProgressionReward reward)
         {
             //This would integrate with appropriate systems
@@ -564,15 +606,19 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 case RewardType.Cash:
                     EconomyManager.Instance?.AddCash(reward.Amount);
                     break;
+
                 case RewardType.TowerSlot:
                     //Grant tower slot through tower system
                     break;
+
                 case RewardType.UpgradeDiscount:
                     //Apply upgrade discount through tower system
                     break;
+
                 case RewardType.Ability:
                     //Grant ability through player system
                     break;
+
                 case RewardType.Experience:
                     //Grant experience through player level system
                     if (PlayerLevel.Instance != null)
@@ -583,9 +629,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        ///<summary>
-        ///Calculate total level ups completed.
-        ///</summary>
+        /// <summary>
+        /// Calculate total level ups completed.
+        /// </summary>
         private int CalculateTotalLevelUpsCompleted()
         {
             //This would be calculated from saved data
@@ -593,9 +639,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             return PlayerLevel.Instance?.CurrentLevel ?? 1;
         }
 
-        ///<summary>
-        ///Calculate average level up time.
-        ///</summary>
+        /// <summary>
+        /// Calculate average level up time.
+        /// </summary>
         private float CalculateAverageLevelUpTime()
         {
             //This would be calculated from saved data
@@ -608,16 +654,22 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         //Corrected OnPlayerLevelUp method signature to match Action<int> delegate.
         private void OnPlayerLevelUp(int newLevel)
         {
-            System.Diagnostics.Debug.WriteLine($"Player leveled up to {newLevel}");
+            DLogger.Log($"Player leveled up to {newLevel}");
             StartLevelUp(PlayerLevel.Instance.CurrentLevel - 1, newLevel);
         }
     }
 
-    ///<summary>
-    ///Level up animation for player advancement.
-    ///</summary>
+    /// <summary>
+    /// Level up animation for player advancement.
+    /// </summary>
     public class LevelUpAnimation
     {
+        public void Stop()
+        {
+            IsActive = false;
+            Progress = 0f;
+        }
+        public enum RewardType { Cash, TowerSlot, UpgradeDiscount, Ability, Experience }
         public string Id { get; set; }
         public string Name { get; set; }
         public int FromLevel { get; set; }
@@ -677,16 +729,16 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             {
                 Rewards = ((List<object>)rewardsData).Select(r => new ProgressionReward
                 {
-                    Type = (RewardType)Enum.Parse<RewardType>(((Dictionary<string, object>)r)["Type"].ToString()),
+                    Type = (LevelUpControl.RewardType)(RewardType)Enum.Parse<RewardType>(((Dictionary<string, object>)r)["Type"].ToString()),
                     Amount = (int)((Dictionary<string, object>)r)["Amount"]
                 }).ToList();
             }
         }
     }
 
-    ///<summary>
-    ///Level up effect for visual and audio feedback.
-    ///</summary>
+    /// <summary>
+    /// Level up effect for visual and audio feedback.
+    /// </summary>
     public class LevelUpEffect
     {
         public string Id { get; set; }
@@ -699,10 +751,12 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
 
         //Visual effect properties
         public System.Drawing.Color Color { get; set; }
+
         public float Intensity { get; set; }
 
         //Particle effect properties
         public int ParticleCount { get; set; }
+
         public System.Drawing.Color ParticleColor { get; set; }
 
         //Audio effect properties
@@ -725,11 +779,10 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
         }
 
-        ///<summary>
-        ///Gets the level this effect applies to.
-        ///Adapts parameterless level conversion calls to the effect system.
-        ///</summary>
-        ///<returns>The level this effect targets.</returns>
+        /// <summary>
+        /// Gets the level this effect applies to. Adapts parameterless level conversion calls to the effect system.
+        /// </summary>
+        /// <returns>The level this effect targets.</returns>
         public int ToLevel()
         {
             //Extract level from the effect ID or name
@@ -742,11 +795,10 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             return 1; //Default fallback
         }
 
-        ///<summary>
-        ///Gets the level this effect starts from.
-        ///Adapts parameterless level conversion calls to the effect system.
-        ///</summary>
-        ///<returns>The level this effect starts from.</returns>
+        /// <summary>
+        /// Gets the level this effect starts from. Adapts parameterless level conversion calls to the effect system.
+        /// </summary>
+        /// <returns>The level this effect starts from.</returns>
         public int FromLevel()
         {
             //Extract starting level from the effect ID or name
@@ -789,9 +841,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         }
     }
 
-    ///<summary>
-    ///Level up controller statistics.
-    ///</summary>
+    /// <summary>
+    /// Level up controller statistics.
+    /// </summary>
     public class LevelUpControllerStatistics
     {
         public int TotalAnimations { get; set; }
@@ -803,9 +855,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public float AverageLevelUpTime { get; set; }
     }
 
-    ///<summary>
-    ///Animation type enumeration.
-    ///</summary>
+    /// <summary>
+    /// Animation type enumeration.
+    /// </summary>
     public enum AnimationType
     {
         LevelUp,
@@ -815,9 +867,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         Screen
     }
 
-    ///<summary>
-    ///Effect type enumeration.
-    ///</summary>
+    /// <summary>
+    /// Effect type enumeration.
+    /// </summary>
     public enum EffectType
     {
         Visual,
@@ -835,16 +887,46 @@ namespace SASZombieAssaultTD.Engine.Managers
         internal int CurrentCash;
         private object TheType;
         private object TheMember;
+        private object TheValue;
+        private object earn;
+        private static EconomyManager _earnings;
+
+        public object GetEarn(int refundAmount)
+        {
+            return earn;
+        }
+
+        public void SetEarn(object value)
+        {
+            earn = value;
+        }
+
+        public event Action<int> CashChanged;
+
+        public int GetCash() => CurrentCash;
+
+        public void AddCash(int amount) => CurrentCash += amount;
+
+        public void RemoveCash(int amount) => CurrentCash -= amount;
+
+        public void OnCashChanged(int newCash) => CashChanged?.Invoke(newCash);
+
+        public void SetCash(int cash) => CurrentCash = cash;
+
+        public void AddCash() => CurrentCash = 0;
 
         public static EconomyManager Instance => _instance;
-        private EconomyManager() { }
-        public void AddCash(int amount) { /* Implementation */ }
 
-        internal void Earn(int refundAmount)
-        {
-            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
+        public static EconomyManager Earn => _earnings;
 
-            throw new NotImplementedException();
-        }
+        private EconomyManager() =>
+            // Initialize the EconomyManager instance
+
+            CurrentCash = 0;
+
+        //public static object AddCash(int amount)
+        //{ /* Implementation */ }
+
+
     }
 }

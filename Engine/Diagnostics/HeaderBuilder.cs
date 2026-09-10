@@ -1,11 +1,28 @@
-﻿// -----------------------------------------------------------------------------
+// ====================================================================================================
+//  FILE: HeaderBuilder.cs
+//  PATH: ./Engine/Diagnostics/
+//  MODULE: Diagnostics
+//
+//  ROLE:
+//      Provide logging, profiling, or diagnostic instrumentation.
+//
+//  RESPONSIBILITIES:
+//      - Provide Build() behavior for the Diagnostics subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+// -----------------------------------------------------------------------------
 // File: HeaderBuilder.cs
 // Purpose: Deterministic header sweep for SAS Zombie Assault TD
 // Scans entire project root and builds Diagnostics HeaderTable.json
 // -----------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
@@ -124,7 +141,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         {
             if (file.Contains(@"\Engine\Diagnostics")) return "Engine.Diagnostics";
             if (file.Contains(@"\Engine\Systems")) return "Engine.Systems";
-            if (file.Contains(@"\Engine\Rendering")) return "Engine.Rendering";
+            if (file.Contains(@"\Engine\Rendering")) return "Engine.Render";
             if (file.Contains(@"\Engine\Platform")) return "Engine.Platform";
             if (file.Contains(@"\Engine")) return "Engine";
 
@@ -155,3 +172,4 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         }
     }
 }
+

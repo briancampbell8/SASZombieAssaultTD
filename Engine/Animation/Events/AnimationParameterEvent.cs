@@ -12,12 +12,12 @@ Role:     Specific event subtype for parameter-based animations in the animation
           Used by AnimationUpdateSystem to dispatch parameter events with proper type safety.
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-namespace SASZombieAssaultTD.Engine.Animation.Events
+namespace SASZombieAssaultTD.Engine.Animation.Core
 {
     ///<summary>
     ///Animation parameter event subtype for AnimationEvent system.

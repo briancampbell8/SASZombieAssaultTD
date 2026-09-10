@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: ColorConstants.cs
+//  PATH: ./Engine/Core/Colorize/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ColorConstants module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //
 //* File:    ColorConstants.cs
 //* Purpose: Predefined color palette constants for engine-wide color usage.
@@ -18,9 +35,9 @@
 
 //
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-namespace SASZombieAssaultTD.Engine.Core.Colorize
+namespace SASZombieAssaultTD.Engine.CoreSize.Colorize
 {
     public readonly partial struct Color
     {
@@ -149,3 +166,4 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
         //Memory layout: 16 bytes per color, stored in static data segment.
     }
 }
+

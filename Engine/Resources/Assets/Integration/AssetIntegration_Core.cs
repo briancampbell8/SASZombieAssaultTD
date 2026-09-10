@@ -43,14 +43,14 @@
 
 #nullable enable
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AssetPipelineClass = SASZombieAssaultTD.Engine.Resources.AssetPipeline.AssetPipeline;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -97,7 +97,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             {
                 if (_initialized)
                 {
-                    System.Diagnostics.Debug.WriteLine("Warning: AssetSystem: Initialize() called but system already initialized.");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "Warning: AssetSystem: Initialize() called but system already initialized.");
                     return;
                 }
 
@@ -110,11 +110,11 @@ namespace SASZombieAssaultTD.Engine.Resources
                         LoadBundleInternal(bundlePath);
 
                     _initialized = true;
-                    System.Diagnostics.Debug.WriteLine($"Info: AssetSystem: Initialized (Root={assetRootPath}, Bundle={bundlePath})");
+                    DLogger.Log($"Info: AssetSystem: Initialized (Root={assetRootPath}, Bundle={bundlePath})");
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error: AssetSystem: Initialization failed: {ex.Message}");
+                    DLogger.Log($"Error: AssetSystem: Initialization failed: {ex.Message}");
                     throw;
                 }
             }
@@ -129,7 +129,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             {
                 if (_initialized)
                 {
-                    System.Diagnostics.Debug.WriteLine("Warning: AssetSystem: Initialize(config) called but system already initialized.");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "Warning: AssetSystem: Initialize(config) called but system already initialized.");
                     return;
                 }
 
@@ -144,11 +144,11 @@ namespace SASZombieAssaultTD.Engine.Resources
                         LoadBundleInternal(config.BundlePath);
 
                     _initialized = true;
-                    System.Diagnostics.Debug.WriteLine("Info: AssetSystem: Initialized with custom configuration");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "Info: AssetSystem: Initialized with custom configuration");
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error: AssetSystem: Initialization failed: {ex.Message}");
+                    DLogger.Log($"Error: AssetSystem: Initialization failed: {ex.Message}");
                     throw;
                 }
             }
@@ -164,7 +164,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             {
                 if (!_initialized)
                 {
-                    System.Diagnostics.Debug.WriteLine("Warning: AssetSystem: Shutdown() called but system not initialized.");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "Warning: AssetSystem: Shutdown() called but system not initialized.");
                     return;
                 }
 
@@ -180,11 +180,11 @@ namespace SASZombieAssaultTD.Engine.Resources
 
                     _initialized = false;
 
-                    System.Diagnostics.Debug.WriteLine("Info: AssetSystem: Shutdown complete");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "Info: AssetSystem: Shutdown complete");
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error: AssetSystem: Shutdown error: {ex.Message}");
+                    DLogger.Log($"Error: AssetSystem: Shutdown error: {ex.Message}");
                 }
             }
         }
@@ -206,19 +206,19 @@ namespace SASZombieAssaultTD.Engine.Resources
                     var stream = _currentBundle.GetAssetStream(key);
                     if (stream != null)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Debug: AssetSystem: Loading '{key}' from bundle");
+                        DLogger.Log($"Debug: AssetSystem: Loading '{key}' from bundle");
                         return await LoadFromStreamAsync<T>(stream, key);
                     }
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Warning: AssetSystem: Bundle load failed for '{key}': {ex.Message}");
+                    DLogger.Log($"Warning: AssetSystem: Bundle load failed for '{key}': {ex.Message}");
                     //fall through to file-system path
                 }
             }
 
             //2) Fallback to file system via AssetManager
-            System.Diagnostics.Debug.WriteLine($"Debug: AssetSystem: Loading '{key}' from file system");
+            DLogger.Log($"Debug: AssetSystem: Loading '{key}' from file system");
             var handle = _manager!.LoadAsset<T>(key, priority);
 
             return handle.As<T>();
@@ -241,7 +241,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error: AssetSystem: Failed to load '{key}': {ex.Message}");
+                    DLogger.Log($"Error: AssetSystem: Failed to load '{key}': {ex.Message}");
                 }
             });
 
@@ -255,7 +255,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 return;
 
             EnsureInitialized();
-            System.Diagnostics.Debug.WriteLine($"Info: AssetSystem: Preloading {assetKeys.Length} critical assets");
+            DLogger.Log($"Info: AssetSystem: Preloading {assetKeys.Length} critical assets");
 
             //Use existing async load path as a preload mechanism.
             await LoadAssetsAsync(assetKeys, AssetPriority.Critical);
@@ -279,7 +279,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Warning: AssetSystem: Bundle get failed for '{key}': {ex.Message}");
+                    DLogger.Log($"Warning: AssetSystem: Bundle get failed for '{key}': {ex.Message}");
                 }
             }
 
@@ -299,7 +299,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         public static void UnloadAsset(string key, bool force = false)
         {
             EnsureInitialized();
-            System.Diagnostics.Debug.WriteLine($"Debug: AssetSystem: Unloading '{key}' (Force={force})");
+            DLogger.Log($"Debug: AssetSystem: Unloading '{key}' (Force={force})");
             _manager!.UnloadAsset(key, force);
         }
 
@@ -324,7 +324,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         public static int CollectGarbage(bool aggressive = false)
         {
             EnsureInitialized();
-            System.Diagnostics.Debug.WriteLine($"Debug: AssetSystem: CollectGarbage (Aggressive={aggressive})");
+            DLogger.Log($"Debug: AssetSystem: CollectGarbage (Aggressive={aggressive})");
             return _manager!.CollectGarbage(aggressive);
         }
 

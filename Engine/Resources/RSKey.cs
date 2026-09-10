@@ -1,3 +1,23 @@
+// ====================================================================================================
+//  FILE: RSKey.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSKey module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Equals() behavior for the Core subsystem.
+//      - Provide Equals() behavior for the Core subsystem.
+//      - Provide GetHashCode() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    RSKey.cs
 Author:  BDC
@@ -6,9 +26,9 @@ Purpose: Strongly-typed identifier for resources in the engine. Combines type an
 Notes:   Immutable, value-based equality. Safe for use as dictionary keys and registries.
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -79,5 +99,6 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+
 
 

@@ -1,7 +1,24 @@
+// ====================================================================================================
+//  FILE: SaveLoadController_Load.cs
+//  PATH: ./Engine/Player/
+//  MODULE: Core
 //
-using System;
+//  ROLE:
+//      Encapsulate core engine behavior for the SaveLoadController_Load module.
 //
-using System.Collections.Generic;
+//  RESPONSIBILITIES:
+//      - Provide LoadGame() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+//
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+//
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 //
 using System.IO;
 ///File:    E:\BDC\Projects\SASZombieAssaultTD\Engine\Player\SaveLoadController_Load.cs
@@ -52,12 +69,12 @@ namespace SASZombieAssaultTD.Engine.Player
             {
                 try
                 {
-                    System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: Starting load operation");
+                    DLogger.Log(LogSubsystems.Player, "Info", "SaveLoadController: Starting load operation");
 
                     //Check if save file exists
                     if (!File.Exists(_savePath))
                     {
-                        System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: No save file found");
+                        DLogger.Log(LogSubsystems.Player, "Info", "SaveLoadController: No save file found");
                         return false;
                     }
 
@@ -66,7 +83,7 @@ namespace SASZombieAssaultTD.Engine.Player
 
                     if (string.IsNullOrEmpty(json))
                     {
-                        System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Save file is empty or unreadable");
+                        DLogger.Log(LogSubsystems.Player, "Error", "SaveLoadController: Save file is empty or unreadable");
                         return AttemptBackupLoad(playerSystem);
                     }
 
@@ -75,25 +92,25 @@ namespace SASZombieAssaultTD.Engine.Player
 
                     if (playerData == null)
                     {
-                        System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Failed to deserialize player data");
+                        DLogger.Log(LogSubsystems.Player, "Error", "SaveLoadController: Failed to deserialize player data");
                         return AttemptBackupLoad(playerSystem);
                     }
 
                     //Validate loaded data using SaveLoadCore
                     if (!SaveLoadCore.ValidatePlayerData(playerData))
                     {
-                        System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Loaded player data validation failed");
+                        DLogger.Log(LogSubsystems.Player, "Error", "SaveLoadController: Loaded player data validation failed");
                         return AttemptBackupLoad(playerSystem);
                     }
 
                     //Restore player system state
                     if (!RestorePlayerSystemFromData(playerSystem, playerData))
                     {
-                        System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Failed to restore player system");
+                        DLogger.Log(LogSubsystems.Player, "Error", "SaveLoadController: Failed to restore player system");
                         return false;
                     }
 
-                    System.Diagnostics.Debug.WriteLine(
+                    DLogger.Log(LogSubsystems.Player,
                         "Info",
                         $"SaveLoadController: Load completed successfully - Level: {playerData.Progression.GetType}, " +
                         $"Lives: {playerData.State.GetType}, Cash: ${playerData.State.GetType}");
@@ -102,7 +119,7 @@ namespace SASZombieAssaultTD.Engine.Player
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: Load failed - Error: {ex.Message}");
+                    DLogger.Log(LogSubsystems.Player, "Error", $"SaveLoadController: Load failed - Error: {ex.Message}");
 
                     //Attempt to load backup on failure
                     return AttemptBackupLoad(playerSystem);
@@ -119,11 +136,11 @@ namespace SASZombieAssaultTD.Engine.Player
             {
                 if (!File.Exists(_backupPath))
                 {
-                    System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: No backup file available");
+                    DLogger.Log(LogSubsystems.Player, "Info", "SaveLoadController: No backup file available");
                     return false;
                 }
 
-                System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: Attempting to load from backup");
+                DLogger.Log(LogSubsystems.Player, "Info", "SaveLoadController: Attempting to load from backup");
 
                 //Load backup data
                 string backupJson = File.ReadAllText(_backupPath);
@@ -139,17 +156,17 @@ namespace SASZombieAssaultTD.Engine.Player
                         string json = SaveLoadCore.Serialize(newPlayerData);
                         WriteSaveFile(json);
 
-                        System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: Backup load successful, new save created");
+                        DLogger.Log(LogSubsystems.Player, "Info", "SaveLoadController: Backup load successful, new save created");
                         return true;
                     }
                 }
 
-                System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Backup load failed - invalid data");
+                DLogger.Log(LogSubsystems.Player, "Error", "SaveLoadController: Backup load failed - invalid data");
                 return false;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: Backup load failed: {ex.Message}");
+                DLogger.Log(LogSubsystems.Player, "Error", $"SaveLoadController: Backup load failed: {ex.Message}");
                 return false;
             }
         }
@@ -187,7 +204,7 @@ namespace SASZombieAssaultTD.Engine.Player
                 //Validate the restored state
                 playerSystem.Validate();
 
-                System.Diagnostics.Debug.WriteLine(
+                DLogger.Log(
                     "Info",
                     category: $"SaveLoadController: Player system restored - Level: {Progression}, Lives: {Lives}, Cash: ${Cash}");
 
@@ -195,7 +212,7 @@ namespace SASZombieAssaultTD.Engine.Player
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: Player system restoration failed: {ex.Message}");
+                DLogger.Log(LogSubsystems.Player, "Error", $"SaveLoadController: Player system restoration failed: {ex.Message}");
                 return false;
             }
         }
@@ -260,4 +277,5 @@ namespace SASZombieAssaultTD.Engine.Player
     //}
 
 }
+
 

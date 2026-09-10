@@ -1,26 +1,26 @@
-/* ====================================================================================================
- *  FILE: NotImplementedGuard.cs
- *  PATH: Engine/Diagnostics/NotImplementedGuard.cs
- *  SUBSYSTEM: Diagnostics
- *  ROLE: Centralized helper for making all NotImplemented paths visible, logged, and attributable.
- *
- *  RESPONSIBILITIES:
- *      - Provide a single, canonical entry point for all "not implemented" execution paths.
- *      - Emit a high-severity diagnostic log entry for every hit, with clear contextual information.
- *      - Throw a NotImplementedException to preserve correct control-flow semantics.
- *
- *  NON-RESPONSIBILITIES:
- *      - Deciding which features are implemented or not (owned by subsystems).
- *      - Swallowing or recovering from NotImplementedException (owned by callers / Program.cs).
- *
- *  ARCHITECTURAL NOTES:
- *      - All future "not implemented" sites should call NotImplementedGuard.Hit(...) instead of
- *        directly throwing NotImplementedException.
- *      - This ensures every missing implementation is visible in EngineTrace.md and can be
- *        prioritized and burned down systematically.
- * ==================================================================================================== */
+//====================================================================================================
+// FILE: NotImplementedGuard.cs
+// PATH: Engine/Diagnostics/NotImplementedGuard.cs
+// SUBSYSTEM: Diagnostics
+// ROLE: Centralized helper for making all NotImplemented paths visible, logged, and attributable.
+//
+// RESPONSIBILITIES:
+//     - Provide a single, canonical entry point for all "not implemented" execution paths.
+//     - Emit a high-severity diagnostic log entry for every hit, with clear contextual information.
+//     - Throw a NotImplementedException to preserve correct control-flow semantics.
+//
+// NON-RESPONSIBILITIES:
+//     - Deciding which features are implemented or not (owned by subsystems).
+//     - Swallowing or recovering from NotImplementedException (owned by callers / Program.cs).
+//
+// ARCHITECTURAL NOTES:
+//     - All future "not implemented" sites should call NotImplementedGuard.Hit(...) instead of
+//       directly throwing NotImplementedException.
+//     - This ensures every missing implementation is visible in EngineTrace.md and can be
+//       prioritized and burned down systematically.
+//==================================================================================================== 
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
@@ -53,7 +53,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                 $"{context} | Program={programName} | Class={className} | Member={member} | Line={line}";
 
             DLogger.Log(
-                LogSubsystems.Diagnostics, LogLevel.Critical,
+                LogSubsystems.Diagnostics, LogEnums.LogLevel.Critical,
                 "NOT_IMPLEMENTED", fullContext);
 
             throw new NotImplementedException(fullContext);

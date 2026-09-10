@@ -1,3 +1,28 @@
+// ====================================================================================================
+//  FILE: NavigationGrid.cs
+//  PATH: ./Engine/Systems/Gameplay/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the NavigationGrid module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ResetGrid() behavior for the Core subsystem.
+//      - Provide ResizeGrid() behavior for the Core subsystem.
+//      - Provide IsWalkable() behavior for the Core subsystem.
+//      - Provide SetWalkable() behavior for the Core subsystem.
+//      - Provide WorldToGrid() behavior for the Core subsystem.
+//      - Provide GridToWorld() behavior for the Core subsystem.
+//      - Provide GetCell() behavior for the Core subsystem.
+//      - Provide GetNeighbors() behavior for the Core subsystem.
+//      - Provide IsInBounds() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //File: Engine/Systems/Gameplay/NavigationGrid.cs
 //Purpose: Represents a grid-based navigation system for pathfinding.
 //Features: Provides grid dimensions, cell management, and directional navigation.
@@ -5,9 +30,13 @@
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Navigation;
 using System;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Generic;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.Systems;
 
 namespace SASZombieAssaultTD.Engine.Systems.Gameplay
 {
@@ -198,3 +227,4 @@ namespace SASZombieAssaultTD.Engine.Systems.Gameplay
             x >= 0 && x < Width && y >= 0 && y < Height;
     }
 }
+

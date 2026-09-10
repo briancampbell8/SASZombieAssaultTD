@@ -1,12 +1,29 @@
-/*
-File:    GetUpgradeStatusColor.cs
-Purpose: Returns color coding for upgrade states (locked, available, maxed).
-*/
-
-using System;
-using SASZombieAssaultTD.Engine.Core;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+// ====================================================================================================
+//  FILE: GetUpgradeStatusColor.cs
+//  PATH: ./Engine/UI/Rendering/
+//  MODULE: Rendering
+//
+//  ROLE:
+//      Provide rendering logic, draw calls, batching, or GPU resource management.
+//
+//  RESPONSIBILITIES:
+//      - Provide Available() behavior for the Rendering subsystem.
+//      - Provide Locked() behavior for the Rendering subsystem.
+//      - Provide Maxed() behavior for the Rendering subsystem.
+//      - Provide Unaffordable() behavior for the Rendering subsystem.
+//      - Provide InProgress() behavior for the Rendering subsystem.
+//      - Provide Selected() behavior for the Rendering subsystem.
+//      - Provide PrerequisitesNotMet() behavior for the Rendering subsystem.
+//      - Provide GetStatusColor() behavior for the Rendering subsystem.
+//      - Provide GetStatusColor() behavior for the Rendering subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using static SASZombieAssaultTD.Engine.UI.UIEnums;
 
 namespace SASZombieAssaultTD.Engine.UI.Rendering
 {
@@ -23,7 +40,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Green;
         }
-        
+
         ///<summary>
         ///Gets color for locked upgrade.
         ///</summary>
@@ -32,7 +49,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Gray;
         }
-        
+
         ///<summary>
         ///Gets color for maxed upgrade.
         ///</summary>
@@ -41,7 +58,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Gold;
         }
-        
+
         ///<summary>
         ///Gets color for upgrade that cannot be afforded.
         ///</summary>
@@ -50,7 +67,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Red;
         }
-        
+
         ///<summary>
         ///Gets color for upgrade in progress.
         ///</summary>
@@ -59,7 +76,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Blue;
         }
-        
+
         ///<summary>
         ///Gets color for selected upgrade.
         ///</summary>
@@ -68,7 +85,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Yellow;
         }
-        
+
         ///<summary>
         ///Gets color for upgrade with prerequisites not met.
         ///</summary>
@@ -77,7 +94,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Orange;
         }
-        
+
         ///<summary>
         ///Gets color based on upgrade status.
         ///</summary>
@@ -102,7 +119,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             else
                 return Locked();
         }
-        
+
         ///<summary>
         ///Gets color based on upgrade status enum.
         ///</summary>
@@ -123,18 +140,10 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             };
         }
     }
-    
+
     ///<summary>
     ///Enumeration for upgrade status.
     ///</summary>
-    public enum UpgradeStatus
-    {
-        Available,
-        Locked,
-        Maxed,
-        Unaffordable,
-        InProgress,
-        Selected,
-        PrerequisitesNotMet
-    }
+
 }
+

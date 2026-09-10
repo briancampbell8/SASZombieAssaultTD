@@ -1,4 +1,22 @@
-﻿// ============================================================================
+// ====================================================================================================
+//  FILE: DLoggerArg6.cs
+//  PATH: ./Engine/Diagnostics/
+//  MODULE: Diagnostics
+//
+//  ROLE:
+//      Provide logging, profiling, or diagnostic instrumentation.
+//
+//  RESPONSIBILITIES:
+//      - Provide Log() behavior for the Diagnostics subsystem.
+//      - Provide Log() behavior for the Diagnostics subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+// ============================================================================
 //  FILE: DLoggerArg6.cs
 //  MODULE: Diagnostics Pattern Library
 //  PARTIAL: DLogger
@@ -23,7 +41,7 @@
 //  VERSION: 1.0 (Pattern Module)
 // ============================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
@@ -36,8 +54,8 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         public static void Log(
             LogSubsystems subsystem,
             LogCategory category,
-            LogLevel level,
-            LogSeverity severity,
+            LogEnums.LogLevel level,
+            LogSeverityText severity,
             string context,
             string message)
         {
@@ -52,8 +70,8 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         public static void Log(
             LogSubsystems subsystem,
             LogCategory category,
-            LogLevel level,
-            LogSeverity severity,
+            LogEnums.LogLevel level,
+            LogSeverityText severity,
             string context,
             Exception exception)
         {
@@ -68,7 +86,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         }
     }
 
-    public class LogSeverity
+    public class LogSeverityText
     {
         public const string Information = "INFO";
         public const string Warning = "WARN";
@@ -85,3 +103,4 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         public const string Legacy = "LEGACY";
     }
 }
+

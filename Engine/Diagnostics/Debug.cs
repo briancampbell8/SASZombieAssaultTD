@@ -24,7 +24,7 @@
 //      - All production diagnostics must flow through DLogger → Writer.
 //      - Debug.cs should remain minimal and free of side effects outside diagnostics.
 // ====================================================================================================
-
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
     public static class EngineDebug
@@ -40,7 +40,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         ///</summary>
         public static void WriteLine(string level, string message)
         {
-            DLogger.Log(LogSubsystems.Diagnostics, LogLevel.Info, LogCategory.Diagnostics, $"[{level}] {message}");
+            DLogger.Log(LogSubsystems.Diagnostics, LogEnums.LogLevel.Info, LogCategory.Diagnostics, $"[{level}] {message}");
         }
 
         internal static void Log(string v1, string v2)

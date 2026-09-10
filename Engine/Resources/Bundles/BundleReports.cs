@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: BundleReports.cs
+//  PATH: ./Engine/Resources/Bundles/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the BundleReports module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //File: BundleReports.cs
 //Purpose: Render static layout images using texture handles provided by StaticLayoutLoader.
@@ -5,10 +22,10 @@
 //         All visibility, ordering, and asset resolution is handled externally.
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -49,3 +66,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         //If this class becomes empty, that is completely fine!
     }
 }
+

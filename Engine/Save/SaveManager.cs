@@ -5,14 +5,14 @@ Purpose: Unified save manager consolidating SaveSystem and SASGameSaveManager fu
 Features: Slot-based and named saves, auto-save, validation, migration, P120/P100 integration.
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 //
 //
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Save
 {
     ///<summary>
@@ -133,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.Save
             InitializeSaveDirectory();
             LoadAllSaves();
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO",
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "INFO",
                 $"SaveManager initialized with directory '{_saveDirectory}'");
         }
 
@@ -147,7 +147,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 if (!Directory.Exists(_saveDirectory))
                 {
                     Directory.CreateDirectory(_saveDirectory);
-                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Created save directory '{_saveDirectory}'");
+                    DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "INFO", $"Created save directory '{_saveDirectory}'");
                 }
             }
             catch (Exception ex)
@@ -184,7 +184,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 }
                 catch (Exception ex)
                 {
-                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Failed to load named save from {filePath}: {ex.Message}");
+                    DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Warning, "Warning", $"Failed to load named save from {filePath}: {ex.Message}");
                 }
             }
 
@@ -207,11 +207,11 @@ namespace SASZombieAssaultTD.Engine.Save
                 }
                 catch (Exception ex)
                 {
-                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Failed to load slot {slot}: {ex.Message}");
+                    DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Warning, "Warning", $"Failed to load slot {slot}: {ex.Message}");
                 }
             }
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Loaded {_namedSaves.Count} named saves and {_slotSaves.Count} slot saves");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "INFO", $"Loaded {_namedSaves.Count} named saves and {_slotSaves.Count} slot saves");
         }
 
         ///<summary>
@@ -224,13 +224,13 @@ namespace SASZombieAssaultTD.Engine.Save
         {
             if (string.IsNullOrEmpty(saveName) || saveData == null)
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", "Invalid save name or null save data");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Warning, "Warning", "Invalid save name or null save data");
                 return false;
             }
 
             if (_namedSaves.ContainsKey(saveName))
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Save '{saveName}' already exists");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Warning, "Warning", $"Save '{saveName}' already exists");
                 return false;
             }
 
@@ -246,7 +246,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 _namedSaves[saveName] = saveData;
                 OnNamedSaveCreated?.Invoke(saveName, saveData);
 
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Created named save '{saveName}'");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "INFO", $"Created named save '{saveName}'");
                 return true;
             }
             catch (Exception ex)
@@ -266,7 +266,7 @@ namespace SASZombieAssaultTD.Engine.Save
         {
             if (!IsValidSlot(slot) || saveData == null)
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Invalid slot {slot} or null save data");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Warning, "Warning", $"Invalid slot {slot} or null save data");
                 return false;
             }
 
@@ -282,7 +282,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 _slotSaves[slot] = saveData;
                 OnSlotSaveCreated?.Invoke(slot, saveData);
 
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Saved to slot {slot}");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "INFO", $"Saved to slot {slot}");
                 return true;
             }
             catch (Exception ex)
@@ -301,18 +301,18 @@ namespace SASZombieAssaultTD.Engine.Save
         {
             if (string.IsNullOrEmpty(saveName))
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", "Invalid save name");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Warning, "Warning", "Invalid save name");
                 return null;
             }
 
             if (_namedSaves.TryGetValue(saveName, out var saveData))
             {
                 OnSaveLoaded?.Invoke(saveData);
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Loaded named save '{saveName}'");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "INFO", $"Loaded named save '{saveName}'");
                 return saveData;
             }
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Named save '{saveName}' not found");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Warning, "Warning", $"Named save '{saveName}' not found");
             return null;
         }
 
@@ -325,18 +325,18 @@ namespace SASZombieAssaultTD.Engine.Save
         {
             if (!IsValidSlot(slot))
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Invalid slot {slot}");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Warning, "Warning", $"Invalid slot {slot}");
                 return null;
             }
 
             if (_slotSaves.TryGetValue(slot, out var saveData))
             {
                 OnSaveLoaded?.Invoke(saveData);
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Loaded slot {slot}");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "INFO", $"Loaded slot {slot}");
                 return saveData;
             }
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Slot {slot} has no data");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Warning, "Warning", $"Slot {slot} has no data");
             return null;
         }
 
@@ -363,7 +363,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 _namedSaves.Remove(saveName);
                 OnSaveDeleted?.Invoke();
 
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Deleted named save '{saveName}'");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "INFO", $"Deleted named save '{saveName}'");
                 return true;
             }
             catch (Exception ex)
@@ -396,7 +396,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 _slotSaves.Remove(slot);
                 OnSaveDeleted?.Invoke();
 
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "INFO", $"Deleted slot {slot}");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "INFO", $"Deleted slot {slot}");
                 return true;
             }
             catch (Exception ex)
@@ -505,7 +505,7 @@ namespace SASZombieAssaultTD.Engine.Save
             {
                 SaveToSlot(_currentSaveSlot, currentSaveData);
                 DLogger.Log(LogSubsystems.Unknown,
-                    LogLevel.Info,
+                    LogEnums.LogLevel.Info,
                     "INFO", $"Auto-saved to slot {_currentSaveSlot}");
             }
         }
@@ -532,7 +532,7 @@ namespace SASZombieAssaultTD.Engine.Save
             var validationIssues = saveData.Validate();
             if (validationIssues.Count > 0)
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Warning, "Warning", $"Save data validation failed: {string.Join(", ", validationIssues)}");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Warning, "Warning", $"Save data validation failed: {string.Join(", ", validationIssues)}");
             }
         }
 
@@ -602,7 +602,7 @@ namespace SASZombieAssaultTD.Engine.Save
         ///</summary>
         private void HandleError(string context, Exception ex)
         {
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "ERROR",
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "ERROR",
                 $"SaveManager: {context} - {ex.Message}");
             OnError?.Invoke(context, ex);
         }

@@ -1,29 +1,33 @@
-/*
-File: RSPipeline.cs
-Author: BDC
-Created: 2026-02-08
-
-Purpose:
-Performs the actual loading of resources after discovery, validation,
-and registration. Converts metadata into loaded runtime objects.
-
-Notes:
-Deterministic. Returns RSBatchLoadResult.
-*/
-
+// ====================================================================================================
+//  FILE: RSPipeline.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
 //
-using System;
-using System.Collections.Generic;
+//  ROLE:
+//      Encapsulate core engine behavior for the RSPipeline module.
+//
+//  RESPONSIBILITIES:
+//      - Provide LoadAll() behavior for the Core subsystem.
+//      - Provide ValidateRuntimeReadiness() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
+using SASZombieAssaultTD.Engine.Assets;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Scenes.Battlefields;
-namespace SASZombieAssaultTD.Engine.Resources
+namespace SASZombieAssaultTD.Engine.Resources.Assets
 {
-    ///<summary>
-    ///Resource system load context.
-    ///</summary>
+    /// <summary>
+    /// Resource system load context.
+    /// </summary>
     public sealed class RSLoadContext
     {
         public List<DiscoveredResource> Assets { get; set; }
@@ -38,9 +42,9 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 
-    ///<summary>
-    ///Resource system batch load result.
-    ///</summary>
+    /// <summary>
+    /// Resource system batch load result.
+    /// </summary>
     public sealed class RSBatchLoadResult
     {
         public int SuccessCount { get; set; }
@@ -48,27 +52,24 @@ namespace SASZombieAssaultTD.Engine.Resources
         public List<string> Errors { get; set; }
         public TimeSpan LoadTime { get; set; }
 
-        public RSBatchLoadResult()
-        {
-            Errors = new List<string>();
-        }
+        public RSBatchLoadResult() => Errors = new List<string>();
     }
 
-    ///<summary>
-    ///Loads all resources defined in the RSLoadContext.
-    ///</summary>
+    /// <summary>
+    /// Loads all resources defined in the RSLoadContext.
+    /// </summary>
     public static class RSPipeline
     {
         private static object TheContainingType;
         private static object TheContainingMember;
 
-        ///<summary>
-        ///Loads all resources (textures + data) using the metadata provided
-        ///in the load context. Returns a summary of successes/failures.
-        ///</summary>
+        /// <summary>
+        /// Loads all resources (textures + data) using the metadata provided in the load context. Returns a summary of
+        /// successes/failures.
+        /// </summary>
         public static RSBatchLoadResult LoadAll(RSLoadContext context)
         {
-            Dlogger.Log("INFO", "[Resources] Phase5: LoadOrder: Begin");
+            DLogger.Log(LogSubsystems.Resources, "INFO", "[Resources] Phase5: LoadOrder: Begin");
 
             int success = 0;
             int failure = 0;
@@ -99,7 +100,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                             break;
 
                         default:
-                            Dlogger.Log("Warn", $"[Assets] Unknown asset type for {meta.Name}.");
+                            DLogger.Log(LogSubsystems.Resources, "Warn", $"[Assets] Unknown asset type for {meta.Name}.");
                             failure++;
                             continue;
                     }
@@ -108,26 +109,26 @@ namespace SASZombieAssaultTD.Engine.Resources
                 }
                 catch (Exception ex)
                 {
-                    Dlogger.Log("Error", $"[Assets] Failed to load {meta.Name}: {ex.Message}");
+                    DLogger.Log(LogSubsystems.Resources, "Error", $"[Assets] Failed to load {meta.Name}: {ex.Message}");
                     failure++;
                 }
             }
 
-            Dlogger.Log("INFO", "[Assets] Phase5: LoadOrder: Completed");
+            DLogger.Log(LogSubsystems.Resources, "INFO", "[Assets] Phase5: LoadOrder: Completed");
             return new RSBatchLoadResult { SuccessCount = success, FailureCount = failure };
         }
 
-        ///<summary>
-        ///Validates that the engine is ready at runtime: assets are registered
-        ///and no null or empty entries exist in the registry.
-        ///</summary>
+        /// <summary>
+        /// Validates that the engine is ready at runtime: assets are registered and no null or empty entries exist in
+        /// the registry.
+        /// </summary>
         public static bool ValidateRuntimeReadiness()
         {
             try
             {
                 if (RSRegistry.Count == 0)
                 {
-                    Dlogger.Log("WARNING", "[Assets] RuntimeReadiness: No assets registered.");
+                    DLogger.Log(LogSubsystems.Resources, "WARNING", "[Assets] RuntimeReadiness: No assets registered.");
                     return false;
                 }
 
@@ -135,7 +136,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 {
                     if (string.IsNullOrWhiteSpace(kvp.Key) || string.IsNullOrWhiteSpace(kvp.Value))
                     {
-                        Dlogger.Log("WARNING", $"[Assets] RuntimeReadiness: Invalid registry entry: key='{kvp.Key}', path='{kvp.Value}'.");
+                        DLogger.Log(LogSubsystems.Resources, "WARNING", $"[Assets] RuntimeReadiness: Invalid registry entry: key='{kvp.Key}', path='{kvp.Value}'.");
                         return false;
                     }
                 }
@@ -144,7 +145,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                Dlogger.Log("ERROR", $"[Assets] RuntimeReadiness: Validation failed: {ex.Message}");
+                DLogger.Log(LogSubsystems.Resources, "ERROR", $"[Assets] RuntimeReadiness: Validation failed: {ex.Message}");
                 return false;
             }
         }
@@ -161,7 +162,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             RSRegistry.Register(meta.Name, meta.Path);
 
-            Dlogger.Log("Info", $"[Assets] Loaded texture: {meta.Name}");
+            DLogger.Log(LogSubsystems.Resources, "Info", $"[Assets] Loaded texture: {meta.Name}");
         }
 
         private static byte[] LoadTextureBytes(string path)
@@ -183,7 +184,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             //Actual decoding is deferred to the audio subsystem at playback time.
             RSRegistry.Register(meta.Name, meta.Path);
 
-            Dlogger.Log("Info", $"[Assets] Loaded audio: {meta.Name} ({meta.Type})");
+            DLogger.Log(LogSubsystems.Resources, "Info", $"[Assets] Loaded audio: {meta.Name} ({meta.Type})");
         }
 
         //------------------------------------------------------------
@@ -194,268 +195,16 @@ namespace SASZombieAssaultTD.Engine.Resources
             if (!File.Exists(meta.Path))
                 throw new FileNotFoundException($"Data file not found: {meta.Path}");
 
-            object data = Assets.DataLoader.Load(meta.Path);
+            object data = DataLoader.Load(meta.Path);
 
             RSRegistry.Register(meta.Name, meta.Path);
 
-            Dlogger.Log("Info", $"[Assets] Loaded data: {meta.Name}");
+            DLogger.Log(
+                LogSubsystems.ResourcesAssets,
+                "Info", $"[Assets] Loaded data: {meta.Name}");
         }
     }
+
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

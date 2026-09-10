@@ -1,3 +1,23 @@
+// ====================================================================================================
+//  FILE: ProgressionCore.cs
+//  PATH: ./Engine/Player/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ProgressionCore module.
+//
+//  RESPONSIBILITIES:
+//      - Provide CalculateExperienceForNextLevel() behavior for the Core subsystem.
+//      - Provide IsValidExperienceAddition() behavior for the Core subsystem.
+//      - Provide ClampLevel() behavior for the Core subsystem.
+//      - Provide ClampExperience() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File: ProgressionCore.cs
 //FilePath: Engine/Player/ProgressionCore.cs
@@ -14,10 +34,10 @@
 //            tower unlock thresholds.
 //============================================================================
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Player
 {
@@ -101,3 +121,4 @@ namespace SASZombieAssaultTD.Engine.Player
         }
     }
 }
+

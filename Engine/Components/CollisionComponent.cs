@@ -1,34 +1,34 @@
-/*
-File:    CollisionComponent.cs
-Path:    Engine/Components/CollisionComponent.cs
-Purpose:   P11-04-01-A - Core ECS component for collision detection properties.
-           Stores collider shapes, dimensions, offset, trigger flag, layer mask, and enabled state.
+//=====================================================================================================
+//  FILE: CollisionComponent.cs
+//  PATH: Engine/Components/CollisionComponent.cs
+//  SUBSYSTEM: Components
+//
+//  ROLE:
+//      Core component for collision detection. Stores collider shape, dimensions, offset, trigger
+//      state, layer mask, and enabled state used by the engine’s collision and physics systems.
+//
+//  RESPONSIBILITIES:
+//      - Define collider shape type (box or circle)
+//      - Store collider dimensions (width, height, radius)
+//      - Store positional offset relative to the ECSEntityCore transform
+//      - Provide trigger flag for non-physical overlap detection
+//      - Provide layer mask for collision filtering
+//      - Provide enabled/disabled state for collision participation
+//
+//  NON-RESPONSIBILITIES:
+//      - Executing collision detection logic
+//      - Performing physics resolution or spatial queries
+//      - Managing world-level ECSEntityCore allocation or lifecycle sequencing
+//      - Acting as a system or orchestrator
+//
+//  ARCHITECTURAL NOTES:
+//      - This is a pure data component with no behavioral logic
+//      - Layer masks use bitwise operations for efficient filtering
+//      - Collider shapes are defined by the ColliderShapeType enum
+//      - Integrates with collision and physics systems but does not implement them
+//=====================================================================================================
 
-Role:      Essential collision component for entities requiring collision detection.
-           - Defines collision shape type (box, circle, polygon) for spatial queries
-           - Stores collision dimensions and offset for precise boundary calculations
-           - Provides trigger flag for non-physical collision detection
-           - Manages layer mask for collision filtering and group management
-           - Controls enabled state for temporary collision deactivation
-           - Integrates with collision system for broad-phase culling
-
-Features:   ECS-friendly pure data structure optimized for collision detection.
-           Support for multiple collider shapes with unified interface.
-           Collision layer management for complex collision filtering.
-           Trigger collision support for area-of-effect and sensor entities.
-           Thread-safe property access for concurrent collision system access.
-           Optimized for high-frequency collision system queries.
-
-Notes:      This component is required by all entities participating in collision detection.
-           Collider shapes are defined by the ColliderShapeType enum.
-           Layer masks support bitwise operations for efficient filtering.
-           Trigger collisions bypass physics response and only generate events.
-           Component integrates seamlessly with both collision and physics systems.
-
-*/
 using System.Drawing;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Components
 {
@@ -71,7 +71,7 @@ namespace SASZombieAssaultTD.Engine.Components
         public float Radius { get; set; } = 16.0f;
 
         ///<summary>
-        ///Offset position of the collider relative to the entity's transform position.
+        ///Offset position of the collider relative to the ECSEntityCore's transform position.
         ///</summary>
         public PointF Offset { get; set; } = PointF.Empty;
 
@@ -115,7 +115,7 @@ namespace SASZombieAssaultTD.Engine.Components
         ///</summary>
         ///<param name="width">Width of the box collider</param>
         ///<param name="height">Height of the box collider</param>
-        ///<param name="offset">Offset position relative to entity</param>
+        ///<param name="offset">Offset position relative to ECSEntityCore</param>
         ///<param name="isTrigger">Whether this is a trigger collider</param>
         ///<param name="layerMask">Layer mask for collision filtering</param>
         public CollisionComponent(
@@ -137,7 +137,7 @@ namespace SASZombieAssaultTD.Engine.Components
         ///Creates a new circle CollisionComponent with specified radius.
         ///</summary>
         ///<param name="radius">Radius of the circle collider</param>
-        ///<param name="offset">Offset position relative to entity</param>
+        ///<param name="offset">Offset position relative to ECSEntityCore</param>
         ///<param name="isTrigger">Whether this is a trigger collider</param>
         ///<param name="layerMask">Layer mask for collision filtering</param>
         public CollisionComponent(
@@ -160,7 +160,7 @@ namespace SASZombieAssaultTD.Engine.Components
         ///<param name="width">Width (for Box shape)</param>
         ///<param name="height">Height (for Box shape)</param>
         ///<param name="radius">Radius (for Circle shape)</param>
-        ///<param name="offset">Offset position relative to entity</param>
+        ///<param name="offset">Offset position relative to ECSEntityCore</param>
         ///<param name="isTrigger">Whether this is a trigger collider</param>
         ///<param name="layerMask">Layer mask for collision filtering</param>
         ///<param name="enabled">Whether collider is enabled</param>

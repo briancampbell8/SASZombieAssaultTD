@@ -1,4 +1,4 @@
-﻿// ====================================================================================================
+// ====================================================================================================
 //  FILE: DiagnosticEntry.cs
 //  PATH: Engine/Diagnostics/
 //  MODULE: Diagnostics Pipeline (Canonical Diagnostic Record Structure)
@@ -32,7 +32,7 @@
 //      - This class defines the deterministic schema for all diagnostics emitted by the engine.
 //      - Additional metadata fields (PatternTag, OverloadArgs) support modern diagnostics analysis.
 // ====================================================================================================
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {

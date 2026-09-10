@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: AssetBundle_Accessors.cs
+//  PATH: ./Engine/Resources/Assets/Bundle/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetBundle_Accessors module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ForwardExecution() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetBundle_Accessors.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Bundle\AssetBundle_Accessors.cs
@@ -70,7 +87,7 @@
 //Check asset availability
 //if (AssetBundle.ContainsAsset("textures/ui.png"))
 //{
-//System.Diagnostics.Debug.WriteLine("UI texture is available in bundle");
+//DLogger.Log(LogSubsystems.ResourcesPipeline, "UI texture is available in bundle");
 //}
 //Stream asset access with large assets
 //using var stream = await AssetBundle.GetAssetStreamAsync("videos/intro.mp4");
@@ -82,20 +99,20 @@
 //
 //Monitor bundle access performance
 //var stats = AssetBundle.GetAccessStats();
-//System.Diagnostics.Debug.WriteLine($"Accessed {stats.AccessedAssets} assets, cache hits: {stats.CacheHits}");
+//DLogger.Log($"Accessed {stats.AccessedAssets} assets, cache hits: {stats.CacheHits}");
 //
 //Validate bundle integrity during access
 //var validation = await AssetBundle.VerifyIntegrityAsync();
 //if (!validation.IsValid)
 //{
-//System.Diagnostics.Debug.WriteLine($"Bundle integrity check failed: {string.Join(", ", validation.Errors)}");
+//DLogger.Log($"Bundle integrity check failed: {string.Join(", ", validation.Errors)}");
 //}
 //```
 //
 
 //
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 ///<summary>
 ///Asset access layer for AssetBundle system in SAS Zombie Assault TD.
@@ -139,7 +156,8 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             string message = string.Format(PassThruMessageFormat, context);
 
-            System.Diagnostics.Debug.WriteLine(message);
+            DLogger.Log(message);
         }
     }
 }
+

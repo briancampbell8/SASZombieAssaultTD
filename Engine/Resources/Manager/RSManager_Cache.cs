@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: RSManager_Cache.cs
+//  PATH: ./Engine/Resources/Manager/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSManager_Cache module.
+//
+//  RESPONSIBILITIES:
+//      - Provide GetCacheStatistics() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //File: RSManager_Cache.cs
 
@@ -61,11 +78,11 @@
 
 ////Check cache statistics
 //var stats = cache.GetStatistics();
-//System.Diagnostics.Debug.WriteLine($"Cache hits: {stats.CacheHits}, misses: {stats.CacheMisses}");
+//DLogger.Log($"Cache hits: {stats.CacheHits}, misses: {stats.CacheMisses}");
 
 ////Monitor cache performance
 //var performance = cache.GetPerformanceMetrics();
-//System.Diagnostics.Debug.WriteLine($"Cache efficiency: {performance.HitRate:P2}, memory usage: {performance.MemoryUsage} bytes");
+//DLogger.Log($"Cache efficiency: {performance.HitRate:P2}, memory usage: {performance.MemoryUsage} bytes");
 
 ////Configure cache eviction policies
 //var config = new CacheConfiguration
@@ -81,18 +98,21 @@
 */
 
 using System;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Generic;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Audio;
+using SASZombieAssaultTD.Engine.CoreSize;
+// using SASZombieAssaultTD.Engine.Extensions; // Extensions Removed
+using SASZombieAssaultTD.Engine.ECS;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.TextureRendering;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -288,3 +308,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+

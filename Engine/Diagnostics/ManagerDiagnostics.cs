@@ -30,8 +30,8 @@
 //      - Diagnostic data can be exported for analysis and optimization
 // ====================================================================================================
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
@@ -64,7 +64,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                 {
                     DLogger.Log(
                         LogSubsystems.Diagnostics,
-                        LogLevel.Info,
+                        LogEnums.LogLevel.Info,
                         "ManagerDiagnostics",
                         "Initializing ManagerDiagnostics...");
 
@@ -76,7 +76,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
 
                     DLogger.Log(
                         LogSubsystems.Diagnostics,
-                        LogLevel.Info,
+                        LogEnums.LogLevel.Info,
                         "ManagerDiagnostics",
                         "ManagerDiagnostics initialized successfully");
                 }
@@ -84,7 +84,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                 {
                     DLogger.Log(
                         LogSubsystems.Diagnostics,
-                        LogLevel.Error,
+                        LogEnums.LogLevel.Error,
                         "ManagerDiagnostics",
                         $"ManagerDiagnostics initialization failed: {ex.Message}");
                     throw;
@@ -100,7 +100,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                 {
                     DLogger.Log(
                         LogSubsystems.Diagnostics,
-                        LogLevel.Info,
+                        LogEnums.LogLevel.Info,
                         "ManagerDiagnostics",
                         "Shutting down ManagerDiagnostics...");
 
@@ -113,7 +113,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
 
                     DLogger.Log(
                         LogSubsystems.Diagnostics,
-                        LogLevel.Info,
+                        LogEnums.LogLevel.Info,
                         "ManagerDiagnostics",
                         "ManagerDiagnostics shutdown completed");
                 }
@@ -121,7 +121,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                 {
                     DLogger.Log(
                         LogSubsystems.Diagnostics,
-                        LogLevel.Error,
+                        LogEnums.LogLevel.Error,
                         "ManagerDiagnostics",
                         $"ManagerDiagnostics shutdown failed: {ex.Message}");
                 }
@@ -150,7 +150,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
 
                 DLogger.Log(
                     LogSubsystems.Diagnostics,
-                    LogLevel.Info,
+                    LogEnums.LogLevel.Info,
                     "ManagerDiagnostics",
                     $"Manager registered for diagnostics: {managerName}");
             }
@@ -169,7 +169,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
 
                     DLogger.Log(
                         LogSubsystems.Diagnostics,
-                        LogLevel.Debug,
+                        LogEnums.LogLevel.Debug,
                         "ManagerDiagnostics",
                         $"Manager status updated: {managerName} -> {status}");
                 }
@@ -203,7 +203,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
 
                     DLogger.Log(
                         LogSubsystems.Diagnostics,
-                        LogLevel.Error,
+                        LogEnums.LogLevel.Error,
                         "ManagerDiagnostics",
                         $"Manager error recorded: {managerName} - {error.Message}");
                 }
@@ -263,43 +263,43 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
 
                 DLogger.Log(
                     LogSubsystems.Diagnostics,
-                    LogLevel.Info,
+                    LogEnums.LogLevel.Info,
                     "ManagerDiagnostics",
                     "Manager diagnostics final report:");
 
                 DLogger.Log(
                     LogSubsystems.Diagnostics,
-                    LogLevel.Info,
+                    LogEnums.LogLevel.Info,
                     "ManagerDiagnostics",
                     $"  Total run time: {diagnostics.TotalRunTime:F2}s");
                 DLogger.Log(
                     LogSubsystems.Diagnostics,
-                    LogLevel.Info,
+                    LogEnums.LogLevel.Info,
                     "ManagerDiagnostics",
                     $"  Total managers: {diagnostics.ManagerCount}");
                 DLogger.Log(
                     LogSubsystems.Diagnostics,
-                    LogLevel.Info,
+                    LogEnums.LogLevel.Info,
                     "ManagerDiagnostics",
                     $"  Active managers: {diagnostics.ActiveManagers}");
                 DLogger.Log(
                     LogSubsystems.Diagnostics,
-                    LogLevel.Info,
+                    LogEnums.LogLevel.Info,
                     "ManagerDiagnostics",
                     $"  Inactive managers: {diagnostics.InactiveManagers}");
                 DLogger.Log(
                     LogSubsystems.Diagnostics,
-                    LogLevel.Info,
+                    LogEnums.LogLevel.Info,
                     "ManagerDiagnostics",
                     $"  Total errors: {diagnostics.TotalErrors}");
                 DLogger.Log(
                     LogSubsystems.Diagnostics,
-                    LogLevel.Info,
+                    LogEnums.LogLevel.Info,
                     "ManagerDiagnostics",
                     $"  Average operation time: {diagnostics.AverageOperationTime * 1000:F2}ms");
                 DLogger.Log(
                     LogSubsystems.Diagnostics,
-                    LogLevel.Info,
+                    LogEnums.LogLevel.Info,
                     "ManagerDiagnostics",
                     $"  Total operation time: {diagnostics.TotalOperationTime * 1000:F2}ms");
             }
@@ -307,7 +307,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             {
                 DLogger.Log(
                     LogSubsystems.Diagnostics,
-                    LogLevel.Error,
+                    LogEnums.LogLevel.Error,
                     "ManagerDiagnostics",
                     $"Failed to generate final report: {ex.Message}");
             }

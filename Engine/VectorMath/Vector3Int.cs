@@ -1,7 +1,30 @@
-using System;
+// ====================================================================================================
+//  FILE: Vector3Int.cs
+//  PATH: ./Engine/VectorMath/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the Vector3Int module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Equals() behavior for the Core subsystem.
+//      - Provide GetHashCode() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//      - Provide FloorToInt() behavior for the Core subsystem.
+//      - Provide ToVector3() behavior for the Core subsystem.
+//      - Provide Distance() behavior for the Core subsystem.
+//      - Provide SqrDistance() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Dictionary;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.VectorMath
 {
@@ -129,3 +152,4 @@ namespace SASZombieAssaultTD.Engine.VectorMath
         }
     }
 }
+

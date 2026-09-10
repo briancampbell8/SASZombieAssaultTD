@@ -1,3 +1,23 @@
+// ====================================================================================================
+//  FILE: AssetBundle_Validation.cs
+//  PATH: ./Engine/Resources/Assets/Bundle/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetBundle_Validation module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Validate() behavior for the Core subsystem.
+//      - Provide PerformHealthCheck() behavior for the Core subsystem.
+//      - Provide Repair() behavior for the Core subsystem.
+//      - Provide Optimize() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetBundle_Validation.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Bundle\AssetBundle_Validation.cs
@@ -41,14 +61,14 @@
 //============================================================================
 
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 //
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -382,7 +402,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(
+                DLogger.Log(
                     $"Failed to calculate bundle checksum: {ex.Message}");
                 return string.Empty;
             }
@@ -414,3 +434,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+

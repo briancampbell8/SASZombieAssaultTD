@@ -1,3 +1,21 @@
+// ====================================================================================================
+//  FILE: AssetPipeline_Core.cs
+//  PATH: ./Engine/Resources/Assets/Pipeline/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetPipeline_Core module.
+//
+//  RESPONSIBILITIES:
+//      - Provide UpdateConfig() behavior for the Core subsystem.
+//      - Provide Dispose() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetPipeline_Core.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Pipeline\AssetPipeline_Core.cs
@@ -48,13 +66,12 @@
 //============================================================================
 
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 //
 using SASZombieAssaultTD.Engine.VectorMath;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
 {
@@ -114,7 +131,7 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
             InitializeProcessors();
             InitializeConfigs();
 
-            System.Diagnostics.Debug.WriteLine(
+            DLogger.Log(LogSubsystems.ResourcesAssetsPipeline,
                 "Info",
                 $"AssetPipeline: Initialized (Input: {_inputPath}, Output: {_outputPath})");
         }
@@ -133,7 +150,7 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
 
             _configs[type] = config;
 
-            System.Diagnostics.Debug.WriteLine(
+            DLogger.Log(LogSubsystems.ResourcesAssetsPipeline,
                 "Debug",
                 $"AssetPipeline: Updated config for {type}");
         }
@@ -204,7 +221,7 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
         {
             _processors[processor.AssetManagerType.ToString()] = processor;
 
-            System.Diagnostics.Debug.WriteLine(
+            DLogger.Log(LogSubsystems.ResourcesAssetsPipeline,
                 "Debug",
                 $"AssetPipeline: Registered processor for {processor.AssetManagerType}");
         }
@@ -233,7 +250,8 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
 
             _processors.Clear();
 
-            System.Diagnostics.Debug.WriteLine("Info", "AssetPipeline: Disposed");
+            DLogger.Log(LogSubsystems.ResourcesAssetsPipeline,
+                "Info", "AssetPipeline: Disposed");
         }
     }
 
@@ -261,3 +279,4 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
         }
     }
 }
+

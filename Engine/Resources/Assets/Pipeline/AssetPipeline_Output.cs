@@ -1,3 +1,21 @@
+// ====================================================================================================
+//  FILE: AssetPipeline_Output.cs
+//  PATH: ./Engine/Resources/Assets/Pipeline/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetPipeline_Output module.
+//
+//  RESPONSIBILITIES:
+//      - Provide OptimizeAssetAsync() behavior for the Core subsystem.
+//      - Provide GetSupportedExtensions() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetPipeline_Output.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Pipeline\AssetPipeline_Output.cs
@@ -51,6 +69,7 @@ using System.Threading.Tasks;
 //
 
 using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
 {
@@ -88,7 +107,7 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
             //Execute optimization
             var result = await processor.OptimizeAsync(fullAssetPath, config);
 
-            System.Diagnostics.Debug.WriteLine(
+            DLogger.Log(LogSubsystems.ResourcesAssetsPipeline,
                 "Info",
                 $"AssetPipeline: Optimized '{assetPath}' ({optimizationLevel})");
 
@@ -111,3 +130,4 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
         }
     }
 }
+

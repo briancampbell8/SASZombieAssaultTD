@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: EnemySpawnedEvent.cs
+//  PATH: ./Engine/Events/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the EnemySpawnedEvent module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    EnemySpawnedEvent.cs
 Purpose: Event fired when an enemy is spawned in the game.
@@ -8,7 +25,7 @@ P11-04-07-B: Enemy spawn event for ECS integration and event system.
 
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.ECS;
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -53,10 +70,7 @@ namespace SASZombieAssaultTD.Engine.Events
         ///<summary>
         ///Initializes a new enemy spawned event.
         ///</summary>
-        public EnemySpawnedEvent()
-        {
-            SpawnTime = DateTime.UtcNow;
-        }
+        public EnemySpawnedEvent() => SpawnTime = DateTime.UtcNow;
 
         ///<summary>
         ///Initializes a new enemy spawned event with specified enemy.
@@ -67,8 +81,9 @@ namespace SASZombieAssaultTD.Engine.Events
             Enemy = enemy ?? throw new ArgumentNullException(nameof(enemy));
             EnemyType = enemy.Type.ToString();
             Position = enemy.Position;
-            EntityId = enemy.Entity.Id;
+            EntityId = enemy.ECSEntityCore.Id;
             SpawnTime = DateTime.UtcNow;
         }
     }
 }
+

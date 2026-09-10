@@ -1,5 +1,22 @@
-using System;
-using System.Collections.Generic;
+// ====================================================================================================
+//  FILE: SaveDataTypes.cs
+//  PATH: ./Engine/Persistence/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the SaveDataTypes module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -44,3 +61,4 @@ namespace SASZombieAssaultTD.Engine.Persistence
         void Publish<T>(T eventData) where T : class;
     }
 }
+

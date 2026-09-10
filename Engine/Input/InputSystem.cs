@@ -1,204 +1,161 @@
+// =====================================================================================================
+//  FILE: InputSystem.cs
+//  PATH: ./Engine/Input/
+//  SUBSYSTEM: Core Input System
 //
-using SASZombieAssaultTD.Engine.VectorMath;
-using System;
-using System.Collections.Generic;
-using System.Security.AccessControl;
+//  ROLE:
+//      Concrete engine subsystem that provides deterministic, high-level input queries for gameplay,
+//      simulation, and core engine logic. InputSystem does not track raw input itself; instead, it
+//      consumes transitional and state data produced by UIInputRouter and exposes a stable façade
+//      for the rest of the engine.
+//
+//  RESPONSIBILITIES:
+//      - Expose IsKeyPressed / IsKeyJustPressed / IsKeyJustReleased queries.
+//      - Expose IsMouseButtonPressed / IsMouseButtonJustPressed / IsMouseButtonJustReleased queries.
+//      - Provide GetMousePosition / GetMouseDelta for gameplay and UI logic.
+//      - Provide GetScrollDelta for scroll-based interactions.
+//      - Maintain per-frame mouse delta tracking.
+//      - Integrate cleanly with SystemRegistry via IEngineSubsystem.
+//      - Act as a compatibility layer for older engine code that previously relied on static input.
+//
+//  NON-RESPONSIBILITIES:
+//      - Polling OS-level input events (delegated to platform input loops).
+//      - Tracking raw input states (delegated to UIInputRouter).
+//      - Performing UI-specific routing (delegated to UIManager/UIElement).
+//      - Managing input mappings or gesture recognition.
+//
+//  NOTES:
+//      This subsystem is intentionally thin. All deterministic input tracking lives inside
+//      UIInputRouter. InputSystem simply exposes a stable façade for gameplay and engine systems.
+// =====================================================================================================
 
-using SASZombieAssaultTD.Engine.Diagnostics;
-using System.Windows.Forms;
+using System;
+using SASZombieAssaultTD.Engine.Interfaces;
+using SASZombieAssaultTD.Engine.VectorMath;
 
 namespace SASZombieAssaultTD.Engine.Input
 {
-    ///<summary>
-    ///Input system for SAS Zombie Assault TD.
-    ///Provides keyboard and mouse input state tracking.
-    ///</summary>
-    public static class InputSystem
+    /// <summary>
+    /// Deterministic input subsystem providing high-level input queries backed by UIInputRouter.
+    /// </summary>
+    public sealed class InputSystem : IEngineSubsystem
     {
-        private static readonly Dictionary<string, bool> _keyStates = new Dictionary<string, bool>();
-        private static readonly Dictionary<string, bool> _previousKeyStates = new Dictionary<string, bool>();
-        private static Vector3 _mousePosition = new Vector3();
-        private static Vector3 _previousMousePosition = new Vector3();
-        private static bool[] _mouseButtons = new bool[3];
-        private static bool[] _previousMouseButtons = new bool[3];
-        private static object TheType;
-        private static object TheMember;
+        private readonly UIInputRouter _router;
 
-        ///<summary>
-        ///Checks if a specific key is currently pressed.
-        ///</summary>
-        ///<param name="keyName">Name of the key (e.g., "F5", "Space", "Escape").</param>
-        ///<returns>True if the key is pressed.</returns>
-        public static bool IsKeyPressed(string keyName)
+        private Vector3 _mousePositionPrev = Vector3.Zero;
+        private Vector3 _mousePositionCurr = Vector3.Zero;
+
+        /// <summary>
+        /// Constructs the InputSystem and binds it to the engine's UIInputRouter.
+        /// </summary>
+        public InputSystem(UIInputRouter router)
         {
-            return _keyStates.TryGetValue(keyName.ToUpper(), out bool pressed) && pressed;
+            _router = router ?? throw new ArgumentNullException(nameof(router));
         }
 
-        ///<summary>
-        ///Checks if a specific key was just pressed this frame.
-        ///</summary>
-        ///<param name="keyName">Name of the key.</param>
-        ///<returns>True if the key was just pressed.</returns>
-        public static bool IsKeyJustPressed(string keyName)
+        // =====================================================================================================
+        //  KEYBOARD QUERIES
+        // =====================================================================================================
+
+        public bool IsKeyPressed(string keyName)
         {
-            string key = keyName.ToUpper();
-            bool currentlyPressed = _keyStates.TryGetValue(key, out bool current) && current;
-            bool previouslyPressed = _previousKeyStates.TryGetValue(key, out bool previous) && previous;
-            return currentlyPressed && !previouslyPressed;
+            if (string.IsNullOrEmpty(keyName))
+                return false;
+
+            return _router.IsKeyDown(keyName);
         }
 
-        ///<summary>
-        ///Checks if a specific key was just released this frame.
-        ///</summary>
-        ///<param name="keyName">Name of the key.</param>
-        ///<returns>True if the key was just released.</returns>
-        public static bool IsKeyJustReleased(string keyName)
+        public bool IsKeyJustPressed(string keyName)
         {
-            string key = keyName.ToUpper();
-            bool currentlyPressed = _keyStates.TryGetValue(key, out bool current) && current;
-            bool previouslyPressed = _previousKeyStates.TryGetValue(key, out bool previous) && previous;
-            return !currentlyPressed && previouslyPressed;
+            if (string.IsNullOrEmpty(keyName))
+                return false;
+
+            return _router.IsKeyPressed(keyName);
         }
 
-        ///<summary>
-        ///Gets the current mouse position.
-        ///</summary>
-        ///<returns>Mouse position as Vector3.</returns>
-        public static Vector3 GetMousePosition()
+        public bool IsKeyJustReleased(string keyName)
         {
-            return _mousePosition;
+            if (string.IsNullOrEmpty(keyName))
+                return false;
+
+            return _router.IsKeyReleased(keyName);
         }
 
-        ///<summary>
-        ///Gets the mouse movement delta since last frame.
-        ///</summary>
-        ///<returns>Mouse movement as Vector3.</returns>
-        public static Vector3 GetMouseDelta()
+        // =====================================================================================================
+        //  MOUSE QUERIES
+        // =====================================================================================================
+
+        public bool IsMouseButtonPressed(int button)
         {
-            return new Vector3(_mousePosition.X - _previousMousePosition.X, 
-                               _mousePosition.Y - _previousMousePosition.Y, 
-                               0f);
+            return _router.IsMouseButtonDown(button);
         }
 
-        ///<summary>
-        ///Checks if a mouse button is currently pressed.
-        ///</summary>
-        ///<param name="button">Mouse button index (0=Left, 1=Right, 2=Middle).</param>
-        ///<returns>True if the button is pressed.</returns>
-        public static bool IsMouseButtonPressed(int button)
+        public bool IsMouseButtonJustPressed(int button)
         {
-            return button >= 0 && button < _mouseButtons.Length && _mouseButtons[button];
+            return _router.IsMouseButtonPressed(button);
         }
 
-        ///<summary>
-        ///Checks if a mouse button was just pressed this frame.
-        ///</summary>
-        ///<param name="button">Mouse button index.</param>
-        ///<returns>True if the button was just pressed.</returns>
-        public static bool IsMouseButtonJustPressed(int button)
+        public bool IsMouseButtonJustReleased(int button)
         {
-            return button >= 0 && button < _mouseButtons.Length && 
-                   _mouseButtons[button] && !_previousMouseButtons[button];
+            return _router.IsMouseButtonReleased(button);
         }
 
-        ///<summary>
-        ///Checks if a mouse button was just released this frame.
-        ///</summary>
-        ///<param name="button">Mouse button index.</param>
-        ///<returns>True if the button was just released.</returns>
-        public static bool IsMouseButtonJustReleased(int button)
+        public Vector3 GetMousePosition()
         {
-            return button >= 0 && button < _mouseButtons.Length && 
-                   !_mouseButtons[button] && _previousMouseButtons[button];
+            return _mousePositionCurr;
         }
 
-        ///<summary>
-        ///Updates the input state (call this once per frame).
-        ///</summary>
-        public static void Update()
+        public Vector3 GetMouseDelta()
         {
-            //Store previous states
-            _previousMousePosition = _mousePosition;
-            Array.Copy(_mouseButtons, _previousMouseButtons, _mouseButtons.Length);
+            return new Vector3(
+                _mousePositionCurr.X - _mousePositionPrev.X,
+                _mousePositionCurr.Y - _mousePositionPrev.Y,
+                0f
+            );
+        }
 
-            //Update key states dictionary
-            foreach (var kvp in _keyStates)
+        public float GetScrollDelta()
+        {
+            return _router.GetScrollDelta();
+        }
+
+        // =====================================================================================================
+        //  UPDATE / CLEAR
+        // =====================================================================================================
+
+        public void Update(float deltaTime)
+        {
+            _mousePositionPrev = _mousePositionCurr;
+
+            var pos = _router.GetMousePosition();
+            if (pos is Tuple<float, float> tuple)
             {
-                _previousKeyStates[kvp.Key] = kvp.Value;
+                _mousePositionCurr = new Vector3(tuple.Item1, tuple.Item2, 0f);
             }
         }
 
-        ///<summary>
-        ///Sets a key state (used by input handling system).
-        ///</summary>
-        ///<param name="keyName">Name of the key.</param>
-        ///<param name="pressed">Whether the key is pressed.</param>
-        public static void SetKeyState(string keyName, bool pressed)
+        public void Clear()
         {
-            _keyStates[keyName.ToUpper()] = pressed;
+            _mousePositionPrev = Vector3.Zero;
+            _mousePositionCurr = Vector3.Zero;
         }
 
-        ///<summary>
-        ///Sets the mouse position (used by input handling system).
-        ///</summary>
-        ///<param name="x">Mouse X coordinate.</param>
-        ///<param name="y">Mouse Y coordinate.</param>
-        public static void SetMousePosition(float x, float y)
+        // =====================================================================================================
+        //  UTILITY
+        // =====================================================================================================
+
+        public string[] GetPressedKeys()
         {
-            _mousePosition = new Vector3(x, y, 0f);
+            // Router only exposes bool[] for now; names require router enhancement.
+            return Array.Empty<string>();
         }
 
-        ///<summary>
-        ///Sets a mouse button state (used by input handling system).
-        ///</summary>
-        ///<param name="button">Mouse button index.</param>
-        ///<param name="pressed">Whether the button is pressed.</param>
-        public static void SetMouseButtonState(int button, bool pressed)
+        public InputRouterStats GetStats()
         {
-            if (button >= 0 && button < _mouseButtons.Length)
-            {
-                _mouseButtons[button] = pressed;
-            }
-        }
-
-        ///<summary>
-        ///Clears all input states.
-        ///</summary>
-        public static void Clear()
-        {
-            _keyStates.Clear();
-            _previousKeyStates.Clear();
-            _mousePosition = new Vector3();
-            _previousMousePosition = new Vector3();
-            Array.Clear(_mouseButtons, 0, _mouseButtons.Length);
-            Array.Clear(_previousMouseButtons, 0, _previousMouseButtons.Length);
-        }
-
-        ///<summary>
-        ///Gets all currently pressed keys.
-        ///</summary>
-        ///<returns>Array of pressed key names.</returns>
-        public static string[] GetPressedKeys()
-        {
-            var pressedKeys = new List<string>();
-            foreach (var kvp in _keyStates)
-            {
-                if (kvp.Value)
-                {
-                    pressedKeys.Add(kvp.Key);
-                }
-            }
-            return pressedKeys.ToArray();
+            return (InputRouterStats)_router.GetStats();
         }
 
         internal static bool IsKeyPressed(KeyCode escape)
-        {
-            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
-
-            throw new NotImplementedException();
-        }
-
-        internal static bool IsKeyJustPressed(Keys f3)
         {
             throw new NotImplementedException();
         }

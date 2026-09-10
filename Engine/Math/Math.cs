@@ -1,3 +1,35 @@
+// ====================================================================================================
+//  FILE: Math.cs
+//  PATH: ./Engine/Math/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the Math module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Max() behavior for the Core subsystem.
+//      - Provide Max() behavior for the Core subsystem.
+//      - Provide Max() behavior for the Core subsystem.
+//      - Provide Min() behavior for the Core subsystem.
+//      - Provide Min() behavior for the Core subsystem.
+//      - Provide Min() behavior for the Core subsystem.
+//      - Provide Abs() behavior for the Core subsystem.
+//      - Provide Abs() behavior for the Core subsystem.
+//      - Provide Abs() behavior for the Core subsystem.
+//      - Provide Clamp() behavior for the Core subsystem.
+//      - Provide Clamp() behavior for the Core subsystem.
+//      - Provide Clamp() behavior for the Core subsystem.
+//      - Provide Sqrt() behavior for the Core subsystem.
+//      - Provide Sqrt() behavior for the Core subsystem.
+//      - Provide Pow() behavior for the Core subsystem.
+//      - Provide Pow() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    Math.cs
 Purpose: Math namespace for SAS Zombie Assault TD.
@@ -6,7 +38,7 @@ Features: Provides Max, Min, Abs, Clamp, and Sqrt functions.
 P11-04-07-B: Math namespace for engine mathematical operations.
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.VectorMath;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -47,3 +79,4 @@ namespace SASZombieAssaultTD.Engine.Math
         public static double Pow(double baseValue, double exponent) => System.Math.Pow(baseValue, exponent);
     }
 }
+

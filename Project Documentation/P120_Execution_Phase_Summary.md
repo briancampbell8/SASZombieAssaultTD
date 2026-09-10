@@ -726,7 +726,7 @@ transition.Execute(
     fromScene: currentScene,
     toScene: nextScene,
     onComplete: () => {
-        DebugLogger.Log("Transition complete");
+        DebugLogger.Log(LogSubsystems.ResourcesPipeline, "Transition complete");
     }
 );
 ```

@@ -1,16 +1,16 @@
-﻿/*
+/*
 Program Name: SASZombieAssaultTD
 File Path: Engine\Save\BattlefieldProgress.cs
 Purpose: Battlefield progress data structure for save/load system.
 Features: P120 Integration for battlefield-specific progress tracking.
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 //
 
 
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Gameplay;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.GameRoot.GamePlay;
 namespace SASZombieAssaultTD.Engine.Save
 {
     ///<summary>
@@ -37,7 +37,7 @@ namespace SASZombieAssaultTD.Engine.Save
             PlayTime = 0f;
             Attempts = 0;
 
-            DLogger.Log(LogSubsystems.Save, LogLevel.Debug, "Debug", $"BattlefieldProgress: Created for {battlefield.GetDisplayName()}");
+            DLogger.Log(LogSubsystems.Save, LogEnums.LogLevel.Debug, "Debug", $"BattlefieldProgress: Created for {battlefield.GetDisplayName()}");
         }
 
         ///<summary>
@@ -56,7 +56,7 @@ namespace SASZombieAssaultTD.Engine.Save
 
             DLogger.Log(
                 LogSubsystems.Save,
-                LogLevel.Info,
+                LogEnums.LogLevel.Info,
                 "Info",
                 $"BattlefieldProgress: Updated {Battlefield.GetDisplayName()} - Completed={completed}, " +
                 $"HighestWave={HighestWave}, HighScore={HighScore}");

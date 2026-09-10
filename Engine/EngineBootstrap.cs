@@ -1,91 +1,115 @@
-/*
-File:    EngineBootstrap.cs
-Purpose: Advanced engine bootstrap system for clean initialization.
-         Provides factory methods for creating engine components with proper dependency injection.
-
-Notes:    This bootstrap system handles all engine component creation
-         and dependency injection, ensuring clean separation of concerns.
-         It's the single entry point for engine initialization.
-*/
+// =====================================================================================================
+//  FILE: EngineBootstrap.cs
+//  PATH: Engine/EngineBootstrap.cs
+//  SUBSYSTEM: Core Composition Root
+//
+//  ROLE:
+//      Deterministic engine composition root responsible for constructing all top‑level engine managers,
+//      wiring the Win32/D3D11 platform stack into the rendering pipeline, registering core services into
+//      the SystemRegistry, and instantiating GameRootMain using the authoritative GPU render context.
+//
+//  ARCHITECTURE (2026‑09):
+//      - CPU framebuffer (FramebufferDrawing) is NOT part of the render pipeline.
+//      - GPU render context (D3D11Adapter_Core) is the authoritative D3D11Adapter_Core.
+//      - ModernUIRenderer uses the GPU context directly (Option A1).
+//      - RenderContextForwarder is NOT used here.
+//      - Composition root is clean, deterministic, and GPU‑centric.
+// =====================================================================================================
 
 using System;
-using SASZombieAssaultTD.Engine.Timing;
-using SASZombieAssaultTD.Engine.UI.Input;
-//
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Scenes;
-using SASZombieAssaultTD.Engine.Systems;
-using SASZombieAssaultTD.Engine.Managers;
-using SASZombieAssaultTD.Engine.ECS;
+using SASZombieAssaultTD.Engine.Input;
 using SASZombieAssaultTD.Engine.Interfaces;
-using SASZombieAssaultTD.Engine.UI.Rendering;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.Render.D3D11.DeviceCore;
+using SASZombieAssaultTD.Engine.State;
+using SASZombieAssaultTD.Engine.Systems;
+using SASZombieAssaultTD.Engine.UI.Rendering.Modern;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
-
-namespace SASZombieAssaultTD.Engine
+namespace SASZombieAssaultTD.Engine.Platform
 {
-    ///<summary>
-    ///Advanced engine bootstrap system for clean component initialization.
-    ///</summary>
-    public class EngineBootstrap
+    public static class EngineBootstrap
     {
-        private readonly ISystemRegistry _systemRegistry;
-        private readonly ECSWorld _ecsWorld;
-        private readonly Systems.SystemManager _systemManager;
-        private readonly Systems.UpdateManager _updateManager;
-        private readonly Systems.RenderManager _renderManager;
-        private readonly Interfaces.IRenderContext _renderContext;
-
-        ///<summary>
-        ///Initializes a new instance of EngineBootstrap.
-        ///</summary>
-        public EngineBootstrap()
+        public static GameRootMain Start(ISystemRegistry registry)
         {
-            _systemRegistry = new SystemRegistry();
-            _ecsWorld = new ECSWorld();
-            _systemManager = new Systems.SystemManager();
-            _updateManager = new Systems.UpdateManager();
-            _renderManager = new Systems.RenderManager();
-            _renderContext = (Interfaces.IRenderContext)new UIRenderContext();
+            if (registry == null)
+                throw new ArgumentNullException(nameof(registry));
+
+            var systemManager = registry.Resolve<SystemManager>();
+            var updateManager = registry.Resolve<UpdateManager>();
+            var renderManager = registry.Resolve<RenderManager>();
+            var inputRouter = registry.Resolve<UIInputRouter>();
+            var stateMachine = registry.Resolve<StateMachine>();
+            var adapterCore = registry.Resolve<D3D11Adapter_Core>();
+            var uiRenderer = registry.Resolve<ModernUIRenderer>();
+
+            var root = new GameRootMain(
+                registry,
+                systemManager,
+                updateManager,
+                renderManager,
+                inputRouter,
+                stateMachine,
+                adapterCore,
+                uiRenderer);
+
+            root.Initialize();
+            root.Run();
+
+            return root;
         }
 
-        ///<summary>
-        ///Creates and initializes the game root with all required systems.
-        ///</summary>
-        public void CreateAndInitializeGameRoot()
+        internal static GameRootMain CreateGameRootMain(D3D11Window window, D3D11DeviceCore deviceCore)
         {
-            //Initialize all systems directly
-            //TODO: Verify if these systems need explicit initialization or if constructors handle it
-            //_systemRegistry?.Initialize();
-            //_systemManager?.Initialize();
-            //_updateManager?.Initialize();
-            //_renderManager?.Initialize();
+            // Validate arguments to ensure deterministic composition root behavior.
+            if (window == null)
+                throw new ArgumentNullException(nameof(window));
+            if (deviceCore == null)
+                throw new ArgumentNullException(nameof(deviceCore));
+
+            // 1. Initialize the central DI registry container
+            ISystemRegistry registry = new SystemRegistry();
+
+            // 2. Explicitly register hardware components FIRST so dependencies can resolve them instantly
+            registry.Register<D3D11Window>(window);
+            registry.Register<D3D11DeviceCore>(deviceCore);
+
+            // 3. Construct and register the authoritative GPU-only adapter context
+            var adapterCore = new D3D11Adapter_Core(window, deviceCore);
+            registry.Register<D3D11Adapter_Core>(adapterCore);
+
+            // 4. Spin up required managers/subsystems
+            var systemManager = new SystemManager((SystemRegistry)registry);
+            var updateManager = new UpdateManager();
+            var renderManager = new RenderManager();
+            var inputRouter = new UIInputRouter();
+            var stateMachine = new StateMachine();
+
+
+            var textureAtlasManager = new UITextureAtlasManager(); // Make sure to use your exact class name if it differs
+            registry.Register<UITextureAtlasManager>(textureAtlasManager);
+
+            // 5. Build the UI Renderer and BIND its core hardware dependencies immediately
+            var uiRenderer = new ModernUIRenderer(adapterCore);
+            uiRenderer.P2_BindCore(deviceCore, adapterCore, textureAtlasManager); // <--- THIS KILLS THE CRASH!
+
+            registry.Register<SystemManager>(systemManager);
+            registry.Register<UpdateManager>(updateManager);
+            registry.Register<RenderManager>(renderManager);
+            registry.Register<UIInputRouter>(inputRouter);
+            registry.Register<StateMachine>(stateMachine);
+            registry.Register<ModernUIRenderer>(uiRenderer);
+
+            // 6. Invoke the AUTHORITATIVE primary constructor with fully satisfied dependencies
+            return new GameRootMain(
+                registry,
+                systemManager,
+                updateManager,
+                renderManager,
+                inputRouter,
+                stateMachine,
+                adapterCore,
+                uiRenderer);
         }
 
-        ///<summary>
-        ///Creates a game loop instance.
-        ///</summary>
-        ///<returns>Game loop instance.</returns>
-        public GameLoop CreateGameLoop()
-        {
-            //Create a simple game loop implementation
-            return new GameLoop();
-        }
-    }
-
-    ///<summary>
-    ///Simple game loop implementation
-    ///</summary>
-    public class GameLoop
-    {
-        public void Initialize()
-        {
-            //Initialize game loop
-        }
-
-        public void Run()
-        {
-            //Run game loop
-        }
     }
 }

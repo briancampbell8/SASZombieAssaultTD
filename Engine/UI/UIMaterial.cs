@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: UIMaterial.cs
+//  PATH: ./Engine/UI/
+//  MODULE: UI
+//
+//  ROLE:
+//      Provide UI layout, interaction logic, or HUD rendering.
+//
+//  RESPONSIBILITIES:
+//      - Provide LogState() behavior for the UI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*==============================================================================
     File: UIMaterial.cs
     Project: SASZombieAssaultTD Engine
@@ -9,7 +26,7 @@
         Defines the modern UI material data container used by the HUDPanel and
         Finalizer rendering pipelines. This class provides deterministic color,
         shader, and flag metadata consumed by HUDManager, UIStateBuilder,
-        HUDPanelFinalizer, and IDrawingContext.
+        HUDPanelFinalizer, and D3D11Adapter_Core.
 
     Notes:
         - Replaces legacy UI/Rendering version.
@@ -19,17 +36,22 @@
         - Supports diagnostics via DLogger.Log().
 ==============================================================================*/
 
+using System;
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.UI.Rendering.Modern;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
     /// <summary>
     /// Represents a fully modernized UI material used by the HUDPanel + Finalizer pipeline.
     /// This class is a pure data container consumed by HUDManager, UIStateBuilder,
-    /// HUDPanelFinalizer, and IDrawingContext.
+    /// HUDPanelFinalizer, and D3D11Adapter_Core.
     /// </summary>
     public class UIMaterial
     {
+        internal object Texture;
+
         /// <summary>
         /// Primary fill color for UI elements (panels, bars, backgrounds).
         /// </summary>
@@ -85,8 +107,13 @@ namespace SASZombieAssaultTD.Engine.UI
         /// </summary>
         public void LogState(string tag = "UIMaterial")
         {
-            DLogger.Log(tag,
+            DLogger.Log(tag, LogSubsystems.UI,
                 $"Material '{Name}' | Fill={FillColor} Text={TextColor} Flash={FlashColor} Flags={Flags} Shader={ShaderId} Value={Value}");
+        }
+
+        public static explicit operator UIMaterial(UIAtlasMaterial v)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -102,3 +129,4 @@ namespace SASZombieAssaultTD.Engine.UI
         Disabled = 1 << 3
     }
 }
+

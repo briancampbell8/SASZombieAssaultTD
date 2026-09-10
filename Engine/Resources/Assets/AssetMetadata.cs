@@ -1,12 +1,29 @@
+// ====================================================================================================
+//  FILE: AssetMetadata.cs
+//  PATH: ./Engine/Resources/Assets/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetMetadata module.
+//
+//  RESPONSIBILITIES:
+//      - Provide IsValid() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    AssetMetadata.cs
 Purpose: Metadata structure for engine assets.
 Features: Asset format, size, and validation information.
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -109,3 +126,4 @@ namespace SASZombieAssaultTD.Engine.Resources
     //   Binary
     //}
 }
+

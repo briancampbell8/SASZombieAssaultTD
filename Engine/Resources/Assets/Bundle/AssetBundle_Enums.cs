@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: AssetBundle_Enums.cs
+//  PATH: ./Engine/Resources/Assets/Bundle/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetBundle_Enums module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //============================================================================
 //File:        AssetBundle_Enums.cs
@@ -26,8 +43,6 @@
 */
 
 //
-
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -76,3 +91,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         Maximum
     }
 }
+

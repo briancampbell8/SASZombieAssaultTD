@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Core;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -132,7 +132,7 @@ namespace SASZombieAssaultTD.Engine.Save
             _customData = new Dictionary<string, object>();
             Version = 1;
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", "SaveData: Created new save data instance");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", "SaveData: Created new save data instance");
         }
 
         ///<summary>
@@ -146,7 +146,7 @@ namespace SASZombieAssaultTD.Engine.Save
             {
                 _highScore = score;
                 MarkAsModified();
-                DLogger.Log(LogSubsystems.Save,LogLevel.Info, $"SaveData: New high score: {score}");
+                DLogger.Log(LogSubsystems.Save, LogEnums.LogLevel.Info, $"SaveData: New high score: {score}");
                 return true;
             }
             return false;
@@ -257,7 +257,7 @@ namespace SASZombieAssaultTD.Engine.Save
             _customData.Clear();
             MarkAsModified();
 
-            DLogger.Log(LogSubsystems.Save,LogLevel.Info, "SaveData: Reset all progress to defaults");
+            DLogger.Log(LogSubsystems.Save, LogEnums.LogLevel.Info, "SaveData: Reset all progress to defaults");
         }
 
         ///<summary>
@@ -471,7 +471,7 @@ namespace SASZombieAssaultTD.Engine.Save
             _showFPS = false;
             _autoPause = true;
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", "GameSettings: Created with default values");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", "GameSettings: Created with default values");
         }
 
         ///<summary>
@@ -490,7 +490,7 @@ namespace SASZombieAssaultTD.Engine.Save
             _showFPS = false;
             _autoPause = true;
 
-            DLogger.Log(LogSubsystems.Save,LogLevel.Info, "GameSettings: Reset to default values");
+            DLogger.Log(LogSubsystems.Save, LogEnums.LogLevel.Info, "GameSettings: Reset to default values");
         }
 
         ///<summary>

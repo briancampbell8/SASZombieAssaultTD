@@ -1,3 +1,24 @@
+// ====================================================================================================
+//  FILE: ResourceType.cs
+//  PATH: ./Engine/Economy/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ResourceType module.
+//
+//  RESPONSIBILITIES:
+//      - Provide GetDisplayName() behavior for the Core subsystem.
+//      - Provide GetDescription() behavior for the Core subsystem.
+//      - Provide GetIconPath() behavior for the Core subsystem.
+//      - Provide IsPremium() behavior for the Core subsystem.
+//      - Provide IsPrimary() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    ResourceType.cs
 Purpose: Defines different resource types for the economy system.
@@ -119,3 +140,4 @@ namespace SASZombieAssaultTD.Engine.Economy
         }
     }
 }
+

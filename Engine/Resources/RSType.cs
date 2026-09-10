@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: RSType.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSType module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    RSType.cs
 Author:  BDC
@@ -35,5 +52,6 @@ namespace SASZombieAssaultTD.Engine.Resources
         Shader = 8
     }
 }
+
 
 

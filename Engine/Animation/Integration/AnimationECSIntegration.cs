@@ -1,97 +1,132 @@
-//-----------------------------------------------------------------------------
-//Animation ECS integration
-//Namespace: SASZombieAssaultTD.Engine.Animation.Events
-//-----------------------------------------------------------------------------
-using System;
-using SASZombieAssaultTD.Engine.ECS;
+// =====================================================================================================
+//  FILE: AnimationECSIntegration.cs
+//  PATH: Engine/Animation/Integration/AnimationECSIntegration.cs
+//  SUBSYSTEM: Animation Integration Module
+//
+//  ROLE:
+//      Bridges animation systems and animation events into the ECSRuntime subsystem.
+//      Registers animation systems and subscribes to animation-related ECS events.
+//      Provides deterministic integration behavior for animation-triggered ECS operations.
+//
+//  RESPONSIBILITIES:
+//      - Register animation systems into ECSRuntimeSys.
+//      - Subscribe to GameEventData events using ECSRuntimeEventss.
+//      - Provide deterministic event dispatch into animation systems.
+//      - Provide clean unregister behavior.
+//
+//  NON-RESPONSIBILITIES:
+//      - Executing animation logic directly.
+//      - Managing ECS ECSEntityCore lifecycle or component storage.
+//      - Performing spatial or collision queries.
+//      - Managing update-loop sequencing.
+//
+//  ARCHITECTURAL NOTES:
+//      - Updated to match the new ECSRuntimeCore subsystem architecture.
+//      - Replaces legacy AddSystem / Subscribe / Unsubscribe calls.
+//      - Uses ECSRuntimeSys and ECSRuntimeEventss instead of monolithic ECSRuntimeCore methods.
+// =====================================================================================================
+
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Concurrent;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine;
 using SASZombieAssaultTD.Engine.Animation.Systems;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.ECS;
+using SASZombieAssaultTD.Engine.ECS.ESCSystem;
+using SASZombieAssaultTD.Engine.Events;
 
-namespace SASZombieAssaultTD.Engine.Animation.Integration
+public static class AnimationECSIntegration
 {
-    ///<summary>
-    ///Game event types for animation system.
-    ///</summary>
-    public static class GameEvent
+    private static readonly HashSet<Type> _registeredSystems = new();
+    private static readonly Dictionary<string, Action<GameEventData>> _eventHandlers = new();
+    private static readonly ConcurrentDictionary<Type, Action<IECSRuntimeCore>> _systemHandlers = new();
+    private static EventRouting _routing;
+
+
+
+
+
+    // -------------------------------------------------------------------------------------------------
+    // Register
+    // -------------------------------------------------------------------------------------------------
+    public static void Register(IECSRuntimeCore world)
     {
-        public static void TriggerAnimation(string animationName, Entity target)
+        if (world == null)
+            throw new ArgumentNullException(nameof(world), "ECSRuntimeCore cannot be null.");
+
+        // FIX: Cast the interface to the concrete class that contains the subsystems
+        if (world is not ECSRuntimeCore runtimeCore)
+            throw new InvalidCastException("Provided world runtime does not match the concrete ECSRuntimeCore.");
+
+        // Register animation systems
+        var systems = new[]
         {
-            //Animation trigger logic
+            typeof(AnimationTriggerSystem),
+            typeof(AnimationUpdateSystem)
+        };
+
+        foreach (var systemType in systems)
+        {
+            if (_registeredSystems.Contains(systemType))
+                continue;
+
+            _registeredSystems.Add(systemType);
+
+            _systemHandlers.TryAdd(systemType, runtime =>
+            {
+                var instance = (ISystemCore)Activator.CreateInstance(systemType);
+
+                // FIX: Access the Systems manager via the concrete instance
+                runtimeCore.Systems.Add(instance);
+            });
         }
+
+        // Register event handlers
+        if (!_eventHandlers.ContainsKey(nameof(GameEventData)))
+            _eventHandlers[nameof(GameEventData)] = OnGameEventReceived;
+
+        // FIX: Access the Events manager via the concrete instance
+        _routing.Subscribe<GameEventData>(OnGameEventReceived);
+
+        DLogger.Log(LogSubsystems.ResourcesPipeline, "AnimationECSIntegration", 1, "Register", "Animation systems and event handlers registered.");
     }
 
-    ///<summary>
-    ///Game event data for animation system.
-    ///</summary>
-    public class GameEventData
+    // -------------------------------------------------------------------------------------------------
+    // Unregister
+    // -------------------------------------------------------------------------------------------------
+    public static void Unregister(IECSRuntimeCore world)
     {
-        public string EventName { get; set; }
-        public Entity Target { get; set; }
+        if (world == null)
+            throw new ArgumentNullException(nameof(world), "ECSRuntimeCore cannot be null.");
 
-        public GameEventData(string eventName, Entity target)
+        // FIX: Cast the interface to the concrete class
+        if (world is ECSRuntimeCore runtimeCore)
         {
-            EventName = eventName;
-            Target = target;
+            // Remove system handlers
+            foreach (var systemType in _registeredSystems)
+                _systemHandlers.TryRemove(systemType, out _);
+
+            // FIX: Access the Events manager via the concrete instance
+            _routing.Unsubscribe<GameEventData>(OnGameEventReceived);
         }
+
+        _registeredSystems.Clear();
+        _eventHandlers.Clear();
+
+        DLogger.Log(LogSubsystems.ResourcesPipeline, "AnimationECSIntegration", 2, "Unregister", "Animation systems and event handlers unregistered.");
     }
 
-    ///<summary>
-    ///Bridges ECS events and the animation system (subscription, dispatch, etc.).
-    ///Provides a structural integration point for animation-related systems and events.
-    ///</summary>
-    public static class AnimationECSIntegration
+
+    // -------------------------------------------------------------------------------------------------
+    // Event Dispatch
+    // -------------------------------------------------------------------------------------------------
+    private static void OnGameEventReceived(GameEventData gameEvent)
     {
-        ///<summary>
-        ///Registers animation-related ECS systems and event handlers.
-        ///</summary>
-        ///<param name="world">The ECS world to register systems and handlers into.</param>
-        public static void Register(ECSWorld world)
-        {
-            if (world == null)
-                throw new ArgumentNullException(nameof(world), "ECSWorld cannot be null.");
+        if (gameEvent == null)
+            throw new ArgumentNullException(nameof(gameEvent), "GameEvent cannot be null.");
 
-            //TODO: Fix missing constructor arguments - AnimationTriggerSystem requires EntityManager and EventRouter
-            //world.AddSystem(new AnimationTriggerSystem());
-            //world.AddSystem(new AnimationUpdateSystem());
-            System.Diagnostics.Debug.WriteLine("AnimationECSIntegration: Systems not registered - missing constructor arguments");
-
-            //Example: Subscribe to ECS events
-            world.EventManager.Subscribe<GameEventData>(OnGameEventReceived);
-
-            System.Diagnostics.Debug.WriteLine("AnimationECSIntegration: Animation systems and event handlers registered.");
-        }
-
-        ///<summary>
-        ///Unregisters animation-related ECS systems and event handlers.
-        ///</summary>
-        ///<param name="world">The ECS world to unregister systems and handlers from.</param>
-        public static void Unregister(ECSWorld world)
-        {
-            if (world == null)
-                throw new ArgumentNullException(nameof(world), "ECSWorld cannot be null.");
-
-            //TODO: Fix generic type constraint - AnimationTriggerSystem and AnimationUpdateSystem don't implement IECSSystem
-            //world.RemoveSystem<AnimationTriggerSystem>();
-            //world.RemoveSystem<AnimationUpdateSystem>();
-
-            //Example: Unsubscribe from ECS events
-            world.EventManager.Unsubscribe<GameEventData>(OnGameEventReceived);
-
-            System.Diagnostics.Debug.WriteLine("AnimationECSIntegration: Animation systems and event handlers unregistered.");
-        }
-
-        ///<summary>
-        ///Handles game events and dispatches them to the animation system.
-        ///</summary>
-        ///<param name="gameEvent">The game event received.</param>
-        private static void OnGameEventReceived(GameEventData gameEvent)
-        {
-            if (gameEvent == null)
-                throw new ArgumentNullException(nameof(gameEvent), "GameEvent cannot be null.");
-
-            //Example: Dispatch the event to the animation system
-            System.Diagnostics.Debug.WriteLine($"AnimationECSIntegration: GameEvent received - {gameEvent.EventName}");
-        }
+        DLogger.Log(LogSubsystems.ResourcesPipeline, "AnimationECSIntegration", 3, "Event",
+            $"GameEvent received → {gameEvent.EventName}");
     }
 }

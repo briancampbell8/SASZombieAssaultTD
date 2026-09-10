@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: AssetBundle_Metadata.cs
+//  PATH: ./Engine/Resources/Assets/Bundle/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetBundle_Metadata module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ForwardExecutionWithDebugging() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //============================================================================
 //File:        AssetBundle_Metadata.cs
@@ -35,13 +52,8 @@
 */
 
 
-using System;
-//
-
-
-
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using System;   //
+using SASZombieAssaultTD.Engine.Diagnostics; //
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -57,7 +69,8 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             string message = string.Format(PassThruMessage, context);
 
-            System.Diagnostics.Debug.WriteLine(message);
+            DLogger.Log(message);
         }
     }
 }
+

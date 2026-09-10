@@ -1,19 +1,26 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<OutputType>WinExe</OutputType>
-		<TargetFramework>net8.0-windows</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+
 		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<NoWarn>NU1605; NU1902; NU1903; CS0105; CS8632; CS0108; CS0114; </NoWarn>
 	</PropertyGroup>
 
-
-	<!-- NuGet packages -->
 	<ItemGroup>
+		<PackageReference Include="DevExpress.Data" Version="26.1.3" />
+		<PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+		<PackageReference Include="NEST" Version="7.17.5" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="NPOI" Version="2.8.0" />
 		<PackageReference Include="RoseLynn" Version="0.6.4.1" />
+		<PackageReference Include="SharpDX.D3DCompiler" Version="4.2.0" />
+		<PackageReference Include="SharpDX.Direct2D1" Version="4.2.0" />
+		<PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
 		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
 		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.3" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta15" />
@@ -22,30 +29,62 @@
 		<PackageReference Include="Vortice.Direct3D11" Version="3.8.3" />
 		<PackageReference Include="Vortice.DXGI" Version="3.8.3" />
 		<PackageReference Include="Vortice.Mathematics" Version="2.1.1" />
+		<PackageReference Include="Vortice.Win32.Graphics.Imaging" Version="2.5.0" />
 		<PackageReference Include="Vortice.XAudio2" Version="3.8.3" />
 	</ItemGroup>
 
-	<!-- Windows Desktop Framework -->
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.WindowsDesktop.App" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Include="FullscreenQuadVS.hlsl">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Include="FullscreenQuadPS.hlsl">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
 		<Compile Include="Engine\**\*.cs" />
 	</ItemGroup>
+
 	<ItemGroup>
 		<Content Include="Content\**\*.*">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
+
 	<ItemGroup>
-	  <Compile Remove="Engine\Rendering\Framebuffer.cs" />
-	  <Compile Remove="Engine\Resources\RSManager.cs" />
+		<Compile Remove="Engine\Resources\RSManager.cs" />
 	</ItemGroup>
+
 	<ItemGroup>
-	  <Compile Include="Program.cs" />
+		<Compile Include="Program.cs" />
 	</ItemGroup>
+
 	<ItemGroup>
-	  <Folder Include="Engine\Player\" />
+		<Folder Include="Engine\Diagnostics\Performance\" />
+		<Folder Include="Engine\GeometryRendering\" />
+		<Folder Include="Engine\MaterialSystem\" />
+		<Folder Include="Engine\FramebufferSystem\" />
+		<Folder Include="Engine\CustomRendering\" />
+		<Folder Include="Engine\RenderPipeline\" />
+		<Folder Include="Engine\PostProcessing\" />
+		<Folder Include="Engine\ShaderSystem\" />
+		<Folder Include="Engine\RenderCore\" />
+		<Folder Include="Engine\Player\" />
+		<Folder Include="Engine\Render\D3D11\DeviceCore\DDCOps\" />
+		<Folder Include="Engine\Reporting\Logs\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Assets\Displays\MainMenu.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Assets\maps\MeanStreets.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>

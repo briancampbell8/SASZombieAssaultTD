@@ -1,4 +1,27 @@
-using System;
+// ====================================================================================================
+//  FILE: CoreMathDef.cs
+//  PATH: ./Engine/Dictionary/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the CoreMathDef module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Approximately() behavior for the Core subsystem.
+//      - Provide Approximately() behavior for the Core subsystem.
+//      - Provide GetTime() behavior for the Core subsystem.
+//      - Provide Clamp() behavior for the Core subsystem.
+//      - Provide Clamp() behavior for the Core subsystem.
+//      - Provide Clamp() behavior for the Core subsystem.
+//      - Provide CreateTranslation() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -38,3 +61,4 @@ namespace SASZombieAssaultTD.Engine.Dictionary
         public float M41, M42, M43, M44;
     }
 }
+

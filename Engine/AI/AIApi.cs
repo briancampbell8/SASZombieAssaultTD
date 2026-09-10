@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: AIApi.cs
+//  PATH: ./Engine/AI/
+//  MODULE: AI
+//
+//  ROLE:
+//      Provide deterministic AI behavior, decision logic, or state evaluation.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the AI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //File:    AIApi.cs
 //Purpose: Core AI interfaces and context definitions.
 //         Defines the contract for AI behaviors and shared context data.
@@ -19,7 +36,7 @@
 
 //
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.AI
 {
@@ -36,7 +53,7 @@ namespace SASZombieAssaultTD.Engine.AI
     //   float DeltaTime { get; set; }
 
         ///<summary>
-        ///The entity that owns this AI controller.
+        ///The ECSEntityCore that owns this AI controller.
         ///Typically implements IMovable for movement behaviors.
         ///</summary>
     //   object Owner { get; set; }
@@ -65,3 +82,4 @@ namespace SASZombieAssaultTD.Engine.AI
         //Implementation lives in the game's enemy management system.
     }
 }
+

@@ -24,11 +24,11 @@
 //      - Numeric and vector interpolation fall back to built-in logic when no custom type is provided.
 // ====================================================================================================
 
-using System;
-using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Animation.Components;
-using SASZombieAssaultTD.Engine.Diagnostics;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.VectorMath;
+using static SASZombieAssaultTD.Engine.Animation.AnimationEnums;
 
 namespace SASZombieAssaultTD.Engine.Animation.Core
 {
@@ -67,7 +67,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Type = type;
-            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationTrack: Created '{name}' (Type: {type})");
+            DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Debug, $"AnimationTrack: Created '{name}' (Type: {type})");
         }
 
         ///<summary>
@@ -78,7 +78,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
         {
             if (frame == null) throw new ArgumentNullException(nameof(frame));
             Frames.Add(frame);
-            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationTrack '{Name}': Added frame at time {frame.Time}");
+            DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Debug, $"AnimationTrack '{Name}': Added frame at time {frame.Time}");
         }
 
         ///<summary>
@@ -92,7 +92,7 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
             var frame = new AnimationFrame(time, 0.016f);
             frame.SetMetadata("KeyframeValue", value);
             AddFrame(frame);
-            DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"AnimationTrack '{Name}': Added keyframe at time {time:F3} with value {value}");
+            DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Debug, $"AnimationTrack '{Name}': Added keyframe at time {time:F3} with value {value}");
         }
 
         ///<summary>
@@ -237,23 +237,6 @@ namespace SASZombieAssaultTD.Engine.Animation.Core
     ///<summary>
     ///P11-16-01: Types of animation tracks.
     ///</summary>
-    public enum AnimationTrackType
-    {
-        ///<summary>Sprite index track for animation frames.</summary>
-        SpriteIndex,
-
-        ///<summary>Transform offset track for position/rotation/scale changes.</summary>
-        TransformOffset,
-
-        ///<summary>Color tint track for color changes.</summary>
-        ColorTint,
-
-        ///<summary>Custom parameter track for user-defined properties.</summary>
-        Custom,
-
-        ///<summary>Visibility track for show/hide states.</summary>
-        Visibility
-    }
 
     ///<summary>
     ///P11-16-01: Interface for interpolatable values.

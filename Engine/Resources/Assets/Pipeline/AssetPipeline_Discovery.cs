@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: AssetPipeline_Discovery.cs
+//  PATH: ./Engine/Resources/Assets/Pipeline/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetPipeline_Discovery module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ProcessDirectoryAsync() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //============================================================================
 //File:        AssetPipeline_Discovery.cs
@@ -58,11 +75,11 @@
 //
 //    //Monitor discovery performance
 //    var stats = AssetPipeline.GetDiscoveryStats();
-//    Debug.WriteLine($"Discovered {stats.DiscoveredAssets} assets in {stats.ProcessedDirectories} directories");
+//    DLogger.Log($"Discovered {stats.DiscoveredAssets} assets in {stats.ProcessedDirectories} directories");
 //============================================================================
 */
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -77,6 +94,11 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
 
     public partial class AssetPipeline
     {
+        internal static object LoadBytes(string v)
+        {
+            throw new NotImplementedException();
+        }
+
         ///<summary>
         ///Processes all assets in a directory.
         ///</summary>
@@ -134,3 +156,4 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
         }
     }
 }
+

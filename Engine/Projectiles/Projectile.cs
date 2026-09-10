@@ -1,10 +1,29 @@
-using System;
-using SASZombieAssaultTD.Engine.VectorMath;
+// ====================================================================================================
+//  FILE: Projectile.cs
+//  PATH: ./Engine/Projectiles/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the Projectile module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Activate() behavior for the Core subsystem.
+//      - Provide Activate() behavior for the Core subsystem.
+//      - Provide Reset() behavior for the Core subsystem.
+//      - Provide Update() behavior for the Core subsystem.
+//      - Provide Render() behavior for the Core subsystem.
+//      - Provide Deactivate() behavior for the Core subsystem.
+//      - Provide SetFromTowerData() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using SASZombieAssaultTD.Engine.Render;
 using SASZombieAssaultTD.Engine.Towers;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Enemies;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.VectorMath;
 
 namespace SASZombieAssaultTD.Engine.Projectiles
 {
@@ -107,4 +126,5 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         }
     }
 }
+
 

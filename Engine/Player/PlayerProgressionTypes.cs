@@ -1,3 +1,22 @@
+// ====================================================================================================
+//  FILE: PlayerProgressionTypes.cs
+//  PATH: ./Engine/Player/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the PlayerProgressionTypes module.
+//
+//  RESPONSIBILITIES:
+//      - Provide TriggerLevelUp() behavior for the Core subsystem.
+//      - Provide TriggerUnlock() behavior for the Core subsystem.
+//      - Provide Validate() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File: PlayerProgressionTypes.cs
 //FilePath: Engine/Player/PlayerProgressionTypes.cs
@@ -17,9 +36,8 @@
 //
 using System.Collections.Generic;
 //
-using System.Diagnostics;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Player
 {
@@ -115,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.Player
         //Dispatches a level-up event to listeners.
         public void TriggerLevelUp(LevelUp evt)
         {
-            Debug.WriteLine(
+            DLogger.Log(LogSubsystems.Player,
                 $"PlayerSystem: LevelUp triggered - Level {evt.NewLevel}, XP {evt.Experience}",
                 "Info");
         }
@@ -123,7 +141,7 @@ namespace SASZombieAssaultTD.Engine.Player
         //Dispatches a tower-unlock event to listeners.
         public void TriggerUnlock(string towerId)
         {
-            Debug.WriteLine(
+            DLogger.Log(LogSubsystems.Player,
                 $"PlayerSystem: Tower unlocked - {towerId}",
                 "Info");
         }
@@ -131,7 +149,7 @@ namespace SASZombieAssaultTD.Engine.Player
         //Validates the restored state.
         public void Validate()
         {
-            Debug.WriteLine("PlayerSystem: Validating restored state...", "Info");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "PlayerSystem: Validating restored state...", "Info");
             //Add custom validation logic here if needed
         }
 
@@ -174,4 +192,5 @@ namespace SASZombieAssaultTD.Engine.Player
     }
 
 }
+
 

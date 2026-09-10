@@ -1,4 +1,21 @@
-﻿using System;
+// ====================================================================================================
+//  FILE: EngineExceptionHandler.cs
+//  PATH: ./Engine/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the EngineExceptionHandler module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Initialize() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Threading.Tasks;
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -37,3 +54,4 @@ namespace SASZombieAssaultTD.Engine
         }
     }
 }
+

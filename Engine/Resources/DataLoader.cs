@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: DataLoader.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the DataLoader module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Load() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    DataLoader.cs
 Author:  BDC
@@ -10,22 +27,20 @@ Notes:
 LoadAll was removed � AssetPipeline.LoadAll is the canonical bulk loader.
 
 */
-using System;
+
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Text.Json;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Assets
 {
     public static partial class DataLoader
     {
-        ///<summary>
-        ///Loads data from the specified file path.
-        ///Returns the parsed object for JSON files or the raw text content.
-        ///</summary>
-        ///<param name="path">The path to the data file.</param>
-        ///<returns>The parsed object or raw text content.</returns>
+        /// <summary>
+        /// Loads data from the specified file path. Returns the parsed object for JSON files or the raw text content.
+        /// </summary>
+        /// <param name="path">The path to the data file.</param>
+        /// <returns>The parsed object or raw text content.</returns>
         public static object Load(string path)
         {
             if (!File.Exists(path))
@@ -52,5 +67,3 @@ namespace SASZombieAssaultTD.Engine.Assets
         }
     }
 }
-
-

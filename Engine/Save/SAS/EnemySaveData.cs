@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
 using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Enemies;
-using SASZombieAssaultTD.Engine.Gameplay.Enemies;
-using SASZombieAssaultTD.Engine.Waves;
 using EnemyType = SASZombieAssaultTD.Engine.Dictionary.EnemyType;
 using ZombieType = SASZombieAssaultTD.Engine.Dictionary.ZombieType;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Save.SAS
 {
@@ -612,10 +607,7 @@ namespace SASZombieAssaultTD.Engine.Save.SAS
         public float RangeEfficiency { get; set; }
         public float CostEfficiency { get; set; }
 
-        public EnemyStatistics()
-        {
-            CreatedTime = DateTime.Now;
-        }
+        public EnemyStatistics() => CreatedTime = DateTime.Now;
 
         public DateTime CreatedTime { get; set; }
     }

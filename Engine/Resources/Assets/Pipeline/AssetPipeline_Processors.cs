@@ -1,3 +1,44 @@
+// ====================================================================================================
+//  FILE: AssetPipeline_Processors.cs
+//  PATH: ./Engine/Resources/Assets/Pipeline/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetPipeline_Processors module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ProcessAsset() behavior for the Core subsystem.
+//      - Provide ProcessAsync() behavior for the Core subsystem.
+//      - Provide OptimizeAsync() behavior for the Core subsystem.
+//      - Provide ValidateAsync() behavior for the Core subsystem.
+//      - Provide UpdateConfig() behavior for the Core subsystem.
+//      - Provide ProcessAsync() behavior for the Core subsystem.
+//      - Provide OptimizeAsync() behavior for the Core subsystem.
+//      - Provide ValidateAsync() behavior for the Core subsystem.
+//      - Provide UpdateConfig() behavior for the Core subsystem.
+//      - Provide ProcessAsset() behavior for the Core subsystem.
+//      - Provide ProcessAsync() behavior for the Core subsystem.
+//      - Provide OptimizeAsync() behavior for the Core subsystem.
+//      - Provide ValidateAsync() behavior for the Core subsystem.
+//      - Provide UpdateConfig() behavior for the Core subsystem.
+//      - Provide ProcessAsset() behavior for the Core subsystem.
+//      - Provide ProcessAsync() behavior for the Core subsystem.
+//      - Provide OptimizeAsync() behavior for the Core subsystem.
+//      - Provide ValidateAsync() behavior for the Core subsystem.
+//      - Provide UpdateConfig() behavior for the Core subsystem.
+//      - Provide ProcessAsset() behavior for the Core subsystem.
+//      - Provide ProcessAsync() behavior for the Core subsystem.
+//      - Provide OptimizeAsync() behavior for the Core subsystem.
+//      - Provide ValidateAsync() behavior for the Core subsystem.
+//      - Provide UpdateConfig() behavior for the Core subsystem.
+//      - Provide ProcessAsset() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetPipeline_Processors.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Pipeline\AssetPipeline_Processors.cs
@@ -44,8 +85,8 @@
 
 //
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -68,7 +109,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
         public void ProcessAsset(string assetPath, OptimizationLevel level)
         {
-            System.Diagnostics.Debug.WriteLine($"[TextureProcessor] Processing texture: {assetPath}");
+            DLogger.Log($"[TextureProcessor] Processing texture: {assetPath}");
         }
 
         public async Task<AssetProcessResult> ProcessAsync(string inputPath, string outputPath, AssetProcessorConfig config)
@@ -433,3 +474,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+

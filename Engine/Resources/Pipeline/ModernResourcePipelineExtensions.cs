@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: ModernResourcePipelineExtensions.cs
+//  PATH: ./Engine/Resources/Pipeline/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ModernResourcePipelineExtensions module.
+//
+//  RESPONSIBILITIES:
+//      - Provide GetSound() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File: ModernResourcePipelineExtensions.cs
 //Program: ModernResourcePipelineExtensions
@@ -13,12 +30,12 @@
 //    - Deterministic, grep‑friendly trace naming
 //    - No fallback logic except explicit null return
 //============================================================================
-
 using System;
-using SASZombieAssaultTD.Engine.Audio;
 //
 
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.ECS;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Resources.Pipeline
 
 {
@@ -31,7 +48,7 @@ namespace SASZombieAssaultTD.Engine.Resources.Pipeline
             this ModernResourcePipeline pipeline,
             string soundPath)
         {
-            DLogger.Log("ModernResourcePipeline.GetSound.Start", soundPath);
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "ModernResourcePipeline.GetSound.Start", soundPath);
 
             try
             {
@@ -39,14 +56,14 @@ namespace SASZombieAssaultTD.Engine.Resources.Pipeline
                 //Real implementation will load from disk or asset bundle.
                 var sound = new CoreSoundEffect(soundPath);
 
-                DLogger.Log("ModernResourcePipeline.GetSound.Success",
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "ModernResourcePipeline.GetSound.Success",
                     $"Loaded={soundPath}");
 
                 return sound;
             }
             catch (Exception ex)
             {
-                DLogger.Log("ModernResourcePipeline.GetSound.Error",
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "ModernResourcePipeline.GetSound.Error",
                     $"{soundPath} :: {ex.Message}");
 
                 return null;
@@ -54,3 +71,4 @@ namespace SASZombieAssaultTD.Engine.Resources.Pipeline
         }
     }
 }
+

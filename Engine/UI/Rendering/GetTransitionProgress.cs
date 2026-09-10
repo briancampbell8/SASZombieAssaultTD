@@ -1,12 +1,36 @@
+// ====================================================================================================
+//  FILE: GetTransitionProgress.cs
+//  PATH: ./Engine/UI/Rendering/
+//  MODULE: Rendering
+//
+//  ROLE:
+//      Provide rendering logic, draw calls, batching, or GPU resource management.
+//
+//  RESPONSIBILITIES:
+//      - Provide Linear() behavior for the Rendering subsystem.
+//      - Provide EaseIn() behavior for the Rendering subsystem.
+//      - Provide EaseOut() behavior for the Rendering subsystem.
+//      - Provide EaseInOut() behavior for the Rendering subsystem.
+//      - Provide Bounce() behavior for the Rendering subsystem.
+//      - Provide Elastic() behavior for the Rendering subsystem.
+//      - Provide GetProgress() behavior for the Rendering subsystem.
+//      - Provide IsComplete() behavior for the Rendering subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    GetTransitionProgress.cs
 Purpose: Returns animation progress for UI transitions (fade, slide, expand).
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Core;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.UI.Rendering
 {
@@ -132,3 +156,4 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         }
     }
 }
+

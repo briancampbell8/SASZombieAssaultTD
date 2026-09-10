@@ -1,4 +1,24 @@
-using System;
+// ====================================================================================================
+//  FILE: UIFont.cs
+//  PATH: ./Engine/UI/Assets/
+//  MODULE: UI
+//
+//  ROLE:
+//      Provide UI layout, interaction logic, or HUD rendering.
+//
+//  RESPONSIBILITIES:
+//      - Provide MarkAsLoaded() behavior for the UI subsystem.
+//      - Provide MarkAsPreloaded() behavior for the UI subsystem.
+//      - Provide Unload() behavior for the UI subsystem.
+//      - Provide ToString() behavior for the UI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -50,10 +70,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
         ///<summary>
         ///Initializes a new UIFont
         ///</summary>
-        public UIFont()
-        {
-            System.Diagnostics.Debug.WriteLine("UIFont: Created new font");
-        }
+        public UIFont() => DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFont: Created new font");
 
         ///<summary>
         ///Initializes a new UIFont with parameters
@@ -71,11 +88,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
                 _path = path ?? string.Empty;
                 _style = style;
 
-                System.Diagnostics.Debug.WriteLine($"UIFont: Created font '{name}' with size {_size} from path '{path}'");
+                DLogger.Log($"UIFont: Created font '{name}' with size {_size} from path '{path}'");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFont: Error creating font - {ex.Message}");
+                DLogger.Log($"UIFont: Error creating font - {ex.Message}");
             }
         }
 
@@ -87,11 +104,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             try
             {
                 _isLoaded = true;
-                System.Diagnostics.Debug.WriteLine($"UIFont: Marked font '{_name}' as loaded");
+                DLogger.Log($"UIFont: Marked font '{_name}' as loaded");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFont: Error marking font as loaded - {ex.Message}");
+                DLogger.Log($"UIFont: Error marking font as loaded - {ex.Message}");
             }
         }
 
@@ -103,11 +120,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             try
             {
                 _isPreloaded = true;
-                System.Diagnostics.Debug.WriteLine($"UIFont: Marked font '{_name}' as preloaded");
+                DLogger.Log($"UIFont: Marked font '{_name}' as preloaded");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFont: Error marking font as preloaded - {ex.Message}");
+                DLogger.Log($"UIFont: Error marking font as preloaded - {ex.Message}");
             }
         }
 
@@ -121,11 +138,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
                 _isLoaded = false;
                 _isPreloaded = false;
 
-                System.Diagnostics.Debug.WriteLine($"UIFont: Unloaded font '{_name}'");
+                DLogger.Log($"UIFont: Unloaded font '{_name}'");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFont: Error unloading font - {ex.Message}");
+                DLogger.Log($"UIFont: Error unloading font - {ex.Message}");
             }
         }
 
@@ -141,12 +158,13 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFont: Error creating string representation - {ex.Message}");
+                DLogger.Log($"UIFont: Error creating string representation - {ex.Message}");
                 return "UIFont: Error";
             }
         }
     }
 }
+
 
 
 

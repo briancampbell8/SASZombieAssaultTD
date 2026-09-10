@@ -1,7 +1,28 @@
-using System;
-using System.Collections.Generic;
+// ====================================================================================================
+//  FILE: WaveEndEvent.cs
+//  PATH: ./Engine/Waves/
+//  MODULE: WaveDirector
+//
+//  ROLE:
+//      Load, validate, and construct wave definitions for the WaveDirector subsystem.
+//
+//  RESPONSIBILITIES:
+//      - Provide AddStatistic() behavior for the WaveDirector subsystem.
+//      - Provide AddAchievement() behavior for the WaveDirector subsystem.
+//      - Provide ToString() behavior for the WaveDirector subsystem.
+//      - Provide GetDetailedReport() behavior for the WaveDirector subsystem.
+//      - Provide Clone() behavior for the WaveDirector subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Waves
 {
@@ -204,3 +225,4 @@ namespace SASZombieAssaultTD.Engine.Waves
         }
     }
 }
+

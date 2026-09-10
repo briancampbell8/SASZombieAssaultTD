@@ -38,18 +38,18 @@
 //Usage Example:
 //    var key = AssetKey.For<Texture2D>("ui/main_menu/background");
 //    if (AssetSystem.ValidateKey(key))
-//        Debug.WriteLine($"Valid asset key: {key}");
+//        DLogger.Log($"Valid asset key: {key}");
 //============================================================================
 */
 
 
 //
 using SASZombieAssaultTD.Engine.Resources;
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Assets
 {
@@ -209,6 +209,9 @@ namespace SASZombieAssaultTD.Engine.Assets
         public List<string> Warnings { get; } = new();
         public bool IsValid => Errors.Count == 0;
 
+        public string ComponentName { get; internal set; }
+        public string Message { get; internal set; }
+
         public void AddError(string error) => Errors.Add(error);
         public void AddWarning(string warning) => Warnings.Add(warning);
     }
@@ -235,7 +238,7 @@ namespace SASZombieAssaultTD.Engine.Assets
             var validation = metadata.Validate();
             if (!validation.IsValid)
             {
-                System.Diagnostics.Debug.WriteLine($"Asset validation failed: {string.Join(", ", validation.Errors)}");
+                DLogger.Log($"Asset validation failed: {string.Join(", ", validation.Errors)}");
                 return false;
             }
 

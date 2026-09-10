@@ -1,3 +1,23 @@
+// ====================================================================================================
+//  FILE: AssetManager_Validation.cs
+//  PATH: ./Engine/Resources/Assets/Manager/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetManager_Validation module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Validate() behavior for the Core subsystem.
+//      - Provide PerformHealthCheck() behavior for the Core subsystem.
+//      - Provide Repair() behavior for the Core subsystem.
+//      - Provide Optimize() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetManager_Validation.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Manager\AssetManager_Validation.cs
@@ -64,28 +84,28 @@
 //var validation = AssetManager.Validate();
 //if (!validation.IsValid)
 //{
-//System.Diagnostics.Debug.WriteLine($"Asset manager validation failed: {string.Join(", ", validation.Errors)}");
+//DLogger.Log($"Asset manager validation failed: {string.Join(", ", validation.Errors)}");
 //}
 
 //Validate specific asset
 //var assetValidation = AssetManager.ValidateAsset("textures/player.png");
 //if (!assetValidation.IsValid)
 //{
-//System.Diagnostics.Debug.WriteLine($"Asset validation failed: {string.Join(", ", assetValidation.Errors)}");
+//DLogger.Log($"Asset validation failed: {string.Join(", ", assetValidation.Errors)}");
 //}
 //Monitor validation performance
 //var stats = AssetManager.GetValidationStats();
-//System.Diagnostics.Debug.WriteLine($"Validated {stats.ValidatedAssets} assets, found {stats.IssuesFound} issues");
+//DLogger.Log($"Validated {stats.ValidatedAssets} assets, found {stats.IssuesFound} issues");
 //```
 //
 
 //
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -107,7 +127,7 @@ namespace SASZombieAssaultTD.Engine.Resources
     ///var validation = AssetManager.Validate();
     ///if (!validation.IsValid)
     ///{
-    ///    System.Diagnostics.Debug.WriteLine($"Asset manager validation failed: {string.Join(", ", validation.Errors)}");
+    ///    DLogger.Log($"Asset manager validation failed: {string.Join(", ", validation.Errors)}");
     ///}
     ///</code>
     ///</example>
@@ -301,3 +321,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+

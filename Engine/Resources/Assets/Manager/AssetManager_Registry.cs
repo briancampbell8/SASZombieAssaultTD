@@ -1,3 +1,30 @@
+// ====================================================================================================
+//  FILE: AssetManager_Registry.cs
+//  PATH: ./Engine/Resources/Assets/Manager/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetManager_Registry module.
+//
+//  RESPONSIBILITIES:
+//      - Provide RegisterAsset() behavior for the Core subsystem.
+//      - Provide GetAssetMetadata() behavior for the Core subsystem.
+//      - Provide GetAssetsByType() behavior for the Core subsystem.
+//      - Provide GetAllAssetKeys() behavior for the Core subsystem.
+//      - Provide IsAssetRegistered() behavior for the Core subsystem.
+//      - Provide UnregisterAsset() behavior for the Core subsystem.
+//      - Provide ClearRegistry() behavior for the Core subsystem.
+//      - Provide GetAssetCountByType() behavior for the Core subsystem.
+//      - Provide ValidateAssetFile() behavior for the Core subsystem.
+//      - Provide ValidateAllAssetFiles() behavior for the Core subsystem.
+//      - Provide GetStatistics() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetManager_Registry.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Manager\AssetManager_Registry.cs
@@ -71,12 +98,12 @@
 
 //if (AssetManager.IsAssetRegistered("player_texture"))
 //{
-//   System.Diagnostics.Debug.WriteLine("Player texture is registered");
+//   DLogger.Log(LogSubsystems.ResourcesPipeline, "Player texture is registered");
 //}
 
 //Get asset metadata
 //var assetMetadata = AssetManager.GetAssetMetadata("player_texture");
-//System.Diagnostics.Debug.WriteLine($"Asset size: {assetMetadata.Size} bytes");
+//DLogger.Log($"Asset size: {assetMetadata.Size} bytes");
 
 //Register multiple assets
 //var assets = new[]
@@ -91,16 +118,16 @@
 //var allAssets = AssetManager.GetAllRegisteredAssets();
 //foreach (var asset in allAssets)
 //{
-//System.Diagnostics.Debug.WriteLine($"Asset: {asset.Key} - {asset.Path} ({asset.Type})");
+//DLogger.Log($"Asset: {asset.Key} - {asset.Path} ({asset.Type})");
 ///}
 //```
 //
 
 //
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
 
@@ -304,3 +331,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+

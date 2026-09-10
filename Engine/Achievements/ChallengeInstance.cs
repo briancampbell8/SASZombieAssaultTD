@@ -1,7 +1,34 @@
-using System;
+// ====================================================================================================
+//  FILE: ChallengeInstance.cs
+//  PATH: ./Engine/Achievements/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ChallengeInstance module.
+//
+//  RESPONSIBILITIES:
+//      - Provide UpdateProgress() behavior for the Core subsystem.
+//      - Provide SetProgress() behavior for the Core subsystem.
+//      - Provide MarkCompleted() behavior for the Core subsystem.
+//      - Provide ClaimRewards() behavior for the Core subsystem.
+//      - Provide ResetProgress() behavior for the Core subsystem.
+//      - Provide MarkViewed() behavior for the Core subsystem.
+//      - Provide IsExpired() behavior for the Core subsystem.
+//      - Provide GetTimeRemaining() behavior for the Core subsystem.
+//      - Provide GetCompletionPercentage() behavior for the Core subsystem.
+//      - Provide GetRemainingProgress() behavior for the Core subsystem.
+//      - Provide SetCustomProgressData() behavior for the Core subsystem.
+//      - Provide IsValid() behavior for the Core subsystem.
+//      - Provide Clone() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Runtime.Serialization;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Achievements
 {
@@ -50,7 +77,7 @@ namespace SASZombieAssaultTD.Engine.Achievements
         {
             if (IsCompleted || IsExpired()) return false;
 
-            CurrentProgress = Math.Math.Clamp(newProgress, 0, requirementTarget);
+            CurrentProgress = System.Math.Clamp(newProgress, 0, requirementTarget);
             LastUpdatedTime = DateTime.UtcNow;
             UpdateCount++;
 
@@ -130,6 +157,7 @@ namespace SASZombieAssaultTD.Engine.Achievements
             };
     }
 }
+
 
 
 

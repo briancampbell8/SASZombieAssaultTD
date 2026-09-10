@@ -1,28 +1,53 @@
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Gameplay;
-using DeathType = SASZombieAssaultTD.Engine.Gameplay.DeathType;
+// ====================================================================================================
+//  FILE: KillFeedSystem.cs
+//  PATH: ./Engine/UI/Systems/
+//  MODULE: UI
+//
+//  ROLE:
+//      Provide UI layout, interaction logic, or HUD rendering.
+//
+//  RESPONSIBILITIES:
+//      - Provide Update() behavior for the UI subsystem.
+//      - Provide Render() behavior for the UI subsystem.
+//      - Provide GetStatistics() behavior for the UI subsystem.
+//      - Provide ClearFeed() behavior for the UI subsystem.
+//      - Provide Shutdown() behavior for the UI subsystem.
+//      - Provide ToString() behavior for the UI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Extensions;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.Systems;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using DeathType = SASZombieAssaultTD.Engine.GameRoot.GamePlay.DeathType;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
-    ///<summary>
-    ///Kill attributed event for tracking kills.
-    ///</summary>
+    /// <summary>
+    /// Kill attributed event for tracking kills.
+    /// </summary>
     public class KillAttributedEvent
     {
         public string KillerName { get; set; }
         public string VictimName { get; set; }
         public int ScoreAwarded { get; set; }
         public DeathType DeathType { get; set; }
-        public Vector3 Position { get; set; }
+        public System.Numerics.Vector3 Position { get; set; }
 
-        public KillAttributedEvent(string killerName, string victimName, int scoreAwarded, DeathType deathType, Vector3 position)
+        public KillAttributedEvent(
+            string killerName,
+            string victimName,
+            int scoreAwarded,
+            DeathType deathType,
+            System.Numerics.Vector3 position)
         {
             KillerName = killerName;
             VictimName = victimName;
@@ -32,16 +57,16 @@ namespace SASZombieAssaultTD.Engine.UI
         }
     }
 
-    ///<summary>
-    ///Displays recent kills in a scrolling/fading list with death type information.
-    ///</summary>
+    /// <summary>
+    /// Displays recent kills in a scrolling/fading list with death type information.
+    /// </summary>
     public class KillFeedSystem
     {
-        private readonly EventRouter _eventBus;
+        private readonly ECSRuntimeEvents _eventBus;
         private readonly Queue<KillFeedEntry> _killEntries = new();
         private readonly bool _debugOutput = true;
 
-        public Vector3 Position { get; set; } = new(10, 100, 0);
+        public System.Numerics.Vector3 Position { get; set; } = new(10, 100, 0);
         public int MaxEntries { get; set; } = 5;
         public float DisplayDuration { get; set; } = 5.0f;
         public string FontName { get; set; } = "Arial";
@@ -52,17 +77,17 @@ namespace SASZombieAssaultTD.Engine.UI
         public float EntrySpacing { get; set; } = 20.0f;
         public string SeparatorText { get; set; } = "killed";
 
-        public KillFeedSystem(EventRouter eventBus)
+        public KillFeedSystem(ECSRuntimeEvents eventBus)
         {
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
             SubscribeToEvents();
-            DebugLog("KillFeedSystem initialized.");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "KillFeedSystem initialized.");
         }
 
         private void SubscribeToEvents()
         {
             _eventBus.Subscribe<KillAttributedEvent>(OnKillAttributed);
-            DebugLog("Subscribed to KillAttributedEvent.");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Subscribed to KillAttributedEvent.");
         }
 
         private void OnKillAttributed(KillAttributedEvent killEvent)
@@ -75,7 +100,7 @@ namespace SASZombieAssaultTD.Engine.UI
                 TimeRemaining = DisplayDuration
             });
 
-            DebugLog($"Added kill entry: {killEvent.KillerName} killed {killEvent.VictimName} ({killEvent.DeathType}).");
+            DLogger.Log($"{killEvent.KillerName} killed {killEvent.VictimName} ({killEvent.DeathType}).");
         }
 
         private void AddKillEntry(KillFeedEntry entry)
@@ -101,11 +126,11 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        public void Render(IRenderContext context)
+        public void Render(D3D11Adapter_Core context)
         {
             if (context == null)
             {
-                DebugLog("Render failed: Null render context.");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "Render failed: Null render context.");
                 return;
             }
 
@@ -118,7 +143,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
         }
 
-        private void RenderKillEntry(KillFeedEntry entry, float yPosition, IRenderContext context)
+        private void RenderKillEntry(KillFeedEntry entry, float yPosition, D3D11Adapter_Core context)
         {
             float alpha = System.Math.Clamp(entry.TimeRemaining / DisplayDuration, 0f, 1f);
 
@@ -130,15 +155,15 @@ namespace SASZombieAssaultTD.Engine.UI
             RenderDeathTypeIcon(entry.DeathType, currentX, yPosition, alpha, context);
         }
 
-        private float RenderText(IRenderContext context, string text, float x, float y, Color color)
+        private float RenderText(D3D11Adapter_Core context, string text, float x, float y, Color color)
         {
             if (string.IsNullOrEmpty(text)) return x;
 
-            context.DrawText(text, x, y, FontSize, color);
+            context.DrawText(text, (int)x, y, FontSize, color);
             return x + context.MeasureText(text, FontSize).X + 5f;
         }
 
-        private void RenderDeathTypeIcon(DeathType deathType, float x, float y, float alpha, IRenderContext context)
+        private void RenderDeathTypeIcon(DeathType deathType, float x, float y, float alpha, D3D11Adapter_Core context)
         {
             string iconText = GetDeathTypeIcon(deathType);
             var iconColor = GetColorWithAlpha(GetDeathTypeColor(deathType), alpha);
@@ -147,7 +172,11 @@ namespace SASZombieAssaultTD.Engine.UI
         }
 
         private static Color GetColorWithAlpha(Color color, float alpha) =>
-            new Color(color.R, color.G, color.B, System.Math.Clamp(alpha, 0f, 1f) * color.A);
+            new Color(
+                color.R,
+                color.G,
+                color.B,
+                (byte)(System.Math.Clamp(alpha, 0f, 1f) * color.A));
 
         private static string GetDeathTypeIcon(DeathType deathType) => deathType switch
         {
@@ -190,21 +219,21 @@ namespace SASZombieAssaultTD.Engine.UI
         public void ClearFeed()
         {
             _killEntries.Clear();
-            DebugLog("Feed cleared.");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Feed cleared.");
         }
 
         public void Shutdown()
         {
             _eventBus.Unsubscribe<KillAttributedEvent>(OnKillAttributed);
             _killEntries.Clear();
-            DebugLog("Shutdown complete.");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Shutdown complete.");
         }
 
-        private void DebugLog(string message)
+        private void Log(string message)
         {
             if (_debugOutput)
             {
-                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
+                DLogger.Log($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
             }
         }
     }
@@ -222,9 +251,10 @@ namespace SASZombieAssaultTD.Engine.UI
         public int CurrentEntries { get; set; }
         public int MaxEntries { get; set; }
         public float DisplayDuration { get; set; }
-        public Vector3 Position { get; set; }
+        public System.Numerics.Vector3 Position { get; set; }
 
         public override string ToString() =>
-            $"Kill Feed Statistics - Entries: {CurrentEntries}/{MaxEntries}, Duration: {DisplayDuration}s, Position: ({Position.X}, {Position.Y})";
+            $"Kill Feed Statistics - Entries: {CurrentEntries}/{MaxEntries}, " +
+            $"Duration: {DisplayDuration}s, Position: ({Position.X}, {Position.Y})";
     }
 }

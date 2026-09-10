@@ -1,3 +1,22 @@
+// ====================================================================================================
+//  FILE: AssetManager_Types.cs
+//  PATH: ./Engine/Resources/Assets/Manager/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetManager_Types module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Load() behavior for the Core subsystem.
+//      - Provide Release() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetManagerTypes.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Manager\AssetManagerTypes.cs
@@ -58,7 +77,7 @@
 //Check asset types
 //if (assetHandle.Instance is Texture2D texture)
 //{
-//  System.Diagnostics.Debug.WriteLine("Texture asset loaded");
+//  DLogger.Log(LogSubsystems.ResourcesPipeline, "Texture asset loaded");
 //}
 
 //Register assets with type specification
@@ -71,16 +90,16 @@
 
 //Monitor asset system performance
 //var stats = AssetManager.GetMemoryStats();
-//System.Diagnostics.Debug.WriteLine($"Loaded {stats.LoadedAssets} assets, using {stats.TotalMemoryUsage} bytes");
+//DLogger.Log($"Loaded {stats.LoadedAssets} assets, using {stats.TotalMemoryUsage} bytes");
 //```
 //
 
 //
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -174,3 +193,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         public List<string> ActionsTaken { get; set; } = new();
     }
 }
+

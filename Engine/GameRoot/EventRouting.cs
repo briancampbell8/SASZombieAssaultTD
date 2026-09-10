@@ -1,224 +1,146 @@
-/*
-File:    EventRouting.cs
-Path:    Engine/GameRoot/EventRouting.cs
-Purpose: P11-09-01 - Handles all event-based communication between subsystems.
-         Ensures events are subscribed, routed, and dispatched correctly.
-
-Role:     Event communication specialist.
-         - Event subscription functions
-         - Event dispatch functions
-         - Event routing logic
-         - Cross-system event coordination
-         - Event queue management
-
-Notes:    Contains all event routing logic extracted from GameRoot.
-         Works with the engine's event system for loose coupling.
-         Event routing is centralized for better debugging and monitoring.
-*/
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
-namespace SASZombieAssaultTD.Engine
+// =====================================================================================================
+//  FILE: EventRouting.cs
+//  PATH: Engine/GameRoot/EventRouting.cs
+//  SUBSYSTEM: Event System
 //
+//  ROLE:
+//      Provides centralized event subscription, routing, and dispatching for all engine subsystems.
+//      ECSRuntimeEvents enables loose coupling between systems by allowing them to publish and subscribe
+//      to strongly-typed events without direct references.
+//
+//  RESPONSIBILITIES:
+//      - Manage event subscriptions.
+//      - Dispatch events to all registered handlers.
+//      - Provide cross-system event coordination.
+//      - Maintain deterministic event routing behavior.
+//      - Support future queued event processing.
+//
+//  NON-RESPONSIBILITIES:
+//      - GameRoot lifecycle orchestration.
+//      - Rendering or update logic.
+//      - Asset or state management.
+//
+//  ARCHITECTURAL NOTES:
+//      - Extracted from GameRoot to reduce monolithic responsibilities.
+//      - Now a standalone subsystem, consistent with Option B architecture.
+//      - GameRootMain composes and owns an ECSRuntimeEvents instance.
+//      - Future expansion: queued events, priority routing, async dispatch.
+//
+//  AUTHOR: BDC
+//  CREATED: 2026-07-17
+//  LAST UPDATED: 2026-07-17
+// =====================================================================================================
+
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Linq;
+using SASZombieAssaultTD.Engine.Diagnostics;
+
+namespace SASZombieAssaultTD.Engine
 {
-    ///<summary>
-    ///Simple event router for managing event subscriptions and dispatching.
-    ///</summary>
-    public class EventRouter
+    /// <summary>
+    /// Centralized event router for managing event subscriptions and dispatching.
+    /// </summary>
+    public sealed class EventRouting
     {
         private readonly Dictionary<Type, List<Delegate>> _subscriptions = new();
 
-        ///<summary>
-        ///Subscribes to an event.
-        ///</summary>
-        ///<typeparam name="T">The event type.</typeparam>
-        ///<param name="handler">The event handler.</param>
+        // -------------------------------------------------------------------------------------------------
+        //  SUBSCRIBE
+        // -------------------------------------------------------------------------------------------------
+
         public void Subscribe<T>(Action<T> handler) where T : class
         {
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+
             var eventType = typeof(T);
+
             if (!_subscriptions.ContainsKey(eventType))
                 _subscriptions[eventType] = new List<Delegate>();
 
             _subscriptions[eventType].Add(handler);
+
+            DLogger.Log(LogSubsystems.Events, LogEnums.LogLevel.Debug,
+                $"Subscribed handler to event type {eventType.Name}");
         }
 
-        ///<summary>
-        ///Unsubscribes from an event.
-        ///</summary>
-        ///<typeparam name="T">The event type.</typeparam>
-        ///<param name="handler">The event handler.</param>
+        // -------------------------------------------------------------------------------------------------
+        //  UNSUBSCRIBE
+        // -------------------------------------------------------------------------------------------------
+
         public void Unsubscribe<T>(Action<T> handler) where T : class
         {
-            var eventType = typeof(T);
-            if (_subscriptions.ContainsKey(eventType))
-                _subscriptions[eventType].Remove(handler);
-        }
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
 
-        ///<summary>
-        ///Publishes an event.
-        ///</summary>
-        ///<typeparam name="T">The event type.</typeparam>
-        ///<param name="eventData">The event data.</param>
-        public void Publish<T>(T eventData) where T : class
-        {
             var eventType = typeof(T);
+
             if (_subscriptions.ContainsKey(eventType))
             {
-                foreach (var handler in _subscriptions[eventType])
-                {
-                    if (handler is Action<T> typedHandler)
-                        typedHandler(eventData);
-                }
+                _subscriptions[eventType].Remove(handler);
+
+                DLogger.Log(LogSubsystems.Events, LogEnums.LogLevel.Debug,
+                    $"Unsubscribed handler from event type {eventType.Name}");
             }
         }
 
-        ///<summary>
-        ///Processes event queue (placeholder).
-        ///</summary>
-        public void ProcessQueue()
-        {
-            //Event queue processing logic would go here
-        }
+        // -------------------------------------------------------------------------------------------------
+        //  PUBLISH
+        // -------------------------------------------------------------------------------------------------
 
-        ///<summary>
-        ///Clears all subscriptions.
-        ///</summary>
-        public void ClearSubscriptions()
-        {
-            _subscriptions.Clear();
-        }
-
-        ///<summary>
-        ///Gets subscription count.
-        ///</summary>
-        ///<returns>The number of active subscriptions.</returns>
-        public int GetSubscriptionCount()
-        {
-            return _subscriptions.Values.Sum(list => list.Count);
-        }
-    }
-
-    ///<summary>
-    ///Partial class containing event routing logic for GameRoot.
-    ///</summary>
-    public partial class GameRoot
-    {
-        private readonly EventRouter _eventRouter = new();
-
-        ///<summary>
-        ///Gets the event router for event operations.
-        ///</summary>
-        public EventRouter EventRouter => _eventRouter;
-
-        ///<summary>
-        ///Subscribes to an event with the specified handler.
-        ///</summary>
-        ///<typeparam name="T">The event type.</typeparam>
-        ///<param name="handler">The event handler.</param>
-        public void SubscribeToEvent<T>(Action<T> handler) where T : class
-        {
-            if (handler == null)
-                throw new ArgumentNullException(nameof(handler));
-
-            _eventRouter.Subscribe(handler);
-            DLogger.Log(
-                LogSubsystems.GameRoot,
-                LogLevel.Debug,
-                $"Subscribed to event of type {typeof(T).Name}");
-        }
-
-        ///<summary>
-        ///Unsubscribes from an event.
-        ///</summary>
-        ///<typeparam name="T">The event type.</typeparam>
-        ///<param name="handler">The event handler.</param>
-        public void UnsubscribeFromEvent<T>(Action<T> handler) where T : class
-        {
-            if (handler == null)
-                throw new ArgumentNullException(nameof(handler));
-
-            _eventRouter.Unsubscribe(handler);
-            DLogger.Log(
-                LogSubsystems.GameRoot,
-                LogLevel.Debug,
-                $"Unsubscribed from event of type {typeof(T).Name}");
-        }
-
-        ///<summary>
-        ///Publishes an event to all subscribers.
-        ///</summary>
-        ///<typeparam name="T">The event type.</typeparam>
-        ///<param name="eventData">The event data.</param>
-        public void PublishEvent<T>(T eventData) where T : class
+        public void Publish<T>(T eventData) where T : class
         {
             if (eventData == null)
                 throw new ArgumentNullException(nameof(eventData));
 
+            var eventType = typeof(T);
+
             try
             {
-                _eventRouter.Publish(eventData);
-                DLogger.Log(
-                    LogSubsystems.GameRoot,
-                    LogLevel.Debug,
-                    $"Published event of type {typeof(T).Name}");
+                if (_subscriptions.ContainsKey(eventType))
+                {
+                    foreach (var handler in _subscriptions[eventType])
+                    {
+                        if (handler is Action<T> typedHandler)
+                            typedHandler(eventData);
+                    }
+                }
+
+                DLogger.Log(LogSubsystems.Events, LogEnums.LogLevel.Debug,
+                    $"Published event of type {eventType.Name}");
             }
             catch (Exception ex)
             {
-                DLogger.Log(LogSubsystems.GameRoot, LogLevel.Error, $"Failed to publish event of type {typeof(T).Name}: {ex.Message}");
-                DLogger.Log(
-                    LogSubsystems.GameRoot,
-                    LogLevel.Error,
-                    ex.ToString());
+                DLogger.Log(LogSubsystems.Events, LogEnums.LogLevel.Error,
+                    $"Event publish failure for {eventType.Name}: {ex.Message}");
+                throw;
             }
         }
 
-        ///<summary>
-        ///Processes all pending events in the event queue.
-        ///</summary>
-        public void ProcessEventQueue()
-        {
-            try
-            {
-                _eventRouter.ProcessQueue();
-                DLogger.Log(
-                    LogSubsystems.GameRoot,
-                    LogLevel.Debug,
-                    "Event queue processed successfully");
-            }
-            catch (Exception ex)
-            {
-                DLogger.Log(LogSubsystems.GameRoot, LogLevel.Error,
-                    $"Failed to process event queue: {ex.Message}");
-                DLogger.Log(
-                    LogSubsystems.GameRoot,
-                    LogLevel.Error,
-                    ex.ToString(), "Event queue processing");
+        // -------------------------------------------------------------------------------------------------
+        //  QUEUED PROCESSING (FUTURE EXPANSION)
+        // -------------------------------------------------------------------------------------------------
 
-            }
+        public void ProcessQueue()
+        {
+            // Placeholder for future queued event processing
         }
 
-        ///<summary>
-        ///Clears all event subscriptions.
-        ///</summary>
-        public void ClearEventSubscriptions()
+        // -------------------------------------------------------------------------------------------------
+        //  MAINTENANCE
+        // -------------------------------------------------------------------------------------------------
+
+        public void ClearSubscriptions()
         {
-            _eventRouter.ClearSubscriptions();
-            DLogger.Log(
-                LogSubsystems.GameRoot,
-                LogLevel.Debug,
+            _subscriptions.Clear();
+            DLogger.Log(LogSubsystems.Events, LogEnums.LogLevel.Debug,
                 "All event subscriptions cleared");
         }
 
-        ///<summary>
-        ///Gets the number of active event subscriptions.
-        ///</summary>
-        ///<returns>The number of active subscriptions.</returns>
-        public int GetEventSubscriptionCount()
+        public int GetSubscriptionCount()
         {
-            return _eventRouter.GetSubscriptionCount();
+            return _subscriptions.Values.Sum(list => list.Count);
         }
     }
 }

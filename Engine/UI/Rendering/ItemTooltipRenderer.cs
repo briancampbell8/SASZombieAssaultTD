@@ -1,3 +1,25 @@
+// ====================================================================================================
+//  FILE: ItemTooltipRenderer.cs
+//  PATH: ./Engine/UI/Rendering/
+//  MODULE: Rendering
+//
+//  ROLE:
+//      Provide rendering logic, draw calls, batching, or GPU resource management.
+//
+//  RESPONSIBILITIES:
+//      - Provide Show() behavior for the Rendering subsystem.
+//      - Provide Hide() behavior for the Rendering subsystem.
+//      - Provide UpdateTooltip() behavior for the Rendering subsystem.
+//      - Provide Update() behavior for the Rendering subsystem.
+//      - Provide Render() behavior for the Rendering subsystem.
+//      - Provide GetStatistics() behavior for the Rendering subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    ItemTooltipRenderer.cs
 Purpose: UI renderer for item tooltips on hover.
@@ -7,11 +29,12 @@ P11-04-12-I: Renders item tooltips with proper layering above all other UI.
 Uses UIElementBase for consistent UI behavior and supports dynamic positioning.
 */
 
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Resources;
 using System;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.Resources;
+using SASZombieAssaultTD.Engine.TextRendering;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
@@ -43,7 +66,7 @@ namespace SASZombieAssaultTD.Engine.UI
             _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
             _textRenderer = textRenderer ?? throw new ArgumentNullException(nameof(textRenderer));
 
-            DebugLog("ItemTooltipRenderer: Initialized");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "ItemTooltipRenderer: Initialized");
         }
 
         ///<summary>
@@ -59,7 +82,7 @@ namespace SASZombieAssaultTD.Engine.UI
                 _currentPosition = position;
                 _isVisible = true;
 
-                DebugLog($"ItemTooltipRenderer: Showing tooltip at position {position}");
+                DLogger.Log($"ItemTooltipRenderer: Showing tooltip at position {position}");
 
                 //In a full implementation, this would:
                 //1. Create tooltip UI element with UIElementBase
@@ -70,7 +93,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                DebugLog($"ItemTooltipRenderer: Failed to show tooltip - {ex.Message}");
+                DLogger.Log($"ItemTooltipRenderer: Failed to show tooltip - {ex.Message}");
             }
         }
 
@@ -85,7 +108,7 @@ namespace SASZombieAssaultTD.Engine.UI
                 _currentItemData = null;
                 _currentPosition = System.Numerics.Vector3.Zero;
 
-                DebugLog("ItemTooltipRenderer: Hiding tooltip");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "ItemTooltipRenderer: Hiding tooltip");
 
                 //In a full implementation, this would:
                 //1. Hide tooltip UI element
@@ -94,7 +117,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                DebugLog($"ItemTooltipRenderer: Failed to hide tooltip - {ex.Message}");
+                DLogger.Log($"ItemTooltipRenderer: Failed to hide tooltip - {ex.Message}");
             }
         }
 
@@ -115,7 +138,7 @@ namespace SASZombieAssaultTD.Engine.UI
                     _currentPosition = position.Value;
                 }
 
-                DebugLog("ItemTooltipRenderer: Updating tooltip");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "ItemTooltipRenderer: Updating tooltip");
 
                 //In a full implementation, this would:
                 //1. Update tooltip content with new item data
@@ -125,7 +148,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                DebugLog($"ItemTooltipRenderer: Failed to update tooltip - {ex.Message}");
+                DLogger.Log($"ItemTooltipRenderer: Failed to update tooltip - {ex.Message}");
             }
         }
 
@@ -144,7 +167,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                DebugLog($"ItemTooltipRenderer: Update failed - {ex.Message}");
+                DLogger.Log($"ItemTooltipRenderer: Update failed - {ex.Message}");
             }
         }
 
@@ -152,7 +175,7 @@ namespace SASZombieAssaultTD.Engine.UI
         ///Renders the item tooltip.
         ///</summary>
         ///<param name="context">Render context for drawing</param>
-        public void Render(IRenderContext context)
+        public void Render(D3D11Adapter_Core context)
         {
             if (!_isVisible || context == null) return;
 
@@ -166,11 +189,11 @@ namespace SASZombieAssaultTD.Engine.UI
                 //5. Apply fade-in/fade-out animations
                 //6. Handle multi-line text wrapping
 
-                DebugLog("ItemTooltipRenderer: Rendering tooltip");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "ItemTooltipRenderer: Rendering tooltip");
             }
             catch (Exception ex)
             {
-                DebugLog($"ItemTooltipRenderer: Render failed - {ex.Message}");
+                DLogger.Log($"ItemTooltipRenderer: Render failed - {ex.Message}");
             }
         }
 
@@ -188,15 +211,16 @@ namespace SASZombieAssaultTD.Engine.UI
             };
         }
 
-        private void DebugLog(string message)
+        private void Log(string message)
         {
             if (_debugOutput)
             {
-                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
+                DLogger.Log($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
             }
         }
     }
 }
+
 
 
 

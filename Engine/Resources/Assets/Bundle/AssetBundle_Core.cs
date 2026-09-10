@@ -1,3 +1,26 @@
+// ====================================================================================================
+//  FILE: AssetBundle_Core.cs
+//  PATH: ./Engine/Resources/Assets/Bundle/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetBundle_Core module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Dispose() behavior for the Core subsystem.
+//      - Provide ThrowIfDisposed() behavior for the Core subsystem.
+//      - Provide ThrowIfNotLoaded() behavior for the Core subsystem.
+//      - Provide GetAssetStream() behavior for the Core subsystem.
+//      - Provide GetAssetMetadata() behavior for the Core subsystem.
+//      - Provide LoadFromFile() behavior for the Core subsystem.
+//      - Provide VerifyIntegrityAsync() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetBundle_Core.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Bundle\AssetBundle_Core.cs
@@ -50,9 +73,9 @@
 
 
 //
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 //
-using System.Collections.Generic;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 //
 using System.IO;
 //
@@ -146,7 +169,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             _isLoaded = false;
 
-            System.Diagnostics.Debug.WriteLine($"AssetBundle: Disposed '{_bundlePath}'");
+            DLogger.Log($"AssetBundle: Disposed '{_bundlePath}'");
         }
 
         protected void ThrowIfDisposed()
@@ -312,4 +335,5 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+
 

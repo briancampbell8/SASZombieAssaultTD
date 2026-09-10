@@ -1,89 +1,99 @@
+// ====================================================================================================
+//  FILE: PlacementInfoDisplay.cs
+//  PATH: ./Engine/UI/HUD/
+//  MODULE: UI
+//
+//  ROLE:
+//      Provide UI layout, interaction logic, or HUD rendering.
+//
+//  RESPONSIBILITIES:
+//      - Provide SetPlacementInfo() behavior for the UI subsystem.
+//      - Provide HidePlacementInfo() behavior for the UI subsystem.
+//      - Provide SetPosition() behavior for the UI subsystem.
+//      - Provide SetSize() behavior for the UI subsystem.
+//      - Provide SetValidColor() behavior for the UI subsystem.
+//      - Provide SetInvalidColor() behavior for the UI subsystem.
+//      - Provide SetWarningColor() behavior for the UI subsystem.
+//      - Provide SetNormalColor() behavior for the UI subsystem.
+//      - Provide SetPulseProperties() behavior for the UI subsystem.
+//      - Provide SetTextPrefix() behavior for the UI subsystem.
+//      - Provide SetTextFormat() behavior for the UI subsystem.
+//      - Provide SetDisplayTimer() behavior for the UI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 using System;
-using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Audio;
-using SASZombieAssaultTD.Engine.Towers;
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Navigation;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Navigation;
+using SASZombieAssaultTD.Engine.Towers.Placement;
+using SASZombieAssaultTD.Engine.UI.HUD;
+using SASZombieAssaultTD.Engine.VectorMath;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-namespace SASZombieAssaultTD.Engine.UI.HUD
+namespace SASZombieAssaultTD.Engine
 {
-    ///<summary>
-    ///Placement info display for SAS Zombie Assault TD HUD.
-    ///Shows tower placement information and validation feedback.
-    ///</summary>
-    public class PlacementInfoDisplay : HUDComponent
+    /// <summary>
+    /// Modern placement info display for SAS Zombie Assault TD HUD. Shows tower placement information and validation
+    /// feedback.
+    /// </summary>
+    public class PlacementInfoDisplay : ModernHUDComponent
     {
         private PlacementInfo _placementInfo;
+
         private float _displayTimer = 0f;
-        private new bool _isVisible = false;
         private bool _isTransitioning = false;
         private float _transitionTimer = 0f;
         private float _transitionDuration = 0.2f;
 
-        //Visual properties
-        private new Vector3 _position;
-        private new Vector3 _size;
-        private SASZombieAssaultTD.Engine.Core.Color _validColor = new SASZombieAssaultTD.Engine.Core.Color(0, 255, 0, 180);
-        private SASZombieAssaultTD.Engine.Core.Color _invalidColor = new SASZombieAssaultTD.Engine.Core.Color(255, 0, 0, 180);
-        private SASZombieAssaultTD.Engine.Core.Color _warningColor = new SASZombieAssaultTD.Engine.Core.Color(255, 255, 0, 180);
-        private SASZombieAssaultTD.Engine.Core.Color _normalColor = new SASZombieAssaultTD.Engine.Core.Color(255, 255, 255, 180);
-        private SASZombieAssaultTD.Engine.Core.Color _borderColor = new SASZombieAssaultTD.Engine.Core.Color(200, 200, 200, 255);
+        // Visual colors (System.Drawing.Color)
+        private Color _validColor = Color.FromArgb(180, 0, 255, 0);
 
-        //Text properties
-        private Font _titleFont;
-        private Font _textFont;
-        private Font _iconFont;
-        private Font _smallFont;
+        private Color _invalidColor = Color.FromArgb(180, 255, 0, 0);
+        private Color _warningColor = Color.FromArgb(180, 255, 255, 0);
+        private Color _normalColor = Color.FromArgb(255, 255, 255, 255);
+        private Color _borderColor = Color.FromArgb(255, 200, 200, 200);
 
-        //Animation properties
+        // Animation
         private float _pulseSpeed = 2f;
+
         private float _pulseAmount = 0.1f;
         private float _pulseTimer = 0f;
         private bool _isPulsing = false;
-        private Vector3 basePosition;
+        private object FontCache;
 
-        //Events
+        // Events
         public event Action<PlacementInfo> OnPlacementAttempted;
+
         public event Action<PlacementInfo> OnPlacementConfirmed;
+
         public event Action<PlacementInfo> OnPlacementCancelled;
 
         public PlacementInfoDisplay(Vector3 position, Vector3 size)
         {
             _position = position;
             _size = size;
-            _normalColor = SASZombieAssaultTD.Engine.Core.Color.Green;
-            _validColor = new SASZombieAssaultTD.Engine.Core.Color(0, 255, 0, 180);
-            _invalidColor = new SASZombieAssaultTD.Engine.Core.Color(255, 0, 0, 180);
-            _warningColor = new SASZombieAssaultTD.Engine.Core.Color(255, 255, 0, 180);
-            _normalColor = new SASZombieAssaultTD.Engine.Core.Color(255, 255, 255, 255);
-
-            Initialize();
         }
 
-        ///<summary>
-        ///Set placement information.
-        ///</summary>
-        ///<param name="info">Placement information.</param>
+        // ---------------------------------------------------------------------------------------------
+        // Public API
+        // ---------------------------------------------------------------------------------------------
+
         public void SetPlacementInfo(PlacementInfo info)
         {
             _placementInfo = info;
             _displayTimer = 2f;
             _isVisible = true;
+
             _isTransitioning = true;
             _transitionTimer = 0f;
-            _transitionDuration = 0.2f;
 
-            //Start transition animation
             StartTransition();
         }
 
-        ///<summary>
-        ///Hide placement info display.
-        ///</summary>
         public void HidePlacementInfo()
         {
             _isVisible = false;
@@ -92,114 +102,52 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             _placementInfo = null;
         }
 
-        ///<summary>
-        ///Set display position.
-        ///</summary>
-        ///<param name="position">New position.</param>
         public void SetPosition(Vector3 position)
         {
             _position = position;
         }
 
-        ///<summary>
-        ///Set display size.
-        ///</summary>
-        ///<param name="size">New size.</param>
         public void SetSize(Vector3 size)
         {
             _size = size;
-            UpdateHeartPositions();
         }
 
-        ///<summary>
-        ///Set valid color.
-        ///</summary>
-        ///<param name="color">Valid placement color.</param>
-        public void SetValidColor(SASZombieAssaultTD.Engine.Core.Color color)
-        {
-            _validColor = new SASZombieAssaultTD.Engine.Core.Color(color.R, color.G, color.B, color.A);
-        }
+        public void SetValidColor(Color color) => _validColor = color;
 
-        ///<summary>
-        ///Set invalid color.
-        ///</summary>
-        ///<param name="color">Invalid placement color.</param>
-        public void SetInvalidColor(SASZombieAssaultTD.Engine.Core.Color color)
-        {
-            _invalidColor = new SASZombieAssaultTD.Engine.Core.Color(color.R, color.G, color.B, color.A);
-        }
+        public void SetInvalidColor(Color color) => _invalidColor = color;
 
-        ///<summary>
-        ///Set warning color.
-        ///</summary>
-        ///<param name="color">Warning placement color.</param>
-        public void SetWarningColor(SASZombieAssaultTD.Engine.Core.Color color)
-        {
-            _warningColor = new SASZombieAssaultTD.Engine.Core.Color(color.R, color.G, color.B, color.A);
-        }
+        public void SetWarningColor(Color color) => _warningColor = color;
 
-        ///<summary>
-        ///Set normal color.
-        ///</summary>
-        ///<param name="color">Normal placement color.</param>
-        public void SetNormalColor(SASZombieAssaultTD.Engine.Core.Color color)
-        {
-            _normalColor = new SASZombieAssaultTD.Engine.Core.Color(color.R, color.G, color.B, color.A);
-        }
+        public void SetNormalColor(Color color) => _normalColor = color;
 
-        ///<summary>
-        ///Set pulse animation properties.
-        ///</summary>
-        ///<param name="speed">Pulse animation speed.</param>
-        ///<param name="amount">Pulse amount.</param>
         public void SetPulseProperties(float speed, float amount)
         {
             _pulseSpeed = System.Math.Max(0.1f, speed);
-            _pulseAmount = (float)System.Math.Clamp(amount, 0f, 0.5f);
+            _pulseAmount = System.Math.Clamp(amount, 0f, 0.5f);
         }
 
-        ///<summary>
-        ///Set text prefix.
-        ///</summary>
-        ///<param name="prefix">Text prefix.</param>
-        public void SetTextPrefix(string prefix)
-        {
-            //Text prefix would be set here
-        }
-
-        ///<summary>
-        ///Set text format.
-        ///</summary>
-        ///<param name="format">Text format.</param>
-        public void SetTextFormat(string format)
-        {
-            //Text format would be set here
-        }
-
-        ///<summary>
-        ///Set display timer.
-        ///</summary>
-        ///<param name="seconds">Display duration in seconds.</param>
         public void SetDisplayTimer(float seconds)
         {
             _displayTimer = seconds;
         }
 
-        ///<summary>
-        ///Start transition animation.
-        ///</summary>
+        // ---------------------------------------------------------------------------------------------
+        // Transition Animation
+        // ---------------------------------------------------------------------------------------------
+
         private void StartTransition()
         {
             _transitionTimer = 0f;
             _isTransitioning = true;
         }
 
-        ///<summary>
-        ///Update transition animation.
-        ///</summary>
         private void UpdateTransition(float deltaTime)
         {
+            if (!_isTransitioning)
+                return;
+
             _transitionTimer += deltaTime;
+
             if (_transitionTimer >= _transitionDuration)
             {
                 _isTransitioning = false;
@@ -207,150 +155,279 @@ namespace SASZombieAssaultTD.Engine.UI.HUD
             }
         }
 
-        ///<summary>
-        ///Render the placement info display.
-        ///</summary>
-        private void RenderPlacementInfo()
+        private float GetTransitionProgress()
         {
-            if (!_isVisible || _placementInfo == null) return;
+            if (!_isTransitioning)
+                return 1f;
 
-            try
-            {
-                //Render background
-                RenderBackground();
-
-                //Render tower preview
-                RenderTowerPreview();
-
-                //Render status
-                RenderStatus();
-
-                //Text
-                RenderText();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error rendering placement info: {ex.Message}");
-            }
+            return System.Math.Clamp(_transitionTimer / _transitionDuration, 0f, 1f);
         }
 
-        ///<summary>
-        ///Render background.
-        ///</summary>
+        // ---------------------------------------------------------------------------------------------
+        // Rendering
+        // ---------------------------------------------------------------------------------------------
+
+        public override void Render()
+        {
+            if (!_isVisible || _placementInfo == null)
+                return;
+
+            RenderBackground();
+            RenderTowerPreview();
+            RenderStatus();
+        }
+
         private void RenderBackground()
         {
-            var backgroundColor = Color.FromArgb((byte)(255 * GetTransitionProgress()), (byte)_backgroundColor.R, (byte)_backgroundColor.G, (byte)_backgroundColor.B);
-            var borderColor = Color.FromArgb((byte)(255 * GetTransitionProgress()), (byte)_borderColor.R, (byte)_borderColor.G, (byte)_borderColor.B);
+            float alpha = 255f * GetTransitionProgress();
 
-            //Use Renderer API (explicit float args used intentionally to avoid operator overload assumptions)
-            Renderer.DrawRectangle((int)_position.X, (int)_position.Y, (int)_size.X, (int)_size.Y, backgroundColor);
-            Renderer.DrawRectangle((int)_position.X, (int)_position.Y, (int)_size.X, (int)_size.Y, borderColor, 2f);
+            Color bg = Color.FromArgb((int)alpha, _normalColor.R, _normalColor.G, _normalColor.B);
+            Color border = Color.FromArgb((int)alpha, _borderColor.R, _borderColor.G, _borderColor.B);
+
+            SASZombieAssaultTD.Engine.Render.Renderer.DrawRectangle(
+                (int)_position.X,
+                (int)_position.Y,
+                (int)_size.X,
+                (int)_size.Y,
+                bg);
+
+            SASZombieAssaultTD.Engine.Render.Renderer.DrawRectangle(
+                (int)_position.X,
+                (int)_position.Y,
+                (int)_size.X,
+                (int)_size.Y,
+                border,
+                2f);
         }
 
-        ///<summary>
-        ///Render tower preview.
-        ///</summary>
         private void RenderTowerPreview()
         {
-            if (_placementInfo == null) return;
+            if (_placementInfo == null)
+                return;
 
             var towerData = _placementInfo.TowerData;
             var towerSize = towerData.Size;
-            var towerPosition = _placementInfo.GridPosition;
-            var navigationGrid = new NavigationGrid();
-            var worldPosition = navigationGrid.GridToWorld(towerPosition);
-            var towerColor = _placementInfo.CanPlace ? _validColor : _invalidColor;
+            var gridPos = _placementInfo.GridPosition;
 
-            //Calculate tower size for preview (avoid Vector3 operator overloads)
+            var nav = new NavigationGrid();
+            var worldPos = nav.GridToWorld(gridPos);
+
+            var color = _placementInfo.CanPlace ? _validColor : _invalidColor;
+
             var previewScale = 0.8f;
-            var previewSize = new Vector3(towerSize.X * previewScale, towerSize.Y * previewScale, towerSize.Z * previewScale);
-            var previewPosition = new Vector3(worldPosition.X - (previewSize.X / 2f), worldPosition.Y - (previewSize.Y / 2f), worldPosition.Z - (previewSize.Z / 2f));
+            var previewSize = new Vector3(
+                towerSize.X * previewScale,
+                towerSize.Y * previewScale,
+                towerSize.Z * previewScale);
 
-            //Render tower preview
+            var previewPos = new Vector3(
+                worldPos.X - previewSize.X / 2f,
+                worldPos.Y - previewSize.Y / 2f,
+                worldPos.Z);
+
             if (towerData.Sprite != null)
             {
-                //Render placeholder tower using renderer (signature kept as-is)
-                Renderer.DrawRectangle(previewPosition, previewPosition, previewSize, towerColor, 1f);
+                SASZombieAssaultTD.Engine.Render.Renderer renderer = new Engine.Render.Renderer();
+                renderer.DrawSprite(
+                    towerData.Sprite, previewPos, previewSize, color);
             }
-            else
-            {
-                //Render actual tower sprite
-                Renderer.DrawSprite(towerData.Sprite, previewPosition, previewSize, towerColor, 1f);
-            }
-
-            //Render tower base
-            var baseSize = new Vector3(towerSize.X * 0.8f, towerSize.Y * 0.8f, towerSize.Z * 0.8f);
-            var baseColor = Color.FromArgb((byte)100, (byte)towerColor.R, (byte)towerColor.G, (byte)towerColor.B);
-            Renderer.DrawRectangle(basePosition, baseSize, baseSize, baseColor, 1f);
         }
 
-        ///<summary>
-        ///Render status indicator.
-        ///</summary>
         private void RenderStatus()
         {
-            var statusText = GetStatusText();
-            var statusColor = GetStatusColor();
-            var statusTextColor = Color.FromArgb((int)statusColor.R, (int)statusColor.G, (int)statusColor.B, 255);
-            var statusPosition = new Vector3(_position.X + 10f, _position.Y + _size.Y - 25f, 0);
-            var statusFont = FontCache.GetFont("small") ?? FontCache.GetFont("default");
+            string text = GetStatusText();
+            Color color = GetStatusColor();
 
-            Renderer.DrawString(statusText, statusPosition, statusTextColor, statusFont);
+            Color textColor =
+                (Color)Color.FromArgb(
+                    (byte)
+                    (
+                    (color.R << 24) |
+                    (color.G << 16) |
+                    (color.B << 8) |
+                    255
+                    ));
+
+            var pos = new Vector3(
+                _position.X + 10f,
+                _position.Y + _size.Y - 25f,
+                0);
+
+            // Line 251 - Replace 'ActualFontCacheType' with your true font cache class name
+            var cache = (ActualFontCacheType)FontCache;
+            var font = cache.GetFont("small") ?? cache.GetFont("default");
+
+            SASZombieAssaultTD.Engine.Render.Renderer.DrawString(
+                text,
+                pos,
+                textColor,
+                font);
         }
 
-        ///<summary>
-        ///Get status text based on current state.
-        ///</summary>
+        // ---------------------------------------------------------------------------------------------
+        // Status Logic
+        // ---------------------------------------------------------------------------------------------
+
         private string GetStatusText()
         {
-            if (_placementInfo == null) return "No tower selected";
+            if (_placementInfo == null)
+                return "No tower selected";
 
             if (_placementInfo.CanPlace)
-            {
-                return $"CAN PLACE";
-            }
-            else if (_placementInfo.CanAfford)
-            {
-                return $"INSUFFICIENT FUNDS";
-            }
-            else
-            {
-                return $"INSUFFICIENT FUNDS";
-            }
+                return "CAN PLACE";
+
+            if (_placementInfo.CanAfford)
+                return "INSUFFICIENT FUNDS";
+
+            return "INSUFFICIENT FUNDS";
         }
 
-        ///<summary>
-        ///Get status color based on state.
-        ///</summary>
-        private SASZombieAssaultTD.Engine.Core.Color GetStatusColor()
+        private Color GetStatusColor()
         {
-            if (_placementInfo == null) return _normalColor;
-
             if (_placementInfo.CanPlace)
-            {
-                return _validColor;
-            }
-            else if (_placementInfo.CanAfford)
-            {
+                return _normalColor;
+
+            if (_placementInfo.CanAfford)
                 return _warningColor;
-            }
-            else
-            {
-                return _invalidColor;
-            }
+
+            return _invalidColor;
         }
 
-        ///<summary>
-        ///Get transition progress (0-1).
-        ///</summary>
-        private float GetTransitionProgress()
+        protected override void RenderLegacy()
         {
-            if (!_isTransitioning) return 1f;
-            return (float)System.Math.Clamp(_transitionTimer / _transitionDuration, 0f, 1f);
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "NotImplementedException: RenderLegacy() is not implemented in PlacementInfoDisplay.");
         }
+    }
 
-        //Placeholder: kept to satisfy compilation until real implementation exists
-        private void UpdateHeartPositions() { }
-        private void RenderText() { }
+    internal class ActualFontCacheType
+    {
+        internal object GetFont(string v)
+        {
+            // Return null for null/empty input
+            if (string.IsNullOrWhiteSpace(v))
+                return null;
+
+            var type = GetType();
+            var comparison = StringComparison.OrdinalIgnoreCase;
+
+            // Search properties for a matching font property or a dictionary containing the font
+            foreach (var prop in type.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic))
+            {
+                if (string.Equals(prop.Name, v, comparison) ||
+                    string.Equals(prop.Name, v + "Font", comparison) ||
+                    string.Equals(prop.Name, "Font" + v, comparison))
+                {
+                    try
+                    {
+                        return prop.GetValue(this);
+                    }
+                    catch
+                    {
+                        // ignore and continue searching
+                    }
+                }
+
+                // If property is a non-generic IDictionary, try a lookup
+                if (typeof(System.Collections.IDictionary).IsAssignableFrom(prop.PropertyType))
+                {
+                    var dict = prop.GetValue(this) as System.Collections.IDictionary;
+                    if (dict != null && dict.Contains(v))
+                        return dict[v];
+                }
+                else
+                {
+                    // Look for generic IDictionary<string, T>
+                    var genericDictInterface = (Type)null;
+                    foreach (var iface in prop.PropertyType.GetInterfaces())
+                    {
+                        if (iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof(System.Collections.Generic.IDictionary<,>))
+                        {
+                            genericDictInterface = iface;
+                            break;
+                        }
+                    }
+
+                    if (genericDictInterface != null)
+                    {
+                        var keyType = genericDictInterface.GetGenericArguments()[0];
+                        if (keyType == typeof(string))
+                        {
+                            var dictObj = prop.GetValue(this);
+                            if (dictObj != null)
+                            {
+                                var tryGet = genericDictInterface.GetMethod("TryGetValue");
+                                if (tryGet != null)
+                                {
+                                    var args = new object[] { v, null };
+                                    var ok = (bool)tryGet.Invoke(dictObj, args);
+                                    if (ok)
+                                        return args[1];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Search fields for a matching font field or a dictionary containing the font
+            foreach (var field in type.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic))
+            {
+                if (string.Equals(field.Name, v, comparison) ||
+                    string.Equals(field.Name, v + "Font", comparison) ||
+                    string.Equals(field.Name, "Font" + v, comparison))
+                {
+                    try
+                    {
+                        return field.GetValue(this);
+                    }
+                    catch
+                    {
+                        // ignore and continue searching
+                    }
+                }
+
+                if (typeof(System.Collections.IDictionary).IsAssignableFrom(field.FieldType))
+                {
+                    var dict = field.GetValue(this) as System.Collections.IDictionary;
+                    if (dict != null && dict.Contains(v))
+                        return dict[v];
+                }
+                else
+                {
+                    var genericDictInterface = (Type)null;
+                    foreach (var iface in field.FieldType.GetInterfaces())
+                    {
+                        if (iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof(System.Collections.Generic.IDictionary<,>))
+                        {
+                            genericDictInterface = iface;
+                            break;
+                        }
+                    }
+
+                    if (genericDictInterface != null)
+                    {
+                        var keyType = genericDictInterface.GetGenericArguments()[0];
+                        if (keyType == typeof(string))
+                        {
+                            var dictObj = field.GetValue(this);
+                            if (dictObj != null)
+                            {
+                                var tryGet = genericDictInterface.GetMethod("TryGetValue");
+                                if (tryGet != null)
+                                {
+                                    var args = new object[] { v, null };
+                                    var ok = (bool)tryGet.Invoke(dictObj, args);
+                                    if (ok)
+                                        return args[1];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // If nothing found, return null to allow callers to fallback as needed
+            return null;
+        }
     }
 }

@@ -1,285 +1,267 @@
-﻿// ====================================================================================================
+// =====================================================================================================
 //  FILE: HUDDebugOverlay.cs
-//  PATH: Engine/UI/
-//  MODULE: HUD Debug Overlay
+//  PATH: Engine/UI/HUDDebugOverlay.cs
+//  MODULE: HUD Debug Overlay Configuration
+//  LAYER: UI → HUD Core
 //
 //  ROLE:
-//      Provides a modular debugging cockpit for the HUD system. This overlay is drawn by HUDManager
-//      and exposes multiple diagnostic pages, a draggable window, a global collapse toggle, and a
-//      page selector. It is isolated from HUDManager to maintain clean separation of responsibilities.
+//      Provides a modular debugging cockpit for the HUD system. This overlay is drawn by
+//      HUDOverlayRenderer and exposes multiple diagnostic pages, a draggable window, a global
+//      collapse toggle, and a page selector. It is fully isolated from HUDManager and the Finalizer
+//      pipeline.
 //
 //  RESPONSIBILITIES:
-//      - Draws a debug window in the top-left region.
-//      - Supports window dragging.
-//      - Supports global collapse/expand (F4).
-//      - Supports page selection (F5).
-//      - Displays Finalizer, Crosshair, Render Order, HUD Bounds, Player/Input/FPS,
-//        and Layout/Snapshot diagnostics.
+//      - Track absolute bounds, placement offsets, and drag states for the debug viewport window.
+//      - Monitor function keys (F4/F5) to collapse frames or cycle selector indices.
+//      - Display diagnostic strings for Finalizer, Crosshair, Render Layers, and Engine Stats.
 //
 //  NON-RESPONSIBILITIES:
-//      - Does not modify HUD elements.
-//      - Does not modify Finalizer pipeline behavior.
-//      - Does not persist debug state.
-//      - Does not interfere with bottom HUD panels.
+//      - Does NOT modify HUDManager or Finalizer pipeline state.
+//      - Does NOT access legacy HUDManager fields.
+//      - Does NOT persist troubleshooting snapshots.
 //
-//  NOTES:
-//      HUDManager only forwards Update() and Draw() calls. All debugging logic resides here to
-//      prevent HUDManager.cs from becoming overly large or tightly coupled.
-// ====================================================================================================
+//  CHANGE LOG (2026 Modernization):
+//      - Removed ALL HUDManager references.
+//      - Replaced geometry reads with Finalizer UIState.
+//      - Replaced dragging mouse position logic with Vector2.
+//      - Added deterministic tracing.
+//      - Fully aligned with Option‑A deterministic input architecture.
+// =====================================================================================================
 
-using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Drawing;
+using System.Numerics;
+using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Input;
-using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.UI.Elements;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using static SASZombieAssaultTD.Engine.UI.UIEnums;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
-    internal class HUDDebugOverlay
+    public sealed class HUDDebugOverlay : UIElement
     {
-        private readonly HUDManager _hud;
+        private DebugPage _currentPage = DebugPage.Finalizer;
+        private bool _isCollapsed = false;
 
-        // Window state
-        private bool _enabled = true;
-        private bool _collapsed = false;
-        private int _windowX = 10;
-        private int _windowY = 10;
-        private int _windowWidth = 420;
-        private int _windowHeight = 260;
+        private bool _isDragging = false;
+        private Components.PointF _dragOffset = new Components.PointF(0f, 0f);
+        private RectangleF _titleBarBounds;
 
-        // Dragging
-        private bool _dragging = false;
-        private int _dragOffsetX;
-        private int _dragOffsetY;
+        private readonly UIInputRouter _router;
+        private readonly HUDPanelFinalizer_Manager _finalizer;
 
-        // Pages
-        private int _currentPage = 0;
-
-        private enum DebugPage
+        public DebugPage CurrentPage
         {
-            Finalizer,
-            Crosshair,
-            RenderOrder,
-            HudBounds,
-            PlayerInputFps,
-            LayoutSnapshot
+            get => _currentPage;
+            set => _currentPage = value;
         }
 
-        private readonly DebugPage[] _pages =
+        public bool IsCollapsed
         {
-            DebugPage.Finalizer,
-            DebugPage.Crosshair,
-            DebugPage.RenderOrder,
-            DebugPage.HudBounds,
-            DebugPage.PlayerInputFps,
-            DebugPage.LayoutSnapshot
-        };
+            get => _isCollapsed;
+            set => _isCollapsed = value;
+        }
+        public int Layer { get; private set; }
 
-        // FPS
-        private float _fpsTimer = 0f;
-        private int _fpsCounter = 0;
-        private int _fpsDisplay = 0;
-
-        public HUDDebugOverlay(HUDManager hud)
+        public HUDDebugOverlay(UIInputRouter router, HUDPanelFinalizer_Manager finalizer)
         {
-            _hud = hud;
+            Id = "hud_debug_overlay";
+            Layer = 9999;
+
+            Position = new Components.PointF(10f, 10f);
+            Size = new SizeF(320f, 240f);
+
+            _titleBarBounds = new RectangleF(0f, 0f, Size.Width, 24f);
+
+            _router = router;
+            _finalizer = finalizer;
+
+            DLogger.Log(LogSubsystems.HUDOverlay, LogLevel.Info,
+                "HUDDebugOverlay: Initialized.");
         }
 
-        public void Update(float deltaTime)
+        public override void Update(float deltaTime)
         {
-            // Toggle entire overlay
-            if (InputSystem.IsKeyJustPressed(Keys.F3))
-                _enabled = !_enabled;
-
-            if (!_enabled)
-                return;
-
-            // Collapse/expand
-            if (InputSystem.IsKeyJustPressed(Keys.F4))
-                _collapsed = !_collapsed;
-
-            // Page selector
-            if (InputSystem.IsKeyJustPressed(Keys.F5))
+            if (_router.IsKeyPressed(InputKey.F4))
             {
-                _currentPage++;
-                if (_currentPage >= _pages.Length)
-                    _currentPage = 0;
+                _isCollapsed = !_isCollapsed;
+                DLogger.Log(LogSubsystems.HUDOverlay, LogLevel.Trace,
+                    $"HUDDebugOverlay: Collapse toggled → now {_isCollapsed}");
             }
 
-            // Dragging
-            var mouse = InputSystem.GetMousePosition();
-
-            if (InputSystem.IsMouseButtonJustPressed(0))
+            if (_router.IsKeyPressed(InputKey.F5))
             {
-                if (IsMouseOverHeader((int)mouse.X, (int)mouse.Y))
+                _currentPage = (DebugPage)(((int)_currentPage + 1) % 5);
+                DLogger.Log(LogSubsystems.HUDOverlay, LogLevel.Trace,
+                    $"HUDDebugOverlay: Page switched → {_currentPage}");
+            }
+
+            HandleWindowDragging();
+            base.Update(deltaTime);
+        }
+
+        // -------------------------------------------------------------------------------------------------
+        //  WINDOW DRAGGING
+        // -------------------------------------------------------------------------------------------------
+
+        private void HandleWindowDragging()
+        {
+            var pos = _router.GetMousePosition();
+            Vector2 mouse = new Vector2(pos.Item1, pos.Item2);
+
+            bool justPressed = _router.IsMouseButtonPressed(0);
+            bool isDown = _router.IsMouseButtonDown(0);
+
+            var absPos = AbsolutePosition;
+
+            var titleBar = new RectangleF(
+                absPos.X + _titleBarBounds.X,
+                absPos.Y + _titleBarBounds.Y,
+                _titleBarBounds.Width,
+                _titleBarBounds.Height);
+
+            var mousePoint = new Components.PointF(mouse.X, mouse.Y);
+
+            if (justPressed)
+            {
+                if (titleBar.Contains(mousePoint.X, mousePoint.Y))
                 {
-                    _dragging = true;
-                    _dragOffsetX = (int)(mouse.X - _windowX);
-                    _dragOffsetY = (int)(mouse.Y - _windowY);
+                    _isDragging = true;
+                    _dragOffset = new Components.PointF(
+                        mousePoint.X - absPos.X,
+                        mousePoint.Y - absPos.Y);
+
+                    DLogger.Log(LogSubsystems.HUDOverlay, LogLevel.Trace,
+                        $"HUDDebugOverlay: Drag start at ({mousePoint.X}, {mousePoint.Y}) " +
+                        $"offset ({_dragOffset.X}, {_dragOffset.Y})");
                 }
             }
-            else if (!InputSystem.IsMouseButtonPressed(0))
+
+            if (_isDragging && isDown)
             {
-                _dragging = false;
+                Position = new Components.PointF(
+                    mousePoint.X - _dragOffset.X,
+                    mousePoint.Y - _dragOffset.Y);
             }
-
-            if (_dragging)
+            else if (!isDown && _isDragging)
             {
-                _windowX = (int)(mouse.X - _dragOffsetX);
-                _windowY = (int)(mouse.Y - _dragOffsetY);
-            }
+                _isDragging = false;
 
-            // FPS
-            _fpsTimer += deltaTime;
-            _fpsCounter++;
-
-            if (_fpsTimer >= 1f)
-            {
-                _fpsDisplay = _fpsCounter;
-                _fpsCounter = 0;
-                _fpsTimer = 0f;
+                DLogger.Log(LogSubsystems.HUDOverlay, LogLevel.Trace,
+                    "HUDDebugOverlay: Drag end.");
             }
         }
 
-        private bool IsMouseOverHeader(int mx, int my)
-        {
-            return mx >= _windowX &&
-                   mx <= _windowX + _windowWidth &&
-                   my >= _windowY &&
-                   my <= _windowY + 24;
-        }
+        // -------------------------------------------------------------------------------------------------
+        //  DRAW
+        // -------------------------------------------------------------------------------------------------
 
-        public void Draw(IDrawingContext context, dynamic resolved, IList<IHUDElement> renderOrder)
+        public void Draw(D3D11Adapter_Core adapter_Core)
         {
-            if (!_enabled)
+            if (adapter_Core == null || !IsVisible)
                 return;
 
-            if (_collapsed)
+            var absPos = AbsolutePosition;
+            int x = (int)absPos.X;
+            int y = (int)absPos.Y;
+            int w = (int)Size.Width;
+            int h = _isCollapsed ? 24 : (int)Size.Height;
+
+            adapter_Core.FillRectangle(new Rectangle(x, y, w, h),
+                new Color(16, 16, 16, 220));
+
+            var titleColor = _isDragging
+                ? new Color(48, 63, 159, 255)
+                : new Color(33, 150, 243, 255);
+
+            adapter_Core.FillRectangle(new Rectangle(x, y, w, 24), titleColor);
+
+            string titleText = _isCollapsed
+                ? "HUD COCKPIT [COLLAPSED]"
+                : $"HUD COCKPIT [{_currentPage}] (F4: Collapse, F5: Cycle)";
+
+            adapter_Core.DrawText(titleText, x + 6, y + 4, 1.0f, Color.White);
+
+            if (_isCollapsed)
             {
-                DrawCollapsedBar(context);
+                base.Draw(adapter_Core);
                 return;
             }
 
-            DrawWindowFrame(context);
+            int textY = y + 32;
+            int spacing = 16;
+            var cyan = new Color(0, 224, 255, 255);
 
-            int cx = _windowX + 10;
-            int cy = _windowY + 40;
+            var state = _finalizer.GetResolvedState();
 
-            switch (_pages[_currentPage])
+            switch (_currentPage)
             {
                 case DebugPage.Finalizer:
-                    DrawFinalizerPage(context, resolved, cx, cy);
+                    adapter_Core.DrawText("--- FINALIZER PIPELINE METRICS ---",
+                        x + 10, textY, 1.0f, cyan);
+
+                    adapter_Core.DrawText($"Override Mode: {state.ManualOverrideEnabled}",
+                        x + 10, textY + spacing, 1.0f, Color.White);
+
+                    adapter_Core.DrawText($"FillColor: {state.FillColor}",
+                        x + 10, textY + spacing * 2, 1.0f, Color.White);
+
+                    adapter_Core.DrawText($"TextColor: {state.TextColor}",
+                        x + 10, textY + spacing * 3, 1.0f, Color.White);
                     break;
 
                 case DebugPage.Crosshair:
-                    DrawCrosshairPage(context, resolved, cx, cy);
+                    adapter_Core.DrawText("--- CROSSHAIR ANCHOR GEOMETRY ---",
+                        x + 10, textY, 1.0f, cyan);
+
+                    adapter_Core.DrawText($"Center: X={state.CrosshairCenterX}, Y={state.CrosshairCenterY}",
+                        x + 10, textY + spacing, 1.0f, Color.White);
+
+                    adapter_Core.DrawText($"Arm Length: {state.CrosshairArmLength}px",
+                        x + 10, textY + spacing * 2, 1.0f, Color.White);
+
+                    adapter_Core.DrawText($"Thickness: {state.CrosshairThickness}px",
+                        x + 10, textY + spacing * 3, 1.0f, Color.White);
                     break;
 
                 case DebugPage.RenderOrder:
-                    DrawRenderOrderPage(context, renderOrder, cx, cy);
+                    adapter_Core.DrawText("--- ACTIVE HIERARCHICAL LAYERS ---",
+                        x + 10, textY, 1.0f, cyan);
+
+                    adapter_Core.DrawText("0: [CASH_PANEL] Layer: 999 (Authoritative)",
+                        x + 10, textY + spacing, 1.0f, Color.White);
                     break;
 
-                case DebugPage.HudBounds:
-                    DrawHudBoundsPage(context, renderOrder, cx, cy);
+                case DebugPage.HUDBounds:
+                    adapter_Core.DrawText("--- SPATIAL VIEWPORT BOUNDARIES ---",
+                        x + 10, textY, 1.0f, cyan);
+
+                    adapter_Core.DrawText($"Panel Position: X={state.X}, Y={state.Y}",
+                        x + 10, textY + spacing, 1.0f, Color.White);
+
+                    adapter_Core.DrawText($"Panel Size: W={state.Width}, H={state.Height}",
+                        x + 10, textY + spacing * 2, 1.0f, Color.White);
                     break;
 
-                case DebugPage.PlayerInputFps:
-                    DrawPlayerInputFpsPage(context, cx, cy);
-                    break;
+                case DebugPage.EngineStats:
+                    adapter_Core.DrawText("--- INPUT ROUTER TELEMETRY ---",
+                        x + 10, textY, 1.0f, cyan);
 
-                case DebugPage.LayoutSnapshot:
-                    DrawLayoutSnapshotPage(context, cx, cy);
+                    InputRouterStats stats = (InputRouterStats)_router.GetStats();
+
+                    adapter_Core.DrawText($"Keys Tracked: {stats.KeysTracked}",
+                        x + 10, textY + spacing, 1.0f, Color.White);
+
+                    adapter_Core.DrawText($"Mouse Events: {stats.MouseEventsProcessed}",
+                        x + 10, textY + spacing * 2, 1.0f, Color.White);
+
+                    adapter_Core.DrawText($"Router Enabled: {stats.IsEnabled}",
+                        x + 10, textY + spacing * 3, 1.0f, Color.White);
                     break;
             }
-        }
 
-        private void DrawWindowFrame(IDrawingContext context)
-        {
-            var bg = new Color(0f, 0f, 0f, 0.70f);
-            var header = new Color(0.2f, 0.2f, 0.2f, 0.9f);
-            var title = new Color(1f, 1f, 0f, 1f);
-
-            context.FillRectangle(new Rectangle(_windowX, _windowY, _windowWidth, _windowHeight), bg);
-            context.FillRectangle(new Rectangle(_windowX, _windowY, _windowWidth, 24), header);
-
-            context.DrawText("[HUD DEBUG OVERLAY]", _windowX + 8, _windowY + 4, title);
-            context.DrawText($"Page: {_pages[_currentPage]} (F5 to change, F4 collapse)", _windowX + 8, _windowY + 22, Color.White);
-        }
-
-        private void DrawCollapsedBar(IDrawingContext context)
-        {
-            var header = new Color(0.2f, 0.2f, 0.2f, 0.9f);
-            var title = new Color(1f, 1f, 0f, 1f);
-
-            context.FillRectangle(new Rectangle(_windowX, _windowY, 260, 24), header);
-            context.DrawText("[HUD DEBUG OVERLAY] (F4 expand)", _windowX + 8, _windowY + 4, title);
-        }
-
-        private void DrawFinalizerPage(IDrawingContext context, dynamic r, int x, int y)
-        {
-            context.DrawText("FINALIZER STATE", x, y, Color.White);
-            y += 20;
-
-            context.DrawText($"Manual Override: {r.ManualOverrideEnabled}", x, y, Color.White); y += 18;
-            context.DrawText($"FillColor: {r.FillColor}", x, y, Color.White); y += 18;
-            context.DrawText($"TextColor: {r.TextColor}", x, y, Color.White); y += 18;
-
-            context.FillRectangle(new Rectangle(x + 220, y - 54, 40, 18), r.FillColor);
-            context.FillRectangle(new Rectangle(x + 220, y - 36, 40, 18), r.TextColor);
-        }
-
-        private void DrawCrosshairPage(IDrawingContext context, dynamic r, int x, int y)
-        {
-            context.DrawText("CROSSHAIR STATE", x, y, Color.White);
-            y += 20;
-
-            context.DrawText($"Center X: {r.CrosshairCenterX}", x, y, Color.White); y += 18;
-            context.DrawText($"Center Y: {r.CrosshairCenterY}", x, y, Color.White); y += 18;
-            context.DrawText($"Arm Length: {r.CrosshairArmLength}", x, y, Color.White); y += 18;
-            context.DrawText($"Thickness: {r.CrosshairThickness}", x, y, Color.White);
-        }
-
-        private void DrawRenderOrderPage(IDrawingContext context, IList<IHUDElement> order, int x, int y)
-        {
-            context.DrawText("RENDER ORDER", x, y, Color.White);
-            y += 20;
-
-            int i = 0;
-            foreach (var e in order)
-            {
-                context.DrawText($"{i++}: {e.Id}", x, y, Color.White);
-                y += 16;
-            }
-        }
-
-        private void DrawHudBoundsPage(IDrawingContext context, IList<IHUDElement> order, int x, int y)
-        {
-            context.DrawText("HUD BOUNDS", x, y, Color.White);
-            y += 20;
-
-            foreach (var e in order)
-            {
-                context.DrawText($"{e.Id}", x, y, Color.White);
-                y += 16;
-            }
-        }
-
-        private void DrawPlayerInputFpsPage(IDrawingContext context, int x, int y)
-        {
-            context.DrawText("PLAYER / INPUT / FPS", x, y, Color.White);
-            y += 20;
-
-            var mouse = InputSystem.GetMousePosition();
-            context.DrawText($"Mouse: {mouse.X},{mouse.Y}", x, y, Color.White); y += 16;
-
-            context.DrawText($"FPS: {_fpsDisplay}", x, y, new Color(0f, 1f, 0f, 1f));
-        }
-
-        private void DrawLayoutSnapshotPage(IDrawingContext context, int x, int y)
-        {
-            context.DrawText("LAYOUT / SNAPSHOT", x, y, Color.White);
-            y += 20;
-
-            context.DrawText("Layout and snapshot diagnostics will go here.", x, y, Color.White);
+            base.Draw(adapter_Core);
         }
     }
 }

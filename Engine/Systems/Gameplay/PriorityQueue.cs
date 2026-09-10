@@ -1,9 +1,32 @@
+// ====================================================================================================
+//  FILE: PriorityQueue.cs
+//  PATH: ./Engine/Systems/Gameplay/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the PriorityQueue module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Enqueue() behavior for the Core subsystem.
+//      - Provide Dequeue() behavior for the Core subsystem.
+//      - Provide Contains() behavior for the Core subsystem.
+//      - Provide IsEmpty() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 using System;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Generic;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-namespace Engine.Systems.Gameplay
+namespace SASZombieAssaultTD.Engine.Systems.Gameplay
 {
     public class PriorityQueue<T>
     {
@@ -44,3 +67,4 @@ namespace Engine.Systems.Gameplay
         }
     }
 }
+

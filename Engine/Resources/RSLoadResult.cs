@@ -1,3 +1,22 @@
+// ====================================================================================================
+//  FILE: RSLoadResult.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSLoadResult module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Ok() behavior for the Core subsystem.
+//      - Provide Fail() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    AssetLoadResult.cs
 Author:  BDC
@@ -61,5 +80,6 @@ namespace SASZombieAssaultTD.Engine.Assets
         }
     }
 }
+
 
 

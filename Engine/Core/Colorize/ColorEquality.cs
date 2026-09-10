@@ -1,3 +1,24 @@
+// ====================================================================================================
+//  FILE: ColorEquality.cs
+//  PATH: ./Engine/Core/Colorize/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ColorEquality module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Equals() behavior for the Core subsystem.
+//      - Provide Equals() behavior for the Core subsystem.
+//      - Provide Equals() behavior for the Core subsystem.
+//      - Provide GetHashCode() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //File:    ColorEquality.cs
 //Purpose: Equality comparison and hashing for Color with float safety.
 //         Isolated core struct logic with exact and tolerance-based comparison.
@@ -17,12 +38,12 @@
 
 //
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Runtime.CompilerServices;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
-namespace SASZombieAssaultTD.Engine.Core.Colorize
+namespace SASZombieAssaultTD.Engine.CoreSize.Colorize
 {
     public readonly partial struct Color
     {
@@ -120,3 +141,4 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
         //- Colors are value types - equality compares contents, not reference
     }
 }
+

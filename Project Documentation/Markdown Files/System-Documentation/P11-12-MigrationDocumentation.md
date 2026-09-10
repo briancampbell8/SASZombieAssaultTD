@@ -99,7 +99,7 @@ enemy.AddComponent(new ScoreComponent(10));
 // Configure
 var health = enemy.GetComponent<HealthComponent>();
 health.OnDeath += () => {
-    DebugLogger.Log("INFO", $"Enemy {enemy.Id} died!");
+    DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"Enemy {enemy.Id} died!");
     // Handle enemy death (spawn loot, play sound, etc.)
 };
 ```

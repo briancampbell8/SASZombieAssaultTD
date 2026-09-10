@@ -1,4 +1,4 @@
-﻿// ====================================================================================================
+// ====================================================================================================
 //  FILE: Writer.cs
 //  PATH: Engine/Diagnostics/
 //  MODULE: Diagnostics Pipeline (Fan‑Out Stage)
@@ -14,7 +14,7 @@
 //      - Must ALWAYS include PatternTag and OverloadArgs.
 // ====================================================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Diagnostics.Writers;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics

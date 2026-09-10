@@ -18,11 +18,11 @@ Referenced in:
   Line 17: public sealed class EntityManager
   Line 22: /// Initializes a new EntityManager.
   Line 25: public EntityManager(ECSWorld ecsWorld)
-  Line 28: DebugLogger.Log("INFO", "EntityManager: Initialized");
-  Line 212: DebugLogger.Log("INFO", $"EntityManager: Destroyed {destroyedCount} dead entities");
-  Line 237: DebugLogger.Log("INFO", $"EntityManager: Destroyed {destroyedCount} inactive entities");
-  Line 262: DebugLogger.Log("INFO", $"EntityManager: Destroyed {destroyedCount} projectiles");
-  Line 292: DebugLogger.Log("INFO", $"EntityManager: Respawned {respawnedCount} dead enemies");
+  Line 28: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", "EntityManager: Initialized");
+  Line 212: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"EntityManager: Destroyed {destroyedCount} dead entities");
+  Line 237: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"EntityManager: Destroyed {destroyedCount} inactive entities");
+  Line 262: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"EntityManager: Destroyed {destroyedCount} projectiles");
+  Line 292: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"EntityManager: Respawned {respawnedCount} dead enemies");
   Line 330: var info = $"EntityManager Debug Info:\n";
 - File: .\Engine\Managers\EntityManager.cs
   Line 3: File:    EntityManager.cs
@@ -197,13 +197,13 @@ Referenced in:
   Line 76: /// <param name="entityManager">Entity manager for component access</param>
   Line 77: public HealthBarRenderer(EntityManager entityManager)
   Line 79: _entityManager = entityManager ?? throw new ArgumentNullException(nameof(entityManager));
-  Line 80: DebugLog("HealthBarRenderer: Initialized with EntityManager");
+  Line 80: DebugLog(LogSubsystems.ResourcesPipeline, "HealthBarRenderer: Initialized with EntityManager");
 - File: .\Engine\Systems\UI\ScoreDisplaySystem.cs
   Line 31: private readonly EntityManager _entityManager;
   Line 89: /// <param name="entityManager">Entity manager for component access</param>
   Line 91: public ScoreDisplaySystem(EntityManager entityManager, EventBus eventBus)
   Line 93: _entityManager = entityManager ?? throw new ArgumentNullException(nameof(entityManager));
-  Line 97: DebugLog("ScoreDisplaySystem: Initialized with EntityManager and EventBus");
+  Line 97: DebugLog(LogSubsystems.ResourcesPipeline, "ScoreDisplaySystem: Initialized with EntityManager and EventBus");
 
 ---
 
@@ -411,7 +411,7 @@ Referenced in:
   Line 81: /// Creates a new TransformComponent with full configuration.
   Line 87: public TransformComponent(
   Line 104: return $"TransformComponent(Pos: {Position}, Rot: {Rotation:F2}, Scale: {Scale:F2})";
-  Line 154: DebugLog("TransformComponent: FromSaveData called with null save data");
+  Line 154: DebugLog(LogSubsystems.ResourcesPipeline, "TransformComponent: FromSaveData called with null save data");
   Line 200: DebugLog($"TransformComponent: Restored transform state - Pos: {this.Position}, " +
   Line 205: DebugLog($"TransformComponent: Error restoring from save data - {ex.Message}");
   Line 215: Console.WriteLine($"[{DateTime.UtcNow:HH:mm:ss.fff}] TransformComponent: {message}");
@@ -520,7 +520,7 @@ Referenced in:
   Line 265: var transform = entity.GetComponent<TransformComponent>();
 - File: .\Engine\Navigation\NavigationMigrationHelper.cs
   Line 47: var transform = entity.GetComponent<TransformComponent>();
-  Line 53: DebugLogger.Log("MIGRATION", "Entity missing TransformComponent.");
+  Line 53: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "MIGRATION", "Entity missing TransformComponent.");
   Line 136: entity.AddComponent(new TransformComponent { X = position.X, Y = position.Y });
   Line 212: if (!entity.HasComponent<TransformComponent>())
   Line 214: result.AddIssue(entity.Id, "Missing TransformComponent.");
@@ -607,7 +607,7 @@ Referenced in:
   Line 261: var transformComp = _entityManager.GetComponent<TransformComponent>(entityId);
 - File: .\Engine\Systems\Persistence\LoadSystem.cs
   Line 252: var transform = _entityManager.GetComponent<TransformComponent>(playerEntity);
-  Line 264: DebugLog("LoadSystem: Warning - Player entity missing TransformComponent");
+  Line 264: DebugLog(LogSubsystems.ResourcesPipeline, "LoadSystem: Warning - Player entity missing TransformComponent");
   Line 638: var transform = _entityManager.GetComponent<TransformComponent>(entity);
   Line 651: var newTransform = new TransformComponent(entityData.Position, entityData.Rotation, entityData.Scale);
   Line 653: DebugLog($"LoadSystem: Created TransformComponent for entity {entityData.EntityId}");
@@ -774,24 +774,24 @@ Referenced in:
 - File: .\Engine\Animation\Events\AnimationEventDispatcher.cs
   Line 12: public class AnimationEventDispatcher
   Line 54: public AnimationEventDispatcher()
-  Line 62: DebugLogger.Log("DEBUG", "AnimationEventDispatcher: Initialized dispatcher");
-  Line 74: DebugLogger.Log("ERROR", "AnimationEventDispatcher: Cannot register null receiver");
-  Line 82: DebugLogger.Log("ERROR", $"AnimationEventDispatcher: Receiver '{receiver.ReceiverName}' validation failed: {string.Join(", ", validation.Errors)}");
-  Line 90: DebugLogger.Log("ERROR", $"AnimationEventDispatcher: Receiver ID '{receiver.ReceiverId}' already registered");
-  Line 101: DebugLogger.Log("DEBUG", $"AnimationEventDispatcher: Registered receiver '{receiver.ReceiverName}' ({receiver.ReceiverId}) with priority {receiver.Priority}");
-  Line 114: DebugLogger.Log("ERROR", "AnimationEventDispatcher: Cannot deregister receiver with null or empty ID");
-  Line 124: DebugLogger.Log("DEBUG", $"AnimationEventDispatcher: Deregistered receiver '{receiverToRemove.ReceiverName}' ({receiverId})");
-  Line 129: DebugLogger.Log("WARNING", $"AnimationEventDispatcher: Receiver ID '{receiverId}' not found for deregistration");
-  Line 142: DebugLogger.Log("ERROR", "AnimationEventDispatcher: Cannot register null event track");
-  Line 150: DebugLogger.Log("ERROR", $"AnimationEventDispatcher: Event track '{eventTrack.TrackName}' validation failed: {string.Join(", ", validation.Errors)}");
-  Line 157: DebugLogger.Log("ERROR", $"AnimationEventDispatcher: Event track for clip '{eventTrack.ClipId}' already registered");
-  Line 165: DebugLogger.Log("DEBUG", $"AnimationEventDispatcher: Registered event track '{eventTrack.TrackName}' ({eventTrack.TrackId}) for clip '{eventTrack.ClipId}'");
-  Line 178: DebugLogger.Log("ERROR", "AnimationEventDispatcher: Cannot deregister event track with null or empty clip ID");
-  Line 186: DebugLogger.Log("DEBUG", $"AnimationEventDispatcher: Deregistered event track '{eventTrack.TrackName}' ({eventTrack.TrackId}) for clip '{clipId}'");
-  Line 190: DebugLogger.Log("WARNING", $"AnimationEventDispatcher: Event track for clip '{clipId}' not found for deregistration");
-  Line 245: DebugLogger.Log("DEBUG", $"AnimationEventDispatcher: Dispatched {dispatchedEvents.Count} events for clip '{currentClipId}' at {playbackTime:F3}s");
-  Line 251: DebugLogger.Log("ERROR", $"AnimationEventDispatcher: Error during update: {ex.Message}");
-  Line 319: DebugLogger.Log("DEBUG", "AnimationEventDispatcher: Reset all event tracks and statistics");
+  Line 62: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", "AnimationEventDispatcher: Initialized dispatcher");
+  Line 74: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", "AnimationEventDispatcher: Cannot register null receiver");
+  Line 82: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationEventDispatcher: Receiver '{receiver.ReceiverName}' validation failed: {string.Join(", ", validation.Errors)}");
+  Line 90: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationEventDispatcher: Receiver ID '{receiver.ReceiverId}' already registered");
+  Line 101: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventDispatcher: Registered receiver '{receiver.ReceiverName}' ({receiver.ReceiverId}) with priority {receiver.Priority}");
+  Line 114: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", "AnimationEventDispatcher: Cannot deregister receiver with null or empty ID");
+  Line 124: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventDispatcher: Deregistered receiver '{receiverToRemove.ReceiverName}' ({receiverId})");
+  Line 129: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", $"AnimationEventDispatcher: Receiver ID '{receiverId}' not found for deregistration");
+  Line 142: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", "AnimationEventDispatcher: Cannot register null event track");
+  Line 150: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationEventDispatcher: Event track '{eventTrack.TrackName}' validation failed: {string.Join(", ", validation.Errors)}");
+  Line 157: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationEventDispatcher: Event track for clip '{eventTrack.ClipId}' already registered");
+  Line 165: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventDispatcher: Registered event track '{eventTrack.TrackName}' ({eventTrack.TrackId}) for clip '{eventTrack.ClipId}'");
+  Line 178: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", "AnimationEventDispatcher: Cannot deregister event track with null or empty clip ID");
+  Line 186: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventDispatcher: Deregistered event track '{eventTrack.TrackName}' ({eventTrack.TrackId}) for clip '{clipId}'");
+  Line 190: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", $"AnimationEventDispatcher: Event track for clip '{clipId}' not found for deregistration");
+  Line 245: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventDispatcher: Dispatched {dispatchedEvents.Count} events for clip '{currentClipId}' at {playbackTime:F3}s");
+  Line 251: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationEventDispatcher: Error during update: {ex.Message}");
+  Line 319: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", "AnimationEventDispatcher: Reset all event tracks and statistics");
   Line 422: var info = $"AnimationEventDispatcher: Enabled={IsEnabled}";
 
 ---
@@ -1038,37 +1038,37 @@ Referenced in:
   Line 20: /// Deterministic storage for entity-specific event handlers.
   Line 37: /// P11-19-12: Registers an ECS event handler for a specific entity.
   Line 40: /// <param name="entityId">Entity ID to register handler for</param>
-  Line 47: DebugLogger.Log("ERROR", "AnimationEventECSIntegration: Cannot register handler for entity ID 0");
-  Line 69: DebugLogger.Log("WARNING", $"AnimationEventECSIntegration: Handler '{handler.HandlerName}' is already registered for entity {entityId}");
-  Line 74: DebugLogger.Log("DEBUG", $"AnimationEventECSIntegration: Registered ECS handler '{handler.HandlerName}' for entity {entityId}");
-  Line 80: DebugLogger.Log("ERROR", $"AnimationEventECSIntegration: Error registering ECS handler for entity {entityId}: {ex.Message}");
+  Line 47: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", "AnimationEventECSIntegration: Cannot register handler for entity ID 0");
+  Line 69: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", $"AnimationEventECSIntegration: Handler '{handler.HandlerName}' is already registered for entity {entityId}");
+  Line 74: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventECSIntegration: Registered ECS handler '{handler.HandlerName}' for entity {entityId}");
+  Line 80: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationEventECSIntegration: Error registering ECS handler for entity {entityId}: {ex.Message}");
   Line 86: /// P11-19-12: Deregisters an ECS event handler for a specific entity.
   Line 89: /// <param name="entityId">Entity ID to deregister handler for</param>
-  Line 96: DebugLogger.Log("ERROR", "AnimationEventECSIntegration: Cannot deregister handler for entity ID 0");
-  Line 112: DebugLogger.Log("WARNING", $"AnimationEventECSIntegration: No handlers registered for entity {entityId}");
-  Line 119: DebugLogger.Log("DEBUG", $"AnimationEventECSIntegration: Deregistered ECS handler '{handler.HandlerName}' for entity {entityId}");
+  Line 96: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", "AnimationEventECSIntegration: Cannot deregister handler for entity ID 0");
+  Line 112: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", $"AnimationEventECSIntegration: No handlers registered for entity {entityId}");
+  Line 119: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventECSIntegration: Deregistered ECS handler '{handler.HandlerName}' for entity {entityId}");
   Line 121: // Clean up empty entity handler lists
-  Line 129: DebugLogger.Log("WARNING", $"AnimationEventECSIntegration: Handler '{handler.HandlerName}' not found for entity {entityId}");
-  Line 137: DebugLogger.Log("ERROR", $"AnimationEventECSIntegration: Error deregistering ECS handler for entity {entityId}: {ex.Message}");
+  Line 129: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", $"AnimationEventECSIntegration: Handler '{handler.HandlerName}' not found for entity {entityId}");
+  Line 137: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationEventECSIntegration: Error deregistering ECS handler for entity {entityId}: {ex.Message}");
   Line 218: /// Deterministic event dispatching with entity and global handlers.
   Line 220: /// <param name="entityId">Entity ID the event is for</param>
   Line 238: // Dispatch to entity-specific handlers first
-  Line 248: DebugLogger.Log("DEBUG", $"AnimationEventECSIntegration: Entity handler '{handler.HandlerName}' processed event '{animationEvent.EventName}' for entity {entityId}");
-  Line 253: DebugLogger.Log("ERROR", $"AnimationEventECSIntegration: Entity handler '{handler.HandlerName}' failed to process event '{animationEvent.EventName}': {ex.Message}");
-  Line 266: DebugLogger.Log("DEBUG", $"AnimationEventECSIntegration: Global handler '{handler.HandlerName}' processed event '{animationEvent.EventName}' for entity {entityId}");
-  Line 278: DebugLogger.Log("DEBUG", $"AnimationEventECSIntegration: No ECS handlers processed event '{animationEvent.EventName}' for entity {entityId}");
-  Line 282: DebugLogger.Log("DEBUG", $"AnimationEventECSIntegration: Event '{animationEvent.EventName}' dispatched to {handlersProcessed} ECS handlers for entity {entityId}");
+  Line 248: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventECSIntegration: Entity handler '{handler.HandlerName}' processed event '{animationEvent.EventName}' for entity {entityId}");
+  Line 253: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationEventECSIntegration: Entity handler '{handler.HandlerName}' failed to process event '{animationEvent.EventName}': {ex.Message}");
+  Line 266: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventECSIntegration: Global handler '{handler.HandlerName}' processed event '{animationEvent.EventName}' for entity {entityId}");
+  Line 278: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventECSIntegration: No ECS handlers processed event '{animationEvent.EventName}' for entity {entityId}");
+  Line 282: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventECSIntegration: Event '{animationEvent.EventName}' dispatched to {handlersProcessed} ECS handlers for entity {entityId}");
   Line 295: /// P11-19-12: Gets all registered handlers for an entity.
   Line 298: /// <param name="entityId">Entity ID to get handlers for</param>
-  Line 304: DebugLogger.Log("WARNING", "AnimationEventECSIntegration: Cannot get handlers for entity ID 0");
-  Line 324: DebugLogger.Log("ERROR", $"AnimationEventECSIntegration: Error getting handlers for entity {entityId}: {ex.Message}");
+  Line 304: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", "AnimationEventECSIntegration: Cannot get handlers for entity ID 0");
+  Line 324: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationEventECSIntegration: Error getting handlers for entity {entityId}: {ex.Message}");
   Line 351: /// P11-19-12: Clears all handlers for a specific entity.
   Line 352: /// Deterministic cleanup for entity handlers.
   Line 354: /// <param name="entityId">Entity ID to clear handlers for</param>
-  Line 360: DebugLogger.Log("ERROR", "AnimationEventECSIntegration: Cannot clear handlers for entity ID 0");
-  Line 372: DebugLogger.Log("DEBUG", $"AnimationEventECSIntegration: Cleared {count} ECS handlers for entity {entityId}");
-  Line 377: DebugLogger.Log("DEBUG", $"AnimationEventECSIntegration: No handlers to clear for entity {entityId}");
-  Line 384: DebugLogger.Log("ERROR", $"AnimationEventECSIntegration: Error clearing handlers for entity {entityId}: {ex.Message}");
+  Line 360: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", "AnimationEventECSIntegration: Cannot clear handlers for entity ID 0");
+  Line 372: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventECSIntegration: Cleared {count} ECS handlers for entity {entityId}");
+  Line 377: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationEventECSIntegration: No handlers to clear for entity {entityId}");
+  Line 384: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationEventECSIntegration: Error clearing handlers for entity {entityId}: {ex.Message}");
   Line 464: /// P11-19-12: Handles an animation event for an entity.
   Line 467: /// <param name="entityId">Entity ID the event is for</param>
   Line 580: /// Deterministic count for entity handlers.
@@ -1246,7 +1246,7 @@ Referenced in:
   Line 387: if (!entity.IsDestroyed)
   Line 388: throw new Exception("Entity not marked as destroyed");
   Line 394: /// Tests entity factory and migration functionality.
-  Line 419: DebugLogger.Log("INFO", "Entity factory test passed");
+  Line 419: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", "Entity factory test passed");
 - File: .\Engine\ECS\ECSWorld.cs
   Line 5: //     Core container and lifecycle manager for the Entity Component System (ECS).
   Line 9: //       - Maintaining internal entity/component collections
@@ -1415,15 +1415,15 @@ Referenced in:
   Line 80: /// Entity starts active by default.
   Line 93: /// <param name="initiallyActive">Whether the entity starts active.</param>
   Line 103: /// <param name="initiallyActive">Whether the entity starts active.</param>
-  Line 128: DebugLogger.Log("INFO", $"ActiveComponent: Lifetime expired for entity {Owner?.Id}");
+  Line 128: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ActiveComponent: Lifetime expired for entity {Owner?.Id}");
   Line 133: /// Activates this entity.
-  Line 145: DebugLogger.Log("INFO", $"ActiveComponent: Activated entity {Owner?.Id}");
+  Line 145: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ActiveComponent: Activated entity {Owner?.Id}");
   Line 149: /// Deactivates this entity.
-  Line 159: DebugLogger.Log("INFO", $"ActiveComponent: Deactivated entity {Owner?.Id}");
+  Line 159: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ActiveComponent: Deactivated entity {Owner?.Id}");
   Line 163: /// Toggles the active state of this entity.
-  Line 191: DebugLogger.Log("INFO", $"ActiveComponent: Set lifetime={_lifetime:F1}s, auto-deactivate={_autoDeactivate} for entity {Owner?.Id}");
-  Line 204: DebugLogger.Log("INFO", $"ActiveComponent: Extended lifetime by {additionalTime:F1}s for entity {Owner?.Id}");
-  Line 216: DebugLogger.Log("INFO", $"ActiveComponent: Reset lifetime timer for entity {Owner?.Id}");
+  Line 191: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ActiveComponent: Set lifetime={_lifetime:F1}s, auto-deactivate={_autoDeactivate} for entity {Owner?.Id}");
+  Line 204: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ActiveComponent: Extended lifetime by {additionalTime:F1}s for entity {Owner?.Id}");
+  Line 216: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ActiveComponent: Reset lifetime timer for entity {Owner?.Id}");
   Line 220: /// Checks if this entity should be processed by systems.
   Line 223: /// <returns>True if the entity is active and should be processed.</returns>
 - File: .\Engine\ECS\Components\DamageComponent.cs
@@ -1432,11 +1432,11 @@ Referenced in:
   Line 107: public event Action<Entity, float>? OnDamageApplied;
   Line 184: /// <param name="targetEntity">The entity that received the damage.</param>
   Line 186: public void NotifyDamageApplied(Entity targetEntity, float actualDamage)
-  Line 189: DebugLogger.Log("INFO", $"DamageComponent: Damage {actualDamage:F1} applied to entity {targetEntity?.Id}");
+  Line 189: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"DamageComponent: Damage {actualDamage:F1} applied to entity {targetEntity?.Id}");
 - File: .\Engine\ECS\Components\EnemyTypeComponent.cs
-  Line 303: DebugLogger.Log("INFO", $"EnemyTypeComponent: Changed enemy type from {oldType} to {enemyType} for entity {Owner?.Id}");
-  Line 313: DebugLogger.Log("INFO", $"EnemyTypeComponent: Added behavior flags {flags} to entity {Owner?.Id}");
-  Line 323: DebugLogger.Log("INFO", $"EnemyTypeComponent: Removed behavior flags {flags} from entity {Owner?.Id}");
+  Line 303: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"EnemyTypeComponent: Changed enemy type from {oldType} to {enemyType} for entity {Owner?.Id}");
+  Line 313: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"EnemyTypeComponent: Added behavior flags {flags} to entity {Owner?.Id}");
+  Line 323: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"EnemyTypeComponent: Removed behavior flags {flags} from entity {Owner?.Id}");
 - File: .\Engine\ECS\Components\HealthComponent.cs
   Line 5: //     Represents the health state of an entity.
   Line 27: /// Component that stores health-related data for an entity.
@@ -1469,10 +1469,10 @@ Referenced in:
   Line 115: /// Called by ScoringSystem when the entity is defeated.
   Line 117: /// <param name="scoringEntity">The entity that earned the score (player, tower, etc.).</param>
   Line 119: public int AwardScore(Entity scoringEntity)
-  Line 130: DebugLogger.Log("INFO", $"ScoreComponent: Awarded {finalScore} score to entity {scoringEntity?.Id}");
-  Line 142: DebugLogger.Log("INFO", $"ScoreComponent: Reset awarded state for entity {Owner?.Id}");
-  Line 154: DebugLogger.Log("INFO", $"ScoreComponent: Applied combo multiplier {comboMultiplier} to entity {Owner?.Id}");
-  Line 166: DebugLogger.Log("INFO", $"ScoreComponent: Cleared combo multiplier for entity {Owner?.Id}");
+  Line 130: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ScoreComponent: Awarded {finalScore} score to entity {scoringEntity?.Id}");
+  Line 142: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ScoreComponent: Reset awarded state for entity {Owner?.Id}");
+  Line 154: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ScoreComponent: Applied combo multiplier {comboMultiplier} to entity {Owner?.Id}");
+  Line 166: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ScoreComponent: Cleared combo multiplier for entity {Owner?.Id}");
 - File: .\Engine\ECS\Components\TransformComponent.cs
   Line 5: //     Represents the spatial position of an entity in the game world.
   Line 28: /// Component that stores the 2D position of an entity.
@@ -1493,9 +1493,9 @@ Referenced in:
   Line 115: var transform = entity.GetComponent<TransformComponent>();
   Line 116: var health = entity.GetComponent<HealthComponent>();
   Line 128: var targetPosition = DetermineNavigationTarget(entity, enemyType, transform.Position);
-  Line 133: DebugLogger.Log("DEBUG", $"AISystem: Entity {entity.Id} navigating to {targetPosition}");
+  Line 133: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AISystem: Entity {entity.Id} navigating to {targetPosition}");
   Line 142: OnTargetReached?.Invoke(entity);
-  Line 143: DebugLogger.Log("DEBUG", $"AISystem: Entity {entity.Id} reached navigation target");
+  Line 143: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AISystem: Entity {entity.Id} reached navigation target");
   Line 150: private void ProcessAILegacy(Entity entity, float deltaTime)
   Line 152: var enemyType = entity.GetComponent<EnemyTypeComponent>();
   Line 153: var movement = entity.GetComponent<MovementComponent>();
@@ -1529,49 +1529,49 @@ Referenced in:
   Line 349: PerformAttack(entity, transform);
   Line 354: private void PerformAttack(Entity entity, TransformComponent transform)
   Line 357: entity.AddComponent(damageComponent);
-  Line 359: DebugLogger.Log("INFO", $"AISystem: Entity {entity.Id} performed melee attack");
+  Line 359: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AISystem: Entity {entity.Id} performed melee attack");
   Line 393: private bool ShouldProcessEntity(Entity entity)
   Line 395: if (!entity.IsEnabled || entity.IsDestroyed)
   Line 398: if (!entity.HasComponent<EnemyTypeComponent>())
-  Line 413: DebugLogger.Log("INFO", $"AISystem: Cleaned up {removedKeys.Count} destroyed entity states");
+  Line 413: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AISystem: Cleaned up {removedKeys.Count} destroyed entity states");
   Line 451: private void HandleAICollision(Entity aiEntity, Entity otherEntity, CollisionEvent collisionEvent)
   Line 467: private void HandleTriggerCollision(Entity aiEntity, Entity triggerEntity)
-  Line 473: DebugLogger.Log("DEBUG", $"AISystem: AI entity {aiEntity.Id} entered trigger zone {triggerEntity.Id}");
+  Line 473: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AISystem: AI entity {aiEntity.Id} entered trigger zone {triggerEntity.Id}");
   Line 477: private void HandleObstacleCollision(Entity aiEntity, Entity obstacleEntity, CollisionEvent collisionEvent)
-  Line 490: DebugLogger.Log("DEBUG", $"AISystem: AI entity {aiEntity.Id} collided with obstacle {obstacleEntity.Id}");
+  Line 490: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AISystem: AI entity {aiEntity.Id} collided with obstacle {obstacleEntity.Id}");
   Line 494: private bool IsAIEntity(Entity entity)
   Line 495: => entity.HasComponent<EnemyTypeComponent>();
   Line 497: private bool IsObstacle(Entity entity)
   Line 499: var collider = entity.GetComponent<ColliderComponent>();
-  Line 508: DebugLogger.Log("DEBUG", $"AISystem: Entity {controller.Entity.Id} started animation '{clipName}'");
-  Line 513: DebugLogger.Log("DEBUG", $"AISystem: Entity {controller.Entity.Id} completed animation '{clipName}'");
-  Line 518: DebugLogger.Log("DEBUG", $"AISystem: Entity {controller.Entity.Id} fired animation event '{animationEvent.Name}'");
+  Line 508: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AISystem: Entity {controller.Entity.Id} started animation '{clipName}'");
+  Line 513: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AISystem: Entity {controller.Entity.Id} completed animation '{clipName}'");
+  Line 518: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AISystem: Entity {controller.Entity.Id} fired animation event '{animationEvent.Name}'");
 - File: .\Engine\ECS\Systems\AnimationSystem.cs
   Line 132: foreach (var entity in controllers)
   Line 134: var controller = entity.GetComponent<AnimationControllerComponent>();
-  Line 166: DebugLogger.Log("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} started animation '{currentClip}'");
-  Line 176: DebugLogger.Log("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} completed animation '{currentClip}'");
-  Line 203: DebugLogger.Log("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} fired event '{animationEvent.Name}' at time {animationEvent.Time:F3}");
+  Line 166: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} started animation '{currentClip}'");
+  Line 176: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} completed animation '{currentClip}'");
+  Line 203: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} fired event '{animationEvent.Name}' at time {animationEvent.Time:F3}");
   Line 255: // Create damage component for the entity
   Line 257: controller.Entity.AddComponent(damageComponent);
-  Line 259: DebugLogger.Log("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} fired weapon for {damage} damage");
-  Line 271: DebugLogger.Log("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} footstep sound '{soundName}' at volume {volume}");
-  Line 284: DebugLogger.Log("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} playing sound '{soundName}' (volume: {volume}, loop: {loop})");
+  Line 259: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} fired weapon for {damage} damage");
+  Line 271: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} footstep sound '{soundName}' at volume {volume}");
+  Line 284: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} playing sound '{soundName}' (volume: {volume}, loop: {loop})");
   Line 293: var position = controller.Entity.GetComponent<TransformComponent>()?.Position ?? Vector2.Zero;
-  Line 296: DebugLogger.Log("DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} spawning effect '{effectType}' at {position}");
+  Line 296: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationSystem: Entity {controller.Entity.Id} spawning effect '{effectType}' at {position}");
   Line 306: var position = controller.Entity.GetComponent<TransformComponent>()?.Position ?? Vector2.Zero;
   Line 310: controller.Entity.AddComponent(areaDamageComponent);
-  Line 312: DebugLogger.Log("DEBUG", $"AnimationSystem: Entity {controller.Id} created area damage: {damage} damage, {radius} radius at {position}");
+  Line 312: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationSystem: Entity {controller.Id} created area damage: {damage} damage, {radius} radius at {position}");
   Line 347: foreach (var entity in stateMachines)
   Line 349: var stateMachine = entity.GetComponent<AnimationStateMachine>();
   Line 368: HandleTransitionActions(entity, stateMachine, transition);
   Line 378: /// <param name="entity">The entity with the state machine.</param>
   Line 381: private void HandleTransitionActions(Entity entity, AnimationStateMachine stateMachine, AnimationTransition transition)
-  Line 391: DebugLogger.Log("DEBUG", $"AnimationSystem: Set parameter '{paramName}' = '{paramValue}' for entity {entity.Id}");
+  Line 391: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationSystem: Set parameter '{paramName}' = '{paramValue}' for entity {entity.Id}");
   Line 398: OnAnimationEventFired?.Invoke(entity.GetComponent<AnimationControllerComponent>(), animationEvent);
-  Line 399: DebugLogger.Log("DEBUG", $"AnimationSystem: Fired event '{eventName}' from transition for entity {entity.Id}");
+  Line 399: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationSystem: Fired event '{eventName}' from transition for entity {entity.Id}");
   Line 404: var controller = entity.GetComponent<AnimationControllerComponent>();
-  Line 408: DebugLogger.Log("DEBUG", $"AnimationSystem: Played clip '{clipName}' from transition for entity {entity.Id}");
+  Line 408: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationSystem: Played clip '{clipName}' from transition for entity {entity.Id}");
   Line 426: foreach (var entity in renderableEntities)
   Line 428: var renderable = entity.GetComponent<RenderableComponent>();
   Line 429: var animationController = entity.GetComponent<AnimationControllerComponent>();
@@ -1596,12 +1596,12 @@ Referenced in:
   Line 135: .Where(entity => entity.GetComponent<ActiveComponent>()?.IsActive == true);
   Line 186: .Where(entity => HasAreaOfEffect(entity));
   Line 235: /// Applies damage from a source entity to a target entity.
-  Line 265: DebugLogger.Log("INFO", $"CombatSystem: Entity {application.Target.Id} killed by {application.Source.Id}");
-  Line 268: DebugLogger.Log("INFO", $"CombatSystem: Applied {actualDamage:F1} {application.DamageType} damage from entity {application.Source.Id} to {application.Target.Id}");
+  Line 265: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"CombatSystem: Entity {application.Target.Id} killed by {application.Source.Id}");
+  Line 268: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"CombatSystem: Applied {actualDamage:F1} {application.DamageType} damage from entity {application.Source.Id} to {application.Target.Id}");
   Line 273: /// Applies knockback force to an entity.
   Line 275: /// <param name="target">The entity to apply knockback to.</param>
   Line 277: private void ApplyKnockback(Entity target, Vector2 knockbackForce)
-  Line 283: DebugLogger.Log("DEBUG", $"CombatSystem: Applied knockback {knockbackForce} to entity {target.Id}");
+  Line 283: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"CombatSystem: Applied knockback {knockbackForce} to entity {target.Id}");
   Line 290: /// <param name="source">The source entity dealing damage.</param>
   Line 291: /// <param name="target">The target entity receiving damage.</param>
   Line 293: private void QueueDamageApplication(Entity source, Entity target, DamageComponent damageComponent)
@@ -1646,9 +1646,9 @@ Referenced in:
 - File: .\Engine\ECS\Systems\NavigationSystem.cs
   Line 145: /// Requests a path for a specific entity.
   Line 147: /// <param name="entityId">The entity ID requesting the path.</param>
-  Line 166: DebugLogger.Log("DEBUG", $"NavigationSystem: Path requested for entity {entityId} from {startPos} to {endPos}");
+  Line 166: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"NavigationSystem: Path requested for entity {entityId} from {startPos} to {endPos}");
   Line 172: /// <param name="entityId">The entity ID to cancel.</param>
-  Line 178: DebugLogger.Log("DEBUG", $"NavigationSystem: Cancelled path request for entity {entityId}");
+  Line 178: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"NavigationSystem: Cancelled path request for entity {entityId}");
   Line 189: foreach (var entity in agents)
   Line 191: var navAgent = entity.GetComponent<NavAgentComponent>();
   Line 192: var transform = entity.GetComponent<TransformComponent>();
@@ -1657,9 +1657,9 @@ Referenced in:
   Line 244: var entity = _ecsWorld.GetEntity(request.EntityId);
   Line 245: if (entity != null)
   Line 247: var navAgent = entity.GetComponent<NavAgentComponent>();
-  Line 257: DebugLogger.Log("DEBUG", $"NavigationSystem: Path calculated for entity {request.EntityId} with {path.Count} waypoints");
-  Line 266: DebugLogger.Log("WARNING", $"NavigationSystem: No path found for entity {request.EntityId}");
-  Line 276: DebugLogger.Log("ERROR", $"NavigationSystem: Pathfinding failed for entity {request.EntityId}: {ex.Message}");
+  Line 257: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"NavigationSystem: Path calculated for entity {request.EntityId} with {path.Count} waypoints");
+  Line 266: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", $"NavigationSystem: No path found for entity {request.EntityId}");
+  Line 276: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"NavigationSystem: Pathfinding failed for entity {request.EntityId}: {ex.Message}");
   Line 288: foreach (var entity in agents)
   Line 290: var navAgent = entity.GetComponent<NavAgentComponent>();
   Line 291: var transform = entity.GetComponent<TransformComponent>();
@@ -1711,7 +1711,7 @@ Referenced in:
   Line 130: // For now, we'll draw a placeholder rectangle to show the entity position
   Line 143: // Debug: Draw entity ID for debugging (optional)
   Line 145: context.DrawText($"E{entity.Id}", (int)renderPosition.X, (int)renderPosition.Y - 10);
-  Line 150: DebugLogger.Log("ERROR", $"RenderSystem: Failed to render entity {entity.Id}: {ex.Message}");
+  Line 150: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"RenderSystem: Failed to render entity {entity.Id}: {ex.Message}");
 - File: .\Engine\ECS\Systems\ScoringSystem.cs
   Line 73: /// Event fired when score is awarded for an entity.
   Line 75: public event Action<Entity, int>? OnScoreAwarded;
@@ -1727,7 +1727,7 @@ Referenced in:
   Line 167: // Determine the scoring entity (simplified - would be player or tower)
   Line 168: var scoringEntity = FindScoringEntity(entity);
   Line 184: RecordScoreEvent(entity, awardedScore);
-  Line 190: DebugLogger.Log("INFO", $"ScoringSystem: Awarded {awardedScore} points for entity {entity.Id}. Total: {_totalScore}");
+  Line 190: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ScoringSystem: Awarded {awardedScore} points for entity {entity.Id}. Total: {_totalScore}");
   Line 237: /// <param name="entity">The entity that was scored.</param>
   Line 239: private void RecordScoreEvent(Entity entity, int score)
   Line 243: EntityId = entity.Id,
@@ -1864,13 +1864,13 @@ Referenced in:
   Line 47: var transform = entity.GetComponent<TransformComponent>();
   Line 48: var enemyType = entity.GetComponent<EnemyTypeComponent>();
   Line 49: var legacyMovement = entity.GetComponent<MovementComponent>();
-  Line 53: DebugLogger.Log("MIGRATION", "Entity missing TransformComponent.");
-  Line 59: DebugLogger.Log("MIGRATION", "Entity missing EnemyTypeComponent.");
+  Line 53: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "MIGRATION", "Entity missing TransformComponent.");
+  Line 59: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "MIGRATION", "Entity missing EnemyTypeComponent.");
   Line 64: if (entity.HasComponent<NavAgentComponent>())
-  Line 66: DebugLogger.Log("MIGRATION", "Entity already has NavAgentComponent. Skipping.");
+  Line 66: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "MIGRATION", "Entity already has NavAgentComponent. Skipping.");
   Line 85: entity.AddComponent(navAgent);
   Line 89: entity.RemoveComponent<MovementComponent>();
-  Line 91: DebugLogger.Log("MIGRATION", $"Migrated entity {entity.Id} to NavAgent.");
+  Line 91: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "MIGRATION", $"Migrated entity {entity.Id} to NavAgent.");
   Line 104: public static int BatchMigrateToNavAgent(IEnumerable<Entity> entities, ECSWorld world)
   Line 111: foreach (var entity in entities)
   Line 113: if (MigrateToNavAgent(entity, world))
@@ -1879,7 +1879,7 @@ Referenced in:
   Line 134: var entity = world.CreateEntity();
   Line 136: entity.AddComponent(new TransformComponent { X = position.X, Y = position.Y });
   Line 137: entity.AddComponent(new NavAgentComponent
-  Line 145: DebugLogger.Log("MIGRATION", $"Created NavAgent entity at {position}");
+  Line 145: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "MIGRATION", $"Created NavAgent entity at {position}");
   Line 147: return entity;
   Line 192: public static MigrationValidationResult ValidateMigration(IEnumerable<Entity> entities)
   Line 196: foreach (var entity in entities)
@@ -1943,8 +1943,8 @@ Referenced in:
   Line 19: /// No collision layer - entity doesn't participate in collisions.
   Line 92: /// Gets or sets the collision layer this entity belongs to.
   Line 142: // Transform shape bounds by entity's world position
-  Line 239: DebugLogger.Log("INFO", $"ColliderComponent: Set shape to {shape?.ShapeType} for entity {Owner?.Id}");
-  Line 251: DebugLogger.Log("INFO", $"ColliderComponent: Set layer={layer}, mask={mask} for entity {Owner?.Id}");
+  Line 239: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ColliderComponent: Set shape to {shape?.ShapeType} for entity {Owner?.Id}");
+  Line 251: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"ColliderComponent: Set layer={layer}, mask={mask} for entity {Owner?.Id}");
   Line 272: /// Gets the world-space collision shape (transformed by entity position).
 - File: .\Engine\Physics\CollisionDebugRenderer.cs
   Line 217: foreach (var entity in collidableEntities)
@@ -2050,7 +2050,7 @@ Referenced in:
   Line 92: _entityEntries[entity.Id] = entry;
   Line 94: // Add entity to each cell it spans
   Line 103: cell.Entities.Add(entity);
-  Line 106: DebugLogger.Log("DEBUG", $"SpatialPartitionGrid: Inserted entity {entity.Id} into {cellIndices.Count} cells");
+  Line 106: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"SpatialPartitionGrid: Inserted entity {entity.Id} into {cellIndices.Count} cells");
   Line 110: /// Removes an entity from the spatial grid.
   Line 112: /// <param name="entity">The entity to remove.</param>
   Line 113: /// <returns>True if the entity was removed, false if not found.</returns>
@@ -2060,7 +2060,7 @@ Referenced in:
   Line 122: // Remove entity from all cells it spans
   Line 127: cell.Entities.Remove(entity);
   Line 137: _entityEntries.Remove(entity.Id);
-  Line 139: DebugLogger.Log("DEBUG", $"SpatialPartitionGrid: Removed entity {entity.Id}");
+  Line 139: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"SpatialPartitionGrid: Removed entity {entity.Id}");
   Line 144: /// Updates an entity's position in the spatial grid.
   Line 146: /// <param name="entity">The entity to update.</param>
   Line 147: /// <param name="newBounds">The new world-space bounds of the entity.</param>
@@ -2070,7 +2070,7 @@ Referenced in:
   Line 154: if (!_entityEntries.TryGetValue(entity.Id, out var entry))
   Line 167: Remove(entity);
   Line 168: Insert(entity, newBounds);
-  Line 170: DebugLogger.Log("DEBUG", $"SpatialPartitionGrid: Updated entity {entity.Id} position");
+  Line 170: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"SpatialPartitionGrid: Updated entity {entity.Id} position");
   Line 179: public IEnumerable<Entity> Query(BoundingBox area)
   Line 182: var result = new HashSet<Entity>();
   Line 188: foreach (var entity in cell.Entities)
@@ -2115,29 +2115,29 @@ Referenced in:
   Line 179: /// Initializes a new entity.
   Line 181: /// <param name="id">Unique identifier for the entity.</param>
   Line 184: protected Entity(string id = null, Vector2? position = null, Vector2? size = null)
-  Line 195: DebugLogger.Log("DEBUG", $"Entity: Created '{_id}' at {_position} size {_size}");
+  Line 195: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"Entity: Created '{_id}' at {_position} size {_size}");
   Line 199: /// Updates the entity.
   Line 200: /// P20-07-03: Implements entity update functionality.
   Line 219: // Update entity-specific logic
-  Line 224: DebugLogger.Log("ERROR", $"Entity: Failed to update '{_id}' - {ex.Message}");
+  Line 224: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"Entity: Failed to update '{_id}' - {ex.Message}");
   Line 229: /// Renders the entity.
   Line 230: /// P20-07-03: Implements entity render functionality.
   Line 249: // Render entity-specific elements
-  Line 254: DebugLogger.Log("ERROR", $"Entity: Failed to render '{_id}' - {ex.Message}");
+  Line 254: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"Entity: Failed to render '{_id}' - {ex.Message}");
   Line 259: /// Adds a component to the entity.
-  Line 267: DebugLogger.Log("WARNING", "Entity: Cannot add null component");
-  Line 273: DebugLogger.Log("WARNING", $"Entity: Component '{component.GetType().Name}' already exists on '{_id}'");
+  Line 267: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", "Entity: Cannot add null component");
+  Line 273: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", $"Entity: Component '{component.GetType().Name}' already exists on '{_id}'");
   Line 278: component.Entity = this;
-  Line 281: DebugLogger.Log("DEBUG", $"Entity: Added component '{component.GetType().Name}' to '{_id}'");
+  Line 281: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"Entity: Added component '{component.GetType().Name}' to '{_id}'");
   Line 286: /// Removes a component from the entity.
   Line 299: component.Entity = null;
-  Line 300: DebugLogger.Log("DEBUG", $"Entity: Removed component '{component.GetType().Name}' from '{_id}'");
+  Line 300: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"Entity: Removed component '{component.GetType().Name}' from '{_id}'");
   Line 342: /// Removes the entity from its scene.
   Line 344: /// <returns>True if entity was removed successfully.</returns>
   Line 354: /// Destroys the entity.
   Line 367: component.Entity = null;
-  Line 374: DebugLogger.Log("DEBUG", $"Entity: Destroyed '{_id}'");
-  Line 378: DebugLogger.Log("ERROR", $"Entity: Failed to destroy '{_id}' - {ex.Message}");
+  Line 374: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"Entity: Destroyed '{_id}'");
+  Line 378: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"Entity: Failed to destroy '{_id}' - {ex.Message}");
   Line 383: /// Moves the entity by the specified offset.
   Line 392: /// Rotates the entity by the specified angle.
   Line 401: /// Scales the entity by the specified factor.
@@ -2158,9 +2158,9 @@ Referenced in:
   Line 507: /// Gets or sets the entity this component belongs to.
   Line 509: public Entity Entity
   Line 567: /// Called when the component is added to an entity.
-  Line 571: DebugLogger.Log("DEBUG", $"Component: Added '{GetType().Name}' to entity");
+  Line 571: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"Component: Added '{GetType().Name}' to entity");
   Line 575: /// Called when the component is removed from an entity.
-  Line 579: DebugLogger.Log("DEBUG", $"Component: Removed '{GetType().Name}' from entity");
+  Line 579: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"Component: Removed '{GetType().Name}' from entity");
 - File: .\Engine\Scene\GameplayScene.cs
   Line 16: private readonly List<Entity> _gameEntities;
   Line 67: _gameEntities = new List<Entity>();
@@ -2189,13 +2189,13 @@ Referenced in:
   Line 278: /// <returns>True if entity was added successfully.</returns>
   Line 279: public bool AddEntity(Entity entity)
   Line 281: if (entity == null)
-  Line 283: DebugLogger.Log("WARNING", "Scene: Cannot add null entity");
+  Line 283: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", "Scene: Cannot add null entity");
   Line 287: if (_entities.Contains(entity))
-  Line 289: DebugLogger.Log("WARNING", $"Scene: Entity '{entity.Id}' already exists in scene '{_name}'");
+  Line 289: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", $"Scene: Entity '{entity.Id}' already exists in scene '{_name}'");
   Line 293: _entities.Add(entity);
   Line 294: entity.Scene = this;
   Line 295: OnEntityAdded?.Invoke(entity);
-  Line 297: DebugLogger.Log("DEBUG", $"Scene: Added entity '{entity.Id}' to '{_name}'");
+  Line 297: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"Scene: Added entity '{entity.Id}' to '{_name}'");
   Line 302: /// Removes an entity from the scene.
   Line 304: /// <param name="entity">The entity to remove.</param>
   Line 305: /// <returns>True if entity was removed successfully.</returns>
@@ -2204,7 +2204,7 @@ Referenced in:
   Line 311: var removed = _entities.Remove(entity);
   Line 314: entity.Scene = null;
   Line 315: OnEntityRemoved?.Invoke(entity);
-  Line 316: DebugLogger.Log("DEBUG", $"Scene: Removed entity '{entity.Id}' from '{_name}'");
+  Line 316: DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"Scene: Removed entity '{entity.Id}' from '{_name}'");
   Line 323: /// Gets an entity by ID.
   Line 325: /// <param name="id">The ID of the entity to find.</param>
   Line 326: /// <returns>The entity, or null if not found.</returns>
@@ -3041,14 +3041,14 @@ Referenced in:
 - File: .\Engine\Systems\Persistence\LoadSystem.cs
   Line 5: Features: World state restoration, entity recreation, event publishing.
   Line 47: /// <param name="entityManager">Entity manager for component access</param>
-  Line 218: DebugLog("LoadSystem: Failed to find or create player entity");
+  Line 218: DebugLog(LogSubsystems.ResourcesPipeline, "LoadSystem: Failed to find or create player entity");
   Line 234: DebugLog($"LoadSystem: Player state loaded successfully for entity {playerEntity}");
   Line 248: /// <param name="playerEntity">The player entity</param>
-  Line 264: DebugLog("LoadSystem: Warning - Player entity missing TransformComponent");
+  Line 264: DebugLog(LogSubsystems.ResourcesPipeline, "LoadSystem: Warning - Player entity missing TransformComponent");
   Line 272: /// <param name="playerEntity">The player entity</param>
-  Line 288: DebugLog("LoadSystem: Warning - Player entity missing HealthComponent");
+  Line 288: DebugLog(LogSubsystems.ResourcesPipeline, "LoadSystem: Warning - Player entity missing HealthComponent");
   Line 296: /// <param name="playerEntity">The player entity</param>
-  Line 308: DebugLog("LoadSystem: Warning - Player entity missing StatsComponent");
+  Line 308: DebugLog(LogSubsystems.ResourcesPipeline, "LoadSystem: Warning - Player entity missing StatsComponent");
   Line 316: /// <param name="playerEntity">The player entity</param>
   Line 518: /// <returns>True if persistent entity loading was successful, false otherwise</returns>
   Line 539: DebugLog($"LoadSystem: Persistent entity loading failed - {ex.Message}");
@@ -3109,7 +3109,7 @@ Referenced in:
   Line 808: if (IsPlayerEntity(entity))
   Line 809: return entity;
   Line 812: // Create new player entity if none exists
-  Line 813: DebugLog("LoadSystem: Would create new player entity");
+  Line 813: DebugLog(LogSubsystems.ResourcesPipeline, "LoadSystem: Would create new player entity");
   Line 817: private bool IsPlayerEntity(object entity)
   Line 819: return _entityManager.HasComponent<PlayerComponent>(entity) ||
   Line 820: _entityManager.HasComponent<StatsComponent>(entity);
@@ -3130,7 +3130,7 @@ Referenced in:
 - File: .\Engine\Systems\Persistence\SaveManager.cs
   Line 49: /// <param name="entityManager">Entity manager for component access</param>
   Line 323: // Collect player entity data
-  Line 331: DebugLog("SaveManager: Warning - No player entity found");
+  Line 331: DebugLog(LogSubsystems.ResourcesPipeline, "SaveManager: Warning - No player entity found");
   Line 363: /// <param name="playerEntity">The player entity</param>
   Line 485: foreach (var entity in entities)
   Line 487: if (ShouldPersistEntity(entity))
@@ -3172,7 +3172,7 @@ Referenced in:
   Line 810: return entity;
   Line 821: // Create new player entity if none exists
   Line 822: // This would use the entity creation system
-  Line 823: DebugLog("SaveManager: Warning - No player entity found, would need to create one");
+  Line 823: DebugLog(LogSubsystems.ResourcesPipeline, "SaveManager: Warning - No player entity found, would need to create one");
   Line 827: private bool IsPlayerEntity(object entity)
   Line 829: return _entityManager.HasComponent<PlayerComponent>(entity) ||
   Line 830: _entityManager.HasComponent<StatsComponent>(entity);
@@ -3322,21 +3322,21 @@ Referenced in:
 - File: .\Engine\Systems\Assets\AssetManager.cs
   Line 3: File:    AssetManager.cs
   Line 20: public class AssetManager
-  Line 75: DebugLog("AssetManager: Starting initialization...");
+  Line 75: DebugLog(LogSubsystems.ResourcesPipeline, "AssetManager: Starting initialization...");
   Line 81: DebugLog($"AssetManager: Initialized with {_assetMetadata.Count} registered assets");
   Line 85: DebugLog($"AssetManager: Initialization failed - {ex.Message}");
   Line 86: throw new InvalidOperationException("Failed to initialize AssetManager", ex);
   Line 95: DebugLog($"AssetManager: GetAsset failed - Not initialized (Key: {key})");
   Line 96: throw new InvalidOperationException("AssetManager not initialized");
-  Line 101: DebugLog("AssetManager: GetAsset failed - Invalid key (null or empty)");
+  Line 101: DebugLog(LogSubsystems.ResourcesPipeline, "AssetManager: GetAsset failed - Invalid key (null or empty)");
   Line 112: DebugLog($"AssetManager: Retrieved cached asset '{key}' as type {typeof(T).Name}");
   Line 117: DebugLog($"AssetManager: Type mismatch for asset '{key}' - Expected {typeof(T).Name}, got {asset.GetType().Name}");
   Line 123: DebugLog($"AssetManager: Loading asset '{key}' on demand");
-  Line 133: DebugLog("AssetManager: PreloadAssets failed - Not initialized");
+  Line 133: DebugLog(LogSubsystems.ResourcesPipeline, "AssetManager: PreloadAssets failed - Not initialized");
   Line 134: throw new InvalidOperationException("AssetManager not initialized");
-  Line 139: DebugLog("AssetManager: PreloadAssets failed - Null keys collection");
+  Line 139: DebugLog(LogSubsystems.ResourcesPipeline, "AssetManager: PreloadAssets failed - Null keys collection");
   Line 144: DebugLog($"AssetManager: Preloading {keysList.Count} assets...");
-  Line 155: DebugLog("AssetManager: Skipping null/empty key during preload");
+  Line 155: DebugLog(LogSubsystems.ResourcesPipeline, "AssetManager: Skipping null/empty key during preload");
   Line 163: DebugLog($"AssetManager: Asset '{key}' already loaded, skipping");
   Line 175: DebugLog($"AssetManager: Failed to preload asset '{key}': {ex.Message}");
   Line 179: DebugLog($"AssetManager: Preload complete - Success: {successCount}, Errors: {errorCount}");
@@ -3353,18 +3353,18 @@ Referenced in:
   Line 328: DebugLog($"AssetManager: Validating asset '{key}'");
   Line 377: DebugLog($"AssetManager: Asset '{key}' validation passed");
   Line 384: DebugLog($"AssetManager: Asset '{key}' validation failed with exception: {ex.Message}");
-  Line 521: DebugLog("AssetManager: Loading asset metadata from AssetRegistry...");
+  Line 521: DebugLog(LogSubsystems.ResourcesPipeline, "AssetManager: Loading asset metadata from AssetRegistry...");
   Line 537: DebugLog($"AssetManager: Registered asset '{asset.Key}' ({type}) from '{asset.Value}'");
   Line 541: DebugLog($"AssetManager: Failed to register asset '{asset.Key}': {ex.Message}");
   Line 545: DebugLog($"AssetManager: Loaded metadata for {loadedCount} assets");
   Line 634: DebugLog($"AssetManager: Disposed asset '{key}'");
   Line 638: DebugLog($"AssetManager: Failed to dispose asset '{key}': {ex.Message}");
   Line 646: DebugLog($"AssetManager: Unloaded asset '{key}'");
-  Line 656: DebugLog("AssetManager: Unloading all assets...");
+  Line 656: DebugLog(LogSubsystems.ResourcesPipeline, "AssetManager: Unloading all assets...");
   Line 676: DebugLog($"AssetManager: Failed to dispose asset '{kvp.Key}': {ex.Message}");
   Line 684: DebugLog($"AssetManager: Unloaded all assets - Disposed: {disposedCount}, Errors: {errorCount}");
-  Line 696: DebugLog("AssetManager: Starting shutdown...");
-  Line 703: DebugLog("AssetManager: Shutdown complete");
+  Line 696: DebugLog(LogSubsystems.ResourcesPipeline, "AssetManager: Starting shutdown...");
+  Line 703: DebugLog(LogSubsystems.ResourcesPipeline, "AssetManager: Shutdown complete");
 - File: .\Engine\Systems\Gameplay\TowerSystem.cs
   Line 109: private readonly AssetManager _assetManager;
   Line 116: public TowerSystem(EntityManager entityManager, EventBus eventBus, AssetManager assetManager)
@@ -3401,12 +3401,12 @@ Referenced in:
   Line 82: public class ParticleSystem
   Line 95: /// Creates a new ParticleSystem with required dependencies.
   Line 100: public ParticleSystem(EntityManager entityManager, AssetManager assetManager, EventBus eventBus)
-  Line 106: DebugLog("ParticleSystem: Constructed with required dependencies");
-  Line 119: DebugLog("ParticleSystem: Starting initialization...");
-  Line 128: DebugLog("ParticleSystem: Initialization complete - Particle pool initialized with 200 particles");
+  Line 106: DebugLog(LogSubsystems.ResourcesPipeline, "ParticleSystem: Constructed with required dependencies");
+  Line 119: DebugLog(LogSubsystems.ResourcesPipeline, "ParticleSystem: Starting initialization...");
+  Line 128: DebugLog(LogSubsystems.ResourcesPipeline, "ParticleSystem: Initialization complete - Particle pool initialized with 200 particles");
   Line 132: DebugLog($"ParticleSystem: Initialization failed - {ex.Message}");
   Line 133: throw new InvalidOperationException("Failed to initialize ParticleSystem", ex);
-  Line 149: DebugLog("ParticleSystem: Update failed - Not initialized");
+  Line 149: DebugLog(LogSubsystems.ResourcesPipeline, "ParticleSystem: Update failed - Not initialized");
   Line 172: DebugLog($"ParticleSystem: Update complete - Active particles: {_particles.Count}");
   Line 176: DebugLog($"ParticleSystem: Update failed - {ex.Message}");
   Line 280: /// - Maintains separation of concerns (ParticleSystem manages simulation, RenderingSystem handles drawing)
@@ -3417,8 +3417,8 @@ Referenced in:
   Line 364: DebugLog($"ParticleSystem: Spawning effect '{effectName}' at position {position}");
   Line 372: DebugLog($"ParticleSystem: Effect '{effectName}' spawned successfully at position {position}");
   Line 376: DebugLog($"ParticleSystem: Failed to spawn effect '{effectName}' at position {position} - {ex.Message}");
-  Line 576: DebugLog("ParticleSystem: Starting shutdown...");
-  Line 582: DebugLog("ParticleSystem: Shutdown complete");
+  Line 576: DebugLog(LogSubsystems.ResourcesPipeline, "ParticleSystem: Starting shutdown...");
+  Line 582: DebugLog(LogSubsystems.ResourcesPipeline, "ParticleSystem: Shutdown complete");
   Line 589: /// The ParticleSystem does NOT require any event subscriptions for its core functionality.
   Line 592: /// - ParticleSystem queries EntityManager for entities with required components
 - File: .\Engine\Systems\RenderingSystem.cs
@@ -3479,27 +3479,27 @@ Referenced in:
   Line 32: public class UISystem
   Line 65: /// Creates a new UISystem with required dependencies.
   Line 74: public UISystem(EntityManager entityManager, AssetManager assetManager, EventBus eventBus)
-  Line 103: DebugLog("UISystem: Constructed with all UI subsystems including game lifecycle UI, inventory/resource UI, and achievement/challenge UI");
-  Line 117: DebugLog("UISystem: Starting initialization...");
-  Line 123: DebugLog("UISystem: Initialization complete with all subsystems ready");
+  Line 103: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Constructed with all UI subsystems including game lifecycle UI, inventory/resource UI, and achievement/challenge UI");
+  Line 117: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Starting initialization...");
+  Line 123: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Initialization complete with all subsystems ready");
   Line 127: DebugLog($"UISystem: Initialization failed - {ex.Message}");
   Line 128: throw new InvalidOperationException("Failed to initialize UISystem", ex);
-  Line 141: DebugLog("UISystem: Update failed - Not initialized");
+  Line 141: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Update failed - Not initialized");
   Line 153: DebugLog($"UISystem: Update failed - {ex.Message}");
-  Line 190: DebugLog("UISystem: Updated all UI subsystems including game lifecycle UI, inventory/resource UI, and achievement/challenge UI");
+  Line 190: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Updated all UI subsystems including game lifecycle UI, inventory/resource UI, and achievement/challenge UI");
   Line 194: DebugLog($"UISystem: Failed to update UI subsystems - {ex.Message}");
   Line 216: DebugLog($"UISystem: Render failed - {ex.Message}");
-  Line 260: DebugLog("UISystem: Rendered all UI subsystems including game lifecycle UI, inventory/resource UI, and achievement/challenge UI");
+  Line 260: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Rendered all UI subsystems including game lifecycle UI, inventory/resource UI, and achievement/challenge UI");
   Line 264: DebugLog($"UISystem: Failed to render UI subsystems - {ex.Message}");
   Line 304: DebugLog($"UISystem: Failed to update UI entity - {ex.Message}");
   Line 348: DebugLog($"UISystem: Failed to render UI entity - {ex.Message}");
   Line 390: DebugLog($"UISystem: Showed game over screen (Victory: {wasVictory}, Score: {finalScore})");
   Line 394: DebugLog($"UISystem: Failed to show game over screen - {ex.Message}");
-  Line 406: DebugLog("UISystem: Hid game over screen");
+  Line 406: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Hid game over screen");
   Line 410: DebugLog($"UISystem: Failed to hide game over screen - {ex.Message}");
   Line 425: DebugLog($"UISystem: Showed round complete notification (Round: {roundNumber}, Score: {roundScore})");
   Line 429: DebugLog($"UISystem: Failed to show round complete notification - {ex.Message}");
-  Line 441: DebugLog("UISystem: Hid round complete notification");
+  Line 441: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Hid round complete notification");
   Line 445: DebugLog($"UISystem: Failed to hide round complete notification - {ex.Message}");
   Line 459: DebugLog($"UISystem: Showed respawn countdown for entity {entityId} ({respawnTime}s)");
   Line 463: DebugLog($"UISystem: Failed to show respawn countdown - {ex.Message}");
@@ -3523,7 +3523,7 @@ Referenced in:
   Line 614: DebugLog($"UISystem: Failed to show incompatible save version dialog - {ex.Message}");
   Line 630: DebugLog($"UISystem: Would show {operation} progress dialog - {progress:P0} - {message}");
   Line 641: DebugLog($"UISystem: Failed to show save/load progress dialog - {ex.Message}");
-  Line 654: DebugLog("UISystem: Would hide all save/load dialogs");
+  Line 654: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Would hide all save/load dialogs");
   Line 663: DebugLog($"UISystem: Failed to hide save/load dialogs - {ex.Message}");
   Line 678: DebugLog($"UISystem: Would show save completed notification for slot {saveSlotId}");
   Line 679: DebugLog($"UISystem: Save summary: {saveSummary}");
@@ -3533,17 +3533,17 @@ Referenced in:
   Line 715: DebugLog($"UISystem: Failed to show load completed notification - {ex.Message}");
   Line 729: DebugLog($"UISystem: Showed inventory panel for entity {entityId}");
   Line 733: DebugLog($"UISystem: Failed to show inventory panel - {ex.Message}");
-  Line 745: DebugLog("UISystem: Hid inventory panel");
+  Line 745: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Hid inventory panel");
   Line 749: DebugLog($"UISystem: Failed to hide inventory panel - {ex.Message}");
-  Line 762: DebugLog("UISystem: Updated inventory panel");
+  Line 762: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Updated inventory panel");
   Line 766: DebugLog($"UISystem: Failed to update inventory panel - {ex.Message}");
-  Line 779: DebugLog("UISystem: Updated resource display");
+  Line 779: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Updated resource display");
   Line 783: DebugLog($"UISystem: Failed to update resource display - {ex.Message}");
   Line 797: DebugLog($"UISystem: Showed item tooltip at position {position}");
   Line 801: DebugLog($"UISystem: Failed to show item tooltip - {ex.Message}");
-  Line 813: DebugLog("UISystem: Hid item tooltip");
+  Line 813: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Hid item tooltip");
   Line 817: DebugLog($"UISystem: Failed to hide item tooltip - {ex.Message}");
-  Line 831: DebugLog("UISystem: Updated item tooltip");
+  Line 831: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Updated item tooltip");
   Line 835: DebugLog($"UISystem: Failed to update item tooltip - {ex.Message}");
   Line 848: DebugLog($"UISystem: Set resource display visibility to {isVisible}");
   Line 852: DebugLog($"UISystem: Failed to set resource display visibility - {ex.Message}");
@@ -3552,8 +3552,8 @@ Referenced in:
   Line 899: DebugLog($"UISystem: Failed to update UI text - {ex.Message}");
   Line 916: DebugLog($"UISystem: Updated UI visibility to {isVisible}");
   Line 921: DebugLog($"UISystem: Failed to update UI visibility - {ex.Message}");
-  Line 958: DebugLog("UISystem: Starting shutdown...");
-  Line 973: DebugLog("UISystem: Shutdown complete with all subsystems including game lifecycle UI");
+  Line 958: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Starting shutdown...");
+  Line 973: DebugLog(LogSubsystems.ResourcesPipeline, "UISystem: Shutdown complete with all subsystems including game lifecycle UI");
   Line 977: DebugLog($"UISystem: Shutdown failed - {ex.Message}");
   Line 985: /// The UISystem does NOT require any event subscriptions for its core functionality.
   Line 988: /// - UISystem queries EntityManager for entities with UIComponent

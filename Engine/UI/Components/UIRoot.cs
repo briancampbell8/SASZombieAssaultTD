@@ -1,264 +1,171 @@
-using System;
-using System.Collections.Generic;
+// =====================================================================================================
+//  FILE: UIRoot.cs
+//  PATH: Engine/UI/Components/UIRoot.cs
+//  SUBSYSTEM: UI Framework — Root Container
+//
+//  ROLE:
+//      Serves as the deterministic root container for all UIElement instances within a UI subsystem.
+//      Provides initialization, update propagation, layout invalidation, and render dispatch for the
+//      entire UI tree. All UI subsystems (MainMenu, MapMenu, HUD, PauseMenu) anchor their elements
+//      under a UIRoot instance.
+//
+//  RESPONSIBILITIES:
+//      - Maintain the authoritative collection of UIElement children.
+//      - Provide deterministic initialization, update, layout, and render entry points.
+//      - Propagate Update(), Render(), and UpdateLayout() calls to all child elements.
+//      - Track and invalidate layout state using NeedsLayoutUpdate flags.
+//      - Manage parent/child relationships for UIElement instances.
+//      - Serve as the root node for UIRenderer, UIEventSystem, and UIState pipelines.
+//
+//  NON-RESPONSIBILITIES:
+//      - Does NOT perform element-specific rendering logic (delegated to UIElement subclasses).
+//      - Does NOT manage input routing (handled by UIEventSystem).
+//      - Does NOT manage scene transitions or UI subsystem switching.
+//      - Does NOT handle asset loading or texture management.
+//
+//  ARCHITECTURAL NOTES:
+//      - UIRoot inherits from UIElement to maintain a unified tree structure.
+//      - All UIElement instances must be attached to a UIRoot to participate in rendering and input.
+//      - Layout invalidation follows deterministic Option‑B rules: any child invalidation bubbles up.
+//      - UIRoot is required by MapMenu, MainMenu, HUD, and all future UI subsystems.
+//
+//  AUTHORSHIP:
+//      Modernized by Copilot and Brian Campbell — 2026‑09‑10
+// =====================================================================================================
 
+using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.UI.Elements;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
-    ///<summary>
-    ///Root UI system class providing initialization, update, and render entry points
-    ///P80-01-01: UIRoot containing root UI system with initialization, update, and render entry points
-    ///</summary>
-    public class UIRoot : UIElement
+    public sealed class UIRoot : UIElement
     {
-        private readonly List<UIElement> _elements;
+        private readonly List<UIElement> _elements = new List<UIElement>();
         private bool _isInitialized = false;
+        private bool _needsLayoutUpdate = true;
 
-        ///<summary>
-        ///Gets whether the UI system is initialized
-        ///</summary>
         public bool IsInitialized => _isInitialized;
-
-        ///<summary>
-        ///Gets the collection of UI elements
-        ///</summary>
         public IReadOnlyList<UIElement> Elements => _elements.AsReadOnly();
 
-        private bool needsLayoutUpdate = true;
+        public Color BackgroundColor { get; internal set; } = Color.Transparent;
 
-        ///<summary>
-        ///Gets whether the UI system needs a layout update
-        ///</summary>
         public bool GetNeedsLayoutUpdate()
         {
-            return needsLayoutUpdate;
+            return _needsLayoutUpdate;
         }
 
         private void SetNeedsLayoutUpdate(bool value)
         {
-            needsLayoutUpdate = value;
+            _needsLayoutUpdate = value;
         }
 
-        ///<summary>
-        ///Initializes the UI system
-        ///</summary>
+        // ---------------------------------------------------------------------------------------------
+        // Initialization
+        // ---------------------------------------------------------------------------------------------
         public void Initialize()
         {
-            try
+            if (_isInitialized)
             {
-                if (_isInitialized)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRoot: Already initialized");
-                    return;
-                }
-
-                System.Diagnostics.Debug.WriteLine("UIRoot: Initializing UI system");
-
-                _elements.Clear();
-                SetNeedsLayoutUpdate(true);
-                _isInitialized = true;
-
-                System.Diagnostics.Debug.WriteLine("UIRoot: UI system initialized successfully");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "UIRoot: Already initialized");
+                return;
             }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRoot: Error during initialization - {ex.Message}");
-                throw;
-            }
+
+            _elements.Clear();
+            SetNeedsLayoutUpdate(true);
+            _isInitialized = true;
+
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "UIRoot: Initialized");
         }
 
-        ///<summary>
-        ///Updates the UI system
-        ///</summary>
-        ///<param name="deltaTime">Time since last update in seconds</param>
+        // ---------------------------------------------------------------------------------------------
+        // Update
+        // ---------------------------------------------------------------------------------------------
         public override void Update(float deltaTime)
         {
-            try
+            if (!_isInitialized)
+                return;
+
+            foreach (var element in _elements)
             {
-                if (!_isInitialized)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRoot: Cannot update - not initialized");
-                    return;
-                }
+                element.Update(deltaTime);
 
-                //Update all UI elements
-                for (int i = 0; i < _elements.Count; i++)
-                {
-                    _elements[i].Update(deltaTime);
-                }
-
-                //Mark layout as needing update if any element needs it
-                foreach (var element in _elements)
-                {
-                    if (element.NeedsLayoutUpdate)
-                    {
-                        SetNeedsLayoutUpdate(true);
-                        break;
-                    }
-                }
-
-                System.Diagnostics.Debug.WriteLine($"UIRoot: Updated {_elements.Count} UI elements");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRoot: Error during update - {ex.Message}");
+                if (element.NeedsLayoutUpdate)
+                    SetNeedsLayoutUpdate(true);
             }
         }
 
-        ///<summary>
-        ///Renders the UI system
-        ///</summary>
-        public override void Render()
+        // ---------------------------------------------------------------------------------------------
+        // Render
+        // ---------------------------------------------------------------------------------------------
+        public void Render()
         {
-            try
-            {
-                if (!_isInitialized)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRoot: Cannot render - not initialized");
-                    return;
-                }
+            if (!_isInitialized)
+                return;
 
-                //Update layouts if needed
-                if (GetNeedsLayoutUpdate())
-                {
-                    UpdateLayouts();
-                }
+            if (GetNeedsLayoutUpdate())
+                UpdateLayout();
 
-                //Render all UI elements
-                for (int i = 0; i < _elements.Count; i++)
-                {
-                    _elements[i].Render();
-                }
-
-                System.Diagnostics.Debug.WriteLine($"UIRoot: Rendered {_elements.Count} UI elements");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRoot: Error during render - {ex.Message}");
-            }
+            foreach (var element in _elements)
+                element.Render();
         }
 
-        ///<summary>
-        ///Adds a UI element to the root
-        ///</summary>
-        ///<param name="element">UI element to add</param>
+        // ---------------------------------------------------------------------------------------------
+        // Layout
+        // ---------------------------------------------------------------------------------------------
+        public override void UpdateLayout()
+        {
+            foreach (var element in _elements)
+                element.UpdateLayout();
+
+            SetNeedsLayoutUpdate(false);
+        }
+
+        // ---------------------------------------------------------------------------------------------
+        // Element Management
+        // ---------------------------------------------------------------------------------------------
         public void AddElement(UIElement element)
         {
-            try
-            {
-                if (element == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRoot: Cannot add null element");
-                    return;
-                }
+            if (element == null)
+                return;
 
-                if (_elements.Contains(element))
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRoot: Element already exists in UI root");
-                    return;
-                }
+            if (_elements.Contains(element))
+                return;
 
-                _elements.Add(element);
-                element.Parent = this;
-                SetNeedsLayoutUpdate(true);
-
-                System.Diagnostics.Debug.WriteLine($"UIRoot: Added UI element, total: {_elements.Count}");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRoot: Error adding element - {ex.Message}");
-            }
+            element.Parent = this;
+            _elements.Add(element);
+            SetNeedsLayoutUpdate(true);
         }
 
-        ///<summary>
-        ///Removes a UI element from the root
-        ///</summary>
-        ///<param name="element">UI element to remove</param>
         public void RemoveElement(UIElement element)
         {
-            try
-            {
-                if (element == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRoot: Cannot remove null element");
-                    return;
-                }
+            if (element == null)
+                return;
 
-                if (_elements.Remove(element))
-                {
-                    element.Parent = null;
-                    SetNeedsLayoutUpdate(true);
-                    System.Diagnostics.Debug.WriteLine($"UIRoot: Removed UI element, remaining: {_elements.Count}");
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRoot: Element not found in UI root");
-                }
-            }
-            catch (Exception ex)
+            if (_elements.Remove(element))
             {
-                System.Diagnostics.Debug.WriteLine($"UIRoot: Error removing element - {ex.Message}");
+                element.Parent = null;
+                SetNeedsLayoutUpdate(true);
             }
         }
 
-        ///<summary>
-        ///Updates layouts for all UI elements
-        ///</summary>
-        private void UpdateLayouts()
-        {
-            try
-            {
-                System.Diagnostics.Debug.WriteLine("UIRoot: Updating UI layouts");
-
-                foreach (var element in _elements)
-                {
-                    element.UpdateLayout();
-                }
-
-                SetNeedsLayoutUpdate(false);
-                System.Diagnostics.Debug.WriteLine("UIRoot: Layout update completed");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRoot: Error updating layouts - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Shuts down the UI system
-        ///</summary>
+        // ---------------------------------------------------------------------------------------------
+        // Shutdown
+        // ---------------------------------------------------------------------------------------------
         public void Shutdown()
         {
-            try
-            {
-                if (!_isInitialized)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRoot: Already shut down");
-                    return;
-                }
+            if (!_isInitialized)
+                return;
 
-                System.Diagnostics.Debug.WriteLine("UIRoot: Shutting down UI system");
+            foreach (var element in _elements)
+                element.Parent = null;
 
-                _elements.Clear();
-                SetNeedsLayoutUpdate(false);
-                _isInitialized = false;
+            _elements.Clear();
+            SetNeedsLayoutUpdate(false);
+            _isInitialized = false;
 
-                System.Diagnostics.Debug.WriteLine("UIRoot: UI system shut down successfully");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRoot: Error during shutdown - {ex.Message}");
-            }
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "UIRoot: Shutdown complete");
         }
     }
 }
-
-
-
-
-
-
-
-
-
-

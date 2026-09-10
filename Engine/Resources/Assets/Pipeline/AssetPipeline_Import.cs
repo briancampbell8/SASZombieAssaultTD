@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: AssetPipeline_Import.cs
+//  PATH: ./Engine/Resources/Assets/Pipeline/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetPipeline_Import module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ProcessAssetAsync() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetPipeline_Import.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Pipeline\AssetPipeline_Import.cs
@@ -46,13 +63,13 @@
 //                                                  "optimized/character.fbx");
 //============================================================================
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Threading.Tasks;
 //
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
 {
@@ -99,7 +116,7 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
             if (_processingCache.TryGet(cacheKey, out var cachedObj) &&
                 cachedObj is AssetProcessResult cached)
             {
-                System.Diagnostics.Debug.WriteLine(
+                DLogger.Log(LogSubsystems.ResourcesAssetsPipeline,
                     "Debug",
                     $"AssetPipeline: Retrieved cached result for '{inputPath}'");
                 return cached;
@@ -114,7 +131,7 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
             //Cache result
             _processingCache.Set(cacheKey, result, EstimateResultSize(result));
 
-            System.Diagnostics.Debug.WriteLine(
+            DLogger.Log(LogSubsystems.ResourcesAssetsPipeline,
                 "Info",
                 $"AssetPipeline: Processed '{inputPath}' -> '{outputPath}' ({result.Status})");
 
@@ -152,3 +169,4 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
         }
     }
 }
+

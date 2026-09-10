@@ -20,7 +20,7 @@
 
 #### **String Interpolation Syntax Error (Line 215)**
 ```csharp
-DebugLogger.Log("INFO", $"AnimationController: Stopped animation{(clipName != null ? $" '{clipName}'" : string.Empty)}");
+DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Stopped animation{(clipName != null ? $" '{clipName}'" : string.Empty)}");
 ```
 **Issue:** **SYNTAX ERROR - Missing closing parenthesis in interpolated string**
 **Error Type:** CS1022 - Type or namespace definition, or end-of-file expected
@@ -117,11 +117,11 @@ DebugLogger.Log("INFO", $"AnimationController: Stopped animation{(clipName != nu
 **Issue:** Missing closing parenthesis in interpolated string
 **Current Code:**
 ```csharp
-DebugLogger.Log("INFO", $"AnimationController: Stopped animation{(clipName != null ? $" '{clipName}'" : string.Empty)}");
+DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Stopped animation{(clipName != null ? $" '{clipName}'" : string.Empty)}");
 ```
 **Required Fix:**
 ```csharp
-DebugLogger.Log("INFO", $"AnimationController: Stopped animation{(clipName != null ? $"'{clipName}'" : string.Empty)}");
+DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Stopped animation{(clipName != null ? $"'{clipName}'" : string.Empty)}");
 ```
 **Impact:** **COMPLETE COMPILATION FAILURE**
 **Priority:** **CRITICAL**
@@ -201,10 +201,10 @@ DebugLogger.Log("INFO", $"AnimationController: Stopped animation{(clipName != nu
 1. **Fix String Interpolation Error:**
    ```csharp
    // Line 215 - CURRENT (BROKEN):
-   DebugLogger.Log("INFO", $"AnimationController: Stopped animation{(clipName != null ? $" '{clipName}'" : string.Empty)}");
+   DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Stopped animation{(clipName != null ? $" '{clipName}'" : string.Empty)}");
    
    // Line 215 - FIXED:
-   DebugLogger.Log("INFO", $"AnimationController: Stopped animation{(clipName != null ? $"'{clipName}'" : string.Empty)}");
+   DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Stopped animation{(clipName != null ? $"'{clipName}'" : string.Empty)}");
    ```
 
 ### **SHORT-TERM ENHANCEMENTS (After Fix)**

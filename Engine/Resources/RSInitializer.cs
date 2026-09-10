@@ -1,7 +1,23 @@
+// ====================================================================================================
+//  FILE: RSInitializer.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
 //
-using SASZombieAssaultTD.Engine.Resources;
-using System;
-using System.Collections.Generic;
+//  ROLE:
+//      Encapsulate core engine behavior for the RSInitializer module.
+//
+//  RESPONSIBILITIES:
+//      - Provide InitializeAllAssets() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+//
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 /*
 File: AssetInitializer.cs
 Author: BDC
@@ -18,13 +34,14 @@ Updated for the NEW Asset System API.
 
 
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Resources;
 namespace SASZombieAssaultTD.Engine.Assets
 {
     ///<summary>
     ///Entry point for asset initialization. Performs the full
     ///discovery → validation → registration sequence.
     ///</summary>
-    
+
     public static class AssetInitializer
     {
         private static object TheType;
@@ -64,12 +81,12 @@ namespace SASZombieAssaultTD.Engine.Assets
 
         public static void InitializeAllAssets()
         {
-            DLogger.Log("Info", "[Assets] Initialization started.");
+            DLogger.Log(LogSubsystems.Resources, "Info", "[Assets] Initialization started.");
 
             //------------------------------------------------------------
             //1. Discover assets
             //------------------------------------------------------------
-            DLogger.Log("Info", "[Assets] Running AssetDiscovery...");
+            DLogger.Log(LogSubsystems.Resources, "Info", "[Assets] Running AssetDiscovery...");
 
             AssetLoadContext discoveryContext = new AssetLoadContext("Content");
             RSDiscovery assetDiscovery = new RSDiscovery();
@@ -79,16 +96,16 @@ namespace SASZombieAssaultTD.Engine.Assets
 
             if (discoveredAssets == null || discoveredAssets.Count == 0)
             {
-                DLogger.Log("Warn", "[Assets] No assets discovered. Engine will run with empty asset tables.");
+                DLogger.Log(LogSubsystems.Resources, "Warn", "[Assets] No assets discovered. Engine will run with empty asset tables.");
                 return;
             }
 
-            DLogger.Log("Info", $"[Assets] Discovered {discoveredAssets.Count} assets.");
+            DLogger.Log(LogSubsystems.Resources, "Info", $"[Assets] Discovered {discoveredAssets.Count} assets.");
 
             //------------------------------------------------------------
             //2. Validate metadata
             //------------------------------------------------------------
-            DLogger.Log("Info", "[Assets] Validating metadata...");
+            DLogger.Log(LogSubsystems.Resources, "Info", "[Assets] Validating metadata...");
 
             List<DiscoveredResource> validAssets = new List<DiscoveredResource>();
             int invalidCount = 0;
@@ -102,7 +119,7 @@ namespace SASZombieAssaultTD.Engine.Assets
                 if (!isValid)
                 {
                     //NEW API: Key is now a value object; use ToString()
-                    DLogger.Log("Warn", $"[Assets] Invalid metadata for {discovered.Key}");
+                    DLogger.Log(LogSubsystems.Resources, "Warn", $"[Assets] Invalid metadata for {discovered.Key}");
                     invalidCount++;
                     continue;
                 }
@@ -110,19 +127,19 @@ namespace SASZombieAssaultTD.Engine.Assets
                 validAssets.Add(discovered);
             }
 
-            DLogger.Log("Info", $"[Assets] {validAssets.Count}/{discoveredAssets.Count} assets passed validation.");
+            DLogger.Log(LogSubsystems.Resources, "Info", $"[Assets] {validAssets.Count}/{discoveredAssets.Count} assets passed validation.");
 
             //------------------------------------------------------------
             //3. Register metadata
             //------------------------------------------------------------
-            DLogger.Log("Info", "[Assets] Registering metadata...");
+            DLogger.Log(LogSubsystems.Resources, "Info", "[Assets] Registering metadata...");
 
             foreach (var discovered in validAssets)
             {
                 AssetRegistry.Register(discovered.Key.ToString(), discovered.Source.ToString());
             }
 
-            DLogger.Log("Info", "[Assets] Metadata registration complete.");
+            DLogger.Log(LogSubsystems.Resources, "Info", "[Assets] Metadata registration complete.");
 
             //------------------------------------------------------------
             //4. Summary
@@ -130,17 +147,18 @@ namespace SASZombieAssaultTD.Engine.Assets
             int successCount = validAssets.Count;
             int failureCount = invalidCount;
 
-            DLogger.Log("Info", $"[Assets] Registration complete. Success: {successCount}, Failed: {failureCount}");
+            DLogger.Log(LogSubsystems.Resources, "Info", $"[Assets] Registration complete. Success: {successCount}, Failed: {failureCount}");
 
             if (failureCount > 0)
-                DLogger.Log("Warn", "[Assets] Some assets failed validation. Check logs for details.");
+                DLogger.Log(LogSubsystems.Resources, "Warn", "[Assets] Some assets failed validation. Check logs for details.");
             else
-                DLogger.Log("Info", "[Assets] All assets registered successfully.");
+                DLogger.Log(LogSubsystems.Resources, "Info", "[Assets] All assets registered successfully.");
 
-            DLogger.Log("Info", "[Assets] Initialization finished.");
+            DLogger.Log(LogSubsystems.Resources, "Info", "[Assets] Initialization finished.");
         }
     }
 }
+
 
 
 

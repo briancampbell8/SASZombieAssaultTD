@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: ColorCore.cs
+//  PATH: ./Engine/Core/Colorize/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ColorCore module.
+//
+//  RESPONSIBILITIES:
+//      - Provide CreateUnchecked() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //File:    ColorCore.cs
 //Purpose: Core color struct definition with optimized data layout and constructors.
 //         This is the ONLY file containing the struct declaration.
@@ -17,14 +34,11 @@
 
 //
 
-using System;
-using System.Drawing;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
-
-namespace SASZombieAssaultTD.Engine.Core.Colorize
+namespace SASZombieAssaultTD.Engine.CoreSize.Colorize
 {
     ///<summary>
     ///Canonical engine color type representing RGBA color with single-precision floating point components.
@@ -198,17 +212,51 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color CreateUnchecked(float r, float g, float b, float a)
         {
-            return Color.FromArgb((int)(r * 255f), (int)(g * 255f), (int)(b * 255f), (int)(a * 255f));
+            // Use the fast internal constructor (no clamping).
+            return new Color(r, g, b, a, true);
         }
 
-        public static implicit operator Color(Core.Color v)
+        ///<summary>
+        ///Internal factory for creating colors from packed ARGB uint.
+        ///Bypasses clamping for performance in hot math operations.
+        ///</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Color CreateUnchecked(uint argb)
         {
-            return Color.FromArgb((int)(v.R * 255f), (int)(v.G * 255f), (int)(v.B * 255f), (int)(v.A * 255f));
+            // Deconstruct ARGB uint into components (0-255 range).
+            uint a = (argb >> 24) & 0xFF;
+            uint r = (argb >> 16) & 0xFF;
+            uint g = (argb >> 8) & 0xFF;
+            uint b = argb & 0xFF;
+            return new Color((float)r / 255f, (float)g / 255f, (float)b / 255f, (float)a / 255f, true);
         }
 
+        //---------------------------------------------------------
+        //EXPLICIT CONVERSIONS
+        //---------------------------------------------------------
+
+        ///<summary>
+        ///Implicit conversion from System.Drawing.Color to Color.
+        ///Efficient conversion using existing FromArgb() overload.
+        ///</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //public static implicit operator Color(System.Drawing.Color v)
+        public static explicit operator System.Drawing.Color(Color v)
+        {
+            // System.Drawing.Color components are bytes (0..255) already.
+            // Use the existing FromArgb(int a, int r, int g, int b) overload.
+            return System.Drawing.Color.FromArgb(
+                (int)(v.A * 255f), (int)(v.R * 255f),
+                (int)(v.G * 255f), (int)(v.B * 255f));
+        }
+
+        ///<summary>
+        ///Implicit conversion from Color to Vector4 (for compatibility).
+        ///</summary>
         public static implicit operator Vector4(Color v)
         {
             return new Vector4(v.R, v.G, v.B, v.A);
         }
     }
 }
+

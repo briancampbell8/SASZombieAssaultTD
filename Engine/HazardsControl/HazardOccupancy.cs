@@ -15,8 +15,8 @@ Notes:    This file supports AI and pathing systems.
           Single responsibility: occupancy management.
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
 
 using SASZombieAssaultTD.Engine.Diagnostics;

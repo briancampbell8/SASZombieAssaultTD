@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: IAIBehavior.cs
+//  PATH: ./Engine/AI/
+//  MODULE: AI
+//
+//  ROLE:
+//      Provide deterministic AI behavior, decision logic, or state evaluation.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the AI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //CANONICAL IAIBehavior — CLEAN VERSION
 //REASON: Decompiler added invalid members (DeltaTime, Owner, GetTarget, SetTarget)
 //STATUS: Restored to original engine design
@@ -18,3 +35,4 @@ namespace SASZombieAssaultTD.Engine.AI
         void Tick(AIContext context);
     }
 }
+

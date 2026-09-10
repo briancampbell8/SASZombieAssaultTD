@@ -32,21 +32,17 @@
 //        and guaranteed to deliver DiagnosticEntry objects to Writer.cs.
 // ====================================================================================================
 
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Diagnostics.Writers;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
     /// <summary>
-    /// Central dispatch point for all diagnostic entries. EngineTrace receives fully constructed
-    /// DiagnosticEntry objects from DLogger and forwards them to the active writers. This class
-    /// performs no formatting, timestamping, or categorization; it simply guarantees that every
-    /// diagnostic event is written to the configured sinks.
-    ///
-    /// Writers include:
-    ///   - EngineTraceWriter (primary structured writer)
-    ///   - MarkdownLogWriter (developer-friendly readable logs)
-    ///   - Additional writers registered by diagnostics subsystems
-    ///
+    /// Central dispatch point for all diagnostic entries. EngineTrace receives fully constructed DiagnosticEntry
+    /// objects from DLogger and forwards them to the active writers. This class performs no formatting, timestamping,
+    /// or categorization; it simply guarantees that every diagnostic event is written to the configured sinks.
+    /// Writers include: - EngineTraceWriter (primary structured writer) - MarkdownLogWriter (developer-friendly
+    /// readable logs) - Additional writers registered by diagnostics subsystems
     /// EngineTrace is intentionally minimal and deterministic.
     /// </summary>
     public static class EngineTrace
@@ -61,11 +57,11 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
 
             // Primary structured writer
             EngineTraceWriter.Write(entry);
+            Console.WriteLine($"{entry.Subsystem}: {entry.Message}");
+
 
             // Developer-friendly markdown writer
             MarkdownLogWriter.Write(entry);
-
-
 
             // Additional writers may be added here if needed
             // Example:

@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: AssetIntegration_Pipeline.cs
+//  PATH: ./Engine/Resources/Assets/Integration/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetIntegration_Pipeline module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetIntegration_Pipeline.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Integration\AssetIntegration_Pipeline.cs
@@ -55,26 +72,25 @@
 //
 //    //Monitor pipeline performance
 //    var stats = AssetSystem.GetPipelineStats();
-//    Debug.WriteLine($"Processed {stats.ProcessedAssets} assets, saved {stats.SpaceSaved} bytes");
+//    DLogger.Log($"Processed {stats.ProcessedAssets} assets, saved {stats.SpaceSaved} bytes");
 //
 //    //Validate pipeline integrity
 //    var validation = await AssetSystem.ValidatePipelineAsync();
 //    if (!validation.IsValid)
-//        Debug.WriteLine($"Pipeline validation failed: {string.Join(", ", validation.Errors)}");
+//        DLogger.Log($"Pipeline validation failed: {string.Join(", ", validation.Errors)}");
 //============================================================================
 
 //
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using SASZombieAssaultTD.Engine.Resources.AssetPipeline;
 
 
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -87,7 +103,8 @@ namespace SASZombieAssaultTD.Engine.Resources
         public static async Task<IEnumerable<AssetProcessResult>> ProcessAssetsAsync(string inputDirectory, bool recursive = true)
         {
             EnsureInitialized();
-            System.Diagnostics.Debug.WriteLine("Info", $"AssetSystem: Processing assets in '{inputDirectory}' (Recursive={recursive})");
+            DLogger.Log(LogSubsystems.ResourcesAssetsIntegration,
+                "Info", $"AssetSystem: Processing assets in '{inputDirectory}' (Recursive={recursive})");
 
             return await _pipeline.ProcessDirectoryAsync(inputDirectory, recursive);
         }
@@ -104,7 +121,8 @@ namespace SASZombieAssaultTD.Engine.Resources
         {
             EnsureInitialized();
 
-            System.Diagnostics.Debug.WriteLine("Info", $"AssetSystem: Creating bundle '{bundleName}' → {outputPath}");
+            DLogger.Log(LogSubsystems.ResourcesAssetsIntegration,
+                "Info", $"AssetSystem: Creating bundle '{bundleName}' → {outputPath}");
 
             var assets = new Dictionary<string, string>();
             foreach (var path in assetPaths)
@@ -121,13 +139,15 @@ namespace SASZombieAssaultTD.Engine.Resources
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("Debug", $"AssetSystem: Async stream load for '{key}'");
+                DLogger.Log(LogSubsystems.ResourcesAssetsIntegration,
+                    "Debug", $"AssetSystem: Async stream load for '{key}'");
                 await Task.Delay(1); //Placeholder
                 return null;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error", $"AssetSystem: Stream load failed for '{key}': {ex.Message}");
+                DLogger.Log(LogSubsystems.ResourcesAssetsIntegration,
+                    "Error", $"AssetSystem: Stream load failed for '{key}': {ex.Message}");
                 return null;
             }
         }
@@ -136,12 +156,14 @@ namespace SASZombieAssaultTD.Engine.Resources
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine("Debug", $"AssetSystem: Sync stream load for '{key}'");
+                DLogger.Log(LogSubsystems.ResourcesAssetsIntegration,
+                    "Debug", $"AssetSystem: Sync stream load for '{key}'");
                 return null;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error", $"AssetSystem: Stream load failed for '{key}': {ex.Message}");
+                DLogger.Log(LogSubsystems.ResourcesAssetsIntegration,
+                    "Error", $"AssetSystem: Stream load failed for '{key}': {ex.Message}");
                 return null;
             }
         }
@@ -202,3 +224,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+

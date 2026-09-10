@@ -1,272 +1,165 @@
-//============================================================================
-//File:        D3D11Window.cs
-//Author:      BDC
-//Created:     2026-05-14
-//Purpose:     Provides a Win32 window for D3D11 rendering. Exposes HWND and
-//             handles message pumping. No rendering logic is performed here.
+// =====================================================================================================
+// FILE: D3D11Window.cs
+// PATH: Engine/Platform/D3D11Window.cs
+// SUBSYSTEM: Win32 / D3D11 Host Window
 //
-//Responsibilities:
-//- Register Win32 window class
-//- Create and manage the application window
-//- Expose HWND for D3D11 swap-chain creation
-//- Pump and dispatch Win32 messages
-//- Handle window destruction and cleanup
+// ROLE:
+//     Deterministic Win32/D3D11 host responsible for owning the native window handle, initializing the
+//     GPU device/swap chain via D3D11DeviceCore, processing the OS message loop, and delegating
+//     lifecycle control to GameRootMain. This class forms the bridge between the platform layer and
+//     the engine’s composition root.
 //
-//Dependencies:
-//- Win32 API (user32.dll)
+// RESPONSIBILITIES:
+//     - Own the Win32 window handle and provide it to D3D11DeviceCore.
+//     - Initialize the D3D11 device and swap chain before engine initialization.
+//     - Execute a deterministic message pump for the engine host.
+//     - Enforce the lifecycle contract: GPU Init → Initialize → Run Loop → Shutdown.
+//     - Delegate all engine-facing lifecycle operations to GameRootMain.
 //
-//Thread Safety:
-//- All operations must occur on the main UI thread.
+// NON-RESPONSIBILITIES:
+//     - Implementing rendering, frame updates, or game timing logic (handled by GameRootMain).
+//     - Managing engine subsystems, assets, or game state.
+//     - Implementing high-level UI or scene logic.
 //
-//Architectural Notes:
-//- This class replaces the legacy Win32Window and removes all framebuffer
-//  and GDI responsibilities.
-//- Rendering is performed exclusively through the D3D11 swap-chain.
-//- This class provides only HWND and message pump functionality.
-//============================================================================
+// ARCHITECTURAL NOTES:
+//     - The window host is minimal and deterministic but is responsible for GPU bring-up.
+//     - GameRootMain owns the update/render loop; the host only initializes GPU and pumps OS messages.
+//     - No direct rendering or game logic is permitted inside this class.
+// =====================================================================================================
 
 using System;
 using System.Runtime.InteropServices;
-//
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.Render.D3D11.DeviceCore;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Platform
 {
     public sealed class D3D11Window : IDisposable
     {
-        private IntPtr _hwnd;
-        private bool _disposed;
+        private readonly IntPtr _hwnd;
+        private readonly D3D11DeviceCore _deviceCore;
+        private bool _isRunning;
 
         public IntPtr Handle => _hwnd;
+        public D3D11DeviceCore DeviceCore => _deviceCore;
 
-        private readonly int _width;
-        private readonly int _height;
-        private readonly string _title;
+        public object Width { get; internal set; }
+        public object Height { get; internal set; }
 
-        private readonly WndProcDelegate _wndProcDelegate;
-
-        public D3D11Window(int width, int height, string title)
+        public D3D11Window(IntPtr hwnd, D3D11DeviceCore deviceCore)
         {
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.Ctor.Start", $"width={width}, height={height}, title={title}");
+            _hwnd = hwnd != IntPtr.Zero
+                ? hwnd
+                : throw new ArgumentNullException(nameof(hwnd));
 
-            _width = width;
-            _height = height;
-            _title = title;
-            _wndProcDelegate = WndProc;
-
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.Ctor.End", "OK");
+            _deviceCore = deviceCore ?? throw new ArgumentNullException(nameof(deviceCore));
         }
 
-        public void Create()
+        public void Run(GameRootMain game)
         {
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.Create.Start", "Begin");
+            if (game == null)
+                throw new ArgumentNullException(nameof(game));
 
-            IntPtr hInstance = GetModuleHandle(null);
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.Create.hInstance", $"hInstance=0x{hInstance.ToString("X")}");
+            // -------------------------------------------------------------------------------------------------
+            // WIN32 STYLES EX-OVERRIDE — STRIP OPERATING SYSTEM DEFAULT WHITE BACKGROUND CANVAS
+            // -------------------------------------------------------------------------------------------------
+            const int GWL_EXSTYLE = -20;
+            const int WS_EX_NOREDIRECTIONBITMAP = 0x00100000;
 
-            IntPtr hCursor = LoadCursor(IntPtr.Zero, (IntPtr)32512); //IDC_ARROW
+            int currentExStyle = GetWindowLong(_hwnd, GWL_EXSTYLE);
+            SetWindowLong(_hwnd, GWL_EXSTYLE, currentExStyle | WS_EX_NOREDIRECTIONBITMAP);
 
-            WNDCLASSEX wc = new WNDCLASSEX
+            // 1. HARDWARE SIZE MEASUREMENT OVERRIDES
+            int width = 1280;
+            int height = 720;
+            if (GetClientRect(_hwnd, out RECT rect))
             {
-                cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf(typeof(WNDCLASSEX)),
-                style = 0,
-                lpfnWndProc = _wndProcDelegate,
-                cbClsExtra = 0,
-                cbWndExtra = 0,
-                hInstance = hInstance,
-                hIcon = IntPtr.Zero,
-                hCursor = hCursor,
-                hbrBackground = IntPtr.Zero,
-                lpszMenuName = null,
-                lpszClassName = "SASD3D11WindowClass",
-                hIconSm = IntPtr.Zero
-            };
+                width = rect.Right - rect.Left;
+                height = rect.Bottom - rect.Top;
 
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.Create.RegisterClass", "Calling RegisterClassEx");
-            ushort atom = RegisterClassEx(ref wc);
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.Create.RegisterClass.Result", $"atom={atom}");
-
-            if (atom == 0)
-            {
-                DLogger.Log(
-                    LogSubsystems.Platform,
-                    LogLevel.Error,
-                    "D3D11Window.Create.Error", "RegisterClassEx failed.");
-                throw new Exception("Failed to register window class.");
+                _deviceCore.BackbufferWidth = width;
+                _deviceCore.BackbufferHeight = height;
+                _deviceCore.Width = width;
+                _deviceCore.Height = height;
+                _deviceCore.ViewportSize = new System.Numerics.Vector2(width, height);
             }
 
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.Create.CreateWindowEx", "Calling CreateWindowEx");
+            // 2. BRING UP D3D11 HARDWARE LAYERS (CRITICAL: Clear old states to enforce live handle binding)
+            _deviceCore.IsInitialized = false;
+            _deviceCore.InitializeDeviceAndSwapChain(_hwnd);
+            _deviceCore.CreateBackbufferTargets();
 
-            _hwnd = CreateWindowEx(
-                0,
-                wc.lpszClassName,
-                _title,
-                0x00CF0000,
-                unchecked((int)0x80000000),
-                unchecked((int)0x80000000),
-                _width,
-                _height,
-                IntPtr.Zero,
-                IntPtr.Zero,
-                hInstance,
-                IntPtr.Zero
-            );
+            // 3. INITIALIZE THE CORE ENGINE MANAGERS
+            game.Initialize();
 
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.Create.HWND", $"_hwnd={_hwnd}");
+            // 4. PRIME TIMING PARAMETERS
+            _isRunning = true;
+            var lastTime = DateTime.Now;
+            float frameAccumulator = 0f;
+            const float targetFrameTime = 1f / 60f;
 
-            if (_hwnd == IntPtr.Zero)
+            // 5. THE AUTHORITATIVE HARMONIZED RUN LOOP
+            while (_isRunning)
             {
-                DLogger.Log(
-                    LogSubsystems.Platform,
-                    LogLevel.Error,
-                    "D3D11Window.Create.Error", "CreateWindowEx returned NULL HWND.");
-                throw new Exception("Failed to create window.");
-            }
-
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.Create.ShowWindow", "Calling ShowWindow");
-            ShowWindow(_hwnd, 1);
-
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.Create.End", "OK");
-        }
-
-        public bool PumpMessages()
-        {
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.PumpMessages.Start", "Begin");
-
-            MSG msg;
-            while (PeekMessage(out msg, IntPtr.Zero, 0, 0, 1))
-            {
-                DLogger.Log(
-                    LogSubsystems.Platform,
-                    LogLevel.Debug,
-                    "D3D11Window.PumpMessages.Message",
-                    $"msg={msg.message}, hwnd={msg.hwnd}, wParam={msg.wParam}, lParam={msg.lParam}");
-
-                if (msg.message == 0x0012) //WM_QUIT
+                // STEP A: Pump OS Windows messages continuously to satisfy the window handle responsive contract
+                while (PeekMessage(out var msg, IntPtr.Zero, 0, 0, PM_REMOVE))
                 {
-                    DLogger.Log(
-                        LogSubsystems.Platform,
-                        LogLevel.Debug,
-                        "D3D11Window.PumpMessages.Quit", "WM_QUIT received");
-                    return false;
+                    if (msg.message == WM_QUIT)
+                    {
+                        _isRunning = false;
+                        break;
+                    }
+
+                    TranslateMessage(ref msg);
+                    DispatchMessage(ref msg);
                 }
 
-                TranslateMessage(ref msg);
-                DispatchMessage(ref msg);
+                if (!_isRunning)
+                    break;
+
+                var now = DateTime.Now;
+                var delta = (float)(now - lastTime).TotalSeconds;
+                lastTime = now;
+
+                frameAccumulator += delta;
+
+                // STEP B: Drive deterministic fixed-step tick updates
+                while (frameAccumulator >= targetFrameTime)
+                {
+                    game.Update(targetFrameTime);
+                    frameAccumulator -= targetFrameTime;
+                }
+
+                // STEP B: Drive deterministic fixed-step tick updates
+                while (frameAccumulator >= targetFrameTime)
+                {
+                    game.Update(targetFrameTime);
+                    frameAccumulator -= targetFrameTime;
+                }
+
+                // STEP C: Force Direct3D clear, render pass execution, and presentation
+                // FIX: Instead of trying to resolve the un-registered GameRootUpdateLoop out of the container,
+                // we resolve the authoritative adapter context to execute the clear/render/present flow seamlessly.
+                var context = game.SystemRegistry?.Resolve<D3D11Adapter_Core>();
+                if (context != null)
+                {
+                    context.ClearScreen();
+                    game.Render(context);
+                    context.Present();
+                }
             }
 
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.PumpMessages.End", "Continue");
-            return true;
-        }
-
-        private IntPtr WndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
-        {
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.WndProc",
-                $"hWnd={hWnd}, msg={msg}, wParam={wParam}, lParam={lParam}");
-
-            if (msg == 0x0002) //WM_DESTROY
-            {
-                DLogger.Log(
-                    LogSubsystems.Platform,
-                    LogLevel.Debug,
-                    "D3D11Window.WndProc.WM_DESTROY", "Posting quit message");
-                PostQuitMessage(0);
-            }
-
-            return DefWindowProc(hWnd, msg, wParam, lParam);
+            // 6. CLEAN RELEASES
+            game.Shutdown();
         }
 
         public void Dispose()
         {
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.Dispose.Start", $"disposed={_disposed}, hwnd={_hwnd}");
-
-            if (_disposed)
-            {
-                DLogger.Log(
-                    LogSubsystems.Platform,
-                    LogLevel.Debug,
-                    "D3D11Window.Dispose.Skip", "Already disposed");
-                return;
-            }
-
-            if (_hwnd != IntPtr.Zero)
-            {
-                DLogger.Log(
-                    LogSubsystems.Platform,
-                    LogLevel.Debug,
-                    "D3D11Window.Dispose.DestroyWindow", "Calling DestroyWindow");
-                DestroyWindow(_hwnd);
-                _hwnd = IntPtr.Zero;
-            }
-
-            _disposed = true;
-
-            DLogger.Log(
-                LogSubsystems.Platform,
-                LogLevel.Debug,
-                "D3D11Window.Dispose.End", "OK");
+            _deviceCore?.Dispose();
         }
 
-        private delegate IntPtr WndProcDelegate(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        private struct WNDCLASSEX
-        {
-            public uint cbSize;
-            public uint style;
-            public WndProcDelegate lpfnWndProc;
-            public int cbClsExtra;
-            public int cbWndExtra;
-            public IntPtr hInstance;
-            public IntPtr hIcon;
-            public IntPtr hCursor;
-            public IntPtr hbrBackground;
-            public string lpszMenuName;
-            public string lpszClassName;
-            public IntPtr hIconSm;
-        }
+        private const uint PM_REMOVE = 0x0001;
+        private const uint WM_QUIT = 0x0012;
 
         [StructLayout(LayoutKind.Sequential)]
         private struct MSG
@@ -276,57 +169,39 @@ namespace SASZombieAssaultTD.Engine.Platform
             public IntPtr wParam;
             public IntPtr lParam;
             public uint time;
-            public int pt_x;
-            public int pt_y;
+            public System.Drawing.Point pt;
         }
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        private static extern IntPtr GetModuleHandle(string lpModuleName);
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        private static extern IntPtr LoadCursor(IntPtr hInstance, IntPtr lpCursorName);
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        private static extern ushort RegisterClassEx([In] ref WNDCLASSEX lpWndClass);
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        private static extern IntPtr CreateWindowEx(
-            int dwExStyle,
-            string lpClassName,
-            string lpWindowName,
-            int dwStyle,
-            int x, int y,
-            int nWidth, int nHeight,
-            IntPtr hWndParent,
-            IntPtr hMenu,
-            IntPtr hInstance,
-            IntPtr lpParam
-        );
-
-        [DllImport("user32.dll")]
-        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        [DllImport("user32.dll")]
-        private static extern bool PeekMessage(out MSG lpMsg, IntPtr hWnd, uint min, uint max, uint remove);
-
-        [DllImport("user32.dll")]
-        private static extern bool TranslateMessage([In] ref MSG lpMsg);
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr DispatchMessage([In] ref MSG lpMsg);
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr DefWindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        private static extern void PostQuitMessage(int exitCode);
-
-        [DllImport("user32.dll")]
-        private static extern bool DestroyWindow(IntPtr hWnd);
-
-        internal void Run(GameRoot game)
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RECT
         {
-            throw new NotImplementedException();
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
         }
+
+        [DllImport("user32.dll")]
+        private static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+        [DllImport("user32.dll")]
+        private static extern bool PeekMessage(
+            out MSG lpMsg,
+            IntPtr hWnd,
+            uint wMsgFilterMin,
+            uint wMsgFilterMax,
+            uint wRemoveMsg);
+
+        [DllImport("user32.dll")]
+        private static extern bool TranslateMessage(ref MSG lpMsg);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr DispatchMessage(ref MSG lpMsg);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
     }
 }

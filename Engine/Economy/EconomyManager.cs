@@ -1,10 +1,37 @@
-﻿/*
+// ====================================================================================================
+//  FILE: EconomyManager.cs
+//  PATH: ./Engine/Economy/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the EconomyManager module.
+//
+//  RESPONSIBILITIES:
+//      - Provide SetDifficultyMultiplier() behavior for the Core subsystem.
+//      - Provide AddCash() behavior for the Core subsystem.
+//      - Provide RemoveCash() behavior for the Core subsystem.
+//      - Provide RecordTowerPurchase() behavior for the Core subsystem.
+//      - Provide RecordUpgradePurchase() behavior for the Core subsystem.
+//      - Provide Reset() behavior for the Core subsystem.
+//      - Provide CanAfford() behavior for the Core subsystem.
+//      - Provide Spend() behavior for the Core subsystem.
+//      - Provide Earn() behavior for the Core subsystem.
+//      - Provide GetFinalCost() behavior for the Core subsystem.
+//      - Provide HasEnoughCash() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+/*
 File:    EconomyManager.cs
 Purpose: Central economy system for SAS Zombie Assault TD.
 Features: Cash management, resource tracking, difficulty scaling.
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 //
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -41,7 +68,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _towerCostMultiplier = towerCostMultiplier;
             _upgradeCostMultiplier = upgradeCostMultiplier;
 
-            DLogger.Log(LogSubsystems.Economy, LogLevel.Info, $"EconomyManager: Set difficulty multipliers - Cash: {cashRewardMultiplier:F2}, Tower: {towerCostMultiplier:F2}, Upgrade: {upgradeCostMultiplier:F2}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"EconomyManager: Set difficulty multipliers - Cash: {cashRewardMultiplier:F2}, Tower: {towerCostMultiplier:F2}, Upgrade: {upgradeCostMultiplier:F2}");
         }
 
         public static void AddCash(int amount)
@@ -49,7 +76,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _currentCash += amount;
             _totalEarned += amount;
             OnCashChanged?.Invoke(_currentCash);
-            DLogger.Log(LogSubsystems.Economy, LogLevel.Info, $"EconomyManager: Added {amount} cash - Total: {_currentCash}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"EconomyManager: Added {amount} cash - Total: {_currentCash}");
         }
 
         public static void RemoveCash(int amount)
@@ -59,11 +86,11 @@ namespace SASZombieAssaultTD.Engine.Economy
                 _currentCash -= amount;
                 _totalSpent += amount;
                 OnCashChanged?.Invoke(_currentCash);
-                DLogger.Log(LogSubsystems.Economy, LogLevel.Info, $"EconomyManager: Removed {amount} cash - Total: {_currentCash}");
+                DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"EconomyManager: Removed {amount} cash - Total: {_currentCash}");
             }
             else
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", "EconomyManager: Insufficient cash to remove " + amount);
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", "EconomyManager: Insufficient cash to remove " + amount);
             }
         }
 
@@ -71,14 +98,14 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _towerPurchases++;
             RemoveCash(cost);
-            DLogger.Log(LogSubsystems.Economy, LogLevel.Info, $"EconomyManager: Tower purchase recorded - Total: {_towerPurchases}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"EconomyManager: Tower purchase recorded - Total: {_towerPurchases}");
         }
 
         public static void RecordUpgradePurchase(int cost)
         {
             _upgradePurchases++;
             RemoveCash(cost);
-            DLogger.Log(LogSubsystems.Economy, LogLevel.Info, $"EconomyManager: Upgrade purchase recorded - Total: {_upgradePurchases}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"EconomyManager: Upgrade purchase recorded - Total: {_upgradePurchases}");
         }
 
         public static void Reset()
@@ -89,7 +116,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _towerPurchases = 0;
             _upgradePurchases = 0;
             OnCashChanged?.Invoke(_currentCash);
-            DLogger.Log(LogSubsystems.Economy, LogLevel.Info, "EconomyManager: Economy reset to starting cash: " + _startingCash);
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, "EconomyManager: Economy reset to starting cash: " + _startingCash);
         }
 
         public static (float cashRewardMultiplier, float towerCostMultiplier, float upgradeCostMultiplier) GetDifficultyMultipliers()
@@ -123,3 +150,4 @@ namespace SASZombieAssaultTD.Engine.Economy
         }
     }
 }
+

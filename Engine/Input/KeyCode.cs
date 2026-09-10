@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: KeyCode.cs
+//  PATH: ./Engine/Input/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the KeyCode module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Input
@@ -33,3 +50,4 @@ namespace SASZombieAssaultTD.Engine.Input
         F1 = 112, F2 = 113, F3 = 114, F4 = 115, F5 = 116, F6 = 117, F7 = 118, F8 = 119, F9 = 120, F10 = 121, F11 = 122, F12 = 123
     }
 }
+

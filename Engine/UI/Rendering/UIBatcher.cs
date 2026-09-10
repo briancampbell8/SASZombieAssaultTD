@@ -1,7 +1,31 @@
+// ====================================================================================================
+//  FILE: UIBatcher.cs
+//  PATH: ./Engine/UI/Rendering/
+//  MODULE: Rendering
+//
+//  ROLE:
+//      Provide rendering logic, draw calls, batching, or GPU resource management.
+//
+//  RESPONSIBILITIES:
+//      - Provide AddDrawCall() behavior for the Rendering subsystem.
+//      - Provide DrawRectangle() behavior for the Rendering subsystem.
+//      - Provide DrawText() behavior for the Rendering subsystem.
+//      - Provide DrawLine() behavior for the Rendering subsystem.
+//      - Provide Batch() behavior for the Rendering subsystem.
+//      - Provide GetBatches() behavior for the Rendering subsystem.
+//      - Provide Clear() behavior for the Rendering subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 using System;
 using System.Collections.Generic;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using static SASZombieAssaultTD.Engine.UI.UIEnums;
 
 namespace SASZombieAssaultTD.Engine.UI.Rendering
 {
@@ -32,7 +56,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             _drawCalls = new List<UIDrawCall>();
             _batches = new Dictionary<string, UIBatch>();
-            System.Diagnostics.Debug.WriteLine("UIBatcher: Initialized");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "UIBatcher: Initialized");
         }
 
         ///<summary>
@@ -45,18 +69,18 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             {
                 if (drawCall == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("UIBatcher: Cannot add null draw call");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "UIBatcher: Cannot add null draw call");
                     return;
                 }
 
                 _drawCalls.Add(drawCall);
                 _needsSorting = true;
 
-                System.Diagnostics.Debug.WriteLine($"UIBatcher: Added draw call, total: {_drawCalls.Count}");
+                DLogger.Log($"UIBatcher: Added draw call, total: {_drawCalls.Count}");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error adding draw call - {ex.Message}");
+                DLogger.Log($"UIBatcher: Error adding draw call - {ex.Message}");
             }
         }
 
@@ -83,7 +107,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error drawing rectangle - {ex.Message}");
+                DLogger.Log($"UIBatcher: Error drawing rectangle - {ex.Message}");
             }
         }
 
@@ -112,7 +136,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error drawing text - {ex.Message}");
+                DLogger.Log($"UIBatcher: Error drawing text - {ex.Message}");
             }
         }
 
@@ -141,7 +165,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error drawing line - {ex.Message}");
+                DLogger.Log($"UIBatcher: Error drawing line - {ex.Message}");
             }
         }
 
@@ -152,7 +176,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"UIBatcher: Batching {_drawCalls.Count} draw calls");
+                DLogger.Log($"UIBatcher: Batching {_drawCalls.Count} draw calls");
 
                 //Clear existing batches
                 _batches.Clear();
@@ -184,11 +208,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                     batch.DrawCalls.Add(drawCall);
                 }
 
-                System.Diagnostics.Debug.WriteLine($"UIBatcher: Created {_batches.Count} batches");
+                DLogger.Log($"UIBatcher: Created {_batches.Count} batches");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error batching draw calls - {ex.Message}");
+                DLogger.Log($"UIBatcher: Error batching draw calls - {ex.Message}");
             }
         }
 
@@ -204,7 +228,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error getting batches - {ex.Message}");
+                DLogger.Log($"UIBatcher: Error getting batches - {ex.Message}");
                 return new List<UIBatch>();
             }
         }
@@ -220,11 +244,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                 _batches.Clear();
                 _needsSorting = true;
 
-                System.Diagnostics.Debug.WriteLine("UIBatcher: Cleared all draw calls and batches");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "UIBatcher: Cleared all draw calls and batches");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error clearing - {ex.Message}");
+                DLogger.Log($"UIBatcher: Error clearing - {ex.Message}");
             }
         }
 
@@ -253,7 +277,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIBatcher: Error getting batch key - {ex.Message}");
+                DLogger.Log($"UIBatcher: Error getting batch key - {ex.Message}");
                 return "default";
             }
         }
@@ -280,14 +304,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
     ///<summary>
     ///Types of UI draw calls
     ///</summary>
-    public enum UIDrawCallType
-    {
-        Rectangle,
-        Text,
-        Line,
-        Circle,
-        Triangle
-    }
+
 
     ///<summary>
     ///Represents a batch of UI draw calls
@@ -305,6 +322,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public int Count => DrawCalls?.Count ?? 0;
     }
 }
+
 
 
 

@@ -1,8 +1,29 @@
-﻿using System;
+// ====================================================================================================
+//  FILE: Window.cs
+//  PATH: ./Engine/Window/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the Window module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Open() behavior for the Core subsystem.
+//      - Provide Close() behavior for the Core subsystem.
+//      - Provide SetShouldClose() behavior for the Core subsystem.
+//      - Provide PollEvents() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Numerics;
 using SASZombieAssaultTD.Engine.Core;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Window
 //
 {
@@ -132,7 +153,7 @@ namespace SASZombieAssaultTD.Engine.Window
             _isFocused = false;
             _handle = IntPtr.Zero;
 
-            DLogger.Log("Window: Initialized with default settings");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Window: Initialized with default settings");
         }
 
         ///<summary>
@@ -147,7 +168,7 @@ namespace SASZombieAssaultTD.Engine.Window
         {
             if (_isOpened)
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", "Window: Window is already open");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", "Window: Window is already open");
                 return false;
             }
 
@@ -162,14 +183,14 @@ namespace SASZombieAssaultTD.Engine.Window
                 _handle = new IntPtr(1); //Simulate window handle
                 _isOpened = true;
 
-                DLogger.Log(LogSubsystems.Window,LogLevel.Info, $"Window: Opened '{_title}' ({width}x{height}) at ({_position.X},{_position.Y})");
+                DLogger.Log(LogSubsystems.Window, LogEnums.LogLevel.Info, $"Window: Opened '{_title}' ({width}x{height}) at ({_position.X},{_position.Y})");
                 OnWindowOpened?.Invoke();
 
                 return true;
             }
             catch (Exception ex)
             {
-DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to open window - {ex.Message}");
+                DLogger.Log(LogSubsystems.Window, LogEnums.LogLevel.Info,"ERROR",$"Window: Failed to open window - {ex.Message}");
                 return false;
             }
         }
@@ -182,7 +203,7 @@ DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to open 
         {
             if (!_isOpened)
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", "Window: Window is not open");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", "Window: Window is not open");
                 return false;
             }
 
@@ -193,14 +214,14 @@ DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to open 
                 _isOpened = false;
                 _handle = IntPtr.Zero;
 
-                DLogger.Log(LogSubsystems.Window,LogLevel.Info, $"Window: Closed '{_title}'");
+                DLogger.Log(LogSubsystems.Window, LogEnums.LogLevel.Info, $"Window: Closed '{_title}'");
                 OnWindowClosed?.Invoke();
 
                 return true;
             }
             catch (Exception ex)
             {
-DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to close window - {ex.Message}");
+                DLogger.Log(LogSubsystems.Window, LogEnums.LogLevel.Info,"ERROR",$"Window: Failed to close window - {ex.Message}");
                 return false;
             }
         }
@@ -212,7 +233,7 @@ DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to close
         public void SetShouldClose(bool shouldClose)
         {
             _shouldClose = shouldClose;
-            DLogger.Log(LogSubsystems.Window,LogLevel.Info, $"Window: ShouldClose set to {shouldClose}");
+            DLogger.Log(LogSubsystems.Window, LogEnums.LogLevel.Info, $"Window: ShouldClose set to {shouldClose}");
             OnShouldClose?.Invoke(shouldClose);
         }
 
@@ -235,7 +256,7 @@ DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to close
                 if (newFocusState != _isFocused)
                 {
                     _isFocused = newFocusState;
-                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"Window: Focus changed to {newFocusState}");
+                    DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"Window: Focus changed to {newFocusState}");
                     OnFocusChanged?.Invoke(newFocusState);
                 }
 
@@ -244,7 +265,7 @@ DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to close
                 if (newSize != _size)
                 {
                     _size = newSize;
-                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"Window: Resized to {newSize.X}x{newSize.Y}");
+                    DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"Window: Resized to {newSize.X}x{newSize.Y}");
                     OnWindowResized?.Invoke(newSize);
                 }
 
@@ -256,7 +277,7 @@ DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to close
             }
             catch (Exception ex)
             {
-DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to poll events - {ex.Message}");
+                DLogger.Log(LogSubsystems.Window, LogEnums.LogLevel.Info,"ERROR",$"Window: Failed to poll events - {ex.Message}");
             }
         }
 
@@ -269,7 +290,7 @@ DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to poll 
                 return;
 
             //Platform-specific title update would go here
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"Window: Updated title to '{_title}'");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"Window: Updated title to '{_title}'");
         }
 
         ///<summary>
@@ -281,7 +302,7 @@ DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to poll 
                 return;
 
             //Platform-specific size update would go here
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"Window: Updated size to {_size.X}x{_size.Y}");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"Window: Updated size to {_size.X}x{_size.Y}");
         }
 
         ///<summary>
@@ -293,7 +314,7 @@ DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to poll 
                 return;
 
             //Platform-specific position update would go here
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"Window: Updated position to ({_position.X},{_position.Y})");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"Window: Updated position to ({_position.X},{_position.Y})");
         }
 
         ///<summary>
@@ -330,6 +351,7 @@ DLogger.Log(LogSubsystems.Window,LogLevel.Info,"ERROR",$"Window: Failed to poll 
         }
     }
 }
+
 
 
 

@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: AIContext.cs
+//  PATH: ./Engine/AI/
+//  MODULE: AI
+//
+//  ROLE:
+//      Provide deterministic AI behavior, decision logic, or state evaluation.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the AI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /* 
 //PROGRAM: AIContext
 //FILE PATH: Engine/AI/AIContext.cs
@@ -35,3 +52,4 @@ namespace SASZombieAssaultTD.Engine.AI
         public object? Target { get; set; }
     }
 }
+

@@ -1,31 +1,36 @@
-/*
-File:    HazardsMain.cs
-Path:    Engine/HazardsControl/HazardsMain.cs
-Purpose: Orchestrator and entry point for Hazards Control system.
-         Provides unified API for all hazard-related functionality.
+// ====================================================================================================
+// FILE: HazardsMain.cs
+// PATH: Engine/HazardsControl/HazardsMain.cs
+// MODULE: HazardsControl
+//
+// ROLE:
+//     Central orchestrator for all hazard subsystems.
+//     Provides the unified API surface for registering, updating, analyzing,
+//     and visualizing hazards.
+//
+// RESPONSIBILITIES:
+//     - Maintain the active hazard list.
+//     - Route operations to lifecycle, registration, cleanup, occupancy,
+//       density, kill attribution, lane interaction, analytics, and visuals.
+//     - Manage subsystem initialization and cleanup.
+//     - Provide deterministic hazard analytics and zone/density queries.
+//     - Expose a clean external API with no embedded hazard logic.
+//
+// NON-RESPONSIBILITIES:
+//     - Performing hazard logic (delegated to subsystems).
+//     - Rendering, simulation, or persistence.
+//     - Managing hazard types or definitions.
+//
+// NOTES:
+//     Pure orchestration layer. All complex behavior is delegated.
+//     Single responsibility: coordination and routing.
+// ====================================================================================================
 
-Role:    Central coordinator for hazard management systems.
-         - Provides clean API surface for external systems
-         - Routes calls to appropriate subsystems
-         - Manages subsystem lifecycle
-         - No hazard logic - pure orchestration
-
-Notes:   This is the main entry point that external systems interact with.
-         All complex operations are delegated to specialized subsystems.
-         Single responsibility: coordination and routing.
-*/
-
-using System;
-using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Extensions;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using static SASZombieAssaultTD.Engine.HazardsControl.HazardDensitySystem;
 
 namespace SASZombieAssaultTD.Engine.HazardsControl
 {
-    ///<summary>
-    ///Types of visual effects for hazards.
-    ///</summary>
     public enum HazardVisualEffect
     {
         None,
@@ -38,10 +43,6 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         Ice
     }
 
-    ///<summary>
-    ///Main orchestrator for Hazards Control system.
-    ///Provides unified API for all hazard-related functionality.
-    ///</summary>
     public class HazardsMain
     {
         private readonly HazardLifecycle _lifecycle = new();
@@ -57,25 +58,18 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
         private readonly List<Hazard> _activeHazards = new();
         private bool _isInitialized;
 
-        ///<summary>
-        ///Initializes all hazard subsystems.
-        ///</summary>
+        public IEnumerable<Hazard> ActiveHazards { get; internal set; }
+
         public void InitHazards()
         {
             if (_isInitialized) return;
 
             foreach (var subsystem in GetSubsystems())
-            {
                 subsystem?.Init();
-            }
 
             _isInitialized = true;
         }
 
-        ///<summary>
-        ///Updates all hazard subsystems.
-        ///</summary>
-        ///<param name="deltaTime">Time since last update.</param>
         public void UpdateHazards(float deltaTime)
         {
             if (!_isInitialized) return;
@@ -85,27 +79,17 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             _visuals?.UpdateHazardVisualState(_activeHazards);
         }
 
-        ///<summary>
-        ///Cleans up all hazard subsystems.
-        ///</summary>
         public void CleanupHazards()
         {
             if (!_isInitialized) return;
 
             foreach (var subsystem in GetSubsystems())
-            {
                 subsystem?.Cleanup();
-            }
 
             _activeHazards.Clear();
             _isInitialized = false;
         }
 
-        ///<summary>
-        ///Registers a new hazard with the system.
-        ///</summary>
-        ///<param name="hazard">The hazard to register.</param>
-        ///<returns>True if successfully registered.</returns>
         public bool RegisterHazard(Hazard hazard)
         {
             if (!_isInitialized || hazard == null) return false;
@@ -129,11 +113,12 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             return false;
         }
 
-        ///<summary>
-        ///Gets hazard analytics data.
-        ///</summary>
-        ///<returns>Hazard analytics summary.</returns>
-        public HazardAnalyticsSummary GetHazardAnalytics()
+        public HazardAnalyticsSummary GetHazardAnalytics(
+            int? zoneId = null,
+            bool? isOverloaded = null,
+            float? minIntensity = null,
+            float? maxIntensity = null,
+            float? minLifetime = null)
         {
             if (!_isInitialized) return new HazardAnalyticsSummary();
 
@@ -141,17 +126,19 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             {
                 TotalCount = _analytics?.GetTotalHazardCount() ?? 0,
                 ActiveCount = _analytics?.GetActiveHazardCount() ?? 0,
-                TypeBreakdown = (Dictionary<string, int>)(_analytics?.GetHazardTypeBreakdown() ?? new Dictionary<string, int>()),
+                TypeBreakdown = (Dictionary<string, int>)(_analytics?.GetHazardTypeBreakdown()
+                    ?? new Dictionary<string, int>()),
                 AverageLifetime = _analytics?.GetAverageHazardLifetime() ?? 0f,
-                EffectivenessScore = _analytics?.GetAverageEffectivenessScore() ?? 0f
+                EffectivenessScore = _analytics?.GetAverageEffectivenessScore() ?? 0f,
+                Active = _analytics?.GetHazardCountByState(HazardState.Active) ?? 0,
+                Inactive = _analytics?.GetHazardCountByState(HazardState.Inactive) ?? 0,
+                Dead = _analytics?.GetHazardCountByState(HazardState.Dead) ?? 0,
+                Revived = _analytics?.GetHazardCountByState(HazardState.Revived) ?? 0,
+                Killed = _analytics?.GetHazardCountByState(HazardState.Killed) ?? 0,
+                Reviving = _analytics?.GetHazardCountByState(HazardState.Reviving) ?? 0
             };
         }
 
-        ///<summary>
-        ///Gets hazard occupancy data for a zone.
-        ///</summary>
-        ///<param name="zoneId">Zone identifier.</param>
-        ///<returns>Occupancy information.</returns>
         public ZoneOccupancyData GetHazardOccupancy(int zoneId)
         {
             if (!_isInitialized) return new ZoneOccupancyData();
@@ -164,11 +151,6 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             };
         }
 
-        ///<summary>
-        ///Gets hazard density data for an area.
-        ///</summary>
-        ///<param name="area">Area to analyze.</param>
-        ///<returns>Density information.</returns>
         public HazardDensityData GetHazardDensity(Rectangle area)
         {
             if (!_isInitialized) return new HazardDensityData();
@@ -177,11 +159,6 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             return densityData ?? new HazardDensityData();
         }
 
-        ///<summary>
-        ///Triggers visual effects for hazards.
-        ///</summary>
-        ///<param name="hazard">The hazard to trigger visuals for.</param>
-        ///<param name="effectType">Type of visual effect.</param>
         public void TriggerHazardVisuals(Hazard hazard, HazardVisualEffect effectType)
         {
             if (!_isInitialized || hazard == null) return;
@@ -191,8 +168,8 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
 
         private int GetCurrentZone(Hazard hazard)
         {
-            //Simple zone calculation - can be enhanced
-            return (int)(hazard.Position.X / 100) + (int)(hazard.Position.Y / 100) * 10;
+            return (int)(hazard.Position.X / 100) +
+                   (int)(hazard.Position.Y / 100) * 10;
         }
 
         private IEnumerable<IHazardSubsystem> GetSubsystems()
@@ -211,25 +188,16 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
 
     internal class HazardDensity : IHazardSubsystem
     {
-        public void Init()
-        {
-            //No-op for now; hook up if density needs initialization.
-        }
-
-        public void Cleanup()
-        {
-            //No-op for now; hook up if density needs cleanup.
-        }
+        public void Init() { }
+        public void Cleanup() { }
 
         internal HazardDensityData CalculateHazardDensity(Rectangle area)
         {
-            //Placeholder deterministic implementation; safe default.
             return new HazardDensityData();
         }
 
         internal void UpdateDensityForNewHazard(Hazard hazard)
         {
-            //Placeholder deterministic implementation; safe no-op.
         }
     }
 

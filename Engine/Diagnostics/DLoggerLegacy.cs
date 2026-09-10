@@ -1,4 +1,24 @@
-﻿// ============================================================================
+// ====================================================================================================
+//  FILE: DLoggerLegacy.cs
+//  PATH: ./Engine/Diagnostics/
+//  MODULE: Diagnostics
+//
+//  ROLE:
+//      Provide logging, profiling, or diagnostic instrumentation.
+//
+//  RESPONSIBILITIES:
+//      - Provide Log() behavior for the Diagnostics subsystem.
+//      - Provide Log() behavior for the Diagnostics subsystem.
+//      - Provide Log() behavior for the Diagnostics subsystem.
+//      - Provide Log() behavior for the Diagnostics subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+// ============================================================================
 //  FILE: DLoggerLegacy.cs
 //  MODULE: Diagnostics Pattern Library
 //  PARTIAL: DLogger
@@ -22,7 +42,7 @@
 //  VERSION: 1.0 (Legacy Pattern Module)
 // ============================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
@@ -32,7 +52,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         // LEGACY OVERLOAD: string message
         // ====================================================================
 
-        public static void Log(string category, string message)
+        public static void Log(string category, int args, string message, string v)
         {
             string msg = message ?? "(null legacy message)";
 
@@ -48,7 +68,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         // LEGACY OVERLOAD: object
         // ====================================================================
 
-        public static void Log(object anything)
+        public static void Log(object anything, string category)
         {
             string msg = anything?.ToString() ?? "(null legacy object)";
 
@@ -105,3 +125,4 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         }
     }
 }
+

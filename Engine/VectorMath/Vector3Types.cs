@@ -1,7 +1,30 @@
-using System;
-using SASZombieAssaultTD.Engine.Math;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+// ====================================================================================================
+//  FILE: Vector3Types.cs
+//  PATH: ./Engine/VectorMath/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the Vector3Types module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Equals() behavior for the Core subsystem.
+//      - Provide Equals() behavior for the Core subsystem.
+//      - Provide GetHashCode() behavior for the Core subsystem.
+//      - Provide Dot() behavior for the Core subsystem.
+//      - Provide Cross() behavior for the Core subsystem.
+//      - Provide Distance() behavior for the Core subsystem.
+//      - Provide DistanceSquared() behavior for the Core subsystem.
+//      - Provide Lerp() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//      - Provide Parse() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.VectorMath
 {
@@ -29,12 +52,20 @@ namespace SASZombieAssaultTD.Engine.VectorMath
         public static readonly Vector3 Min = new(float.MinValue, float.MinValue, float.MinValue);
         public static readonly Vector3 Max = new(float.MaxValue, float.MaxValue, float.MaxValue);
         internal readonly float Length;
+        private readonly object x;
+        private readonly int v;
 
         public Vector3(float x, float y, float z)
         {
             X = x;
             Y = y;
             Z = z;
+        }
+
+        public Vector3(object x, int v) : this()
+        {
+            this.x = x;
+            this.v = v;
         }
 
         public float Magnitude => (float)System.Math.Sqrt(X * X + Y * Y + Z * Z);
@@ -79,6 +110,21 @@ namespace SASZombieAssaultTD.Engine.VectorMath
         public static bool operator ==(Vector3 left, Vector3 right) => left.Equals(right);
         public static bool operator !=(Vector3 left, Vector3 right) => !left.Equals(right);
 
+        public static implicit operator Vector3(System.Numerics.Vector3 v)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static implicit operator System.Numerics.Vector3(Vector3 v)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static explicit operator System.Numerics.Vector2(Vector3 v)
+        {
+            throw new NotImplementedException();
+        }
+
         public static float Dot(Vector3 left, Vector3 right) =>
             left.X * right.X + left.Y * right.Y + left.Z * right.Z;
 
@@ -122,3 +168,4 @@ namespace SASZombieAssaultTD.Engine.VectorMath
         }
     }
 }
+

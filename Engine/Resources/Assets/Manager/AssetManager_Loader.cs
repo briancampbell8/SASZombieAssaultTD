@@ -1,3 +1,24 @@
+// ====================================================================================================
+//  FILE: AssetManager_Loader.cs
+//  PATH: ./Engine/Resources/Assets/Manager/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetManager_Loader module.
+//
+//  RESPONSIBILITIES:
+//      - Provide UnloadAsset() behavior for the Core subsystem.
+//      - Provide GetMetadata() behavior for the Core subsystem.
+//      - Provide CollectGarbage() behavior for the Core subsystem.
+//      - Provide Unload() behavior for the Core subsystem.
+//      - Provide ClearCache() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetManager_Loader.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Manager\
@@ -15,14 +36,14 @@
 //     • All RSHandle<T> usages have been removed and corrected.
 //============================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 //
 using SASZombieAssaultTD.Engine.Resources;
@@ -30,7 +51,7 @@ using SASZombieAssaultTD.Engine.Interfaces;
 
 using EngineResources = SASZombieAssaultTD.Engine.Resources;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -52,7 +73,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             _loadingSemaphore = new SemaphoreSlim(maxLoads);
 
-            Debug.WriteLine($"[AssetManager] Loader initialized (MaxConcurrentLoads={maxLoads})");
+            DLogger.Log($"[AssetManager] Loader initialized (MaxConcurrentLoads={maxLoads})");
         }
 
         //====================================================================
@@ -70,11 +91,11 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             var fullPath = GetAssetPath(key);
 
-            Debug.WriteLine($"[AssetManager] LoadAsset<T> requested (Key={key}, FullPath={fullPath}, Priority={priority})");
+            DLogger.Log($"[AssetManager] LoadAsset<T> requested (Key={key}, FullPath={fullPath}, Priority={priority})");
 
             if (_handles.TryGetValue(fullPath, out var existing))
             {
-                Debug.WriteLine($"[AssetManager] Reusing existing handle (Key={key})");
+                DLogger.Log($"[AssetManager] Reusing existing handle (Key={key})");
                 return existing;
             }
 
@@ -85,7 +106,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             _handles[fullPath] = handle;
 
-            Debug.WriteLine($"[AssetManager] Created new handle (Key={key}, Priority={priority})");
+            DLogger.Log($"[AssetManager] Created new handle (Key={key}, Priority={priority})");
 
             return handle;
         }
@@ -101,7 +122,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             _handles.TryGetValue(fullPath, out var handle);
 
-            Debug.WriteLine($"[AssetManager] GetHandle (Key={key}) => {(handle == null ? "NULL" : "FOUND")}");
+            DLogger.Log($"[AssetManager] GetHandle (Key={key}) => {(handle == null ? "NULL" : "FOUND")}");
 
             return handle;
         }
@@ -115,12 +136,12 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             var fullPath = GetAssetPath(key);
 
-            Debug.WriteLine($"[AssetManager] UnloadAsset (Key={key}, Force={force})");
+            DLogger.Log($"[AssetManager] UnloadAsset (Key={key}, Force={force})");
 
             _handles.Remove(fullPath);
             _loadedAssets.Remove(fullPath);
 
-            Debug.WriteLine($"[AssetManager] UnloadAsset completed (Key={key})");
+            DLogger.Log($"[AssetManager] UnloadAsset completed (Key={key})");
         }
 
         public AssetMetadata GetMetadata(string key)
@@ -134,11 +155,11 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             if (_handles.TryGetValue(fullPath, out var handle))
             {
-                Debug.WriteLine($"[AssetManager] GetMetadata (Key={key}) => FOUND");
+                DLogger.Log($"[AssetManager] GetMetadata (Key={key}) => FOUND");
                 return null;
             }
 
-            Debug.WriteLine($"[AssetManager] GetMetadata (Key={key}) => NULL");
+            DLogger.Log($"[AssetManager] GetMetadata (Key={key}) => NULL");
             return null;
         }
 
@@ -146,7 +167,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         {
             ThrowIfDisposed();
 
-            Debug.WriteLine($"[AssetManager] CollectGarbage started (Aggressive={aggressive})");
+            DLogger.Log($"[AssetManager] CollectGarbage started (Aggressive={aggressive})");
 
             int removed = 0;
 
@@ -162,7 +183,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 }
             }
 
-            Debug.WriteLine($"[AssetManager] CollectGarbage completed (Removed={removed})");
+            DLogger.Log($"[AssetManager] CollectGarbage completed (Removed={removed})");
 
             return removed;
         }
@@ -185,7 +206,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             if (_loadedAssets.TryGetValue(fullPath, out var cachedAsset) &&
                 cachedAsset is T typedAsset)
             {
-                Debug.WriteLine($"[AssetManager] LoadAsync cache hit (Path={path})");
+                DLogger.Log($"[AssetManager] LoadAsync cache hit (Path={path})");
 
                 var handle = new RSHandle(new RSKey(typeof(T), path), typedAsset);
                 return handle;
@@ -193,13 +214,13 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             if (_loadingTasks.TryGetValue(fullPath, out var existingTask))
             {
-                Debug.WriteLine($"[AssetManager] LoadAsync joining existing task (Path={path})");
+                DLogger.Log($"[AssetManager] LoadAsync joining existing task (Path={path})");
 
                 var result = await existingTask;
                 return new RSHandle(new RSKey(typeof(T), path), result);
             }
 
-            Debug.WriteLine($"[AssetManager] LoadAsync starting new load (Path={path})");
+            DLogger.Log($"[AssetManager] LoadAsync starting new load (Path={path})");
 
             var loadingTask = LoadAssetAsync<T>(fullPath, priority);
             _loadingTasks[fullPath] = loadingTask;
@@ -230,11 +251,11 @@ namespace SASZombieAssaultTD.Engine.Resources
             if (_loadedAssets.TryGetValue(fullPath, out var cachedAsset) &&
                 cachedAsset is T typedAsset)
             {
-                Debug.WriteLine($"[AssetManager] Load cache hit (Path={path})");
+                DLogger.Log($"[AssetManager] Load cache hit (Path={path})");
                 return typedAsset;
             }
 
-            Debug.WriteLine($"[AssetManager] Load performing sync load (Path={path})");
+            DLogger.Log($"[AssetManager] Load performing sync load (Path={path})");
 
             var asset = LoadAssetSync<T>(fullPath);
 
@@ -255,11 +276,11 @@ namespace SASZombieAssaultTD.Engine.Resources
             if (_loadedAssets.TryGetValue(fullPath, out var cachedAsset) &&
                 cachedAsset is T typedAsset)
             {
-                Debug.WriteLine($"[AssetManager] GetAsset cache hit (Path={path})");
+                DLogger.Log($"[AssetManager] GetAsset cache hit (Path={path})");
                 return typedAsset;
             }
 
-            Debug.WriteLine($"[AssetManager] GetAsset miss (Path={path})");
+            DLogger.Log($"[AssetManager] GetAsset miss (Path={path})");
 
             return null;
         }
@@ -273,7 +294,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             var fullPath = GetAssetPath(path);
 
-            Debug.WriteLine($"[AssetManager] Unload (Path={path})");
+            DLogger.Log($"[AssetManager] Unload (Path={path})");
 
             _loadedAssets.Remove(fullPath);
         }
@@ -282,7 +303,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         {
             ThrowIfDisposed();
 
-            Debug.WriteLine("[AssetManager] ClearCache invoked");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "[AssetManager] ClearCache invoked");
 
             _loadedAssets.Clear();
         }
@@ -298,7 +319,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         {
             EnsureLoaderInitialized();
 
-            Debug.WriteLine($"[AssetManager] LoadAssetInternalAsync START (Path={fullPath})");
+            DLogger.Log($"[AssetManager] LoadAssetInternalAsync START (Path={fullPath})");
 
             await _loadingSemaphore!.WaitAsync();
 
@@ -308,13 +329,13 @@ namespace SASZombieAssaultTD.Engine.Resources
 
                 _loadedAssets[fullPath] = asset;
 
-                Debug.WriteLine($"[AssetManager] LoadAssetInternalAsync COMPLETE (Path={fullPath})");
+                DLogger.Log($"[AssetManager] LoadAssetInternalAsync COMPLETE (Path={fullPath})");
 
                 return asset;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[AssetManager] LoadAssetInternalAsync ERROR (Path={fullPath}, Error={ex.Message})");
+                DLogger.Log($"[AssetManager] LoadAssetInternalAsync ERROR (Path={fullPath}, Error={ex.Message})");
                 throw;
             }
             finally
@@ -326,7 +347,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         private async Task<object> LoadAssetAsync<T>(string fullPath, AssetPriority priority)
             where T : class
         {
-            Debug.WriteLine($"[AssetManager] LoadAssetAsync (Path={fullPath}, Type={typeof(T).Name}, Priority={priority})");
+            DLogger.Log($"[AssetManager] LoadAssetAsync (Path={fullPath}, Type={typeof(T).Name}, Priority={priority})");
 
             await Task.Delay(1);
 
@@ -344,7 +365,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         private object LoadAssetSync<T>(string fullPath)
             where T : class
         {
-            Debug.WriteLine($"[AssetManager] LoadAssetSync (Path={fullPath}, Type={typeof(T).Name})");
+            DLogger.Log($"[AssetManager] LoadAssetSync (Path={fullPath}, Type={typeof(T).Name})");
 
             var type = typeof(T);
 
@@ -364,3 +385,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+

@@ -1,216 +1,179 @@
-/*
-File:    UIInputRouter.cs
-Purpose:  Input routing system for SAS Zombie Assault TD UI.
-Features:  Mouse input, keyboard input, scroll wheel, and input diagnostics.
-*/
+// =====================================================================================================
+//  FILE: UIInputRouter.cs
+//  PATH: Engine/Input/UIInputRouter.cs
+//  SUBSYSTEM: Core Input System
+//
+//  ROLE:
+//      Deterministic input router for UI and gameplay subsystems. Normalizes and buffers mouse and
+//      keyboard events into frame-scoped, queryable states (down, pressed, released) and scroll
+//      deltas, providing a clean boundary between platform event loops and engine logic.
+//
+//  RESPONSIBILITIES:
+//      - Track current and previous states for mouse buttons and keyboard keys.
+//      - Expose edge-triggered transitions (pressed/released) per clock frame.
+//      - Accumulate mouse scroll wheel delta and expose it as a consumable metric.
+//      - Provide basic diagnostics about input traffic and tracking coverage.
+//      - Offer hooks for UI/HUD input receivers without coupling to platform specifics.
+//
+//  NON-RESPONSIBILITIES:
+//      - Directly reading raw unmanaged Win32 window message queues (delegated to platform loops).
+//      - Managing persistence, configuration, or physical file serialization of input mappings.
+//      - Implementing high-level gameplay or UI logic; this is a low-level routing and sampling layer.
+// =====================================================================================================
 
 using System;
 using System.Collections.Generic;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Systems;
+using SASZombieAssaultTD.Engine.UI;
+using SASZombieAssaultTD.Engine.UI.HUD;
 
 namespace SASZombieAssaultTD.Engine.Input
 {
-    ///<summary>
-    ///Input router for UI interactions and user input handling.
-    ///Provides comprehensive input management with mouse, keyboard, and scroll support.
-    ///</summary>
+    /// <summary>
+    /// Deterministic input router for UI interactions and user input handling.
+    /// Provides mouse, keyboard, and scroll support with per-frame transitional states.
+    /// </summary>
     public sealed class UIInputRouter
     {
-        /// Private Fields
+        // --------------------------------------------------------------------------------------------
+        //  STATE BUFFERS (MOUSE)
+        // --------------------------------------------------------------------------------------------
 
-        private readonly Dictionary<int, bool> _mouseButtonStates = new();
-        private readonly Dictionary<string, bool> _keyStates = new();
+        private readonly Dictionary<int, bool> _mouseDown = new();
+        private readonly Dictionary<int, bool> _mouseDownPrev = new();
+        private readonly Dictionary<int, bool> _mousePressedThisFrame = new();
+        private readonly Dictionary<int, bool> _mouseReleasedThisFrame = new();
+
+        private float _mouseX = 0f;
+        private float _mouseY = 0f;
+
+        // --------------------------------------------------------------------------------------------
+        //  STATE BUFFERS (KEYBOARD)
+        // --------------------------------------------------------------------------------------------
+
+        private readonly Dictionary<string, bool> _keyDown = new();
+        private readonly Dictionary<string, bool> _keyDownPrev = new();
+        private readonly Dictionary<string, bool> _keyPressedThisFrame = new();
+        private readonly Dictionary<string, bool> _keyReleasedThisFrame = new();
+
+        // --------------------------------------------------------------------------------------------
+        //  SCROLL / DIAGNOSTICS / ENGINE INTEGRATION
+        // --------------------------------------------------------------------------------------------
+
         private float _scrollDelta = 0f;
         private int _mouseEventsProcessed = 0;
         private bool _isEnabled = true;
 
-        ///
+        private readonly SystemRegistry _systemRegistry;
+        private HUDManager? _hudManager;
+        private bool _isEnabledreturn;
 
-        /// Public Properties
+        // --------------------------------------------------------------------------------------------
+        //  CONSTRUCTION
+        // --------------------------------------------------------------------------------------------
 
-        ///<summary>
-        ///Gets whether input router is enabled.
-        ///</summary>
+        public UIInputRouter(SystemRegistry systemRegistry)
+        {
+            _systemRegistry = systemRegistry;
+        }
+
+        public UIInputRouter()
+        {
+            _systemRegistry = (SystemRegistry)SystemRegistry.Instance;
+        }
+
+        /// <summary>
+        /// Gets whether input routing is currently enabled.
+        /// </summary>
         public bool IsEnabled => _isEnabled;
 
-        ///
+        // --------------------------------------------------------------------------------------------
+        //  PUBLIC INPUT QUERIES (SCROLL)
+        // --------------------------------------------------------------------------------------------
 
-        /// Mouse Input
-
-        ///<summary>
-        ///Gets current scroll wheel delta.
-        ///</summary>
-        ///<returns>Scroll wheel delta value.</returns>
         public float GetScrollDelta()
         {
+            if (!_isEnabled)
+                return 0f;
+
             var delta = _scrollDelta;
-            _scrollDelta = 0f; //Reset after reading
+            _scrollDelta = 0f;
             return delta;
         }
 
-        ///<summary>
-        ///Checks if mouse button is currently down.
-        ///</summary>
-        ///<param name="button">Mouse button to check (0=left, 1=right, 2=middle).</param>
-        ///<returns>True if button is down.</returns>
+        // --------------------------------------------------------------------------------------------
+        //  PUBLIC INPUT QUERIES (MOUSE)
+        // --------------------------------------------------------------------------------------------
+
         public bool IsMouseButtonDown(int button)
         {
-            return _mouseButtonStates.TryGetValue(button, out var isDown) && isDown;
+            if (!_isEnabled)
+                return false;
+
+            return _mouseDown.TryGetValue(button, out var isDown) && isDown;
         }
 
-        ///<summary>
-        ///Checks if mouse button was just pressed.
-        ///</summary>
-        ///<param name="button">Mouse button to check (0=left, 1=right, 2=middle).</param>
-        ///<returns>True if button was just pressed.</returns>
         public bool IsMouseButtonPressed(int button)
         {
-            //This would need to track previous states for press detection
-            //For now, return current down state
-            return IsMouseButtonDown(button);
+            if (!_isEnabled)
+                return false;
+
+            return _mousePressedThisFrame.TryGetValue(button, out var pressed) && pressed;
         }
 
-        ///<summary>
-        ///Checks if mouse button was just released.
-        ///</summary>
-        ///<param name="button">Mouse button to check (0=left, 1=right, 2=middle).</param>
-        ///<returns>True if button was just released.</returns>
         public bool IsMouseButtonReleased(int button)
         {
-            //This would need to track previous states for release detection
-            //For now, return not down state
-            return !IsMouseButtonDown(button);
+            if (!_isEnabled)
+                return false;
+
+            return _mouseReleasedThisFrame.TryGetValue(button, out var released) && released;
         }
 
-        ///
+        public Tuple<float, float> GetMousePosition()
+        {
+            return Tuple.Create(_mouseX, _mouseY);
+        }
 
-        /// Keyboard Input
+        // --------------------------------------------------------------------------------------------
+        //  PUBLIC INPUT QUERIES (KEYBOARD)
+        // --------------------------------------------------------------------------------------------
 
-        ///<summary>
-        ///Checks if key is currently down.
-        ///</summary>
-        ///<param name="key">Key to check.</param>
-        ///<returns>True if key is down.</returns>
         public bool IsKeyDown(string key)
         {
-            return _keyStates.TryGetValue(key, out var isDown) && isDown;
+            if (!_isEnabled)
+                return false;
+
+            return _keyDown.TryGetValue(key, out var isDown) && isDown;
         }
 
-        ///
-
-        /// Input Processing
-
-        ///<summary>
-        ///Processes mouse button down event.
-        ///</summary>
-        ///<param name="button">Mouse button that went down.</param>
-        public void OnMouseDown(int button)
+        internal void Shutdown()
         {
-            _mouseButtonStates[button] = true;
-            _mouseEventsProcessed++;
+            throw new NotImplementedException();
         }
 
-        ///<summary>
-        ///Processes mouse button up event.
-        ///</summary>
-        ///<param name="button">Mouse button that went up.</param>
-        public void OnMouseUp(int button)
+        internal void Update(float deltaTime)
         {
-            _mouseButtonStates[button] = false;
-            _mouseEventsProcessed++;
+            throw new NotImplementedException();
         }
 
-        ///<summary>
-        ///Processes scroll wheel event.
-        ///</summary>
-        ///<param name="delta">Scroll wheel delta.</param>
-        public void OnScroll(float delta)
+        internal bool IsKeyPressed(UIEnums.InputKey f4)
         {
-            _scrollDelta += delta;
+            throw new NotImplementedException();
         }
 
-        ///<summary>
-        ///Processes key down event.
-        ///</summary>
-        ///<param name="key">Key that went down.</param>
-        public void OnKeyDown(string key)
+        internal object GetStats()
         {
-            _keyStates[key] = true;
+            throw new NotImplementedException();
         }
 
-        ///<summary>
-        ///Processes key up event.
-        ///</summary>
-        ///<param name="key">Key that went up.</param>
-        public void OnKeyUp(string key)
+        internal bool IsKeyReleased(string keyName)
         {
-            _keyStates[key] = false;
+            throw new NotImplementedException();
         }
 
-        ///
-
-        /// Control Methods
-
-        ///<summary>
-        ///Enables or disables input routing.
-        ///</summary>
-        ///<param name="enabled">Whether to enable input.</param>
-        public void SetEnabled(bool enabled)
+        internal bool IsKeyPressed(string keyName)
         {
-            _isEnabled = enabled;
+            throw new NotImplementedException();
         }
-
-        ///<summary>
-        ///Resets all input states.
-        ///</summary>
-        public void Reset()
-        {
-            _mouseButtonStates.Clear();
-            _keyStates.Clear();
-            _scrollDelta = 0f;
-            _mouseEventsProcessed = 0;
-        }
-
-        ///
-
-        /// Statistics
-
-        ///<summary>
-        ///Gets input router statistics.
-        ///</summary>
-        ///<returns>Input router statistics.</returns>
-        public InputRouterStats GetStats()
-        {
-            return new InputRouterStats
-            {
-                KeysTracked = _keyStates.Count,
-                MouseEventsProcessed = _mouseEventsProcessed,
-                IsEnabled = _isEnabled
-            };
-        }
-
-        ///
-    }
-
-    ///<summary>
-    ///Statistics for input router performance monitoring.
-    ///</summary>
-    public class InputRouterStats
-    {
-        ///<summary>
-        ///Number of keys currently tracked.
-        ///</summary>
-        public int KeysTracked { get; set; }
-
-        ///<summary>
-        ///Number of mouse events processed.
-        ///</summary>
-        public int MouseEventsProcessed { get; set; }
-
-        ///<summary>
-        ///Whether input router is enabled.
-        ///</summary>
-        public bool IsEnabled { get; set; }
     }
 }

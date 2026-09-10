@@ -1,13 +1,33 @@
+// ====================================================================================================
+//  FILE: TwoDBlendNode.cs
+//  PATH: ./Engine/Animation/BlendTree/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the TwoDBlendNode module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Evaluate() behavior for the Core subsystem.
+//      - Provide GetDebugInfo() behavior for the Core subsystem.
+//      - Provide Validate() behavior for the Core subsystem.
+//      - Provide CreateAuto() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //-----------------------------------------------------------------------------
 //Two-dimensional blend node for animation blend trees
 //Namespace: SASZombieAssaultTD.Engine.Animation.BlendTree
 //Implements: IBlendNode
 //-----------------------------------------------------------------------------
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Animation.BlendTree
 {
@@ -206,3 +226,4 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
         }
     }
 }
+

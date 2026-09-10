@@ -1,4 +1,21 @@
-﻿// ====================================================================================================
+// ====================================================================================================
+//  FILE: JsonDiagnosticsWriter.cs
+//  PATH: ./Engine/Diagnostics/
+//  MODULE: Diagnostics
+//
+//  ROLE:
+//      Provide logging, profiling, or diagnostic instrumentation.
+//
+//  RESPONSIBILITIES:
+//      - Provide Write() behavior for the Diagnostics subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+// ====================================================================================================
 //  FILE: JsonDiagnosticsWriter.cs
 //  AUTHOR: BDC
 //  DATE: 2026-06-30
@@ -16,7 +33,7 @@
 //      - Must ALWAYS append exactly one JSON object per line.
 // ====================================================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Text.Json;
 
@@ -60,3 +77,4 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         }
     }
 }
+

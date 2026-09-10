@@ -1,4 +1,21 @@
-using System;
+// ====================================================================================================
+//  FILE: EnemyDefinitionValidator.cs
+//  PATH: ./Engine/Enemies/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the EnemyDefinitionValidator module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Validate() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Enemies;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -29,5 +46,6 @@ namespace SASZombieAssaultTD.Engine.Enemies
         }
     }
 }
+
 
 

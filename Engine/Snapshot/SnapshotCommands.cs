@@ -1,3 +1,27 @@
+// ====================================================================================================
+//  FILE: SnapshotCommands.cs
+//  PATH: ./Engine/Snapshot/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the SnapshotCommands module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Initialize() behavior for the Core subsystem.
+//      - Provide CaptureScreenshot() behavior for the Core subsystem.
+//      - Provide CreateSnapshot() behavior for the Core subsystem.
+//      - Provide ListSnapshots() behavior for the Core subsystem.
+//      - Provide LoadSnapshot() behavior for the Core subsystem.
+//      - Provide DeleteSnapshot() behavior for the Core subsystem.
+//      - Provide ValidateSnapshot() behavior for the Core subsystem.
+//      - Provide ShowHelp() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File: SnapshotCommands.cs
 //Path: E:\BDC\Projects\SASZombieAssaultTD\Engine\Snapshot\SnapshotCommands.cs
@@ -15,9 +39,9 @@
 //    - No fallback logic except explicit exception propagation
 //============================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 //
-using SASZombieAssaultTD.Engine.Extensions;
+// using SASZombieAssaultTD.Engine.Extensions; // Extensions Removed
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Snapshot
@@ -35,7 +59,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
         {
             _snapshotManager = manager ?? throw new ArgumentNullException(nameof(manager));
 
-            DLogger.Log("SnapshotCommands.Initialize", "Snapshot command system initialized");
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.Initialize", "Snapshot command system initialized");
         }
 
         //--------------------------------------------------------------------
@@ -44,16 +68,16 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
         public static void CaptureScreenshot(string[] args)
         {
-            DLogger.Log("SnapshotCommands.CaptureScreenshot.Start", "Begin");
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.CaptureScreenshot.Start", "Begin");
 
             try
             {
                 SnapshotCapture.CaptureScreenshot();
-                DLogger.Log("SnapshotCommands.CaptureScreenshot.Success", "Screenshot captured");
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.CaptureScreenshot.Success", "Screenshot captured");
             }
             catch (Exception ex)
             {
-                DLogger.Log("SnapshotCommands.CaptureScreenshot.Error", ex.Message);
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.CaptureScreenshot.Error", ex.Message);
             }
         }
 
@@ -63,13 +87,13 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
         public static void CreateSnapshot(string[] args)
         {
-            DLogger.Log("SnapshotCommands.CreateSnapshot.Start", "Begin");
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.CreateSnapshot.Start", "Begin");
 
             try
             {
                 if (_snapshotManager == null)
                 {
-                    DLogger.Log("SnapshotCommands.CreateSnapshot.NoManager", "SnapshotManager not initialized");
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.CreateSnapshot.NoManager", "SnapshotManager not initialized");
                     return;
                 }
 
@@ -88,11 +112,11 @@ namespace SASZombieAssaultTD.Engine.Snapshot
                     customId: customName
                 );
 
-                DLogger.Log("SnapshotCommands.CreateSnapshot.Snapshot", snapshot?.Id ?? "null");
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.CreateSnapshot.Snapshot", snapshot?.Id ?? "null");
 
                 if (snapshot == null)
                 {
-                    DLogger.Log("SnapshotCommands.CreateSnapshot.NullSnapshot", "Snapshot creation returned null");
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.CreateSnapshot.NullSnapshot", "Snapshot creation returned null");
                     return;
                 }
 
@@ -100,17 +124,17 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
                 if (saved)
                 {
-                    DLogger.Log("SnapshotCommands.CreateSnapshot.Success",
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.CreateSnapshot.Success",
                         $"Saved={snapshot.Id}, Cash={snapshot.PlayerState.Cash}, Lives={snapshot.PlayerState.Lives}, Wave={snapshot.WaveNumber}");
                 }
                 else
                 {
-                    DLogger.Log("SnapshotCommands.CreateSnapshot.SaveFailed", snapshot.Id);
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.CreateSnapshot.SaveFailed", snapshot.Id);
                 }
             }
             catch (Exception ex)
             {
-                DLogger.Log("SnapshotCommands.CreateSnapshot.Error", ex.Message);
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.CreateSnapshot.Error", ex.Message);
             }
         }
 
@@ -120,29 +144,29 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
         public static void ListSnapshots(string[] args)
         {
-            DLogger.Log("SnapshotCommands.ListSnapshots.Start", "Begin");
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.ListSnapshots.Start", "Begin");
 
             try
             {
                 if (_snapshotManager == null)
                 {
-                    DLogger.Log("SnapshotCommands.ListSnapshots.NoManager", "SnapshotManager not initialized");
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.ListSnapshots.NoManager", "SnapshotManager not initialized");
                     return;
                 }
 
                 var snapshots = _snapshotManager.ListSnapshots();
 
-                DLogger.Log("SnapshotCommands.ListSnapshots.Count", snapshots.Count.ToString());
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.ListSnapshots.Count", snapshots.Count.ToString());
 
                 foreach (var s in snapshots)
                 {
-                    DLogger.Log("SnapshotCommands.ListSnapshots.Entry",
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.ListSnapshots.Entry",
                         $"{s.Id} :: Valid={s.IsValid}, Cash={s.Cash}, Lives={s.Lives}, Wave={s.WaveNumber}");
                 }
             }
             catch (Exception ex)
             {
-                DLogger.Log("SnapshotCommands.ListSnapshots.Error", ex.Message);
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.ListSnapshots.Error", ex.Message);
             }
         }
 
@@ -152,19 +176,19 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
         public static void LoadSnapshot(string[] args)
         {
-            DLogger.Log("SnapshotCommands.LoadSnapshot.Start", "Begin");
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.LoadSnapshot.Start", "Begin");
 
             try
             {
                 if (_snapshotManager == null)
                 {
-                    DLogger.Log("SnapshotCommands.LoadSnapshot.NoManager", "SnapshotManager not initialized");
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.LoadSnapshot.NoManager", "SnapshotManager not initialized");
                     return;
                 }
 
                 if (args == null || args.Length == 0)
                 {
-                    DLogger.Log("SnapshotCommands.LoadSnapshot.Usage", "snapshot_load <id>");
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.LoadSnapshot.Usage", "snapshot_load <id>");
                     return;
                 }
 
@@ -173,7 +197,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
                 if (snapshot == null)
                 {
-                    DLogger.Log("SnapshotCommands.LoadSnapshot.NotFound", id);
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.LoadSnapshot.NotFound", id);
                     return;
                 }
 
@@ -181,17 +205,17 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
                 if (applied)
                 {
-                    DLogger.Log("SnapshotCommands.LoadSnapshot.Success",
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.LoadSnapshot.Success",
                         $"Loaded={snapshot.Id}, Cash={snapshot.PlayerState.Cash}, Lives={snapshot.PlayerState.Lives}, Wave={snapshot.WaveNumber}");
                 }
                 else
                 {
-                    DLogger.Log("SnapshotCommands.LoadSnapshot.ApplyFailed", error);
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.LoadSnapshot.ApplyFailed", error);
                 }
             }
             catch (Exception ex)
             {
-                DLogger.Log("SnapshotCommands.LoadSnapshot.Error", ex.Message);
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.LoadSnapshot.Error", ex.Message);
             }
         }
 
@@ -201,33 +225,33 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
         public static void DeleteSnapshot(string[] args)
         {
-            DLogger.Log("SnapshotCommands.DeleteSnapshot.Start", "Begin");
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.DeleteSnapshot.Start", "Begin");
 
             try
             {
                 if (_snapshotManager == null)
                 {
-                    DLogger.Log("SnapshotCommands.DeleteSnapshot.NoManager", "SnapshotManager not initialized");
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.DeleteSnapshot.NoManager", "SnapshotManager not initialized");
                     return;
                 }
 
                 if (args == null || args.Length == 0)
                 {
-                    DLogger.Log("SnapshotCommands.DeleteSnapshot.Usage", "snapshot_delete <id>");
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.DeleteSnapshot.Usage", "snapshot_delete <id>");
                     return;
                 }
 
                 string id = args[0];
                 bool deleted = _snapshotManager.DeleteSnapshot(id);
 
-                DLogger.Log(
+                DLogger.Log(LogSubsystems.Snapshot,
                     deleted ? "SnapshotCommands.DeleteSnapshot.Success" : "SnapshotCommands.DeleteSnapshot.Failed",
                     id
                 );
             }
             catch (Exception ex)
             {
-                DLogger.Log("SnapshotCommands.DeleteSnapshot.Error", ex.Message);
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.DeleteSnapshot.Error", ex.Message);
             }
         }
 
@@ -237,19 +261,19 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
         public static void ValidateSnapshot(string[] args)
         {
-            DLogger.Log("SnapshotCommands.ValidateSnapshot.Start", "Begin");
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.ValidateSnapshot.Start", "Begin");
 
             try
             {
                 if (_snapshotManager == null)
                 {
-                    DLogger.Log("SnapshotCommands.ValidateSnapshot.NoManager", "SnapshotManager not initialized");
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.ValidateSnapshot.NoManager", "SnapshotManager not initialized");
                     return;
                 }
 
                 if (args == null || args.Length == 0)
                 {
-                    DLogger.Log("SnapshotCommands.ValidateSnapshot.Usage", "snapshot_validate <id>");
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.ValidateSnapshot.Usage", "snapshot_validate <id>");
                     return;
                 }
 
@@ -258,16 +282,16 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
                 if (snapshot == null)
                 {
-                    DLogger.Log("SnapshotCommands.ValidateSnapshot.NotFound", id);
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.ValidateSnapshot.NotFound", id);
                     return;
                 }
 
-                DLogger.Log("SnapshotCommands.ValidateSnapshot.Result",
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.ValidateSnapshot.Result",
                     $"Valid={snapshot.Metadata.IsValid}, Checksum={(string.IsNullOrEmpty(snapshot.Metadata.Checksum) ? "None" : "Present")}");
             }
             catch (Exception ex)
             {
-                DLogger.Log("SnapshotCommands.ValidateSnapshot.Error", ex.Message);
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.ValidateSnapshot.Error", ex.Message);
             }
         }
 
@@ -277,7 +301,8 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
         public static void ShowHelp(string[] args)
         {
-            DLogger.Log("SnapshotCommands.Help", "Displayed");
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCommands.Help", "Displayed");
         }
     }
 }
+

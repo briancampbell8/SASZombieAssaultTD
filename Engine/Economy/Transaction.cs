@@ -1,10 +1,29 @@
+// ====================================================================================================
+//  FILE: Transaction.cs
+//  PATH: ./Engine/Economy/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the Transaction module.
+//
+//  RESPONSIBILITIES:
+//      - Provide IsValid() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//      - Provide Clone() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    Transaction.cs
 Purpose: Represents individual economic transactions in the game.
 Features: Transaction tracking, validation, and logging.
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Core;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -115,7 +134,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             IsSuccessful = true;
             ErrorMessage = string.Empty;
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"Transaction: Created {type} transaction - {resourceType} {amount} from {source} to {destination}");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"Transaction: Created {type} transaction - {resourceType} {amount} from {source} to {destination}");
         }
 
         ///<summary>
@@ -135,7 +154,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             IsSuccessful = false;
             ErrorMessage = errorMessage;
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"Transaction: Failed {type} transaction - {errorMessage}");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", $"Transaction: Failed {type} transaction - {errorMessage}");
         }
 
         ///<summary>
@@ -174,3 +193,4 @@ namespace SASZombieAssaultTD.Engine.Economy
         }
     }
 }
+

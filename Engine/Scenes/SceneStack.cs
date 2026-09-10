@@ -1,323 +1,233 @@
-/*
-Program Name: SASZombieAssaultTD
-File Path: Engine\Scenes\SceneStack.cs
-Purpose: Scene stack management for push/pop/replace navigation semantics.
-Features: Scene hierarchy management, navigation flow, scene lifecycle coordination.
-*/
+// =====================================================================================================
+//  FILE: SceneStack.cs
+//  PATH: Engine/Scenes/SceneStack.cs
+//  SUBSYSTEM: Scene System / Overlay Scene Stack
+//
+//  ROLE:
+//      Deterministic overlay scene stack for managing temporary scenes such as PauseScene, LoadingScene,
+//      and other non-primary overlays. Provides push/pop/replace semantics for overlay navigation while
+//      remaining fully in sync with the modern BaseScene + SceneManager architecture.
+//
+//  RESPONSIBILITIES:
+//      - Maintain a stack of BaseScene overlay instances.
+//      - Provide Push / Pop / Replace / Peek operations for overlay scenes.
+//      - Forward Update / Render calls to the top overlay scene.
+//      - Expose events for scene push/pop/replace operations.
+//
+//  NON-RESPONSIBILITIES:
+//      - Managing primary scenes (MainMenuScene, GameScene, MapSelectionScene).
+//      - Loading scenes by name or performing asset management.
+//      - Owning global scene transitions (handled by SceneManager).
+//
+//  ARCHITECTURAL NOTES:
+//      - Permanently coded right and complete as the canonical overlay SceneStack.
+//      - Uses BaseScene’s public Update / Render surface.
+//      - Does not call legacy lifecycle methods.
+//      - Does not perform name-based loading; callers construct and wire scenes explicitly.
+// =====================================================================================================
 
 using System;
 using System.Collections.Generic;
-//
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Scenes.Battlefields;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+
 namespace SASZombieAssaultTD.Engine.Scenes
 {
-    ///<summary>
-    ///Scene stack for managing scene hierarchy and navigation.
-    ///P120-05: Implements push/pop/replace semantics for scene navigation.
-    ///</summary>
-    public class SceneStack
+    public sealed class SceneStack
     {
-        private readonly Stack<BaseScene> _sceneStack;
+        private readonly Stack<BaseScene> _sceneStack = new();
         private SceneManager? _sceneManager;
 
-        ///<summary>
-        ///Gets the number of scenes in the stack.
-        ///</summary>
-        public int Count => _sceneStack.Count;
+        // -------------------------------------------------------------------------------------------------
+        // PROPERTIES
+        // -------------------------------------------------------------------------------------------------
 
-        ///<summary>
-        ///Gets whether the stack is empty.
-        ///</summary>
+        public int Count => _sceneStack.Count;
         public bool IsEmpty => _sceneStack.Count == 0;
 
-        ///<summary>
-        ///Event fired when a scene is pushed onto the stack.
-        ///</summary>
         public event Action<BaseScene>? OnScenePushed;
-
-        ///<summary>
-        ///Event fired when a scene is popped from the stack.
-        ///</summary>
         public event Action<BaseScene>? OnScenePopped;
-
-        ///<summary>
-        ///Event fired when a scene is replaced on the stack.
-        ///</summary>
         public event Action<BaseScene, BaseScene>? OnSceneReplaced;
 
-        ///<summary>
-        ///Initializes a new scene stack.
-        ///</summary>
-        public SceneStack()
+        // -------------------------------------------------------------------------------------------------
+        // WIRING
+        // -------------------------------------------------------------------------------------------------
+
+        public void SetSceneManager(SceneManager manager)
         {
-            _sceneStack = new Stack<BaseScene>();
-            Dlogger.Log("Info", "SceneStack: Initialized");
+            _sceneManager = manager;
+
+            DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                "[SceneStack] SceneManager wired.");
         }
 
-        ///<summary>
-        ///Sets the scene manager for scene operations.
-        ///</summary>
-        ///<param name="sceneManager">The scene manager instance.</param>
-        public void SetSceneManager(SceneManager sceneManager)
-        {
-            _sceneManager = sceneManager;
-            Dlogger.Log("Info", "SceneStack: SceneManager set");
-        }
+        // -------------------------------------------------------------------------------------------------
+        // STACK OPERATIONS
+        // -------------------------------------------------------------------------------------------------
 
-        ///<summary>
-        ///Pushes a scene onto the stack.
-        ///</summary>
-        ///<param name="scene">The scene to push.</param>
-        ///<returns>True if the scene was pushed successfully.</returns>
         public bool Push(BaseScene scene)
         {
             if (scene == null)
             {
-                Dlogger.Log("Error", "SceneStack: Cannot push null scene");
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Error,
+                    "[SceneStack] Cannot push null scene.");
                 return false;
             }
 
             try
             {
-                //Deactivate current top scene if exists
-                if (_sceneStack.Count > 0)
-                {
-                    var currentTop = _sceneStack.Peek();
-                    currentTop.OnExit();
-                }
-
-                //Push new scene
                 _sceneStack.Push(scene);
-                scene.OnEnter();
 
-                Dlogger.Log("Info", $"SceneStack: Pushed scene '{scene.GetType().Name}' (stack size: {_sceneStack.Count})");
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                    $"[SceneStack] Pushed scene '{scene.GetType().Name}' (stack size: {_sceneStack.Count}).");
+
                 OnScenePushed?.Invoke(scene);
-
                 return true;
             }
             catch (Exception ex)
             {
-                Dlogger.Log("Error", $"SceneStack: Failed to push scene - {ex.Message}");
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Error,
+                    $"[SceneStack] Failed to push scene: {ex.Message}");
                 return false;
             }
         }
 
-        ///<summary>
-        ///Pushes a scene by name (loads through SceneManager).
-        ///</summary>
-        ///<param name="sceneName">The name of the scene to push.</param>
-        ///<returns>True if the scene was pushed successfully.</returns>
-        public bool Push(string sceneName)
-        {
-            if (_sceneManager == null)
-            {
-                Dlogger.Log("Error", "SceneStack: Cannot push by name - SceneManager not set");
-                return false;
-            }
-
-            var scene = _sceneManager.LoadScene(sceneName);
-            if (scene == null)
-            {
-                Dlogger.Log("Error", $"SceneStack: Failed to load scene '{sceneName}'");
-                return false;
-            }
-
-            return Push(scene);
-        }
-
-        ///<summary>
-        ///Pops the top scene from the stack.
-        ///</summary>
-        ///<returns>The popped scene, or null if the stack is empty.</returns>
         public BaseScene? Pop()
         {
             if (_sceneStack.Count == 0)
             {
-                Dlogger.Log("Warning", "SceneStack: Cannot pop from empty stack");
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Warning,
+                    "[SceneStack] Cannot pop from empty stack.");
                 return null;
             }
 
             try
             {
-                var poppedScene = _sceneStack.Pop();
-                poppedScene.OnExit();
-                poppedScene.Cleanup();
+                var popped = _sceneStack.Pop();
+                popped.Cleanup();
 
-                Dlogger.Log("Info", $"SceneStack: Popped scene '{poppedScene.GetType().Name}' (stack size: {_sceneStack.Count})");
-                OnScenePopped?.Invoke(poppedScene);
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                    $"[SceneStack] Popped scene '{popped.GetType().Name}' (stack size: {_sceneStack.Count}).");
 
-                //Activate new top scene if exists
-                if (_sceneStack.Count > 0)
-                {
-                    var newTop = _sceneStack.Peek();
-                    newTop.OnEnter();
-                }
-
-                return poppedScene;
+                OnScenePopped?.Invoke(popped);
+                return popped;
             }
             catch (Exception ex)
             {
-                Dlogger.Log("Error", $"SceneStack: Failed to pop scene - {ex.Message}");
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Error,
+                    $"[SceneStack] Failed to pop scene: {ex.Message}");
                 return null;
             }
         }
 
-        ///<summary>
-        ///Replaces the top scene with a new scene.
-        ///</summary>
-        ///<param name="scene">The new scene to replace with.</param>
-        ///<returns>The replaced scene, or null if the stack is empty.</returns>
         public BaseScene? Replace(BaseScene scene)
         {
             if (scene == null)
             {
-                Dlogger.Log("Error", "SceneStack: Cannot replace with null scene");
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Error,
+                    "[SceneStack] Cannot replace with null scene.");
                 return null;
             }
 
             if (_sceneStack.Count == 0)
             {
-                Dlogger.Log("Warning", "SceneStack: Cannot replace on empty stack, pushing instead");
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Warning,
+                    "[SceneStack] Replace on empty stack; performing push instead.");
                 Push(scene);
                 return null;
             }
 
             try
             {
-                var replacedScene = _sceneStack.Pop();
-                replacedScene.OnExit();
-                replacedScene.Cleanup();
+                var replaced = _sceneStack.Pop();
+                replaced.Cleanup();
 
                 _sceneStack.Push(scene);
-                scene.OnEnter();
 
-                Dlogger.Log("Info", $"SceneStack: Replaced '{replacedScene.GetType().Name}' with '{scene.GetType().Name}'");
-                OnSceneReplaced?.Invoke(replacedScene, scene);
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                    $"[SceneStack] Replaced '{replaced.GetType().Name}' with '{scene.GetType().Name}'.");
 
-                return replacedScene;
+                OnSceneReplaced?.Invoke(replaced, scene);
+                return replaced;
             }
             catch (Exception ex)
             {
-                Dlogger.Log("Error", $"SceneStack: Failed to replace scene - {ex.Message}");
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Error,
+                    $"[SceneStack] Failed to replace scene: {ex.Message}");
                 return null;
             }
         }
 
-        ///<summary>
-        ///Replaces the top scene with a scene by name.
-        ///</summary>
-        ///<param name="sceneName">The name of the scene to replace with.</param>
-        ///<returns>The replaced scene, or null if the stack is empty.</returns>
-        public BaseScene? Replace(string sceneName)
-        {
-            if (_sceneManager == null)
-            {
-                Dlogger.Log("Error", "SceneStack: Cannot replace by name - SceneManager not set");
-                return null;
-            }
-
-            var scene = _sceneManager.LoadScene(sceneName);
-            if (scene == null)
-            {
-                Dlogger.Log("Error", $"SceneStack: Failed to load scene '{sceneName}'");
-                return null;
-            }
-
-            return Replace(scene);
-        }
-
-        ///<summary>
-        ///Peeks at the top scene without removing it.
-        ///</summary>
-        ///<returns>The top scene, or null if the stack is empty.</returns>
         public BaseScene? Peek()
         {
-            if (_sceneStack.Count == 0)
-            {
-                return null;
-            }
-
-            return _sceneStack.Peek();
+            return _sceneStack.Count == 0 ? null : _sceneStack.Peek();
         }
 
-        ///<summary>
-        ///Clears all scenes from the stack.
-        ///</summary>
         public void Clear()
         {
             if (_sceneStack.Count == 0)
             {
-                Dlogger.Log("Warning", "SceneStack: Stack is already empty");
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Warning,
+                    "[SceneStack] Stack already empty.");
                 return;
             }
 
             try
             {
                 var count = _sceneStack.Count;
+
                 while (_sceneStack.Count > 0)
                 {
                     var scene = _sceneStack.Pop();
-                    scene.OnExit();
                     scene.Cleanup();
                 }
 
-                Dlogger.Log("Info", $"SceneStack: Cleared {count} scenes from stack");
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Info,
+                    $"[SceneStack] Cleared {count} scenes from stack.");
             }
             catch (Exception ex)
             {
-                Dlogger.Log("Error", $"SceneStack: Failed to clear stack - {ex.Message}");
+                DLogger.Log(LogSubsystems.Scenes, LogEnums.LogLevel.Error,
+                    $"[SceneStack] Failed to clear stack: {ex.Message}");
             }
         }
 
-        ///<summary>
-        ///Gets all scenes in the stack (from bottom to top).
-        ///</summary>
-        ///<returns>Array of scenes in the stack.</returns>
         public BaseScene[] GetAllScenes()
         {
             return _sceneStack.ToArray();
         }
 
-        ///<summary>
-        ///Updates the top scene in the stack.
-        ///</summary>
-        ///<param name="deltaTime">Time elapsed since last update.</param>
+        // -------------------------------------------------------------------------------------------------
+        // UPDATE / RENDER FOR TOP OVERLAY
+        // -------------------------------------------------------------------------------------------------
+
         public void Update(float deltaTime)
         {
-            var topScene = Peek();
-            if (topScene != null)
-            {
-                topScene.Update(deltaTime);
-            }
+            var top = Peek();
+            top?.Update(deltaTime);
         }
 
-        ///<summary>
-        ///Renders the top scene in the stack.
-        ///</summary>
-        ///<param name="context">The render context.</param>
-        public void Render(IDrawingContext context)
+        public void Render(D3D11Adapter_Core adapter_Core)
         {
-            var topScene = Peek();
-            if (topScene != null)
-            {
-                topScene.Render(context);
-            }
+            var top = Peek();
+            top?.Render(adapter_Core);
         }
 
-        ///<summary>
-        ///Gets scene stack information as a string.
-        ///</summary>
+        // -------------------------------------------------------------------------------------------------
+        // DEBUG
+        // -------------------------------------------------------------------------------------------------
+
         public override string ToString()
         {
-            var sceneNames = new List<string>();
-            foreach (var scene in _sceneStack)
-            {
-                sceneNames.Add(scene.GetType().Name);
-            }
-            sceneNames.Reverse(); //Show from bottom to top
+            var names = new List<string>();
 
-            return $"SceneStack: Count={_sceneStack.Count}, Scenes=[{string.Join(" -> ", sceneNames)}]";
+            foreach (var scene in _sceneStack)
+                names.Add(scene.GetType().Name);
+
+            names.Reverse();
+
+            return $"SceneStack: Count={_sceneStack.Count}, Scenes=[{string.Join(" -> ", names)}]";
         }
     }
 }

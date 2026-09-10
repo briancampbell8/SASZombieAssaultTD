@@ -1,87 +1,143 @@
-/*
-File: GameRootMain.cs
-Path: Engine/GameRoot/GameRootMain.cs
-
-Purpose: P11-09-01 - Public API orchestrator for GameRoot system.
-Contains only the public API and high-level flow that delegates
-to other partial files. No deep logic lives here.
-
-Role: Public entry point and high-level coordinator.
-- Provides clean API surface for external systems
-- Delegates to specialized partial files
-- Maintains public interface compatibility
-- High-level game start/shutdown functions
-
-Notes: This is the main partial class that external systems interact with.
-All complex logic is delegated to specialized partial files.
-*/
-
+// =====================================================================================================
+//  FILE: GameRootMain.cs
+//  PATH: Engine/GameRoot/GameRootMain.cs
+//  SUBSYSTEM: Engine/GameRoot
 //
+//  ROLE:
+//      Defines the minimal deterministic lifecycle contract for any engine-hosted program. Implemented
+//      by GameRootMain to provide a clean, engine-facing boundary for initialization, execution, update,
+//      render dispatch, ticking, and shutdown.
+//
+//  RESPONSIBILITIES:
+//      - Provide a strict lifecycle surface: Initialize → Run → Update → Render → Shutdown.
+//      - Allow engine hosts (e.g., GameRootMain) to expose deterministic lifecycle entry points.
+//      - Serve as the base contract for any future top-level engine program modules.
+//      - Support both GPU-context rendering and generic object-based render forwarding.
+//
+//  NON-RESPONSIBILITIES:
+//      - Implementing update or render logic internally (delegated to subsystems).
+//      - Managing system registration, asset loading, or state-machine orchestration.
+//      - Handling GPU device creation, swap-chain management, or windowing.
+//
+//  ARCHITECTURAL NOTES:
+//      - This interface replaces legacy partial lifecycle methods.
+//      - GameRootMain implements this interface and delegates lifecycle operations to:
+//          • GameRootInitialization
+//          • GameRootUpdateLoop
+//          • GameRootStateController
+//          • GameRootSystemRegistration
+//      - All engine-hosted programs MUST implement this interface without exception.
+//      - Includes legacy compatibility signatures (Render(object), Tick(object,...)) for transitional
+//        subsystem support, though the GPU-only pipeline uses Render(D3D11Adapter_Core).
+// =====================================================================================================
+
+
 using System;
 using System.Threading;
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.GameRoot;
+using SASZombieAssaultTD.Engine.Input;
 using SASZombieAssaultTD.Engine.Interfaces;
 using SASZombieAssaultTD.Engine.Platform;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.Render.D3D11.DeviceCore;
+using SASZombieAssaultTD.Engine.Scenes;
+using SASZombieAssaultTD.Engine.State;
 using SASZombieAssaultTD.Engine.Systems;
-using SASZombieAssaultTD.Engine.UI.Input;
-using IRenderContext = SASZombieAssaultTD.Engine.Interfaces.IRenderContext;
+using SASZombieAssaultTD.Engine.UI.Rendering.Modern;
+
 namespace SASZombieAssaultTD.Engine
 {
-    public partial class GameRoot : IProgram
+    public sealed class GameRootMain : IDisposable
     {
         private readonly ISystemRegistry _systemRegistry;
         private readonly SystemManager _systemManager;
         private readonly UpdateManager _updateManager;
         private readonly RenderManager _renderManager;
-        private readonly UIInputRouter _inputManager;
-        private readonly IGameStateMachine _stateMachine;
-        private readonly IRenderContext _renderContext;
+        private readonly UIInputRouter _inputRouter;
+        private readonly StateMachine _stateMachine;
+        private readonly D3D11Adapter_Core _renderContext;
+        private readonly ModernUIRenderer _uiRenderer;
 
-        public SASZombieAssaultTD.Engine.Enemies.EnemySystem? EnemySystem =>
-            GetService<SASZombieAssaultTD.Engine.Enemies.EnemySystem>();
+        private SceneManager _sceneManager;
 
-        public object? RenderSystem => GetService<RenderManager>();
+        private readonly GameRootInitialization _initialization;
+        private readonly GameRootUpdateLoop _updateLoop;
+        private readonly GameRootStateController _stateController;
+        private readonly GameRootSystemRegistration _systemRegistration;
 
-        public UIInputRouter? Input => _inputManager;
-
-        private bool _isInitialized = false;
-        private bool _isRunning = false;
+        private bool _isInitialized;
+        private bool _isRunning;
         private readonly object _stateLock = new();
 
         private DateTime _lastFrameTime;
-        private float _frameAccumulator = 0f;
+        private float _frameAccumulator;
         private const float TargetFrameTime = 1f / 60f;
 
-        public GameRoot(
+        public bool Initialized { get; internal set; }
+        public bool Running { get; internal set; }
+        public ISystemRegistry SystemRegistry { get; internal set; }
+        public SystemManager SystemManager { get; internal set; }
+        public DateTime LastFrameTime { get; internal set; }
+
+        public GameRootMain(
             ISystemRegistry systemRegistry,
             SystemManager systemManager,
             UpdateManager updateManager,
             RenderManager renderManager,
             UIInputRouter inputRouter,
-            IGameStateMachine stateMachine,
-            IRenderContext renderContext)
+            StateMachine stateMachine,
+            D3D11Adapter_Core renderContext,
+            ModernUIRenderer uiRenderer)
         {
             _systemRegistry = systemRegistry ?? throw new ArgumentNullException(nameof(systemRegistry));
-            _systemManager = systemManager ?? throw new ArgumentNullException(nameof(systemManager));
-            _updateManager = updateManager ?? throw new ArgumentNullException(nameof(updateManager));
-            _renderManager = renderManager ?? throw new ArgumentNullException(nameof(renderManager));
-            _inputManager = inputRouter;
+            _systemManager = systemManager;
+            _updateManager = updateManager;
+            _renderManager = renderManager;
+            _inputRouter = inputRouter;
             _stateMachine = stateMachine ?? throw new ArgumentNullException(nameof(stateMachine));
-            _renderContext = renderContext ?? throw new ArgumentNullException(nameof(renderContext));
+            _renderContext = renderContext;
+            _uiRenderer = uiRenderer;
 
-            DLogger.Log(
-                LogSubsystems.GameRoot,
-                LogLevel.Debug,
-                "GameRoot initialized with all managers");
+            SystemRegistry = systemRegistry;
+            SystemManager = systemManager;
+
+            _systemRegistration = new GameRootSystemRegistration(
+                _systemRegistry,
+                _systemManager,
+                _updateManager,
+                _renderManager,
+                _inputRouter,
+                _stateMachine,
+                _uiRenderer,
+                _renderContext);
+
+            _initialization = new GameRootInitialization(
+                _systemRegistry,
+                _systemManager,
+                _updateManager,
+                _renderManager,
+                _inputRouter,
+                _stateMachine,
+                _uiRenderer,
+                _renderContext);
+
+            _updateLoop = new GameRootUpdateLoop(
+                _systemRegistry,
+                _systemManager,
+                _updateManager,
+                _renderManager,
+                _stateMachine,
+                _renderContext,
+                _uiRenderer);
+
+            _stateController = new GameRootStateController(
+                _systemRegistry,
+                _systemManager,
+                _stateMachine);
+
+            _lastFrameTime = DateTime.Now;
+            LastFrameTime = _lastFrameTime;
         }
-
-        public bool IsInitialized => _isInitialized;
-        public bool IsRunning => _isRunning;
-
-        public EngineState State =>
-            _isInitialized
-                ? (_isRunning ? EngineState.Running : EngineState.Stopped)
-                : EngineState.Uninitialized;
 
         public void Initialize()
         {
@@ -90,38 +146,72 @@ namespace SASZombieAssaultTD.Engine
                 if (_isInitialized)
                     return;
 
-                try
+                if (_renderContext != null && _systemRegistry != null)
                 {
-                    DLogger.Log(
-                        LogSubsystems.GameRoot,
-                        "Starting GameRoot initialization...");
-                    DLogger.Log(LogSubsystems.GameRoot, LogLevel.Trace, "TRACE", "GameRoot.Initialize: Enter");
+                    _systemRegistry.Register<D3D11Adapter_Core>(_renderContext);
 
-                    //Implementation lives in Initialization.cs
-                    PerformInitialization();
-
-                    _isInitialized = true;
-
-                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", "GameRoot.Initialize: Exit OK");
-                    DLogger.Log(
-                        LogSubsystems.GameRoot,
-                        LogLevel.Debug,
-                        "GameRoot initialization completed successfully");
+                    if (_renderContext.DeviceCore != null)
+                    {
+                        _systemRegistry.Register<D3D11DeviceCore>(_renderContext.DeviceCore);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    DLogger.Log(
-                        LogSubsystems.GameRoot,
-                        LogLevel.Error,
-                        "GameRoot.Initialize: EXCEPTION");
-                    DLogger.Log(
-                        LogSubsystems.GameRoot,
-                        LogLevel.Debug,
-                        ex.Message,
-                        "GameRoot.Initialize");
 
-                    Shutdown();
-                    throw;
+                _systemRegistration.RegisterCoreSystems();
+                _initialization.Execute();
+
+                _sceneManager = _systemRegistry.Resolve<SceneManager>();
+
+                _isInitialized = true;
+                Initialized = true;
+
+                // FIX: DO NOT start the loop here.
+                // Run() must be the ONLY place that sets _isRunning = true.
+
+                _stateController.StartGame();
+                _sceneManager.SetScene("MainMenu");
+            }
+        }
+
+        public void Run()
+        {
+            if (!_isInitialized)
+                throw new InvalidOperationException("GameRootMain must be initialized before running.");
+
+            lock (_stateLock)
+            {
+                if (_isRunning)
+                    return;
+
+                _isRunning = true;
+                Running = true;
+            }
+
+            _lastFrameTime = DateTime.Now;
+            LastFrameTime = _lastFrameTime;
+
+            while (_isRunning)
+            {
+                var now = DateTime.Now;
+                var delta = (float)(now - _lastFrameTime).TotalSeconds;
+                _lastFrameTime = now;
+                LastFrameTime = _lastFrameTime;
+
+                _frameAccumulator += delta;
+
+                while (_frameAccumulator >= TargetFrameTime)
+                {
+                    _updateLoop.UpdateFrame(TargetFrameTime);
+                    _frameAccumulator -= TargetFrameTime;
+                }
+
+                _updateLoop.RenderFrame();
+
+                var frameTime = (float)(DateTime.Now - now).TotalSeconds;
+                if (frameTime < TargetFrameTime)
+                {
+                    var sleepMs = (int)((TargetFrameTime - frameTime) * 1000f);
+                    if (sleepMs > 0)
+                        Thread.Sleep(sleepMs);
                 }
             }
         }
@@ -134,89 +224,19 @@ namespace SASZombieAssaultTD.Engine
                     return;
 
                 _isRunning = false;
+                Running = false;
 
-                try
-                {
-                    DLogger.Log(
-                        LogSubsystems.GameRoot,
-                        LogLevel.Info,
-                        "Starting GameRoot shutdown...");
-                    DLogger.Log(LogSubsystems.GameRoot, LogLevel.Trace, "TRACE", "GameRoot.Shutdown: Enter");
+                _stateController.GameOver();
+                _stateMachine.Shutdown();
 
-                    //Implementation lives in Initialization.cs
-                    PerformShutdown();
-
-                    _isInitialized = false;
-
-                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", "GameRoot.Shutdown: Exit OK");
-                    DLogger.Log(
-                        LogSubsystems.GameRoot,
-                        LogLevel.Info,
-                        "GameRoot shutdown completed successfully");
-                }
-                catch (Exception ex)
-                {
-                    DLogger.Log(
-                        LogSubsystems.GameRoot,
-                        LogLevel.Error,
-                        ex.Message,
-                        "GameRoot.Shutdown: EXCEPTION");
-                    DLogger.Log(
-                        LogSubsystems.GameRoot,
-                        LogLevel.Debug,
-                        ex.Message,
-                         "GameRoot.Shutdown");
-                }
+                _isInitialized = false;
+                Initialized = false;
             }
         }
 
-        public void Run()
+        public void Dispose()
         {
-            if (!_isInitialized)
-                throw new InvalidOperationException("GameRoot must be initialized before running.");
-
-            lock (_stateLock)
-            {
-                if (_isRunning)
-                    return;
-
-                _isRunning = true;
-            }
-
-            _lastFrameTime = DateTime.Now;
-
-            try
-            {
-                while (_isRunning)
-                {
-                    var currentTime = DateTime.Now;
-                    var deltaTime = (float)(currentTime - _lastFrameTime).TotalSeconds;
-                    _lastFrameTime = currentTime;
-
-                    _frameAccumulator += deltaTime;
-
-                    while (_frameAccumulator >= TargetFrameTime)
-                    {
-                        DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", $"GameRoot.Run: Update({TargetFrameTime})");
-                        Update(TargetFrameTime);
-                        _frameAccumulator -= TargetFrameTime;
-                    }
-
-                    DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", "GameRoot.Run: Render()");
-                    Render();
-
-                    var frameTime = (float)(DateTime.Now - currentTime).TotalSeconds;
-                    if (frameTime < TargetFrameTime)
-                    {
-                        var sleepTime = (int)((TargetFrameTime - frameTime) * 1000);
-                        Thread.Sleep(sleepTime);
-                    }
-                }
-            }
-            finally
-            {
-                _isRunning = false;
-            }
+            Shutdown();
         }
 
         public void Update(float deltaTime)
@@ -224,156 +244,29 @@ namespace SASZombieAssaultTD.Engine
             if (!_isInitialized || !_isRunning)
                 return;
 
-            try
+            lock (_stateLock)
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", $"GameRoot.Update: Enter (delta={deltaTime:F4})");
-
-                //Implementation lives in UpdateLoop.cs
-                PerformUpdate(deltaTime);
-
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", "GameRoot.Update: Exit OK");
-            }
-            catch (Exception ex)
-            {
-                DLogger.Log(
-                    LogSubsystems.Unknown,
-                    LogLevel.Error,
-                    "GameRoot.Update: EXCEPTION");
-                DLogger.Log(
-                    LogSubsystems.GameRoot, LogLevel.Error,
-                    $"Failed to update game: {ex.Message}");
-
-
-                Shutdown();
+                _updateLoop.UpdateFrame(deltaTime);
             }
         }
 
-        public void Render()
+        public void Render(D3D11Adapter_Core context)
         {
             if (!_isInitialized || !_isRunning)
                 return;
 
-            try
-            {
-                DLogger.Log(LogSubsystems.GameRoot, LogLevel.Trace, "TRACE", "GameRoot.Render: Enter");
-
-                //Implementation lives in UpdateLoop.cs
-                PerformRender();
-
-                DLogger.Log(LogSubsystems.GameRoot, LogLevel.Trace, "TRACE", "GameRoot.Render: Exit OK");
-            }
-            catch (Exception ex)
-            {
-                DLogger.Log(
-                    LogSubsystems.GameRoot,
-                    LogLevel.Error,
-                    "GameRoot.Render: EXCEPTION");
-                DLogger.Log(
-                    LogSubsystems.GameRoot,
-                    LogLevel.Error,
-                    ex.Message,
-                    "GameRoot.Render");
-            }
-        }
-
-        public EngineDiagnostics GetDiagnostics()
-        {
             lock (_stateLock)
             {
-                return GetEngineDiagnostics();
+                _updateLoop.RenderFrame();
             }
         }
 
-        private EngineDiagnostics GetEngineDiagnostics()
+        public void Tick(object gameTime, ElapsedGameTime elapsedGameTime)
         {
-            //Intentionally still guarded until diagnostics pipeline is implemented
-            DLogger.Log(
-                LogSubsystems.GameRoot,
-                LogLevel.Debug,
-                "GameRoot.GetEngineDiagnostics: NOT IMPLEMENTED");
-            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
-            throw new NotImplementedException();
         }
 
-        //======================================================================================
-        //IProgram IMPLEMENTATION — public API is the single source of truth
-        //======================================================================================
-
-        void IProgram.Initialize()
+        public void Render(object value)
         {
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", "IProgram.Initialize: delegating to GameRoot.Initialize");
-            Initialize();
-        }
-
-        void IProgram.Update(TimeSpan deltaTime)
-        {
-            NotImplementedGuard.Hit("IProgram.Update NOT IMPLEMENTED");
-            throw new NotImplementedException();
-        }
-
-        void IProgram.Render()
-        {
-            NotImplementedGuard.Hit("IProgram.Render NOT IMPLEMENTED");
-            throw new NotImplementedException();
-        }
-
-        void IProgram.Shutdown()
-        {
-            NotImplementedGuard.Hit("IProgram.Shutdown NOT IMPLEMENTED");
-            throw new NotImplementedException();
-        }
-    }
-
-    public enum EngineState
-    {
-        Uninitialized,
-        Initializing,
-        Running,
-        Stopped,
-        ShuttingDown,
-        Error
-    }
-
-    public class EngineDiagnostics
-    {
-        public EngineState State { get; set; }
-        public bool IsInitialized { get; set; }
-        public bool IsRunning { get; set; }
-        public float FrameAccumulator { get; set; }
-        public float TargetFrameTime { get; set; }
-
-        public Diagnostics.ManagerDiagnostics SystemManagerDiagnostics { get; set; }
-        public Diagnostics.ManagerDiagnostics UpdateManagerDiagnostics { get; set; }
-        public Diagnostics.ManagerDiagnostics RenderManagerDiagnostics { get; set; }
-        public Diagnostics.ManagerDiagnostics InputManagerDiagnostics { get; set; }
-
-        internal static void Trace(string eventName, string details)
-        {
-            eventName ??= string.Empty;
-            details ??= string.Empty;
-
-            try
-            {
-                var message = $"EngineDiagnostics.Trace: {eventName} | {details}";
-                DLogger.Log(
-                    LogSubsystems.GameRoot,
-                    LogLevel.Trace,
-                    "TRACE",
-                    message);
-            }
-            catch (Exception ex)
-            {
-                DLogger.Log(
-                    LogSubsystems.GameRoot,
-                    LogLevel.Error,
-                    "EngineDiagnostics.Trace: EXCEPTION");
-                DLogger.Log(
-                    LogSubsystems.GameRoot,
-                    LogLevel.Error,
-
-                    $"EngineDiagnostics.Trace: Diagnostics failure suppressed | {ex.Message}"
-                );
-            }
         }
     }
 }

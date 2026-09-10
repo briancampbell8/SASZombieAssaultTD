@@ -1,18 +1,39 @@
+// ====================================================================================================
+//  FILE: EnemySystem.cs
+//  PATH: ./Engine/Enemies/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the EnemySystem module.
+//
+//  RESPONSIBILITIES:
+//      - Provide UpdateEnemies() behavior for the Core subsystem.
+//      - Provide RemoveEnemy() behavior for the Core subsystem.
+//      - Provide ClearAllEnemies() behavior for the Core subsystem.
+//      - Provide AddEnemy() behavior for the Core subsystem.
+//      - Provide RemoveEnemy() behavior for the Core subsystem.
+//      - Provide Update() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    EnemySystem.cs
-Purpose: Reference to EntityManager; AddEnemy, RemoveEnemy; enemy update loop in Update.
+Purpose: Reference to ECSEntityCore; AddEnemy, RemoveEnemy; enemy update loop in Update.
 Features: Event publishing for enemy spawn and death events.
 */
+using System;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Linq;
 using SASZombieAssaultTD.Engine.ECS;
 using SASZombieAssaultTD.Engine.Events;
-using SASZombieAssaultTD.Engine.Navigation;
-using SASZombieAssaultTD.Engine.Waves;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Waves.WaveManagement;
+using SASZombieAssaultTD.Engine.Systems;
 
 namespace SASZombieAssaultTD.Engine.Enemies
 {
@@ -33,19 +54,24 @@ namespace SASZombieAssaultTD.Engine.Enemies
             return _services.TryGetValue(typeof(T), out var service) ? (T)service : default(T);
         }
     }
+
     ///<summary>
     ///Manages enemies, including their lifecycle, updates, and event publishing.
     ///</summary>
     public class EnemySystem
     {
         private readonly List<Enemy> _enemies = new();
-        private readonly EntityManager _entityManager;
-        private readonly EventRouter _eventBus;
+        private readonly ECSEntityCore _ECSEntityCore;
+        private readonly ECSRuntimeEvents _eventBus;
 
-        public EnemySystem(EntityManager entityManager, EventRouter eventBus)
+        public EnemySystem(ECSEntityCore ECSEntityCore, ECSRuntimeEvents eventBus)
         {
-            _entityManager = entityManager ?? throw new ArgumentNullException(nameof(entityManager));
+            _ECSEntityCore = ECSEntityCore ?? throw new ArgumentNullException(nameof(ECSEntityCore));
             _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
+        }
+
+        public EnemySystem()
+        {
         }
 
         ///<summary>
@@ -66,7 +92,6 @@ namespace SASZombieAssaultTD.Engine.Enemies
         {
             foreach (var enemy in _enemies)
             {
-                //Update logic for each enemy
                 enemy.Update(deltaTime);
             }
         }
@@ -77,7 +102,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
         ///<param name="enemyId">ID of enemy to remove.</param>
         public void RemoveEnemy(int enemyId)
         {
-            var enemy = _enemies.FirstOrDefault(e => e.Entity.Id == enemyId);
+            var enemy = _enemies.FirstOrDefault(e => e.ECSEntityCore.Id == enemyId);
             if (enemy != null)
             {
                 RemoveEnemy(enemy);
@@ -105,43 +130,35 @@ namespace SASZombieAssaultTD.Engine.Enemies
             if (_enemies.Contains(enemy)) return;
 
             _enemies.Add(enemy);
-            //TODO: Fix EntityManager integration when methods are available
-            //_entityManager.AddEntity(enemy.Entity);
 
-            _eventBus.Publish(new EnemySpawnedEvent(enemy));
+            // TODO: Wire to the correct ECSEntityCore API (CreateEntity/RegisterEntity/etc.)
+            // Example placeholder:
+            // _ECSEntityCore.CreateEntity(enemy.Entity);
+            // Replace the above line with your actual canonical ECS method.
+
+            _eventBus.TriggerEvent("EnemySpawned", new EnemySpawnedEvent(enemy));
         }
 
         ///<summary>
         ///Removes an enemy from the system and publishes an event.
         ///</summary>
-        ///        public EnemyDeathEvent(int entityId, ZombieType Type, Vector2 Position)
-        public EnemySystem( int ntityId, ZombieType type, Vector3 position)
-        {
-            int entityId = 0;
-            int EntityId = entityId;
-            ZombieType Type = type;
-            Vector3 Position = position;
-        }
-
-        public EnemySystem()
-        {
-        }
-
         public void RemoveEnemy(Enemy enemy)
         {
             if (enemy == null) throw new ArgumentNullException(nameof(enemy));
             if (!_enemies.Remove(enemy)) return;
 
-            //TODO: Fix EntityManager integration when methods are available
-            //_entityManager.RemoveEntity(enemy.Entity);
+            // TODO: Fix ECSEntityCore integration when methods are available.
+            // Example placeholder:
+            // _ECSEntityCore.RemoveEntity(enemy.Entity);
 
-        //   _eventBus.Publish(
-          //     new EnemyDeathEvent(
-            //       enemy.Entity.Id,
-              //     enemy.Type,
-                //   enemy.Position
-            _eventBus.Publish(new EnemyDeathEvent(enemy.Entity.Id, enemy.Type, enemy.Position
-            ));
+            _eventBus.TriggerEvent(
+                "EnemyDeath",
+                new EnemyDeathEvent(
+                    enemy.ECSEntityCore.Id,
+                    enemy.Type,
+                    enemy.Position
+                )
+            );
         }
 
         ///<summary>
@@ -151,7 +168,8 @@ namespace SASZombieAssaultTD.Engine.Enemies
         {
             foreach (var enemy in _enemies)
             {
-                //Update logic for each enemy (if needed)
+                // Per-frame enemy update logic can be added here if needed.
+                enemy.Update(deltaTime);
             }
 
             ProcessEnemyDeaths();
@@ -179,7 +197,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
         }
 
         ///<summary>
-        ///Gets the current wave number from the WaveController.
+        ///Gets the current wave number from the WaveDirector.
         ///</summary>
         private int GetCurrentWaveNumber()
         {
@@ -195,7 +213,3 @@ namespace SASZombieAssaultTD.Engine.Enemies
         }
     }
 }
-
-
-
-

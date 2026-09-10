@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: AssetPipeline_Types.cs
+//  PATH: ./Engine/Resources/Assets/Pipeline/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetPipeline_Types module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //============================================================================
 //File:        AssetPipeline_Types.cs
@@ -40,8 +57,8 @@
 */
 
 //
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -129,3 +146,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         public TimeSpan ValidationTime { get; set; }
     }
 }
+

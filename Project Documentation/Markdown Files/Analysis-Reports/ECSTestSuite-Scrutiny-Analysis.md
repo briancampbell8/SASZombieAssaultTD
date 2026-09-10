@@ -10,7 +10,7 @@
 
 ### 1. **MISSING DEBUGLOGGER - COMPILATION ERROR**
 **Location:** Line 66  
-**Code:** `DebugLogger.Log("TEST", $"Test '{name}' threw exception: {ex}");`  
+**Code:** `DebugLogger.Log(LogSubsystems.ResourcesPipeline, "TEST", $"Test '{name}' threw exception: {ex}");`  
 **Problem:** `DebugLogger` class is completely undefined - no import, no definition  
 **Impact:** **WILL NOT COMPILE**  
 **Fix Required:** IMMEDIATE  

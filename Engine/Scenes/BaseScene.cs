@@ -1,172 +1,135 @@
-// =========================================================
+// =====================================================================================================
 //  FILE: BaseScene.cs
-//  PATH: Engine/Platform/BaseScene.cs
-//  SUBSYSTEM: Platform Abstraction Layer
-//  ROLE: Defines the deterministic lifecycle contract
-//  =========================================================
+//  PATH: Engine/Scenes/BaseScene.cs
+//  SUBSYSTEM: Scene System / Deterministic Scene Lifecycle Stage
+//
+//  ROLE:
+//      Authoritative base class for all engine-hosted scenes. Provides the deterministic lifecycle
+//      contract used by SceneManager and GameRootMain. Represents a single pipeline stage in the
+//      scene processing system.
+//
+//  RESPONSIBILITIES:
+//      - Provide canonical lifecycle surface:
+//          • SetGameRoot(GameRootMain root)
+//          • SetSceneManager(SceneManager manager)
+//          • SetInputRouter(UIInputRouter router)
+//          • OnLoad()
+//          • OnStart()
+//          • OnUpdate(float deltaTime)
+//          • OnRender(D3D11Adapter_Core adapter)
+//          • OnUnload()
+//      - Maintain initialization and start flags.
+//      - Serve as the foundation for all gameplay and UI scenes.
+//
+//  NON-RESPONSIBILITIES:
+//      - Scene-specific logic (implemented in derived scenes).
+//      - Resource loading, GPU management, or asset lifecycles.
+//      - Emitting SceneProcessingFlags (SceneManager handles pipeline confirmation).
+//
+//  ARCHITECTURAL NOTES:
+//      - All scenes MUST inherit from BaseScene.
+//      - SceneManager invokes lifecycle methods deterministically.
+//      - This file is permanently correct for the new deterministic pipeline.
+// =====================================================================================================
 
-using SASZombieAssaultTD.Engine.ECS;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.UI.Input;
-using UISystem = SASZombieAssaultTD.Engine.UI.UISystem;
+using SASZombieAssaultTD.Engine.Input;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
 
 namespace SASZombieAssaultTD.Engine.Scenes
 {
-    /// <summary>
-    /// Root game object that manages the overall game state and core subsystems.
-    /// </summary>
-    public class GameRoot
-    {
-        public bool IsInitialized { get; private set; }
-        public bool IsRunning { get; private set; }
-
-        public EntityManager? EntityManager { get; private set; }
-        public UIInputRouter? Input { get; private set; }
-        public UISystem? UISystem { get; private set; }
-        public AnimationSystem? AnimationSystem { get; private set; }
-        public EnemySystem? EnemySystem { get; private set; }
-        public RenderSystem? RenderSystem { get; private set; }
-
-        public GameRoot()
-        {
-            IsInitialized = false;
-            IsRunning = false;
-        }
-
-        /// <summary>
-        /// Initializes the game root and its subsystems.
-        /// </summary>
-        public void Initialize()
-        {
-            if (IsInitialized)
-                return;
-
-            // Basic subsystem wiring; replace with your actual factories/DI as needed.
-            EntityManager = new EntityManager();
-            Input = new UIInputRouter();
-            UISystem = new UISystem();
-            AnimationSystem = new AnimationSystem();
-            EnemySystem = new EnemySystem();
-            RenderSystem = new RenderSystem();
-            RenderSystem.Initialize();
-
-            IsInitialized = true;
-        }
-
-        /// <summary>
-        /// Starts the game.
-        /// </summary>
-        public void Start()
-        {
-            if (!IsInitialized || IsRunning)
-                return;
-
-            IsRunning = true;
-        }
-
-        /// <summary>
-        /// Stops the game.
-        /// </summary>
-        public void Stop()
-        {
-            if (!IsRunning)
-                return;
-
-            IsRunning = false;
-        }
-    }
-
-    /// <summary>
-    /// Manages animations for entities.
-    /// </summary>
-    public class AnimationSystem
-    {
-        private readonly System.Collections.Generic.Dictionary<uint, string> _entityAnimations;
-        private readonly System.Collections.Generic.Dictionary<string, float> _animationDurations;
-
-        public AnimationSystem()
-        {
-            _entityAnimations = new System.Collections.Generic.Dictionary<uint, string>();
-            _animationDurations = new System.Collections.Generic.Dictionary<string, float>();
-
-            _animationDurations["idle"] = 1.0f;
-            _animationDurations["walk"] = 0.8f;
-            _animationDurations["attack"] = 0.5f;
-            _animationDurations["death"] = 1.5f;
-        }
-
-        public void SetAnimation(uint entityId, string animationName)
-        {
-            _entityAnimations[entityId] = animationName;
-        }
-
-        public string GetAnimation(uint entityId)
-        {
-            return _entityAnimations.TryGetValue(entityId, out var animation) ? animation : "idle";
-        }
-
-        public float GetAnimationDuration(string animationName)
-        {
-            return _animationDurations.TryGetValue(animationName, out var duration) ? duration : 1.0f;
-        }
-
-        public void Update(float deltaTime)
-        {
-            // Hook animation timing/state here if needed.
-        }
-    }
-
     public abstract class BaseScene
     {
-        private GameRoot? _gameRoot;
-        private SceneManager? _sceneManager;
+        protected GameRootMain GameRoot;
+        protected SceneManager SceneManager;
+        protected UIInputRouter InputRouter;
 
-        protected GameRoot? GameRoot => _gameRoot;
-        protected SceneManager? SceneManager => _sceneManager;
+        protected bool _isInitialized;
+        protected bool _isStarted;
 
-        protected EntityManager? EntityManager => _gameRoot?.EntityManager;
-        protected UIInputRouter? InputRouter => _gameRoot?.Input;
-        protected UISystem? UISystem => _gameRoot?.UISystem;
-        protected AnimationSystem? AnimationSystem => _gameRoot?.AnimationSystem;
-        protected EnemySystem? EnemySystem => _gameRoot?.EnemySystem;
-        protected RenderSystem? RenderSystem => _gameRoot?.RenderSystem;
+        // ---------------------------------------------------------------------------------------------
+        // ENGINE INJECTION
+        // ---------------------------------------------------------------------------------------------
 
-        public void SetGameRoot(GameRoot gameRoot)
+        public virtual void SetGameRoot(GameRootMain root)
         {
-            _gameRoot = gameRoot;
+            GameRoot = root;
         }
 
-        public void SetSceneManager(SceneManager sceneManager)
+        public virtual void SetSceneManager(SceneManager manager)
         {
-            _sceneManager = sceneManager;
+            SceneManager = manager;
         }
 
-        public virtual void OnEnter() { }
-        public virtual void OnExit() { }
-        public virtual void Initialize() { }
-        public virtual void Update(float deltaTime) { }
-        public virtual void Render(IRenderContext context) { }
-        public virtual void OnUpdate(float deltaTime) { }
-        public virtual void OnRender(IRenderContext context) { }
-        public virtual void LoadContent() { }
-        public virtual void Cleanup() { }
-
-        /// <summary>
-        /// IDrawingContext bridge; default implementation just wraps a frame around derived scene rendering.
-        /// </summary>
-        internal void Render(IDrawingContext context)
+        public virtual void SetInputRouter(UIInputRouter router)
         {
-            if (_gameRoot?.RenderSystem == null)
+            InputRouter = router;
+        }
+
+        // ---------------------------------------------------------------------------------------------
+        // LIFECYCLE (INTERNAL – CALLED BY SceneManager)
+        // ---------------------------------------------------------------------------------------------
+
+        internal virtual void OnLoad()
+        {
+            _isInitialized = true;
+        }
+
+        internal virtual void OnStart()
+        {
+            _isStarted = true;
+        }
+
+        internal virtual void OnUpdate(float deltaTime)
+        {
+        }
+
+        internal virtual void OnRender(D3D11Adapter_Core adapter)
+        {
+        }
+
+        internal virtual void OnUnload()
+        {
+            _isInitialized = false;
+            _isStarted = false;
+        }
+
+        // ---------------------------------------------------------------------------------------------
+        // PUBLIC OVERRIDABLE SURFACE (FOR DERIVED SCENES)
+        // ---------------------------------------------------------------------------------------------
+
+        public virtual void Initialize()
+        {
+            _isInitialized = true;
+        }
+
+        public virtual void Update(float deltaTime)
+        {
+        }
+
+        public virtual void Cleanup()
+        {
+            _isInitialized = false;
+            _isStarted = false;
+        }
+
+        // ---------------------------------------------------------------------------------------------
+        // RENDER DISPATCH
+        // ---------------------------------------------------------------------------------------------
+
+        internal void Render(D3D11Adapter_Core uiContext)
+        {
+            if (uiContext == null)
                 return;
 
-            _gameRoot.RenderSystem.BeginFrame();
-            // Derived scenes are expected to use Render(IRenderContext) with the engine's render context.
-            _gameRoot.RenderSystem.EndFrame();
+            if (!_isInitialized || !_isStarted)
+                return;
+
+            OnRender(uiContext);
         }
 
-        internal virtual void OnUnload() { }
-
-        internal abstract void OnLoad();
-        internal abstract void OnStart();
+        internal void Render(D3D11Adapter_Core adapter, float v)
+        {
+            Render(adapter);
+        }
     }
 }

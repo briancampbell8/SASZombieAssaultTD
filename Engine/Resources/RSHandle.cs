@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: RSHandle.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSHandle module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        RSHandle.cs
 //Program:     RSHandle
@@ -29,10 +46,10 @@
 //       retired in a controlled, non‑compounding migration.
 //============================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Assets;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -68,6 +85,10 @@ namespace SASZombieAssaultTD.Engine.Resources
             Instance = instance ?? throw new ArgumentNullException(nameof(instance));
         }
 
+        public RSHandle(string textureName)
+        {
+        }
+
         ///<summary>
         ///Returns the loaded instance cast to the specified type. Throws an
         ///InvalidCastException if the underlying instance is not compatible.
@@ -88,3 +109,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+

@@ -1,4 +1,23 @@
-﻿// ============================================================================
+// ====================================================================================================
+//  FILE: DLoggerCustom.cs
+//  PATH: ./Engine/Diagnostics/
+//  MODULE: Diagnostics
+//
+//  ROLE:
+//      Provide logging, profiling, or diagnostic instrumentation.
+//
+//  RESPONSIBILITIES:
+//      - Provide LogCustom() behavior for the Diagnostics subsystem.
+//      - Provide LogCustom() behavior for the Diagnostics subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+
+// ============================================================================
 //  FILE: DLoggerCustom.cs
 //  MODULE: Diagnostics Pattern Library
 //  PARTIAL: DLogger
@@ -23,7 +42,7 @@
 //  VERSION: 1.0 (Custom Pattern Module)
 // ============================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
@@ -36,9 +55,6 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         /// <summary>
         /// Logs a custom message with a caller‑defined diagnostic tag.
         /// </summary>
-        /// <param name="subsystem">The subsystem producing the log.</param>
-        /// <param name="customTag">A caller‑defined tag describing the custom event.</param>
-        /// <param name="message">The message to log.</param>
         public static void LogCustom(
             LogSubsystems subsystem,
             string customTag,
@@ -55,9 +71,6 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         /// <summary>
         /// Logs a custom exception with a caller‑defined diagnostic tag.
         /// </summary>
-        /// <param name="subsystem">The subsystem producing the log.</param>
-        /// <param name="customTag">A caller‑defined tag describing the custom event.</param>
-        /// <param name="exception">The exception instance to log.</param>
         public static void LogCustom(
             LogSubsystems subsystem,
             string customTag,
@@ -70,6 +83,52 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                 $"[CUSTOM][{customTag}] {msg}",
                 $"Custom_{customTag}_Exception",
                 3
+            );
+        }
+
+        /// <summary>
+        /// Core render‑aware logging overload used by the rendering pipeline. Executes optional render callbacks and
+        /// logs the message safely.
+        /// </summary>
+        internal static void Log(string format, Action<object> render, LogEnums.LogLevel level, string message)
+        {
+            // Execute optional render callback safely
+            if (render != null)
+            {
+                try
+                {
+                    render(message);
+                }
+                catch (Exception ex)
+                {
+                    ResolveAndLog(
+                        LogSubsystems.General,
+                        $"[RenderCallbackError] {ex.Message}",
+                        "Render_Callback_Error",
+                        2
+                    );
+                }
+            }
+
+            // Log the message through the normal diagnostics pipeline
+            ResolveAndLog(
+                LogSubsystems.General,
+                message,
+                "Render_Log_Message",
+                1
+            );
+        }
+
+        /// <summary>
+        /// Logs a custom message with a caller-defined diagnostic tag.
+        /// </summary>
+        internal static void LogCustom(object info, string message)
+        {
+            ResolveAndLog(
+                LogSubsystems.General,
+                message,
+                "Internal_Log_Message",
+                1
             );
         }
     }

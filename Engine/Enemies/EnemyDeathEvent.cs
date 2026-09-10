@@ -1,8 +1,30 @@
-using System;
-using System.Collections.Generic;
+// ====================================================================================================
+//  FILE: EnemyDeathEvent.cs
+//  PATH: ./Engine/Enemies/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the EnemyDeathEvent module.
+//
+//  RESPONSIBILITIES:
+//      - Provide AddDamageSource() behavior for the Core subsystem.
+//      - Provide AddStatistic() behavior for the Core subsystem.
+//      - Provide AddAchievement() behavior for the Core subsystem.
+//      - Provide GetPrimaryDamageSource() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//      - Provide GetDetailedReport() behavior for the Core subsystem.
+//      - Provide Clone() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.VectorMath;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Enemies.EnemiesEnums;
 
 namespace SASZombieAssaultTD.Engine.Enemies
 {
@@ -31,7 +53,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
         public double CashValue { get; set; }
         public List<string> DamageSources { get; set; } = new();
         public Dictionary<string, double> DamageBreakdown { get; set; } = new();
-        
+
         //Missing properties
         public object Enemy { get; set; }
         public string SourceOfDamage { get; set; }
@@ -107,13 +129,13 @@ namespace SASZombieAssaultTD.Engine.Enemies
             get
             {
                 float rating = 1.0f;
-                
+
                 if (WasHeadshot) rating += 0.3f;
                 if (WasCriticalKill) rating += 0.2f;
                 if (WasExplosiveKill) rating += 0.1f;
                 if (ComboMultiplier > 1.0f) rating += 0.1f;
                 if (DistanceFromPlayer > 50f) rating += 0.1f;
-                
+
                 return System.Math.Clamp(rating, 0f, 2f);
             }
         }
@@ -128,7 +150,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
             if (!string.IsNullOrEmpty(source))
             {
                 DamageSources.Add(source);
-                
+
                 if (DamageBreakdown.ContainsKey(source))
                 {
                     DamageBreakdown[source] += damage;
@@ -137,7 +159,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
                 {
                     DamageBreakdown[source] = damage;
                 }
-                
+
                 DamageDealt += (int)damage;
             }
         }
@@ -190,7 +212,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
 
             double maxDamage = 0;
             var primarySource = "Unknown";
-            
+
             foreach (var kvp in DamageBreakdown)
             {
                 if (kvp.Value > maxDamage)
@@ -199,7 +221,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
                     primarySource = kvp.Key;
                 }
             }
-            
+
             return primarySource;
         }
 
@@ -319,3 +341,4 @@ namespace SASZombieAssaultTD.Engine.Enemies
         }
     }
 }
+

@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: RSDiscovery.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSDiscovery module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Discover() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    RSDiscovery.cs
 Author:  BDC
@@ -8,14 +25,14 @@ Notes:   Stateless. First step in the resource pipeline.
 Discover method returns empty list on error and logs details.
 */
 
-using SASZombieAssaultTD.Engine.Assets;
-using SASZombieAssaultTD.Engine.Core;
 //
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using SASZombieAssaultTD.Engine.Assets;
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Resources.Assets;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Resources
 {
     ///<summary>
@@ -49,7 +66,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                DLogger.Log("Error", $"[Assets] Failed to enumerate files under '{root}': {ex.Message}");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "Error", $"[Assets] Failed to enumerate files under '{root}': {ex.Message}");
                 return results;
             }
 
@@ -75,7 +92,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                     bool isValid = ValidateMetadata(metadata);
                     if (!isValid)
                     {
-                        DLogger.Log("Warn", $"[Assets] Invalid metadata for {metadata.Key}: Type={metadata.Type}, Format={metadata.Format ?? "unknown"}");
+                        DLogger.Log(LogSubsystems.ResourcesPipeline, "Warn", $"[Assets] Invalid metadata for {metadata.Key}: Type={metadata.Type}, Format={metadata.Format ?? "unknown"}");
                         continue;
                     }
 
@@ -88,7 +105,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 }
                 catch (Exception ex)
                 {
-                    DLogger.Log("Error", $"[Assets] Failed to process file '{file}': {ex.Message}");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "Error", $"[Assets] Failed to process file '{file}': {ex.Message}");
                     continue;
                 }
             }
@@ -158,5 +175,6 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+
 
 

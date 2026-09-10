@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: RSMetadata.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSMetadata module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    RSMetadata.cs
 Author:  BDC
@@ -6,10 +23,10 @@ Purpose: Describes metadata associated with a resource, including type, size, fo
 Notes:   Mutable. Used by loaders, validation, and resource registries.
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -74,5 +91,6 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+
 
 

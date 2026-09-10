@@ -1,13 +1,33 @@
-/*
-File:    GetUpgradeInfoTextColor.cs
-Purpose: Returns color coding for upgrade tooltip text.
-*/
-
-using System;
-using SASZombieAssaultTD.Engine.Core;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
-
+// ====================================================================================================
+//  FILE: GetUpgradeInfoTextColor.cs
+//  PATH: ./Engine/UI/Rendering/
+//  MODULE: Rendering
+//
+//  ROLE:
+//      Provide rendering logic, draw calls, batching, or GPU resource management.
+//
+//  RESPONSIBILITIES:
+//      - Provide Title() behavior for the Rendering subsystem.
+//      - Provide Description() behavior for the Rendering subsystem.
+//      - Provide Cost() behavior for the Rendering subsystem.
+//      - Provide PositiveStat() behavior for the Rendering subsystem.
+//      - Provide NegativeStat() behavior for the Rendering subsystem.
+//      - Provide Requirement() behavior for the Rendering subsystem.
+//      - Provide Locked() behavior for the Rendering subsystem.
+//      - Provide Maxed() behavior for the Rendering subsystem.
+//      - Provide SpecialAbility() behavior for the Rendering subsystem.
+//      - Provide Warning() behavior for the Rendering subsystem.
+//      - Provide Info() behavior for the Rendering subsystem.
+//      - Provide GetColor() behavior for the Rendering subsystem.
+//      - Provide GetStatusColor() behavior for the Rendering subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using static SASZombieAssaultTD.Engine.UI.UIEnums;
 namespace SASZombieAssaultTD.Engine.UI.Rendering
 {
     ///<summary>
@@ -23,7 +43,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.White;
         }
-        
+
         ///<summary>
         ///Gets color for description text.
         ///</summary>
@@ -32,7 +52,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.LightGray;
         }
-        
+
         ///<summary>
         ///Gets color for cost text.
         ///</summary>
@@ -41,7 +61,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Yellow;
         }
-        
+
         ///<summary>
         ///Gets color for positive stat text.
         ///</summary>
@@ -50,7 +70,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Green;
         }
-        
+
         ///<summary>
         ///Gets color for negative stat text.
         ///</summary>
@@ -59,7 +79,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Red;
         }
-        
+
         ///<summary>
         ///Gets color for requirement text.
         ///</summary>
@@ -68,7 +88,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Orange;
         }
-        
+
         ///<summary>
         ///Gets color for locked text.
         ///</summary>
@@ -77,7 +97,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Gray;
         }
-        
+
         ///<summary>
         ///Gets color for maxed text.
         ///</summary>
@@ -86,7 +106,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Gold;
         }
-        
+
         ///<summary>
         ///Gets color for special ability text.
         ///</summary>
@@ -95,7 +115,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Cyan;
         }
-        
+
         ///<summary>
         ///Gets color for warning text.
         ///</summary>
@@ -104,7 +124,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.Red;
         }
-        
+
         ///<summary>
         ///Gets color for info text.
         ///</summary>
@@ -113,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         {
             return Color.LightBlue;
         }
-        
+
         ///<summary>
         ///Gets color based on text type.
         ///</summary>
@@ -137,7 +157,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                 _ => Description()
             };
         }
-        
+
         ///<summary>
         ///Gets color based on upgrade status.
         ///</summary>
@@ -158,22 +178,10 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             };
         }
     }
-    
+
     ///<summary>
     ///Enumeration for upgrade text types.
     ///</summary>
-    public enum UpgradeTextType
-    {
-        Title,
-        Description,
-        Cost,
-        PositiveStat,
-        NegativeStat,
-        Requirement,
-        Locked,
-        Maxed,
-        SpecialAbility,
-        Warning,
-        Info
-    }
+
 }
+

@@ -5,14 +5,13 @@ Purpose: Save migration system for version compatibility.
 Features: Version-aware migration, backup creation, automatic migration on load, P120/P100 field migration.
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Text.Json;
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 //
-using SASZombieAssaultTD.Engine.Gameplay;
-using SASZombieAssaultTD.Engine.Scenes.Battlefields;
+using SASZombieAssaultTD.Engine.GameRoot.GamePlay;
 namespace SASZombieAssaultTD.Engine.Save
 {
     ///<summary>
@@ -57,7 +56,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 "SASZombieAssaultTD",
                 "Saves");
 
-            Dlogger.Log(LogSubsystems.Unknown, LogLevel.Info, $"SaveMigration: Initialized with target version {_targetVersion}");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, $"SaveMigration: Initialized with target version {_targetVersion}");
         }
 
         ///<summary>
@@ -69,13 +68,13 @@ namespace SASZombieAssaultTD.Engine.Save
         {
             if (saveData == null)
             {
-                Dlogger.Log(LogLevel.Warning, "SaveMigration: Cannot migrate null save data");
+                DLogger.Log(LogEnums.LogLevel.Warning, "SaveMigration: Cannot migrate null save data");
                 return null;
             }
 
             if (saveData.Version >= _targetVersion)
             {
-                Dlogger.Log(LogSubsystems.Unknown, LogLevel.Info, $"SaveMigration: Save is already at version {saveData.Version}, no migration needed");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, $"SaveMigration: Save is already at version {saveData.Version}, no migration needed");
                 return saveData;
             }
 
@@ -99,13 +98,13 @@ namespace SASZombieAssaultTD.Engine.Save
                 //Version tracking handled by SaveManager
                 OnMigrationCompleted?.Invoke("SaveData", true);
 
-                Dlogger.Log(LogSubsystems.Unknown, LogLevel.Info, $"SaveMigration: Successfully migrated from version {sourceVersion} to {_targetVersion}");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, $"SaveMigration: Successfully migrated from version {sourceVersion} to {_targetVersion}");
                 return currentData;
             }
             catch (Exception ex)
             {
                 OnMigrationFailed?.Invoke("SaveData", ex);
-                Dlogger.Log(LogSubsystems.Save, LogLevel.Info, $"SaveMigration: Migration failed - {ex.Message}");
+                DLogger.Log(LogSubsystems.Save, LogEnums.LogLevel.Info, $"SaveMigration: Migration failed - {ex.Message}");
                 return null;
             }
         }
@@ -119,7 +118,7 @@ namespace SASZombieAssaultTD.Engine.Save
         ///<returns>The migrated save data.</returns>
         private SaveData MigrateToNextVersion(SaveData saveData, int fromVersion, int toVersion)
         {
-            Dlogger.Log(LogSubsystems.Unknown, LogLevel.Info, $"SaveMigration: Migrating from version {fromVersion} to {toVersion}");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, $"SaveMigration: Migrating from version {fromVersion} to {toVersion}");
 
             return (fromVersion, toVersion) switch
             {
@@ -168,7 +167,7 @@ namespace SASZombieAssaultTD.Engine.Save
             extendedData.CurrentDifficulty = SASZombieAssaultTD.Engine.Waves.DifficultyScaling.DifficultyLevel.Normal;
             extendedData.CurrentWave = 0;
 
-            Dlogger.Log(LogSubsystems.Unknown, LogLevel.Info, $"SaveMigration: Migrated V1 to V2 - Added {extendedData.BattlefieldProgress.Count} battlefield progress entries");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, $"SaveMigration: Migrated V1 to V2 - Added {extendedData.BattlefieldProgress.Count} battlefield progress entries");
             return extendedData;
         }
 
@@ -238,7 +237,7 @@ namespace SASZombieAssaultTD.Engine.Save
         {
             if (!File.Exists(filePath))
             {
-                Dlogger.Log(LogLevel.Warning, $"SaveMigration: Cannot backup non-existent file: {filePath}");
+                DLogger.Log(LogEnums.LogLevel.Warning, $"SaveMigration: Cannot backup non-existent file: {filePath}");
                 return null;
             }
 
@@ -246,12 +245,12 @@ namespace SASZombieAssaultTD.Engine.Save
             {
                 var backupPath = $"{filePath}.backup_{DateTime.Now:yyyyMMdd_HHmmss}";
                 File.Copy(filePath, backupPath, overwrite: true);
-                Dlogger.Log(LogSubsystems.Unknown, LogLevel.Info, $"SaveMigration: Created backup at {backupPath}");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, $"SaveMigration: Created backup at {backupPath}");
                 return backupPath;
             }
             catch (Exception ex)
             {
-                Dlogger.Log(LogSubsystems.Unknown, LogLevel.Info, $"SaveMigration: Backup failed - {ex.Message}");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, $"SaveMigration: Backup failed - {ex.Message}");
                 return null;
             }
         }
@@ -266,7 +265,7 @@ namespace SASZombieAssaultTD.Engine.Save
 
             if (!Directory.Exists(_saveDirectory))
             {
-                Dlogger.Log(LogLevel.Warning, $"SaveMigration: Save directory does not exist: {_saveDirectory}");
+                DLogger.Log(LogEnums.LogLevel.Warning, $"SaveMigration: Save directory does not exist: {_saveDirectory}");
                 return result;
             }
 
@@ -321,13 +320,13 @@ namespace SASZombieAssaultTD.Engine.Save
                 catch (Exception ex)
                 {
                     result.FailedMigrations++;
-                    Dlogger.Log(LogSubsystems.Save, LogLevel.Error,
+                    DLogger.Log(LogSubsystems.Save, LogEnums.LogLevel.Error,
                         $"SaveMigration: Failed to migrate {Path.GetFileName(filePath)} - {ex.Message}");
                 }
             }
 
             result.TotalSaves = files.Length;
-            Dlogger.Log(LogSubsystems.Unknown, LogLevel.Info,
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info,
                 $"SaveMigration: Migration complete - Total: {result.TotalSaves}, Success: {result.SuccessfulMigrations}, " +
                 $"Failed: {result.FailedMigrations}, Skipped: {result.SkippedMigrations}, Backups: {result.BackupsCreated}");
 

@@ -1,3 +1,26 @@
+// ====================================================================================================
+//  FILE: PlayerProgressionController.cs
+//  PATH: ./Engine/Player/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the PlayerProgressionController module.
+//
+//  RESPONSIBILITIES:
+//      - Provide AddExperience() behavior for the Core subsystem.
+//      - Provide Reset() behavior for the Core subsystem.
+//      - Provide RestoreFromData() behavior for the Core subsystem.
+//      - Provide GetTotalExperienceEarned() behavior for the Core subsystem.
+//      - Provide GetData() behavior for the Core subsystem.
+//      - Provide GetUnlockedTowers() behavior for the Core subsystem.
+//      - Provide IsTowerUnlocked() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File: PlayerProgressionController.cs
 //FilePath: Engine/Player/PlayerProgressionController.cs
@@ -16,12 +39,10 @@
 //============================================================================
 
 //
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Snapshot;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Player
 {
@@ -92,7 +113,7 @@ namespace SASZombieAssaultTD.Engine.Player
             _experienceToNextLevel = ProgressionCore.CalculateExperienceForNextLevel(1);
             _totalExperienceEarned = 0;
 
-            Debug.WriteLine(
+            DLogger.Log(LogSubsystems.Player,
                 $"PlayerProgressionController: Initialized - Level {_data.CurrentLevel}, XP {_data.CurrentExperience}/{_experienceToNextLevel}",
                 "Info");
         }
@@ -105,7 +126,8 @@ namespace SASZombieAssaultTD.Engine.Player
             _experienceToNextLevel = ProgressionCore.CalculateExperienceForNextLevel(_data.CurrentLevel);
             _totalExperienceEarned = 0;
 
-            Debug.WriteLine(
+            DLogger.Log(
+                LogSubsystems.Player,
                 $"PlayerProgressionController: Initialized with data - Level {_data.CurrentLevel}, XP {_data.CurrentExperience}/{_experienceToNextLevel}",
                 "Info");
         }
@@ -148,20 +170,20 @@ namespace SASZombieAssaultTD.Engine.Player
                     //Diagnostics
                     if (initialLevel < _data.CurrentLevel)
                     {
-                        Debug.WriteLine(
+                        DLogger.Log(LogSubsystems.Player,
                             $"PlayerProgressionController: Level up {initialLevel} → {_data.CurrentLevel} (XP {amount}, Source {source})",
                             "Info");
                     }
                     else
                     {
-                        Debug.WriteLine(
+                        DLogger.Log(LogSubsystems.Player,
                             $"PlayerProgressionController: XP added {amount} (Source {source}) → {_data.CurrentExperience}/{_experienceToNextLevel}",
                             "Debug");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(
+                    DLogger.Log(LogSubsystems.Player,
                         $"PlayerProgressionController: AddExperience failed ({ex.Message})",
                         "Error");
                     throw;
@@ -193,13 +215,13 @@ namespace SASZombieAssaultTD.Engine.Player
 
                 PlayerSystem.Instance.TriggerLevelUp(evt);
 
-                Debug.WriteLine(
+                DLogger.Log(LogSubsystems.Player,
                     $"PlayerProgressionController: LevelUp processed → Level {_data.CurrentLevel}, Carry {carryOver}, Next {_experienceToNextLevel}",
                     "Info");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(
+                DLogger.Log(LogSubsystems.Player,
                     $"PlayerProgressionController: LevelUp failed ({ex.Message})",
                     "Error");
                 throw;
@@ -229,7 +251,7 @@ namespace SASZombieAssaultTD.Engine.Player
 
                         PlayerSystem.Instance.TriggerUnlock(towerId);
 
-                        Debug.WriteLine(
+                        DLogger.Log(LogSubsystems.Player,
                             $"PlayerProgressionController: Tower unlocked {towerId} at level {newLevel}",
                             "Info");
                     }
@@ -237,14 +259,14 @@ namespace SASZombieAssaultTD.Engine.Player
 
                 if (unlocked > 0)
                 {
-                    Debug.WriteLine(
+                    DLogger.Log(LogSubsystems.Player,
                         $"PlayerProgressionController: Unlock scan complete ({unlocked} new, {_data.UnlockedTowers.Count} total)",
                         "Info");
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(
+                DLogger.Log(LogSubsystems.Player,
                     $"PlayerProgressionController: CheckTowerUnlocks failed ({ex.Message})",
                     "Error");
             }
@@ -268,13 +290,13 @@ namespace SASZombieAssaultTD.Engine.Player
                     _data.UnlockedTowers.Clear();
                     CheckTowerUnlocks(1);
 
-                    Debug.WriteLine(
+                    DLogger.Log(LogSubsystems.Player,
                         $"PlayerProgressionController: Reset → Level {_data.CurrentLevel}, XP {_data.CurrentExperience}/{_experienceToNextLevel}",
                         "Info");
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(
+                    DLogger.Log(LogSubsystems.Player,
                         $"PlayerProgressionController: Reset failed ({ex.Message})",
                         "Error");
 
@@ -316,13 +338,13 @@ namespace SASZombieAssaultTD.Engine.Player
 
                     CheckTowerUnlocks(_data.CurrentLevel);
 
-                    Debug.WriteLine(
+                    DLogger.Log(LogSubsystems.Player,
                         $"PlayerProgressionController: Restored → Level {_data.CurrentLevel}, XP {_data.CurrentExperience}/{_experienceToNextLevel}",
                         "Info");
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine(
+                    DLogger.Log(LogSubsystems.Player,
                         $"PlayerProgressionController: Restore failed ({ex.Message})",
                         "Error");
 
@@ -376,3 +398,4 @@ namespace SASZombieAssaultTD.Engine.Player
         }
     }
 }
+

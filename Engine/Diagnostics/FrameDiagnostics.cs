@@ -1,10 +1,33 @@
-using System.Collections.Generic;
+// ====================================================================================================
+//  FILE: FrameDiagnostics.cs
+//  PATH: ./Engine/Diagnostics/
+//  MODULE: Diagnostics
+//
+//  ROLE:
+//      Provide logging, profiling, or diagnostic instrumentation.
+//
+//  RESPONSIBILITIES:
+//      - Provide UpdateFrameMetrics() behavior for the Diagnostics subsystem.
+//      - Provide GetRollingAverageFrameTime() behavior for the Diagnostics subsystem.
+//      - Provide GetPerformanceStats() behavior for the Diagnostics subsystem.
+//      - Provide GetDetailedStats() behavior for the Diagnostics subsystem.
+//      - Provide Reset() behavior for the Diagnostics subsystem.
+//      - Provide GetFrameTimeHistory() behavior for the Diagnostics subsystem.
+//      - Provide IsPerformanceAcceptable() behavior for the Diagnostics subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
     /// <summary>
-    /// Frame diagnostics system for FPS counting and performance monitoring.
-    /// Implements P11-09-06: Add frame diagnostics without affecting frame pacing.
+    /// Frame diagnostics system for FPS counting and performance monitoring. Implements P11-09-06: Add frame
+    /// diagnostics without affecting frame pacing.
     /// </summary>
     public class FrameDiagnostics
     {
@@ -45,7 +68,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         /// </summary>
         public float TotalTime { get; private set; }
 
-        /// 
+        ///
 
         ///  Private Fields
 
@@ -59,7 +82,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         private const int HistorySize = 1000;
         private const int RecentFrameCount = 60; // Last 60 frames for rolling average
 
-        /// 
+        ///
 
         ///  Constructor
 
@@ -73,7 +96,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             Reset();
         }
 
-        /// 
+        ///
 
         ///  Public Methods
 
@@ -169,7 +192,8 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             _frameTimeHistory.Clear();
             _recentFrameTimes.Clear();
 
-            DLogger.Log("INFO", "FrameDiagnostics reset");
+            DLogger.Log(LogSubsystems.Diagnostics,
+                "INFO", "FrameDiagnostics reset");
         }
 
         /// <summary>
@@ -185,14 +209,16 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         /// Checks if performance is within acceptable thresholds.
         /// </summary>
         /// <param name="targetFPS">Target FPS threshold (default: 60).</param>
-        /// <param name="maxFrameTimeMs">Maximum acceptable frame time in milliseconds (default: 16.67ms for 60 FPS).</param>
+        /// <param name="maxFrameTimeMs">
+        /// Maximum acceptable frame time in milliseconds (default: 16.67ms for 60 FPS).
+        /// </param>
         /// <returns>True if performance is acceptable, false otherwise.</returns>
         public bool IsPerformanceAcceptable(float targetFPS = 60f, float maxFrameTimeMs = 16.67f)
         {
             return CurrentFPS >= targetFPS * 0.9f && AverageFrameTimeMs <= maxFrameTimeMs * 1.1f;
         }
 
-        /// 
+        ///
 
         ///  Private Methods
 
@@ -265,10 +291,6 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             return variance / count;
         }
 
-        /// 
+        ///
     }
 }
-
-
-
-

@@ -1,12 +1,34 @@
+// ====================================================================================================
+//  FILE: PathfindingSystem.cs
+//  PATH: ./Engine/Systems/Gameplay/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the PathfindingSystem module.
+//
+//  RESPONSIBILITIES:
+//      - Provide IsWalkable() behavior for the Core subsystem.
+//      - Provide SetWalkable() behavior for the Core subsystem.
+//      - Provide FindPath() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //File: Engine/Systems/Gameplay/PathfindingSystem.cs
 //Purpose: Implements a pathfinding system for navigating a grid-based map.
 //Features: Supports walkability checks, cell management, and A* pathfinding algorithm.
 
 using SASZombieAssaultTD.Engine.VectorMath;
 using System;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Generic;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Systems;
 
 namespace SASZombieAssaultTD.Engine.Systems.Gameplay
 {
@@ -136,3 +158,4 @@ namespace SASZombieAssaultTD.Engine.Systems.Gameplay
         }
     }
 }
+

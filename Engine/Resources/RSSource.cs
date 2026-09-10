@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: RSSource.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSSource module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    AssetSource.cs
 Author:  BDC
@@ -6,9 +23,9 @@ Purpose: Represents the origin of an asset (file, memory, bundle, etc.).
 Notes:   Used by loaders, registries, and validation systems.
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Assets
 {
@@ -58,5 +75,6 @@ namespace SASZombieAssaultTD.Engine.Assets
         Remote = 3
     }
 }
+
 
 

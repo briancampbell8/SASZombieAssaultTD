@@ -49,28 +49,25 @@
  * ==================================================================================================== */
 
 //
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Gameplay;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Text.Json;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+// using SASZombieAssaultTD.Engine.Extensions; // Extensions Removed
 
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
-    ///<summary>
-    ///Public façade for the progression system.
-    ///</summary>
+    /// <summary>
+    /// Public façade for the progression system.
+    /// </summary>
     public class LevelProgression
     {
         //INTERNAL STATE (exposed to serializer and logic through internal accessors)
         internal readonly List<ProgressionMilestone> _milestones;
-        internal readonly Dictionary<string, ProgressionAchievement> _achievements;
+        internal readonly List<ProgressionAchievement> _achievements;
+        internal readonly Dictionary<string, ProgressionAchievement> _achievementsDict;
         internal readonly List<ProgressionEvent> _events;
 
         private bool _isInitialized;
@@ -78,23 +75,30 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
 
         //Optional external blob (kept for compatibility)
         private Dictionary<string, object> AchievementData;
+
         private object TheType;
         private object TheMember;
+        private int UnlockedAchievements;
 
         //EVENTS EXPOSED TO OTHER SYSTEMS
         public event Action<ProgressionMilestone> OnMilestoneReached;
+
         public event Action<ProgressionAchievement> OnAchievementUnlocked;
+
         public event Action<ProgressionEvent> OnProgressionEvent;
+
         public event Action OnAllMilestonesCompleted;
 
         //PUBLIC PROPERTIES
         public bool IsInitialized => _isInitialized;
+
         public int TotalMilestones => _milestones.Count;
         public int TotalAchievements => _achievements.Count;
         public int CompletedMilestones => _milestones.Count(m => m.IsCompleted);
-        public int UnlockedAchievements => _achievements.Count(static a => a.IsUnlocked());
+        public int UnlockedAchievments => _achievements.Count(a => a.IsUnlocked);
+
         public IReadOnlyList<ProgressionMilestone> AllMilestones => _milestones;
-        public IReadOnlyDictionary<string, ProgressionAchievement> AllAchievements => _achievements;
+        public IReadOnlyDictionary<string, ProgressionAchievement> AllAchievements => (IReadOnlyDictionary<string, ProgressionAchievement>)_achievements;
 
         //SINGLETON ACCESSOR
         public static LevelProgression Instance => _instance ??= new LevelProgression();
@@ -107,11 +111,12 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         private LevelProgression()
         {
             _milestones = new List<ProgressionMilestone>();
-            _achievements = new Dictionary<string, ProgressionAchievement>();
+            //_achievements = new Dictionary<string, ProgressionAchievement>();
+            _achievementsDict = new Dictionary<string, ProgressionAchievement>();
             _events = new List<ProgressionEvent>();
 
             ProgressionDefinitions.InitializeMilestones(_milestones);
-            ProgressionDefinitions.InitializeAchievements(_achievements);
+            ProgressionDefinitions.InitializeAchievements(_achievementsDict);
             ProgressionDefinitions.InitializeEvents(_events);
         }
 
@@ -138,7 +143,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to initialize Level Progression System: {ex.Message}");
+                DLogger.Log($"Failed to initialize Level Progression System: {ex.Message}");
                 throw;
             }
         }
@@ -161,9 +166,9 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public bool AddAchievement(ProgressionAchievement achievement)
         {
             if (achievement == null) return false;
-            if (_achievements.ContainsKey(achievement.Id)) return false;
+            if (_achievementsDict.ContainsKey(achievement.Id)) return false;
 
-            _achievements[achievement.Id] = achievement;
+            _achievementsDict[achievement.Id] = achievement;
             return true;
         }
 
@@ -187,7 +192,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         //PURPOSE: Query achievement unlock state.
         public bool IsAchievementUnlocked(string achievementId)
         {
-            return _achievements.TryGetValue(achievementId, out var a) && a.IsUnlocked;
+            return _achievementsDict.TryGetValue(achievementId, out var a) && a.IsUnlocked;
         }
 
         //METHOD: GetCompletedMilestones()
@@ -201,7 +206,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         //PURPOSE: Return all unlocked achievements.
         public IReadOnlyList<ProgressionAchievement> GetAvailableAchievements()
         {
-            return _achievements.Values.Where(a => a.IsUnlocked).ToList();
+            return _achievementsDict.Values.Where(a => a.IsUnlocked).ToList();
         }
 
         //METHOD: GetStatistics()
@@ -219,7 +224,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                     ? (float)CompletedMilestones / _milestones.Count
                     : 0f,
                 RecentMilestones = _milestones.Where(m => m.IsCompleted).Take(5).ToList(),
-                RecentAchievements = _achievements.Values
+                RecentAchievements = _achievementsDict.Values
                     .Where(a => a.IsUnlocked && a.UnlockedDate.HasValue)
                     .OrderByDescending(a => a.UnlockedDate)
                     .Take(10)
@@ -239,7 +244,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 m.CompletionDate = null;
             }
 
-            foreach (var a in _achievements.Values)
+            foreach (var a in _achievementsDict.Values)
             {
                 a.IsUnlocked = false;
                 a.UnlockedDate = null;
@@ -274,7 +279,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error saving progression: {ex.Message}");
+                DLogger.Log($"Error saving progression: {ex.Message}");
                 return false;
             }
         }
@@ -302,7 +307,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error loading progression: {ex.Message}");
+                DLogger.Log($"Error loading progression: {ex.Message}");
                 return false;
             }
         }

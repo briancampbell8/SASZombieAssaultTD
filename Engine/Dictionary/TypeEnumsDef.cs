@@ -1,4 +1,21 @@
-using SASZombieAssaultTD.Engine.Diagnostics;
+// ====================================================================================================
+//  FILE: TypeEnumsDef.cs
+//  PATH: ./Engine/Dictionary/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the TypeEnumsDef module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Dictionary
 {
@@ -74,3 +91,4 @@ namespace SASZombieAssaultTD.Engine.Dictionary
         Bullet, Fire, Melee, Explosion, Poison, Ice, Lightning, Plasma, Laser, Crush, Fall, Drowning, Acid, Radiation, Magic
     }
 }
+

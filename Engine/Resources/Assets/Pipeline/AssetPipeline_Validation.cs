@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: AssetPipeline_Validation.cs
+//  PATH: ./Engine/Resources/Assets/Pipeline/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetPipeline_Validation module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ValidateAssetAsync() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //============================================================================
 //File:        AssetPipeline_Validation.cs
@@ -59,11 +76,11 @@
 //
 //    //Monitor validation performance
 //    var stats = AssetPipeline.GetValidationStats();
-//    Debug.WriteLine($"Validated {stats.ValidatedAssets} assets, {stats.IssuesFound} issues");
+//    DLogger.Log($"Validated {stats.ValidatedAssets} assets, {stats.IssuesFound} issues");
 //============================================================================
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Threading.Tasks;
 //
@@ -94,7 +111,8 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
 
             var result = await processor.ValidateAsync(fullAssetPath);
 
-            System.Diagnostics.Debug.WriteLine("Debug", $"AssetPipeline: Validated '{assetPath}' ({result.IsValid})");
+            DLogger.Log(LogSubsystems.ResourcesAssetsPipeline,
+                "Debug", $"AssetPipeline: Validated '{assetPath}' ({result.IsValid})");
             return result;
         }
 
@@ -159,7 +177,7 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
         //   var processor = GetProcessor(AssetManagerType);
         //   var result = await processor.ValidateAsync(fullAssetPath);
 
-        //   System.Diagnostics.Debug.WriteLine(
+        //   DLogger.Log(
         //       "Debug",
         //       $"AssetPipeline: Validated '{assetPath}' ({result.IsValid})"
         //   );
@@ -169,3 +187,4 @@ namespace SASZombieAssaultTD.Engine.Resources.AssetPipeline
 
     }
 }
+

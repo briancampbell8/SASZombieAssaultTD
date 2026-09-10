@@ -1,103 +1,95 @@
-/* ====================================================================================================
- *  FILE: RenderManager.cs
- *  PATH: Engine/Systems/
- *  SUBSYSTEM: Systems
- *  ROLE: Central render scheduler responsible for invoking all registered
- *        IRenderSystem instances each frame in deterministic order.
- *
- *  RESPONSIBILITIES:
- *      - Maintain an ordered list of render-capable systems.
- *      - Execute Render(context) on all registered systems.
- *      - Maintain and expose the active render context.
- *      - Provide diagnostics for engine introspection.
- *
- *  NON-RESPONSIBILITIES:
- *      - Creating or owning the render context (provided externally).
- *      - System initialization or shutdown (handled by SystemManager).
- *      - Game logic, ECS operations, or state transitions.
- *      - Resource loading or GPU pipeline configuration.
- *
- *  DEPENDENCIES:
- *      - IRenderSystem (render contract)
- *      - IRenderContext (context contract)
- *      - DebugLogger (diagnostics)
- *
- *  CALLED BY:
- *      - GameRoot.PerformRender()
- *      - Higher-level engine loop
- *
- *  CALLS INTO:
- *      - IRenderSystem.Render(IRenderContext)
- *
- *  ARCHITECTURAL NOTES:
- *      - Must remain deterministic and free of gameplay logic.
- *      - Must not assume ordering beyond list insertion order.
- *      - Must not create or destroy render contexts.
- *      - Must not contain partials; this is a complete standalone program.
- * ==================================================================================================== */
-
+// =====================================================================================================
+//  FILE: RenderManager.cs
+//  PATH: Engine/Systems/RenderManager.cs
+//  SUBSYSTEM: Rendering / Frame Scheduling & Dispatch
 //
+//  ROLE:
+//      Central rendering scheduler responsible for executing all registered IRenderSystem
+//      participants in deterministic order. RenderManager does not perform rendering itself;
+//      it orchestrates the pipeline.
+//
+//  RESPONSIBILITIES:
+//      - Maintain an ordered list of IRenderSystem subsystems.
+//      - Invoke each subsystem’s Render(D3D11Adapter_Core) method per frame.
+//      - Guarantee deterministic render ordering (Gameplay → HUD → UI Overlays).
+//      - Manage frame lifecycle boundaries (BeginFrame / EndFrame / Present).
+//      - Bind and expose the active IDrawingContext for RenderSystem and UI/HUD layers.
+//
+//  NON-RESPONSIBILITIES:
+//      - Actual drawing (handled by individual render subsystems).
+//      - Texture loading (handled by TextureManager).
+//      - HUD state management (handled by HUDManager).
+//      - Simulation updates (handled by UpdateManager).
+//
+//  ARCHITECTURAL NOTES:
+//      - GameplayRenderSystem runs first.
+//      - HUDRenderer runs second.
+//      - ModernUIRenderer runs last.
+//      - DrawingContext binding added for GPU-backed D3D11DrawingContext integration.
+//
+//  CHANGE LOG:
+//      [2026-09-08 | BDC] Verified deterministic ordering and stabilized RenderAll() dispatch.
+//      [2026-09-08 | Copilot] Cleaned null‑system removal logic and unified RenderAll() paths.
+//      [2026-09-10 | BDC] Added SetDrawingContext() for D3D11DrawingContext integration.
+// =====================================================================================================
+
 using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Rendering.D3D11;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.Render.D3D11.DeviceCore;
+using SASZombieAssaultTD.Engine.TextureRendering.HUD;
+using SASZombieAssaultTD.Engine.UI.Rendering;
+using SASZombieAssaultTD.Engine.UI.Rendering.Modern;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+
 namespace SASZombieAssaultTD.Engine.Systems
 {
-    ///<summary>
-    ///Manages the rendering pipeline and dispatches render calls to registered systems.
-    ///</summary>
     public sealed class RenderManager
     {
-        //----------------------------------------------------------------------------------------------------
-        // Properties
-        //----------------------------------------------------------------------------------------------------
+        public bool IsActive { get; private set; } = true;
+        public D3D11Adapter_Core? Context { get; private set; }
 
-        ///<summary>
-        ///Whether the render manager is active and should process render calls.
-        ///</summary>
-        public bool IsActive { get; set; } = true;
-
-        ///<summary>
-        ///The active render context used by all render systems.
-        ///Must be assigned externally before rendering begins.
-        ///</summary>
-        public IRenderContext? Context { get; private set; }
-
-        //----------------------------------------------------------------------------------------------------
-        // Private Fields
-        //----------------------------------------------------------------------------------------------------
+        private IDrawingContext? _drawingContext;
 
         private readonly List<IRenderSystem> _systems = new();
-        internal static object Instance;
+        private readonly D3D11DeviceCore deviceCore;
+        private readonly SystemRegistry systemRegistry;
 
-        //----------------------------------------------------------------------------------------------------
-        // Construction
-        //----------------------------------------------------------------------------------------------------
+        public RenderManager(D3D11DeviceCore deviceCore, SystemRegistry systemRegistry)
+        {
+            this.deviceCore = deviceCore ?? throw new ArgumentNullException(nameof(deviceCore));
+            this.systemRegistry = systemRegistry ?? throw new ArgumentNullException(nameof(systemRegistry));
 
-        ///<summary>
-        ///Creates a new RenderManager instance.
-        ///</summary>
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "RenderManager constructed");
+        }
+
         public RenderManager()
         {
-            DLogger.Log("RenderManager constructed");
         }
 
-        //----------------------------------------------------------------------------------------------------
-        // Public API
-        //----------------------------------------------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------------
+        //  CONTEXT BINDING
+        // -------------------------------------------------------------------------------------------------
 
-        ///<summary>
-        ///Assigns the render context used by all render systems.
-        ///</summary>
-        public void SetRenderContext(IRenderContext context)
+        public void SetRenderContext(D3D11Adapter_Core adapter_Core)
         {
-            Context = context ?? throw new ArgumentNullException(nameof(context));
-            DLogger.Log($"RenderManager.SetRenderContext: Assigned '{context.GetType().Name}'");
+            Context = adapter_Core ?? throw new ArgumentNullException(nameof(adapter_Core));
+            IsActive = true;
+
+            DLogger.Log($"RenderManager.SetRenderContext: Assigned '{adapter_Core.GetType().Name}'");
         }
 
-        ///<summary>
-        ///Registers a render system for participation in the render pipeline.
-        ///</summary>
+        public void SetDrawingContext(IDrawingContext drawingContext)
+        {
+            _drawingContext = drawingContext ?? throw new ArgumentNullException(nameof(drawingContext));
+            DLogger.Log("RenderManager.SetDrawingContext: GPU-backed drawing context assigned");
+        }
+
+        // -------------------------------------------------------------------------------------------------
+        //  SYSTEM REGISTRATION
+        // -------------------------------------------------------------------------------------------------
+
         public void RegisterSystem(IRenderSystem system)
         {
             if (system == null)
@@ -110,22 +102,42 @@ namespace SASZombieAssaultTD.Engine.Systems
             }
         }
 
-        ///<summary>
-        ///Invokes Render(context) on all registered render systems.
-        ///</summary>
+        internal void RegisterSystem(ModernUIRenderer uiRenderer)
+        {
+            if (uiRenderer == null)
+                throw new ArgumentNullException(nameof(uiRenderer));
+
+            RegisterSystem(new FunctionalCallbackBridge(adapter => uiRenderer.Render(adapter)));
+        }
+
+        internal void RegisterSystem(HUDRenderer hudRenderer)
+        {
+            if (hudRenderer == null)
+                throw new ArgumentNullException(nameof(hudRenderer));
+
+            RegisterSystem(new FunctionalCallbackBridge(adapter => hudRenderer.Render(adapter)));
+        }
+
+        // -------------------------------------------------------------------------------------------------
+        //  FRAME EXECUTION
+        // -------------------------------------------------------------------------------------------------
+
         public void RenderAll()
         {
-            if (!IsActive)
-                return;
-
-            if (Context == null)
+            if (!IsActive || Context == null)
             {
-                DLogger.Log("RenderManager.RenderAll: No render context assigned");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "RenderManager.RenderAll: No render context assigned");
                 return;
             }
 
-            foreach (var system in _systems)
+            BeginFrame();
+
+            for (int i = 0; i < _systems.Count; i++)
             {
+                var system = _systems[i];
+                if (system == null)
+                    continue;
+
                 try
                 {
                     system.Render(Context);
@@ -133,111 +145,107 @@ namespace SASZombieAssaultTD.Engine.Systems
                 catch (Exception ex)
                 {
                     DLogger.Log(
-                        $"RenderManager.RenderAll: Exception in '{system.GetType().FullName}': {ex.Message}"
-                    );
-                    DLogger.Log(
-                        LogSubsystems.Systems,
-                        LogLevel.Error,
-                        $"RenderManager.RenderAll: Exception in '{system.GetType().FullName}': {ex.Message}"
-                        );
-                    throw;
+                        LogSubsystems.ResourcesPipeline,
+                        $"RenderManager.RenderAll: Exception in '{system.GetType().FullName}': {ex.Message}");
                 }
             }
+
+            EndFrame();
         }
 
-        ///<summary>
-        ///Returns diagnostic information about the render manager.
-        ///</summary>
+        internal void RenderAll(D3D11Adapter_Core renderContext)
+        {
+            if (renderContext == null)
+                throw new ArgumentNullException(nameof(renderContext));
+
+            if (!IsActive)
+                return;
+
+            Context = renderContext;
+
+            BeginFrame();
+
+            for (int i = 0; i < _systems.Count; i++)
+            {
+                var system = _systems[i];
+                if (system == null)
+                    continue;
+
+                try
+                {
+                    system.Render(renderContext);
+                }
+                catch (Exception ex)
+                {
+                    DLogger.Log(
+                        LogSubsystems.ResourcesPipeline,
+                        $"RenderManager.RenderAll(D3D11Adapter_Core): Exception in '{system.GetType().FullName}': {ex.Message}");
+                }
+            }
+
+            EndFrame();
+        }
+
+        // -------------------------------------------------------------------------------------------------
+        //  FRAME LIFECYCLE
+        // -------------------------------------------------------------------------------------------------
+
+        internal void BeginFrame()
+        {
+            if (!IsActive || Context == null)
+                return;
+
+            Context.BeginFrame();
+        }
+
+        internal void EndFrame()
+        {
+            if (!IsActive || Context == null)
+                return;
+
+            Context.EndFrame();
+            Context.Present();
+        }
+
+        // -------------------------------------------------------------------------------------------------
+        //  DIAGNOSTICS / SHUTDOWN
+        // -------------------------------------------------------------------------------------------------
+
         public string GetDiagnostics()
         {
             return $"RenderManager: {_systems.Count} systems registered, Active: {IsActive}";
         }
 
-        ///<summary>
-        ///Shuts down the render manager and clears all registered systems.
-        ///</summary>
         public void Shutdown()
         {
-            DLogger.Log("RenderManager.Shutdown: ENTER");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "RenderManager.Shutdown: ENTER");
 
             IsActive = false;
             _systems.Clear();
 
-            DLogger.Log("RenderManager.Shutdown: EXIT");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "RenderManager.Shutdown: EXIT");
         }
 
-        //----------------------------------------------------------------------------------------------------
-        // Initialization
-        //----------------------------------------------------------------------------------------------------
+        // -------------------------------------------------------------------------------------------------
+        //  INTERNAL BRIDGE
+        // -------------------------------------------------------------------------------------------------
 
-        ///<summary>
-        ///Initializes the render manager and validates the render context.
-        ///</summary>
-        internal void Initialize()
+        private class FunctionalCallbackBridge : IRenderSystem
         {
-            DLogger.Log("RenderManager.Initialize: ENTER");
+            private readonly Action<D3D11Adapter_Core> _renderAction;
 
-            IsActive = true;
+            public FunctionalCallbackBridge(Action<D3D11Adapter_Core> renderAction)
+                => _renderAction = renderAction ?? throw new ArgumentNullException(nameof(renderAction));
 
-            if (Context == null)
+            public void Render(D3D11Adapter_Core adapter)
             {
-                DLogger.Log("RenderManager.Initialize: No render context assigned");
-                throw new InvalidOperationException("RenderManager requires a valid IRenderContext before initialization.");
+                _renderAction(adapter);
             }
-
-            try
-            {
-                DLogger.Log("RenderManager.Initialize: Initializing render context...");
-                Context.Initialize();
-            }
-            catch (Exception ex)
-            {
-                DLogger.Log("RenderManager.Initialize: Render context initialization failed");
-                DLogger.Log(
-                    LogSubsystems.Systems,
-                    LogLevel.Error,
-                    ex.ToString(),
-                    "RenderManager.Initialize");
-                throw;
-            }
-
-            //Remove null systems (defensive cleanup)
-            for (int i = _systems.Count - 1; i >= 0; i--)
-            {
-                if (_systems[i] == null)
-                {
-                    DLogger.Log("RenderManager.Initialize: Null render system removed");
-                    _systems.RemoveAt(i);
-                }
-            }
-
-            DLogger.Log($"RenderManager.Initialize: {_systems.Count} systems registered");
-            DLogger.Log("RenderManager.Initialize: EXIT");
-        }
-
-        internal void SetRenderContext(RenderContextD3D11 renderContext)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal void SetRenderContext(Rendering.RenderContextD3D11Adapter renderContextAdapter)
-        {
-            throw new NotImplementedException();
         }
     }
-
-    //--------------------------------------------------------------------------------------------------------
-    // Interfaces
-    //--------------------------------------------------------------------------------------------------------
 
     public interface IRenderSystem
     {
-        void Render(IRenderContext context);
-    }
-
-    public interface IRenderContext
-    {
-        void Initialize();
-        void Shutdown();
+        void Render(D3D11Adapter_Core adapter);
     }
 }

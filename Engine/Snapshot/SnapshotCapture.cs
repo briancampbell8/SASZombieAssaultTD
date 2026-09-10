@@ -1,3 +1,27 @@
+// ====================================================================================================
+//  FILE: SnapshotCapture.cs
+//  PATH: ./Engine/Snapshot/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the SnapshotCapture module.
+//
+//  RESPONSIBILITIES:
+//      - Provide CaptureScreenshot() behavior for the Core subsystem.
+//      - Provide CaptureFromFramebufferDrawing() behavior for the Core subsystem.
+//      - Provide FinalizeDailySnapshot() behavior for the Core subsystem.
+//      - Provide GetSnapshotInfo() behavior for the Core subsystem.
+//      - Provide ListFinalizedSnapshots() behavior for the Core subsystem.
+//      - Provide CleanupOldSnapshots() behavior for the Core subsystem.
+//      - Provide FinalizeCommand() behavior for the Core subsystem.
+//      - Provide StatusCommand() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File: SnapshotCapture.cs
 //Program: SnapshotCapture
@@ -13,13 +37,13 @@
 //    - No System.Diagnostics
 //============================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 //
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Snapshot
 {
     public static class SnapshotCapture
@@ -37,7 +61,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
         public static void CaptureScreenshot()
         {
-            DLogger.Log("SnapshotCapture.CaptureScreenshot.Start", SnapshotPath);
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.CaptureScreenshot.Start", SnapshotPath);
 
             try
             {
@@ -46,7 +70,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
                 using var bitmap = CaptureWindow();
                 if (bitmap == null)
                 {
-                    DLogger.Log("SnapshotCapture.CaptureScreenshot.NullBitmap",
+                    DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.CaptureScreenshot.NullBitmap",
                         "Real framebuffer capture not implemented");
                     return;
                 }
@@ -54,12 +78,12 @@ namespace SASZombieAssaultTD.Engine.Snapshot
                 bitmap.Save(SnapshotPath, ImageFormat.Png);
 
                 var info = new FileInfo(SnapshotPath);
-                DLogger.Log("SnapshotCapture.CaptureScreenshot.Complete",
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.CaptureScreenshot.Complete",
                     $"Size={info.Length}, Created={info.CreationTime:yyyy-MM-dd HH:mm:ss}");
             }
             catch (Exception ex)
             {
-                DLogger.Log("SnapshotCapture.CaptureScreenshot.Error", ex.Message);
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.CaptureScreenshot.Error", ex.Message);
             }
         }
 
@@ -67,16 +91,16 @@ namespace SASZombieAssaultTD.Engine.Snapshot
         //SCREENSHOT CAPTURE (FRAMEBUFFER)
         //=====================================================================
 
-        public static void CaptureFromFramebuffer(byte[] pixels, int width, int height)
+        public static void CaptureFromFramebufferDrawing(byte[] pixels, int width, int height)
         {
             if (pixels == null || pixels.Length == 0)
             {
-                DLogger.Log("SnapshotCapture.CaptureFromFramebuffer.Error",
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.CaptureFromFramebufferDrawing.Error",
                     "Pixel buffer is null or empty");
                 return;
             }
 
-            DLogger.Log("SnapshotCapture.CaptureFromFramebuffer.Start",
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.CaptureFromFramebufferDrawing.Start",
                 $"{width}x{height}, Bytes={pixels.Length}");
 
             try
@@ -96,12 +120,12 @@ namespace SASZombieAssaultTD.Engine.Snapshot
                 bitmap.Save(SnapshotPath, ImageFormat.Png);
 
                 var info = new FileInfo(SnapshotPath);
-                DLogger.Log("SnapshotCapture.CaptureFromFramebuffer.Complete",
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.CaptureFromFramebufferDrawing.Complete",
                     $"Size={info.Length}, Created={info.CreationTime:yyyy-MM-dd HH:mm:ss}");
             }
             catch (Exception ex)
             {
-                DLogger.Log("SnapshotCapture.CaptureFromFramebuffer.Error", ex.Message);
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.CaptureFromFramebufferDrawing.Error", ex.Message);
             }
         }
 
@@ -111,11 +135,11 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
         public static void FinalizeDailySnapshot()
         {
-            DLogger.Log("SnapshotCapture.FinalizeDailySnapshot.Start", SnapshotPath);
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.FinalizeDailySnapshot.Start", SnapshotPath);
 
             if (!File.Exists(SnapshotPath))
             {
-                DLogger.Log("SnapshotCapture.FinalizeDailySnapshot.Missing",
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.FinalizeDailySnapshot.Missing",
                     "today.png does not exist");
                 return;
             }
@@ -129,12 +153,12 @@ namespace SASZombieAssaultTD.Engine.Snapshot
                 File.Move(SnapshotPath, finalPath);
 
                 var info = new FileInfo(finalPath);
-                DLogger.Log("SnapshotCapture.FinalizeDailySnapshot.Complete",
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.FinalizeDailySnapshot.Complete",
                     $"Final={finalName}, Size={info.Length}");
             }
             catch (Exception ex)
             {
-                DLogger.Log("SnapshotCapture.FinalizeDailySnapshot.Error", ex.Message);
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.FinalizeDailySnapshot.Error", ex.Message);
             }
         }
 
@@ -192,7 +216,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
             for (int i = keepCount; i < files.Length; i++)
             {
                 File.Delete(files[i]);
-                DLogger.Log("SnapshotCapture.CleanupOldSnapshots.Delete",
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.CleanupOldSnapshots.Delete",
                     Path.GetFileName(files[i]));
             }
         }
@@ -203,7 +227,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
         public static void FinalizeCommand(string[] args)
         {
-            DLogger.Log("SnapshotCapture.FinalizeCommand", "Manual trigger");
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.FinalizeCommand", "Manual trigger");
             FinalizeDailySnapshot();
         }
 
@@ -213,16 +237,16 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
             if (info.Exists)
             {
-                DLogger.Log("SnapshotCapture.Status.Exists",
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.Status.Exists",
                     $"Size={info.SizeBytes}, Created={info.CreatedTime}, Modified={info.ModifiedTime}");
             }
             else
             {
-                DLogger.Log("SnapshotCapture.Status.None", "No current snapshot");
+                DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.Status.None", "No current snapshot");
             }
 
             var finalized = ListFinalizedSnapshots();
-            DLogger.Log("SnapshotCapture.Status.FinalizedCount", finalized.Length.ToString());
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.Status.FinalizedCount", finalized.Length.ToString());
         }
 
         //=====================================================================
@@ -231,7 +255,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
         private static Bitmap CaptureWindow()
         {
-            DLogger.Log("SnapshotCapture.CaptureWindow.Warning",
+            DLogger.Log(LogSubsystems.Snapshot, "SnapshotCapture.CaptureWindow.Warning",
                 "Real framebuffer capture not implemented");
             return null;
         }
@@ -251,3 +275,4 @@ namespace SASZombieAssaultTD.Engine.Snapshot
         public string Error { get; set; }
     }
 }
+

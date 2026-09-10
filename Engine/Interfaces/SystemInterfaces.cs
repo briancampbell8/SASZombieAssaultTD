@@ -1,7 +1,24 @@
+// ====================================================================================================
+//  FILE: SystemInterfaces.cs
+//  PATH: ./Engine/Interfaces/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the SystemInterfaces module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //File: E:\BDC\Projects\SASZombieAssaultTD\Engine\SystemInterfaces.cs
 //Defines core system interfaces for system management.
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Interfaces
 {
@@ -31,3 +48,4 @@ namespace SASZombieAssaultTD.Engine.Interfaces
         void Render();
     }
 }
+

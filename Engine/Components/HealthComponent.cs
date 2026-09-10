@@ -1,111 +1,86 @@
-using System;
-using SASZombieAssaultTD.Engine.ECS;
+// ====================================================================================================
+//  FILE: HealthComponent.cs
+//  PATH: Engine/Components/HealthComponent.cs
+//  SUBSYSTEM: Engine Components
+//
+//  ROLE:
+//      Core engine component for representing health state. Stores current/max health values and
+//      provides deterministic mutator methods used by gameplay, combat, and hit‑resolution systems.
+//
+//  RESPONSIBILITIES:
+//      - Store current and maximum health values
+//      - Provide TakeDamage(), Heal(), and Revive() operations
+//      - Expose health state (IsAlive, IsDead, IsDamaged, DamageTaken)
+//      - Provide percentage-based health queries for UI and gameplay systems
+//
+//  NON-RESPONSIBILITIES:
+//      - Executing combat logic or applying damage to other entities
+//      - Managing world-level ECSEntityCore allocation or lifecycle sequencing
+//      - Performing physics, collision, or movement calculations
+//      - Acting as a system or orchestrator
+//
+//  ARCHITECTURAL NOTES:
+//      - This is a pure engine component with minimal behavioral logic
+//      - All continuous numeric values use double for precision
+//      - Integrates with combat, damage, and hit‑resolution systems but does not implement them
+// ====================================================================================================
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Components
 {
-    ///<summary>
-    ///Represents the health of an entity.
-    ///</summary>
-    public class HealthComponent : BaseComponent
+    /// <summary>
+    /// Health component for damage and lifecycle management.
+    /// </summary>
+    public class HealthComponent
     {
-    //Numeric standardization: All continuous values use double for precision
-        private double _currentHealth;
-        private double _maxHealth;
+        public double CurrentHealth { get; set; }
 
-        ///<summary>
-        ///Gets or sets the current health of the entity.
-        ///</summary>
-        public double CurrentHealth 
-        { 
-            get => _currentHealth; 
-            set => _currentHealth = System.Math.Max(0.0, value); 
+        public Action FullRestore { get; set; }
+
+        public double MaxHealth { get; set; }
+
+        public bool IsAlive => CurrentHealth > 0;
+        public bool IsDead => CurrentHealth <= 0;
+        public bool IsDamaged => CurrentHealth < MaxHealth;
+        public float DamageTaken => (float)(MaxHealth - CurrentHealth);
+
+        public double Health => CurrentHealth;
+
+        public double HealthPercentage => MaxHealth > 0 ? CurrentHealth / MaxHealth : 0;
+
+        /// <summary>
+        /// Required so object initializers work.
+        /// </summary>
+        public HealthComponent()
+        {
+            CurrentHealth = 0;
+            MaxHealth = 0;
         }
 
-        ///<summary>
-        ///Gets or sets the maximum health of the entity.
-        ///</summary>
-        public double MaxHealth 
-        { 
-            get => _maxHealth; 
-            set => _maxHealth = System.Math.Max(1.0, value); 
+        /// <summary>
+        /// Convenience constructor for setting max health.
+        /// </summary>
+        public HealthComponent(double maxHealth)
+        {
+            CurrentHealth = maxHealth;
+            MaxHealth = maxHealth;
         }
 
-        ///<summary>
-        ///Gets or sets the entity that owns this component.
-        ///</summary>
-        public Entity Owner { get; set; }
-
-        ///<summary>
-        ///Gets or sets whether the component is active.
-        ///</summary>
-        public bool IsActive { get; set; } = true;
-
-        ///<summary>
-        ///Gets whether this component has a valid value.
-        ///</summary>
-        public bool HasValue => true;
-
-        ///<summary>
-        ///Gets the value of this component.
-        ///</summary>
-        public HealthComponent Value => this;
-
-        ///<summary>
-        ///Applies damage to the entity.
-        ///</summary>
-        ///<param name="damage">Amount of damage to apply.</param>
         public void TakeDamage(float damage)
         {
-            _currentHealth = System.Math.Max(0, _currentHealth - damage);
+            CurrentHealth = global::System.Math.Max(0, CurrentHealth - damage);
         }
 
-        ///<summary>
-        ///Heals the entity.
-        ///</summary>
-        ///<param name="amount">Amount of health to restore.</param>
         public void Heal(float amount)
         {
-            _currentHealth = System.Math.Min(_maxHealth, _currentHealth + amount);
+            CurrentHealth = global::System.Math.Min(MaxHealth, CurrentHealth + amount);
         }
 
-        ///<summary>
-        ///Fully restores health to maximum.
-        ///</summary>
-        public void FullRestore()
+        public void Revive(float healthPercentage = 1.0f)
         {
-            _currentHealth = _maxHealth;
-        }
-
-        ///<summary>
-        ///Checks if the entity is alive.
-        ///</summary>
-        ///<returns>True if health is greater than 0.</returns>
-        public bool IsAlive()
-        {
-            return _currentHealth > 0;
-        }
-
-        ///<summary>
-        ///Gets whether the entity is dead.
-        ///</summary>
-        public bool IsDead => !IsAlive();
-
-        ///<summary>
-        ///Called when the component is added to an entity.
-        ///</summary>
-        public void OnAdded()
-        {
-            //Component added logic
-        }
-
-        ///<summary>
-        ///Called when the component is removed from an entity.
-        ///</summary>
-        public void OnRemoved()
-        {
-            //Component removed logic
+            CurrentHealth = MaxHealth * global::System.Math.Clamp(healthPercentage, 0f, 1f);
         }
     }
 }

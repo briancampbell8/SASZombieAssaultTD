@@ -1,63 +1,97 @@
-﻿// ====================================================================================================
+// =====================================================================================================
 //  FILE: HUDPanelFinalizer_UIStateBuilder.cs
-//  PATH: Engine/UI/HUDPanels/
-//  MODULE: UIState Builder (Finalizer Pipeline)
+//  PATH: Engine/UI/HUDPanels/HUDPanelFinalizer_UIStateBuilder.cs
+//  SUBSYSTEM: HUDPanels → Finalizer
 //
 //  ROLE:
-//      Constructs the authoritative UIState object for the CASH HUD panel. This module receives fully
-//      resolved geometry, colors, and crosshair configuration from HUDPanelFinalizer_Resolver and
-//      produces a deterministic UIState consumed by the GPU UI pipeline.
+//      Constructs the authoritative GPU‑ready UIState object for the CASH HUD panel. Consumes fully
+//      resolved geometry, colors, item price color, and crosshair configuration from the Resolver and
+//      produces a deterministic UIState consumed by HUDPanel_CashUpdate and HUDOverlay diagnostics.
 //
 //  RESPONSIBILITIES:
 //      - Convert resolved geometry and color values into a normalized UIState.
-//      - Package crosshair configuration for HUDManager’s rendering stage.
+//      - Package crosshair configuration.
 //      - Ensure all values are deterministic and free of implicit defaults.
-//      - Provide a single authoritative UIState for the CASH HUD panel.
+//      - Emit tracing for all state construction operations.
 //
-//  NON-RESPONSIBILITIES:
-//      - Manual override processing (handled by HUDPanelFinalizer_Control).
-//      - Color parsing (handled by HUDPanelFinalizer_ColorParser).
-//      - Geometry/crosshair resolution (handled by HUDPanelFinalizer_Resolver).
-//      - Runtime rendering (handled by HUDPanel_CashUpdate and HUDManager).
-//
-//  ARCHITECTURAL NOTES:
-//      - UIStateBuilder is intentionally simple and deterministic.
-//      - No implicit defaults: all values must be provided by the Resolver.
-//      - Produces a GPU‑ready UIState consumed by HUDManager and the rendering pipeline.
-// ====================================================================================================
+//  NON‑RESPONSIBILITIES:
+//      - Manual override processing (Control).
+//      - Color parsing (ColorParser).
+//      - Geometry/crosshair resolution (Resolver).
+//      - Rendering (HUDPanel_CashUpdate).
+// =====================================================================================================
 
-namespace SASZombieAssaultTD.Engine.UI.HUDPanels
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.Diagnostics;
+
+namespace SASZombieAssaultTD.Engine.UI
 {
-    public class HUDPanelFinalizer_UIStateBuilder
+    public sealed class HUDPanelFinalizer_UIStateBuilder
     {
-        /// <summary>
-        /// Builds the authoritative UIState object for the CASH HUD panel.
-        /// All values must be provided explicitly by the Resolver.
-        /// </summary>
-        public UIState Build(
+        public HUDPanels.UIState ConstructState(HUDPanelFinalizer_Resolver resolver)
+        {
+            if (resolver == null)
+                throw new ArgumentNullException(nameof(resolver));
+
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                "UIStateBuilder: ConstructState ENTRY");
+
+            var resolved = resolver.GetResolvedState();
+
+            var state = Build(
+                resolved.X,
+                resolved.Y,
+                resolved.Width,
+                resolved.Height,
+                resolved.FillColor,
+                resolved.TextColor,
+                resolved.ItemPriceColor,
+                resolved.CrosshairCenterX,
+                resolved.CrosshairCenterY,
+                resolved.CrosshairArmLength,
+                resolved.CrosshairThickness,
+                resolved.CrosshairColor,
+                resolved.UseFlashColor,
+                resolved.FlashColor,
+                resolved.ManualOverrideEnabled
+            );
+
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                "UIStateBuilder: ConstructState EXIT");
+
+            return state;
+        }
+
+        public HUDPanels.UIState Build(
             int x,
             int y,
             int width,
             int height,
             Color fillColor,
             Color textColor,
+            Color itemPriceColor,
             int crosshairCenterX,
             int crosshairCenterY,
             int crosshairArmLength,
             int crosshairThickness,
-            System.Drawing.Color crosshairColor,
+            Color crosshairColor,
             bool useFlashColor,
-            System.Drawing.Color flashColor)
+            Color flashColor,
+            bool useManualColors)
         {
-            var state = new UIState
-            {
-                X = x,
-                Y = y,
-                Width = width,
-                Height = height,
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                "UIStateBuilder: Build ENTRY");
 
-                FillColor = fillColor,
-                TextColor = textColor,
+            var state = new HUDPanels.UIState
+            {
+                PanelX = x,
+                PanelY = y,
+                PanelWidth = width,
+                PanelHeight = height,
+
+                PanelFillColor = fillColor,
+                PanelTextColor = textColor,
+                ItemPriceColor = itemPriceColor,
 
                 CrosshairCenterX = crosshairCenterX,
                 CrosshairCenterY = crosshairCenterY,
@@ -66,38 +100,47 @@ namespace SASZombieAssaultTD.Engine.UI.HUDPanels
                 CrosshairColor = crosshairColor,
 
                 UseFlashColor = useFlashColor,
-                FlashColor = flashColor
+                FlashColor = flashColor,
+                UseManualColors = useManualColors
             };
+
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                "UIStateBuilder: Build EXIT");
 
             return state;
         }
     }
+}
 
-    // ====================================================================================================
-    //  UIState DTO (GPU‑ready)
-    // ====================================================================================================
-
-    public class UIState
+namespace SASZombieAssaultTD.Engine.UI.HUDPanels
+{
+    public sealed class UIState
     {
-        // Geometry
-        public int X;
-        public int Y;
-        public int Width;
-        public int Height;
+        internal object Width;
+        internal object X;
+        internal object ManualOverrideEnabled;
+        internal object FillColor;
+        internal object TextColor;
+        internal object Y;
+        internal object Height;
 
-        // Colors
-        public Color FillColor;
-        public Color TextColor;
+        public int PanelX { get; set; }
+        public int PanelY { get; set; }
+        public int PanelWidth { get; set; }
+        public int PanelHeight { get; set; }
 
-        // Crosshair
-        public int CrosshairCenterX;
-        public int CrosshairCenterY;
-        public int CrosshairArmLength;
-        public int CrosshairThickness;
-        public System.Drawing.Color CrosshairColor;
+        public Color PanelFillColor { get; set; }
+        public Color PanelTextColor { get; set; }
+        public Color ItemPriceColor { get; set; }
 
-        // Flash behavior
-        public bool UseFlashColor;
-        public System.Drawing.Color FlashColor;
+        public int CrosshairCenterX { get; set; }
+        public int CrosshairCenterY { get; set; }
+        public int CrosshairArmLength { get; set; }
+        public int CrosshairThickness { get; set; }
+        public Color CrosshairColor { get; set; }
+
+        public bool UseFlashColor { get; set; }
+        public Color FlashColor { get; set; }
+        public bool UseManualColors { get; set; }
     }
 }

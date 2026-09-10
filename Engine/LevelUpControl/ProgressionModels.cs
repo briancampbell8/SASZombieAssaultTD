@@ -38,8 +38,8 @@
  * ==================================================================================================== */
 
 //
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -109,6 +109,8 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         public MilestoneCategory Category { get; set; }
         public int RequiredLevel { get; set; }
         public bool IsCompleted { get; set; }
+        public bool IsUnlocked { get; set; }
+
         public DateTime? CompletionDate { get; set; }
         public List<ProgressionReward> Rewards { get; set; } = new();
     }

@@ -1,3 +1,25 @@
+// ====================================================================================================
+//  FILE: InventoryPanelRenderer.cs
+//  PATH: ./Engine/UI/Rendering/
+//  MODULE: Rendering
+//
+//  ROLE:
+//      Provide rendering logic, draw calls, batching, or GPU resource management.
+//
+//  RESPONSIBILITIES:
+//      - Provide Show() behavior for the Rendering subsystem.
+//      - Provide Hide() behavior for the Rendering subsystem.
+//      - Provide UpdateInventory() behavior for the Rendering subsystem.
+//      - Provide Update() behavior for the Rendering subsystem.
+//      - Provide Render() behavior for the Rendering subsystem.
+//      - Provide GetStatistics() behavior for the Rendering subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    InventoryPanelRenderer.cs
 Purpose: UI renderer for inventory panel display.
@@ -7,11 +29,12 @@ P11-04-12-I: Renders inventory panel with proper layering above HUD.
 Uses UIElementBase for consistent UI behavior and supports inventory management.
 */
 
-using SASZombieAssaultTD.Engine.Rendering;
 using System;
-using SASZombieAssaultTD.Engine.Resources;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.Resources;
+using SASZombieAssaultTD.Engine.TextRendering;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
@@ -43,23 +66,23 @@ namespace SASZombieAssaultTD.Engine.UI
             _assetManager = assetManager ?? throw new ArgumentNullException(nameof(assetManager));
             _textRenderer = textRenderer ?? throw new ArgumentNullException(nameof(textRenderer));
 
-            DebugLog("InventoryPanelRenderer: Initialized");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "InventoryPanelRenderer: Initialized");
         }
 
         ///<summary>
-        ///Shows the inventory panel for the specified entity.
+        ///Shows the inventory panel for the specified ECSEntityCore.
         ///</summary>
-        ///<param name="entityId">Entity ID whose inventory to display</param>
+        ///<param name="ECSEntityCoreId">Entity ID whose inventory to display</param>
         ///<param name="inventoryData">Inventory data to render</param>
-        public void Show(int entityId, object inventoryData)
+        public void Show(int ECSEntityCoreId, object inventoryData)
         {
             try
             {
-                _currentEntityId = entityId;
+                _currentEntityId = ECSEntityCoreId;
                 _currentInventoryData = inventoryData;
                 _isVisible = true;
 
-                DebugLog($"InventoryPanelRenderer: Showing inventory for entity {entityId}");
+                DLogger.Log($"InventoryPanelRenderer: Showing inventory for ECSEntityCore {ECSEntityCoreId}");
 
                 //In a full implementation, this would:
                 //1. Create inventory panel UI element with UIElementBase
@@ -70,7 +93,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                DebugLog($"InventoryPanelRenderer: Failed to show inventory - {ex.Message}");
+                DLogger.Log($"InventoryPanelRenderer: Failed to show inventory - {ex.Message}");
             }
         }
 
@@ -85,7 +108,7 @@ namespace SASZombieAssaultTD.Engine.UI
                 _currentEntityId = 0;
                 _currentInventoryData = null;
 
-                DebugLog("InventoryPanelRenderer: Hiding inventory panel");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "InventoryPanelRenderer: Hiding inventory panel");
 
                 //In a full implementation, this would:
                 //1. Hide inventory panel UI element
@@ -94,7 +117,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                DebugLog($"InventoryPanelRenderer: Failed to hide inventory - {ex.Message}");
+                DLogger.Log($"InventoryPanelRenderer: Failed to hide inventory - {ex.Message}");
             }
         }
 
@@ -110,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.UI
 
                 _currentInventoryData = inventoryData;
 
-                DebugLog("InventoryPanelRenderer: Updating inventory data");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "InventoryPanelRenderer: Updating inventory data");
 
                 //In a full implementation, this would:
                 //1. Update inventory slot contents
@@ -120,7 +143,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                DebugLog($"InventoryPanelRenderer: Failed to update inventory - {ex.Message}");
+                DLogger.Log($"InventoryPanelRenderer: Failed to update inventory - {ex.Message}");
             }
         }
 
@@ -139,7 +162,7 @@ namespace SASZombieAssaultTD.Engine.UI
             }
             catch (Exception ex)
             {
-                DebugLog($"InventoryPanelRenderer: Update failed - {ex.Message}");
+                DLogger.Log($"InventoryPanelRenderer: Update failed - {ex.Message}");
             }
         }
 
@@ -147,7 +170,7 @@ namespace SASZombieAssaultTD.Engine.UI
         ///Renders the inventory panel.
         ///</summary>
         ///<param name="context">Render context for drawing</param>
-        public void Render(IRenderContext context)
+        public void Render(D3D11Adapter_Core context)
         {
             if (!_isVisible || context == null) return;
 
@@ -161,11 +184,11 @@ namespace SASZombieAssaultTD.Engine.UI
                 //5. Draw selection highlights
                 //6. Draw drag/drop ghost items
 
-                DebugLog("InventoryPanelRenderer: Rendering inventory panel");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "InventoryPanelRenderer: Rendering inventory panel");
             }
             catch (Exception ex)
             {
-                DebugLog($"InventoryPanelRenderer: Render failed - {ex.Message}");
+                DLogger.Log($"InventoryPanelRenderer: Render failed - {ex.Message}");
             }
         }
 
@@ -183,15 +206,16 @@ namespace SASZombieAssaultTD.Engine.UI
             };
         }
 
-        private void DebugLog(string message)
+        private void Log(string message)
         {
             if (_debugOutput)
             {
-                System.Diagnostics.Debug.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
+                DLogger.Log($"[{DateTime.Now:HH:mm:ss.fff}] {message}");
             }
         }
     }
 }
+
 
 
 

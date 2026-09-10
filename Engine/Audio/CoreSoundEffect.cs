@@ -1,3 +1,40 @@
+// ====================================================================================================
+//  FILE: CoreSoundEffect.cs
+//  PATH: ./Engine/Audio/
+//  MODULE: Audio
+//
+//  ROLE:
+//      Manage audio playback, mixing, or spatial sound behavior.
+//
+//  RESPONSIBILITIES:
+//      - Provide Play() behavior for the Audio subsystem.
+//      - Provide Play2D() behavior for the Audio subsystem.
+//      - Provide PlayLoop() behavior for the Audio subsystem.
+//      - Provide PlayLoop2D() behavior for the Audio subsystem.
+//      - Provide Stop() behavior for the Audio subsystem.
+//      - Provide StopAll() behavior for the Audio subsystem.
+//      - Provide Pause() behavior for the Audio subsystem.
+//      - Provide Resume() behavior for the Audio subsystem.
+//      - Provide PauseAll() behavior for the Audio subsystem.
+//      - Provide ResumeAll() behavior for the Audio subsystem.
+//      - Provide SetVolume() behavior for the Audio subsystem.
+//      - Provide SetPitch() behavior for the Audio subsystem.
+//      - Provide SetPan() behavior for the Audio subsystem.
+//      - Provide IsPlaying() behavior for the Audio subsystem.
+//      - Provide GetParameters() behavior for the Audio subsystem.
+//      - Provide GetAllActiveParameters() behavior for the Audio subsystem.
+//      - Provide Update() behavior for the Audio subsystem.
+//      - Provide Reset() behavior for the Audio subsystem.
+//      - Provide Unload() behavior for the Audio subsystem.
+//      - Provide Load() behavior for the Audio subsystem.
+//      - Provide Load() behavior for the Audio subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    CoreSoundEffect.cs
 Purpose:  One-Pass Engine Reconstruction - Unified SoundEffect Implementation
@@ -13,13 +50,13 @@ Notes:   This replaces all fragmented sound effect implementations across the en
 */
 
 using SASZombieAssaultTD.Engine.VectorMath;
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
-namespace SASZombieAssaultTD.Engine.Audio
+namespace SASZombieAssaultTD.Engine.ECS
 {
     ///<summary>
     ///Sound effect parameters for audio playback.
@@ -275,3 +312,4 @@ namespace SASZombieAssaultTD.Engine.Audio
         ///
     }
 }
+

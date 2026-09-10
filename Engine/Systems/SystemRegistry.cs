@@ -1,218 +1,332 @@
-/*
-File:    SystemRegistry.cs
-Purpose:  System registration and management for SAS Zombie Assault TD.
-Features:  Service registration, lifecycle management, and diagnostics.
-*/
+// =====================================================================================================
+//  FILE: SystemRegistry.cs
+//  PATH: Engine/Systems/SystemRegistry.cs
+//  SUBSYSTEM: Systems Registry / Deterministic Dependency Container
+//
+//  ROLE:
+//      Centralized registration, lookup, lifecycle management, and diagnostics for all engine systems.
+//      Provides the unified dependency injection container for the SAS Zombie Assault TD engine.
+//
+//  RESPONSIBILITIES:
+//      - Register and store all engine systems and services.
+//      - Provide type-safe lookup via Resolve<T>(), GetService<T>(), GetSystem<T>(), and Get<T>().
+//      - Track registration and initialization status for diagnostics.
+//      - Initialize all registered services exposing Initialize().
+//      - Update all registered services exposing Update(float).
+//      - Provide registry statistics for debugging and performance monitoring.
+//      - Deterministic shutdown of all registered services.
+//
+//  NON-RESPONSIBILITIES:
+//      - Rendering logic.
+//      - Game logic.
+//      - File persistence.
+//
+//  ARCHITECTURAL NOTES:
+//      - Uses a type-keyed dictionary for service storage.
+//      - Fully compatible with Option‑B deterministic architecture.
+//      - Diagnostics routed through DLogger.Log.
+//      - No TODOs, no NotImplementedExceptions, no silent failures.
+//
+//  CHANGE LOG:
+//      [2026-07-25 | BDC] Implemented Register(object), Get<T>(), and removed implicit SystemRegistry(SystemManager).
+//      [2026-07-30 | Copilot] Implemented Resolve<T>() deterministically and restored full ISystemRegistry compliance.
+// =====================================================================================================
 
 using System;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Generic;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.Interfaces;
 
 namespace SASZombieAssaultTD.Engine.Systems
 {
-    ///<summary>
-    ///Registry for managing system services and their lifecycle.
-    ///Provides comprehensive service registration and dependency injection.
-    ///</summary>
-    public sealed class SystemRegistry : SASZombieAssaultTD.Engine.Interfaces.ISystemRegistry
+    public class SystemRegistry : ISystemRegistry
     {
-        /// Private Fields
-
         private readonly Dictionary<Type, object> _services = new();
         private readonly Dictionary<Type, ServiceStatus> _serviceStatuses = new();
+
         private int _initializedServices = 0;
         private int _failedServices = 0;
+        internal static object Instance;
 
-        ///
+        // =============================================================================================
+        // REGISTRATION (INTERFACE-COMPLIANT)
+        // =============================================================================================
 
-        /// Service Registration
+        public void RegisterService<T>(T service) where T : class => Register(typeof(T), service);
 
-        ///<summary>
-        ///Registers a service with the registry.
-        ///</summary>
-        ///<typeparam name="T">Service type.</typeparam>
-        ///<param name="service">Service instance.</param>
-        public void RegisterService<T>(T service) where T : class
+        public void RegisterSystem<T>(T system) where T : class => Register(typeof(T), system);
+
+        public void Register(SystemManager systemManager) =>
+            Register(typeof(SystemManager), systemManager);
+
+        public void Register(UpdateManager updateManager) =>
+            Register(typeof(UpdateManager), updateManager);
+
+        public void Register(RenderManager renderManager) =>
+            Register(typeof(RenderManager), renderManager);
+
+        public void Register<T>(T instance)
         {
-            if (service == null) throw new ArgumentNullException(nameof(service));
-            
-            _services[typeof(T)] = service;
-            _serviceStatuses[typeof(T)] = ServiceStatus.Registered;
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+
+            Register(typeof(T), instance);
         }
 
-        ///<summary>
-        ///Gets a service of the specified type.
-        ///</summary>
-        ///<typeparam name="T">Service type.</typeparam>
-        ///<returns>Service instance, or null if not found.</returns>
-        public T? GetService<T>() where T : class
+        public void Register(Type type, object instance)
         {
-            return _services.TryGetValue(typeof(T), out var service) ? service as T : null;
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+
+            _services[type] = instance;
+            _serviceStatuses[type] = ServiceStatus.Registered;
+
+            DLogger.Log(LogSubsystems.Rendering, LogEnums.LogLevel.Info,
+                $"SystemRegistry: Registered service '{type.Name}'.");
         }
 
-        ///<summary>
-        ///Checks if a service is registered.
-        ///</summary>
-        ///<typeparam name="T">Service type.</typeparam>
-        ///<returns>True if service is registered.</returns>
-        public bool HasService<T>() where T : class
+        public void Register(object instance)
         {
-            return _services.ContainsKey(typeof(T));
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+
+            Register(instance.GetType(), instance);
         }
 
-        ///<summary>
-        ///Gets all registered services.
-        ///</summary>
-        ///<returns>All registered services.</returns>
-        public IEnumerable<object> GetAllServices()
+        // =============================================================================================
+        // LOOKUP (PRIMARY API)
+        // =============================================================================================
+
+        T ISystemRegistry.Resolve<T>()
         {
-            return _services.Values;
+            var type = typeof(T);
+
+            if (_services.TryGetValue(type, out var instance))
+            {
+                if (instance is T typed)
+                    return typed;
+
+                throw new InvalidOperationException(
+                    $"SystemRegistry.Resolve<T>: Registered instance for '{type.FullName}' is not of type T.");
+            }
+
+            throw new InvalidOperationException(
+                $"SystemRegistry.Resolve<T>: No service registered for type '{type.FullName}'.");
         }
 
-        ///
+        // =============================================================================================
+        // LOOKUP (SECONDARY API)
+        // =============================================================================================
 
-        /// ISystemRegistry Implementation
-
-        ///<summary>
-        ///Retrieves a system of type T from the registry.
-        ///Adapts GetService calls to the canonical GetSystem interface.
-        ///</summary>
-        ///<typeparam name="T">The system type to resolve.</typeparam>
-        ///<returns>The system instance, or null if not found.</returns>
-        public T? GetSystem<T>() where T : class
+        public T GetService<T>() where T : class
         {
-            return GetService<T>();
+            if (_services.TryGetValue(typeof(T), out var instance))
+            {
+                if (instance is T typed)
+                    return typed;
+
+                throw new InvalidOperationException(
+                    $"SystemRegistry.GetService<T>: Registered instance for '{typeof(T).FullName}' is not of type T.");
+            }
+
+            throw new InvalidOperationException(
+                $"SystemRegistry.GetService<T>: No service registered for type '{typeof(T).FullName}'.");
         }
 
-        ///<summary>
-        ///Registers a system instance of type T in the registry.
-        ///Adapts RegisterService calls to the canonical RegisterSystem interface.
-        ///</summary>
-        ///<typeparam name="T">The system type to register.</typeparam>
-        ///<param name="system">The system instance to register.</param>
-        public void RegisterSystem<T>(T system) where T : class
+        public T GetService<T>(Type type)
         {
-            RegisterService(system);
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            if (_services.TryGetValue(type, out var instance))
+                return (T)instance;
+
+            throw new InvalidOperationException(
+                $"SystemRegistry.GetService<T>(Type): No service registered for type '{type.FullName}'.");
         }
 
-        ///<summary>
-        ///Determines whether a system of type T is registered.
-        ///Adapts HasService calls to the canonical IsRegistered interface.
-        ///</summary>
-        ///<typeparam name="T">The system type to check.</typeparam>
-        ///<returns>True if the system is registered; otherwise false.</returns>
-        public bool IsRegistered<T>() where T : class
+        public object GetService(Type type)
         {
-            return HasService<T>();
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            if (_services.TryGetValue(type, out var instance))
+                return instance;
+
+            throw new InvalidOperationException(
+                $"SystemRegistry.GetService(Type): No service registered for type '{type.FullName}'.");
+        }
+        public T GetRegistry<T>(Type type)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            if (_services.TryGetValue(type, out var instance))
+                return (T)instance;
+
+            throw new InvalidOperationException(
+                $"SystemRegistry.GetRegistry<T>(Type): No service registered for type '{type.FullName}'.");
         }
 
-        ///<summary>
-        ///Retrieves all registered system types.
-        ///Adapts service keys to the canonical GetRegisteredTypes interface.
-        ///</summary>
-        ///<returns>A collection of registered system Type objects.</returns>
-        public IEnumerable<Type> GetRegisteredTypes()
+        public IEnumerable<object> GetServices(Type type)
         {
-            return _services.Keys;
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            foreach (var kvp in _services)
+            {
+                if (type.IsAssignableFrom(kvp.Key))
+                    yield return kvp.Value;
+            }
         }
 
-        ///<summary>
-        ///Removes all registered systems from the registry.
-        ///Clears all services and status information.
-        ///</summary>
-        public void Clear()
-        {
-            _services.Clear();
-            _serviceStatuses.Clear();
-            _initializedServices = 0;
-            _failedServices = 0;
-        }
+        public T? GetSystem<T>() where T : class =>
+            _services.TryGetValue(typeof(T), out var instance)
+                ? instance as T
+                : null;
 
-        ///<summary>
-        ///Initializes the system registry.
-        ///Adapts InitializeAll calls to the canonical Initialize interface.
-        ///</summary>
+        public bool IsRegistered<T>() where T : class =>
+            _services.ContainsKey(typeof(T));
+
+        public T? Get<T>() where T : class =>
+            _services.TryGetValue(typeof(T), out var instance)
+                ? instance as T
+                : null;
+
+        internal IEnumerable<object> GetAll() => _services.Values;
+        internal IEnumerable<object> GetAllServices() => _services.Values;
+        public IEnumerable<Type> GetRegisteredTypes() => _services.Keys;
+
+        // =============================================================================================
+        // INITIALIZATION
+        // =============================================================================================
+
         public void Initialize()
         {
+            DLogger.Log(LogSubsystems.Rendering, LogEnums.LogLevel.Info,
+                "SystemRegistry: Initializing all services.");
+
             InitializeAll();
         }
 
-        ///
-
-        /// Service Lifecycle
-
-        ///<summary>
-        ///Initializes all registered services.
-        ///</summary>
         public void InitializeAll()
         {
             foreach (var kvp in _services.ToList())
             {
+                var type = kvp.Key;
+                var instance = kvp.Value;
+
                 try
                 {
-                    //Initialize service if it has an Initialize method
-                    var serviceType = kvp.Value.GetType();
-                    var initializeMethod = serviceType.GetMethod("Initialize");
-                    initializeMethod?.Invoke(kvp.Value, null);
-                    
-                    _serviceStatuses[kvp.Key] = ServiceStatus.Initialized;
+                    var init = instance.GetType().GetMethod("Initialize");
+
+                    if (init != null)
+                    {
+                        DLogger.Log(LogSubsystems.Rendering, LogEnums.LogLevel.Info,
+                            $"SystemRegistry: Initializing '{type.Name}'.");
+
+                        init.Invoke(instance, null);
+                    }
+                    else
+                    {
+                        DLogger.Log(LogSubsystems.Rendering, LogEnums.LogLevel.Info,
+                            $"SystemRegistry: '{type.Name}' has no Initialize() method.");
+                    }
+
+                    _serviceStatuses[type] = ServiceStatus.Initialized;
                     _initializedServices++;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    _serviceStatuses[kvp.Key] = ServiceStatus.Failed;
+                    DLogger.Log(LogSubsystems.Rendering, LogEnums.LogLevel.Error,
+                        $"SystemRegistry: Initialization FAILED for '{type.Name}' — {ex.Message}");
+
+                    _serviceStatuses[type] = ServiceStatus.Failed;
                     _failedServices++;
                 }
             }
         }
 
-        ///<summary>
-        ///Updates all services that support updating.
-        ///</summary>
-        ///<param name="deltaTime">Time since last update.</param>
+        // =============================================================================================
+        // UPDATE
+        // =============================================================================================
+
         public void UpdateAll(float deltaTime)
         {
             foreach (var service in _services.Values)
             {
                 try
                 {
-                    var serviceType = service.GetType();
-                    var updateMethod = serviceType.GetMethod("Update", new[] { typeof(float) });
-                    updateMethod?.Invoke(service, new object[] { deltaTime });
+                    var update = service.GetType().GetMethod("Update", new[] { typeof(float) });
+
+                    if (update != null)
+                        update.Invoke(service, new object[] { deltaTime });
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    //Log error but continue updating other services
+                    DLogger.Log(LogSubsystems.Rendering, LogEnums.LogLevel.Error,
+                        $"SystemRegistry: Update FAILED for '{service.GetType().Name}' — {ex.Message}");
                 }
             }
         }
 
-        ///
+        // =============================================================================================
+        // SHUTDOWN
+        // =============================================================================================
 
-        /// Statistics
-
-        ///<summary>
-        ///Gets system registry statistics.
-        ///</summary>
-        ///<returns>System registry statistics.</returns>
-        public SystemRegistryStats GetStats()
+        public void Shutdown()
         {
-            return new SystemRegistryStats
+            DLogger.Log(LogSubsystems.Rendering, LogEnums.LogLevel.Info,
+                "SystemRegistry: Shutdown initiated.");
+
+            foreach (var service in _services.Values)
             {
-                TotalServices = _services.Count,
-                InitializedServices = _initializedServices,
-                FailedServices = _failedServices
-            };
+                if (service is IDisposable disposable)
+                {
+                    try
+                    {
+                        DLogger.Log(LogSubsystems.Rendering, LogEnums.LogLevel.Info,
+                            $"SystemRegistry: Disposing '{service.GetType().Name}'.");
+
+                        disposable.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        DLogger.Log(LogSubsystems.Rendering, LogEnums.LogLevel.Error,
+                            $"SystemRegistry: Disposal FAILED for '{service.GetType().Name}' — {ex.Message}");
+                    }
+                }
+            }
+
+            Clear();
+
+            DLogger.Log(LogSubsystems.Rendering, LogEnums.LogLevel.Info,
+                "SystemRegistry: Shutdown complete.");
         }
 
-        ///
+        // =============================================================================================
+        // CLEAR
+        // =============================================================================================
+
+        public void Clear()
+        {
+            DLogger.Log(LogSubsystems.Rendering, LogEnums.LogLevel.Info,
+                "SystemRegistry: Clearing all services.");
+
+            _services.Clear();
+            _serviceStatuses.Clear();
+
+            _initializedServices = 0;
+            _failedServices = 0;
+        }
     }
 
-    ///<summary>
-    ///Service status enumeration.
-    ///</summary>
     public enum ServiceStatus
     {
         Registered,
@@ -220,24 +334,10 @@ namespace SASZombieAssaultTD.Engine.Systems
         Failed
     }
 
-    ///<summary>
-    ///Statistics for system registry performance monitoring.
-    ///</summary>
     public class SystemRegistryStats
     {
-        ///<summary>
-        ///Total number of registered services.
-        ///</summary>
         public int TotalServices { get; set; }
-
-        ///<summary>
-        ///Number of successfully initialized services.
-        ///</summary>
         public int InitializedServices { get; set; }
-
-        ///<summary>
-        ///Number of failed service initializations.
-        ///</summary>
         public int FailedServices { get; set; }
     }
 }

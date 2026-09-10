@@ -17,9 +17,9 @@
 //      - Intentionally minimal and synchronous; should be called from gameplay event handlers.
 // ====================================================================================================
 
-using SASZombieAssaultTD.Engine.Audio;
+using SASZombieAssaultTD.Engine.ECS;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Waves
 {
@@ -35,7 +35,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         public static void PlayWaveStart()
         {
             ModernPlaySound.Play("wave_start");
-            System.Diagnostics.Debug.WriteLine("WaveAudioIntegration: Played wave start sound");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "WaveAudioIntegration: Played wave start sound");
         }
 
         ///<summary>
@@ -44,7 +44,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         public static void PlayWaveComplete()
         {
             ModernPlaySound.Play("success_wave_complete");
-            System.Diagnostics.Debug.WriteLine("WaveAudioIntegration: Played wave complete sound");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "WaveAudioIntegration: Played wave complete sound");
         }
 
         ///<summary>
@@ -53,7 +53,7 @@ namespace SASZombieAssaultTD.Engine.Waves
         public static void PlayWaveAnnouncement(int waveNumber)
         {
             ModernPlaySound.Play("wave_start");
-            System.Diagnostics.Debug.WriteLine($"WaveAudioIntegration: Played wave {waveNumber} announcement");
+            DLogger.Log($"WaveAudioIntegration: Played wave {waveNumber} announcement");
         }
 
         ///<summary>
@@ -64,7 +64,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             if (ModernPlaySound.GetSubsystem() != null)
             {
                 ModernPlaySound.GetSubsystem().PlayMusic("music_wave", true);
-                System.Diagnostics.Debug.WriteLine("WaveAudioIntegration: Started wave music");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "WaveAudioIntegration: Started wave music");
             }
         }
 
@@ -76,7 +76,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             if (ModernPlaySound.GetSubsystem() != null)
             {
                 ModernPlaySound.GetSubsystem().StopMusic();
-                System.Diagnostics.Debug.WriteLine("WaveAudioIntegration: Stopped wave music");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "WaveAudioIntegration: Stopped wave music");
             }
         }
     }

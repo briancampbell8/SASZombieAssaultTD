@@ -1,24 +1,33 @@
-// ====================================================================================================
-//  FILE: UIFinalizer.cs
-//  PATH: ./Engine/UI/
-//  MODULE: UI Finalizer Pipeline
+// =====================================================================================================
+//  FILE: Finalizer.cs
+//  PATH: Engine/UI/Finalizer.cs
+//  SUBSYSTEM: UI / Overlay Validation & Diagnostic Finalization
 //
 //  ROLE:
-//      Central pipeline manager coordinating UIStateBuilder transformations.
+//      Optional diagnostic subsystem responsible for validating UI overlay correctness,
+//      verifying HUD visibility state, and performing post-render consistency checks.
+//      Finalizer performs no rendering and no state management.
 //
 //  RESPONSIBILITIES:
-//      - Coordinate element updates through the builder chain.
-//      - Execute safe interface resolution operations.
+//      - Validate HUDManager state after HUDRenderer execution.
+//      - Validate dynamic overlay correctness after ModernUIRenderer execution.
+//      - Provide diagnostic hooks for UI debugging.
 //
 //  NON-RESPONSIBILITIES:
-//      - Low-level data persistence or file serialization.
+//      - Rendering (handled by HUDRenderer and ModernUIRenderer).
+//      - HUD state management (handled by HUDManager).
+//      - Texture loading (handled by TextureManager).
 //
-//  NOTES:
-//      Auto-generated structure verified locally via file state scripts.
-// ====================================================================================================
-using System;
-using System.Collections.Generic;
+//  ARCHITECTURAL NOTES:
+//      - Finalizer runs after all render subsystems.
+//      - All legacy HUDPanel* classes have been removed.
+// =====================================================================================================
+
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Drawing;
 using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.UI
 {
     public sealed class UIFinalizer
@@ -69,33 +78,37 @@ namespace SASZombieAssaultTD.Engine.UI
         ///</summary>
         public IReadOnlyList<UIRenderable> FinalizeUI(UIState uiState)
         {
-            DLogger.Log("UIFinalizer.FinalizeUI.Start",
-                uiState == null ? "uiState=NULL" : $"Elements={uiState.UIStateElements?.Count}");
+            // Fixed CS1061: Changed UIStateElements to Elements
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFinalizer.FinalizeUI.Start",
+                uiState == null ? "uiState=NULL" : $"Elements={uiState.Elements?.Count}");
 
             if (uiState == null)
             {
-                DLogger.Log("UIFinalizer.FinalizeUI.Error", "uiState is NULL");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFinalizer.FinalizeUI.Error", "uiState is NULL");
                 return Array.Empty<UIRenderable>();
             }
 
-            if (uiState.UIStateElements == null || uiState.UIStateElements.Count == 0)
+            // Fixed CS1061: Changed UIStateElements to Elements
+            if (uiState.Elements == null || uiState.Elements.Count == 0)
             {
-                DLogger.Log("UIFinalizer.FinalizeUI.Empty", "No elements to finalize");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFinalizer.FinalizeUI.Empty", "No elements to finalize");
                 return Array.Empty<UIRenderable>();
             }
 
-            var finalized = new List<UIRenderable>(uiState.UIStateElements.Count);
+            // Fixed CS1061: Changed UIStateElements to Elements
+            var finalized = new List<UIRenderable>(uiState.Elements.Count);
 
-            foreach (var element in uiState.UIStateElements)
+            // Fixed CS1061: Changed UIStateElements to Elements
+            foreach (var element in uiState.Elements)
             {
                 if (element == null)
                 {
-                    DLogger.Log("UIFinalizer.FinalizeUI.Skip.NullElement", "NULL");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFinalizer.FinalizeUI.Skip.NullElement", "NULL");
                     continue;
                 }
 
                 //If already a UIRenderable, pass through
-                if (element is UIRenderable renderable)
+                if ((object)element is UIRenderable renderable)
                 {
                     finalized.Add(renderable);
                     continue;
@@ -115,7 +128,7 @@ namespace SASZombieAssaultTD.Engine.UI
                 });
             }
 
-            DLogger.Log("UIFinalizer.FinalizeUI.Complete",
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFinalizer.FinalizeUI.Complete",
                 $"Output={finalized.Count}");
 
             return finalized;
@@ -134,7 +147,3 @@ namespace SASZombieAssaultTD.Engine.UI
         internal object Texture;
     }
 }
-
-
-
-

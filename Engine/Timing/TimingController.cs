@@ -1,10 +1,29 @@
-using System;
+// ====================================================================================================
+//  FILE: TimingController.cs
+//  PATH: ./Engine/Timing/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the TimingController module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Start() behavior for the Core subsystem.
+//      - Provide Tick() behavior for the Core subsystem.
+//      - Provide GetGameTime() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Diagnostics;
 using System.Reflection;
 using SASZombieAssaultTD.Engine.Dictionary;
-using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.CoreSize;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Timing
 //
 {
@@ -25,11 +44,11 @@ namespace SASZombieAssaultTD.Engine.Timing
         private float _totalElapsedTime;
         public void Start()
         {
-            DLogger.Log("BREAKPOINT", "Execution reached here");
-            DLogger.Log("BREAKPOINT", "Reached execution checkpoint");
-            DLogger.Log("BREAKPOINT", $"Method={nameof(MethodBase.GetCurrentMethod)}, Line={new StackTrace(true).GetFrame(0)?.GetFileLineNumber()}");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "BREAKPOINT", "Execution reached here");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "BREAKPOINT", "Reached execution checkpoint");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "BREAKPOINT", $"Method={nameof(MethodBase.GetCurrentMethod)}, Line={new StackTrace(true).GetFrame(0)?.GetFileLineNumber()}");
 
-            System.Diagnostics.Debug.WriteLine("[TimingController] Start() called.");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "[TimingController] Start() called.");
             //your timing setup logic
             _stopwatch.Reset();
             _stopwatch.Start();
@@ -73,6 +92,7 @@ namespace SASZombieAssaultTD.Engine.Timing
     }
 
 }
+
 
 
 

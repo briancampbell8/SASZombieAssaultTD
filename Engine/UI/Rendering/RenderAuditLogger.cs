@@ -1,3 +1,29 @@
+// ====================================================================================================
+//  FILE: RenderAuditLogger.cs
+//  PATH: ./Engine/UI/Rendering/
+//  MODULE: Rendering
+//
+//  ROLE:
+//      Provide rendering logic, draw calls, batching, or GPU resource management.
+//
+//  RESPONSIBILITIES:
+//      - Provide BeginFrame() behavior for the Rendering subsystem.
+//      - Provide EndFrame() behavior for the Rendering subsystem.
+//      - Provide LogDrawTexture() behavior for the Rendering subsystem.
+//      - Provide LogDrawRect() behavior for the Rendering subsystem.
+//      - Provide LogDrawText() behavior for the Rendering subsystem.
+//      - Provide LogStateChange() behavior for the Rendering subsystem.
+//      - Provide LogRenderCommand() behavior for the Rendering subsystem.
+//      - Provide SaveFrameCapture() behavior for the Rendering subsystem.
+//      - Provide GetCurrentFrame() behavior for the Rendering subsystem.
+//      - Provide Clear() behavior for the Rendering subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //File: RenderAuditLogger.cs
 //Purpose: Deterministic audit logging for rendering operations.
@@ -21,56 +47,56 @@
 */
 
 //using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.VectorMath;
 using System;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Generic;
-using System.IO;
-using System.Numerics;
-using System.Text.Json;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Drawing; //For Color struct, replace with engine's color type if different
-
+using System.IO;
+using System.Text.Json;
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Interfaces;
+
 namespace SASZombieAssaultTD.Engine.UI.Rendering
 {
-    ///<summary>
-    ///Provides deterministic audit logging for all rendering operations.
-    ///Enables frame capture, replay debugging, and deterministic verification.
-    ///</summary>
+    /// <summary>
+    /// Provides deterministic audit logging for all rendering operations. Enables frame capture, replay debugging, and
+    /// deterministic verification.
+    /// </summary>
     public class RenderAuditLogger
     {
         private readonly object _lock = new();
         private readonly List<AuditEntry> _currentFrame = new();
         private readonly Queue<List<AuditEntry>> _frameHistory = new();
 
-        ///<summary>
-        ///Maximum number of frames to keep in history buffer.
-        ///</summary>
+        /// <summary>
+        /// Maximum number of frames to keep in history buffer.
+        /// </summary>
         private const int MAX_FRAME_HISTORY = 60;
 
-        ///<summary>
-        ///Current frame number being recorded.
-        ///</summary>
+        /// <summary>
+        /// Current frame number being recorded.
+        /// </summary>
         private long _currentFrameNumber = 0;
 
-        ///<summary>
-        ///Flag indicating whether audit logging is enabled.
-        ///</summary>
+        /// <summary>
+        /// Flag indicating whether audit logging is enabled.
+        /// </summary>
         private bool _isEnabled = true;
 
-        ///<summary>
-        ///Gets or sets whether audit logging is enabled.
-        ///</summary>
+        /// <summary>
+        /// Gets or sets whether audit logging is enabled.
+        /// </summary>
         public bool IsEnabled
         {
             get => _isEnabled;
             set => _isEnabled = value;
         }
 
-        ///<summary>
-        ///Begins recording a new frame.
-        ///</summary>
-        ///<param name="frameNumber">Frame number for identification.</param>
+        /// <summary>
+        /// Begins recording a new frame.
+        /// </summary>
+        /// <param name="frameNumber">Frame number for identification.</param>
         public void BeginFrame(long frameNumber)
         {
             if (!_isEnabled) return;
@@ -96,9 +122,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        ///<summary>
-        ///Ends recording the current frame.
-        ///</summary>
+        /// <summary>
+        /// Ends recording the current frame.
+        /// </summary>
         public void EndFrame()
         {
             if (!_isEnabled) return;
@@ -111,13 +137,13 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                     { "EntryCount", _currentFrame.Count }
                 });
 
-                System.Diagnostics.Debug.WriteLine("Debug", $"RenderAuditLogger: Frame {_currentFrameNumber} recorded with {_currentFrame.Count} entries");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "Debug", $"RenderAuditLogger: Frame {_currentFrameNumber} recorded with {_currentFrame.Count} entries");
             }
         }
 
-        ///<summary>
-        ///Logs a draw texture operation.
-        ///</summary>
+        /// <summary>
+        /// Logs a draw texture operation.
+        /// </summary>
         public void LogDrawTexture(ITexture2D texture, Rectangle destRect, Color color, string source = null)
         {
             if (!_isEnabled) return;
@@ -131,9 +157,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             });
         }
 
-        ///<summary>
-        ///Logs a draw rectangle operation.
-        ///</summary>
+        /// <summary>
+        /// Logs a draw rectangle operation.
+        /// </summary>
         public void LogDrawRect(Rectangle rect, Color color, string source = null)
         {
             if (!_isEnabled) return;
@@ -146,10 +172,10 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             });
         }
 
-        ///<summary>
-        ///Logs a draw text operation.
-        ///</summary>
-        public void LogDrawText(string text, Vector2 position, Color color, string source = null)
+        /// <summary>
+        /// Logs a draw text operation.
+        /// </summary>
+        public void LogDrawText(string text, System.Numerics.Vector2 position, Color color, string source = null)
         {
             if (!_isEnabled) return;
 
@@ -162,9 +188,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             });
         }
 
-        ///<summary>
-        ///Logs a state change operation.
-        ///</summary>
+        /// <summary>
+        /// Logs a state change operation.
+        /// </summary>
         public void LogStateChange(string stateType, string fromValue, string toValue, string source = null)
         {
             if (!_isEnabled) return;
@@ -178,9 +204,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             });
         }
 
-        ///<summary>
-        ///Logs a render command submission.
-        ///</summary>
+        /// <summary>
+        /// Logs a render command submission.
+        /// </summary>
         public void LogRenderCommand(RenderCommand command, string source = null)
         {
             if (!_isEnabled) return;
@@ -195,10 +221,10 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             });
         }
 
-        ///<summary>
-        ///Saves the current frame capture to a JSON file.
-        ///</summary>
-        ///<param name="filePath">Path to save the capture file.</param>
+        /// <summary>
+        /// Saves the current frame capture to a JSON file.
+        /// </summary>
+        /// <param name="filePath">Path to save the capture file.</param>
         public void SaveFrameCapture(string filePath)
         {
             lock (_lock)
@@ -219,13 +245,13 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                 string json = JsonSerializer.Serialize(capture, options);
                 File.WriteAllText(filePath, json);
 
-                System.Diagnostics.Debug.WriteLine("Info", $"RenderAuditLogger: Frame capture saved to {filePath}");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "Info", $"RenderAuditLogger: Frame capture saved to {filePath}");
             }
         }
 
-        ///<summary>
-        ///Gets the current frame entries for inspection.
-        ///</summary>
+        /// <summary>
+        /// Gets the current frame entries for inspection.
+        /// </summary>
         public IReadOnlyList<AuditEntry> GetCurrentFrame()
         {
             lock (_lock)
@@ -234,9 +260,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        ///<summary>
-        ///Gets audit statistics.
-        ///</summary>
+        /// <summary>
+        /// Gets audit statistics.
+        /// </summary>
         public (long CurrentFrame, int CurrentEntryCount, int FrameHistoryCount) GetStats()
         {
             lock (_lock)
@@ -245,9 +271,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             }
         }
 
-        ///<summary>
-        ///Clears all recorded frames and resets state.
-        ///</summary>
+        /// <summary>
+        /// Clears all recorded frames and resets state.
+        /// </summary>
         public void Clear()
         {
             lock (_lock)
@@ -255,13 +281,13 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                 _currentFrame.Clear();
                 _frameHistory.Clear();
                 _currentFrameNumber = 0;
-                System.Diagnostics.Debug.WriteLine("Info", "RenderAuditLogger: All records cleared");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "Info", "RenderAuditLogger: All records cleared");
             }
         }
 
-        ///<summary>
-        ///Internal method to log an audit event.
-        ///</summary>
+        /// <summary>
+        /// Internal method to log an audit event.
+        /// </summary>
         private void LogEvent(string eventType, Dictionary<string, object> data)
         {
             var entry = new AuditEntry
@@ -276,9 +302,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         }
     }
 
-    ///<summary>
-    ///Represents a single audit entry.
-    ///</summary>
+    /// <summary>
+    /// Represents a single audit entry.
+    /// </summary>
     public class AuditEntry
     {
         public int Sequence { get; set; }
@@ -287,9 +313,9 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         public Dictionary<string, object> Data { get; set; }
     }
 
-    ///<summary>
-    ///Represents a complete frame capture for serialization.
-    ///</summary>
+    /// <summary>
+    /// Represents a complete frame capture for serialization.
+    /// </summary>
     public class FrameCapture
     {
         public long FrameNumber { get; set; }

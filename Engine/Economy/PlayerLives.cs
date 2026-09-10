@@ -1,11 +1,34 @@
-﻿/*
+// ====================================================================================================
+//  FILE: PlayerLives.cs
+//  PATH: ./Engine/Economy/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the PlayerLives module.
+//
+//  RESPONSIBILITIES:
+//      - Provide SetStartingLives() behavior for the Core subsystem.
+//      - Provide RemoveLife() behavior for the Core subsystem.
+//      - Provide AddLife() behavior for the Core subsystem.
+//      - Provide SetLives() behavior for the Core subsystem.
+//      - Provide Reset() behavior for the Core subsystem.
+//      - Provide HasLives() behavior for the Core subsystem.
+//      - Provide GetLivesPercentage() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+/*
 File:    PlayerLives.cs
 Purpose: Player lives management system for SAS Zombie Assault TD.
 Features: Lives tracking, game over detection, difficulty scaling.
 */
 
-using System;
-using SASZombieAssaultTD.Engine.Core;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.CoreSize;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Economy
@@ -29,7 +52,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _startingLives = 20;
             _maxLives = 50;
             _currentLives = _startingLives;
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"PlayerLives: Initialized with {_startingLives} starting lives");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"PlayerLives: Initialized with {_startingLives} starting lives");
         }
 
         ///<summary>
@@ -71,7 +94,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _startingLives = System.Math.Max(1, System.Math.Min(lives, _maxLives));
             _currentLives = _startingLives;
             OnLivesChanged?.Invoke(_currentLives);
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"PlayerLives: Set starting lives to {_startingLives}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"PlayerLives: Set starting lives to {_startingLives}");
         }
 
         ///<summary>
@@ -82,12 +105,12 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _currentLives = System.Math.Max(0, _currentLives - amount);
             OnLivesChanged?.Invoke(_currentLives);
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"PlayerLives: Removed {amount} life(s) - Remaining: {_currentLives}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"PlayerLives: Removed {amount} life(s) - Remaining: {_currentLives}");
 
             if (_currentLives <= 0)
             {
                 OnGameOver?.Invoke();
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", "PlayerLives: Game over - No lives remaining");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", "PlayerLives: Game over - No lives remaining");
             }
         }
 
@@ -99,7 +122,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _currentLives = System.Math.Min(_maxLives, _currentLives + amount);
             OnLivesChanged?.Invoke(_currentLives);
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"PlayerLives: Added {amount} life(s) - Total: {_currentLives}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"PlayerLives: Added {amount} life(s) - Total: {_currentLives}");
         }
 
         ///<summary>
@@ -110,12 +133,12 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _currentLives = System.Math.Max(0, System.Math.Min(lives, _maxLives));
             OnLivesChanged?.Invoke(_currentLives);
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"PlayerLives: Set lives to {_currentLives}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"PlayerLives: Set lives to {_currentLives}");
 
             if (_currentLives <= 0)
             {
                 OnGameOver?.Invoke();
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", "PlayerLives: Game over - No lives remaining");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", "PlayerLives: Game over - No lives remaining");
             }
         }
 
@@ -126,7 +149,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _currentLives = _startingLives;
             OnLivesChanged?.Invoke(_currentLives);
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"PlayerLives: Reset to starting lives - {_currentLives}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"PlayerLives: Reset to starting lives - {_currentLives}");
         }
 
         ///<summary>
@@ -148,3 +171,4 @@ namespace SASZombieAssaultTD.Engine.Economy
         }
     }
 }
+

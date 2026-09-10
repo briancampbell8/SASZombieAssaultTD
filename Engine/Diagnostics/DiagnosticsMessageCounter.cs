@@ -1,4 +1,4 @@
-﻿// ====================================================================================================
+// ====================================================================================================
 //  FILE: DiagnosticsMessageCounter.cs
 //  PATH: Engine/Diagnostics/
 //  MODULE: Diagnostics Pipeline (Console Summary Output)
@@ -33,7 +33,7 @@
 //      - It is intentionally lightweight and side-effect free.
 // ====================================================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
 using System.Reflection;

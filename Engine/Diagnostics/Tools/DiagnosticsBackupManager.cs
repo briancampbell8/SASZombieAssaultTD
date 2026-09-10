@@ -1,4 +1,4 @@
-﻿// ====================================================================================================
+// ====================================================================================================
 //  FILE: DiagnosticsBackupManager.cs
 //  PATH: Engine/Diagnostics/
 //  MODULE: Diagnostics Pipeline (Log Rotation & Backup Management)
@@ -31,7 +31,7 @@
 //      - Timestamped backups allow historical run inspection without polluting active logs.
 // ====================================================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Reflection;
 

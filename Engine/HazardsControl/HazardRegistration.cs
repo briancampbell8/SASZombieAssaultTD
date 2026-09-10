@@ -15,11 +15,8 @@ Notes:    This file owns all creation/destruction logic.
           Single responsibility: registration management.
 */
 
-using System;
-using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Extensions;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.HazardsControl
 {
@@ -88,7 +85,7 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
                    && hazard.Position.Y >= 0
                    && hazard.Radius > 0
                    && hazard.MaxLifetime > 0
-                   && hazard.Intensity() > 0
+                   && hazard.CurrentIntensity > 0
                    && ValidateHazardType(hazard.Type, hazard);
         }
 
@@ -178,7 +175,7 @@ namespace SASZombieAssaultTD.Engine.HazardsControl
             return type.ToLowerInvariant() switch
             {
                 "nuke" => hazard.Radius is >= 100 and <= 1000,
-                "radiation" => hazard.Intensity() is >= 0.5f and <= 5f,
+                "radiation" => hazard.CurrentIntensity is >= 0.5f and <= 5f,
                 "fire" => hazard.MaxLifetime is >= 5f and <= 60f,
                 "chemical" => hazard.Radius is >= 50 and <= 500,
                 _ => true //Unknown types pass basic validation

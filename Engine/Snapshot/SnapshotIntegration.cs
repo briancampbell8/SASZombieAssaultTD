@@ -1,3 +1,26 @@
+// ====================================================================================================
+//  FILE: SnapshotIntegration.cs
+//  PATH: ./Engine/Snapshot/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the SnapshotIntegration module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Initialize() behavior for the Core subsystem.
+//      - Provide QuickSnapshot() behavior for the Core subsystem.
+//      - Provide MarkFirstFrameRendered() behavior for the Core subsystem.
+//      - Provide EnsureTodaySnapshot() behavior for the Core subsystem.
+//      - Provide CaptureIfRequested() behavior for the Core subsystem.
+//      - Provide CleanupOldSnapshots() behavior for the Core subsystem.
+//      - Provide Shutdown() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File: SnapshotIntegration.cs
 //Author: BDC
@@ -10,19 +33,18 @@
 
 //
 
-using SASZombieAssaultTD.Engine.Player;
-using System;
-
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 //using ModernLoggingSystem = SASZombieAssaultTD.Engine.Core.ModernLoggingSystem;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Player;
 
 namespace SASZombieAssaultTD.Engine.Snapshot
 {
-    ///<summary>
-    ///Integration point for snapshot system with game engine.
-    ///Initializes snapshot functionality and registers commands.
-    ///</summary>
+    /// <summary>
+    /// Integration point for snapshot system with game engine. Initializes snapshot functionality and registers
+    /// commands.
+    /// </summary>
     public static class SnapshotIntegration
     {
         private static SnapshotManager _snapshotManager;
@@ -31,15 +53,14 @@ namespace SASZombieAssaultTD.Engine.Snapshot
         private static bool _hasRenderedFirstFrame = false;
         private static bool _shouldCaptureThisFrame = false;
 
-        ///<summary>
-        ///Initializes the snapshot system.
-        ///Call this during engine startup.
-        ///</summary>
+        /// <summary>
+        /// Initializes the snapshot system. Call this during engine startup.
+        /// </summary>
         public static void Initialize(string snapshotDirectory = null)
         {
             if (_initialized)
             {
-                System.Diagnostics.Debug.WriteLine("Warning", "[SNAPSHOT] Already initialized");
+                DLogger.Log(LogSubsystems.Snapshot, "Warning", "[SNAPSHOT] Already initialized");
                 return;
             }
 
@@ -53,12 +74,12 @@ namespace SASZombieAssaultTD.Engine.Snapshot
             RegisterCommands();
 
             _initialized = true;
-            System.Diagnostics.Debug.WriteLine("Info", "[SNAPSHOT] System initialized successfully");
+            DLogger.Log(LogSubsystems.Snapshot, "Info", "[SNAPSHOT] System initialized successfully");
         }
 
-        ///<summary>
-        ///Gets the global snapshot manager instance.
-        ///</summary>
+        /// <summary>
+        /// Gets the global snapshot manager instance.
+        /// </summary>
         public static SnapshotManager Instance
         {
             get
@@ -71,21 +92,20 @@ namespace SASZombieAssaultTD.Engine.Snapshot
             }
         }
 
-        ///<summary>
-        ///Creates a quick snapshot with current game state.
-        ///Convenience method for automatic snapshots.
-        ///</summary>
+        /// <summary>
+        /// Creates a quick snapshot with current game state. Convenience method for automatic snapshots.
+        /// </summary>
         public static string QuickSnapshot(string context = "auto")
         {
             if (!_initialized)
             {
-                System.Diagnostics.Debug.WriteLine("Error", "[SNAPSHOT] System not initialized");
+                DLogger.Log(LogSubsystems.Snapshot, "Error", "[SNAPSHOT] System not initialized");
                 return null;
             }
 
             if (PlayerSystem.Instance?.State == null)
             {
-                System.Diagnostics.Debug.WriteLine("Error", "[SNAPSHOT] Player system not available");
+                DLogger.Log(LogSubsystems.Snapshot, "Error", "[SNAPSHOT] Player system not available");
                 return null;
             }
 
@@ -109,7 +129,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
                 bool saved = _snapshotManager.SaveSnapshot(snapshot);
                 if (saved)
                 {
-                    System.Diagnostics.Debug.WriteLine("Info", $"[SNAPSHOT] Quick snapshot created: {snapshot.Id}");
+                    DLogger.Log(LogSubsystems.Snapshot, "Info", $"[SNAPSHOT] Quick snapshot created: {snapshot.Id}");
                     return snapshot.Id;
                 }
             }
@@ -117,27 +137,26 @@ namespace SASZombieAssaultTD.Engine.Snapshot
             return null;
         }
 
-        ///<summary>
-        ///Marks that the first frame has been rendered.
-        ///Call this from the main render loop after the first frame is drawn.
-        ///</summary>
+        /// <summary>
+        /// Marks that the first frame has been rendered. Call this from the main render loop after the first frame is
+        /// drawn.
+        /// </summary>
         public static void MarkFirstFrameRendered()
         {
             _hasRenderedFirstFrame = true;
-            System.Diagnostics.Debug.WriteLine("Info", "[SNAPSHOT] First frame rendered - snapshots now enabled");
+            DLogger.Log(LogSubsystems.Snapshot, "Info", "[SNAPSHOT] First frame rendered - snapshots now enabled");
         }
 
-        ///<summary>
-        ///Ensures today.png snapshot exists (creates once per day).
-        ///Deterministic entry point for cash button integration.
-        ///Only captures after first frame is rendered.
-        ///Sets a flag for the render loop to capture at end of frame.
-        ///</summary>
+        /// <summary>
+        /// Ensures today.png snapshot exists (creates once per day). Deterministic entry point for cash button
+        /// integration. Only captures after first frame is rendered. Sets a flag for the render loop to capture at end
+        /// of frame.
+        /// </summary>
         public static void EnsureTodaySnapshot()
         {
             if (!_hasRenderedFirstFrame)
             {
-                System.Diagnostics.Debug.WriteLine("Warning", "[SNAPSHOT] Cannot capture - first frame not yet rendered");
+                DLogger.Log(LogSubsystems.Snapshot, "Warning", "[SNAPSHOT] Cannot capture - first frame not yet rendered");
                 return;
             }
 
@@ -145,12 +164,12 @@ namespace SASZombieAssaultTD.Engine.Snapshot
                 return;
 
             _shouldCaptureThisFrame = true;
-            System.Diagnostics.Debug.WriteLine("Info", "[SNAPSHOT] Snapshot requested - will capture at end of frame");
+            DLogger.Log(LogSubsystems.Snapshot, "Info", "[SNAPSHOT] Snapshot requested - will capture at end of frame");
         }
 
-        ///<summary>
-        ///Called by render loop at end of frame to capture framebuffer if requested.
-        ///</summary>
+        /// <summary>
+        /// Called by render loop at end of frame to capture framebuffer if requested.
+        /// </summary>
         public static void CaptureIfRequested(byte[] framebufferPixels, int width, int height)
         {
             if (!_shouldCaptureThisFrame)
@@ -162,21 +181,21 @@ namespace SASZombieAssaultTD.Engine.Snapshot
                 return;
             }
 
-            SnapshotCapture.CaptureFromFramebuffer(framebufferPixels, width, height);
+            SnapshotCapture.CaptureFromFramebufferDrawing(framebufferPixels, width, height);
             _hasCreatedTodaySnapshot = true;
             _shouldCaptureThisFrame = false;
 
-            System.Diagnostics.Debug.WriteLine("Info", "[SNAPSHOT] Today's snapshot captured from framebuffer");
+            DLogger.Log(LogSubsystems.Snapshot, "Info", "[SNAPSHOT] Today's snapshot captured from framebuffer");
         }
 
-        ///<summary>
-        ///Cleans up old snapshots (keeps last N snapshots).
-        ///</summary>
+        /// <summary>
+        /// Cleans up old snapshots (keeps last N snapshots).
+        /// </summary>
         public static void CleanupOldSnapshots(int keepCount = 10)
         {
             if (!_initialized)
             {
-                System.Diagnostics.Debug.WriteLine("Error", "[SNAPSHOT] System not initialized");
+                DLogger.Log(LogSubsystems.Snapshot, "Error", "[SNAPSHOT] System not initialized");
                 return;
             }
 
@@ -191,14 +210,13 @@ namespace SASZombieAssaultTD.Engine.Snapshot
             for (int i = 0; i < deleteCount; i++)
             {
                 _snapshotManager.DeleteSnapshot(snapshots[i].Id);
-                System.Diagnostics.Debug.WriteLine("Info", $"[SNAPSHOT] Cleaned up old snapshot: {snapshots[i].Id}");
+                DLogger.Log(LogSubsystems.Snapshot, "Info", $"[SNAPSHOT] Cleaned up old snapshot: {snapshots[i].Id}");
             }
         }
 
-        ///<summary>
-        ///Shuts down the snapshot system.
-        ///Call this during engine shutdown.
-        ///</summary>
+        /// <summary>
+        /// Shuts down the snapshot system. Call this during engine shutdown.
+        /// </summary>
         public static void Shutdown()
         {
             if (!_initialized)
@@ -209,7 +227,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
             _snapshotManager = null;
             _initialized = false;
 
-            System.Diagnostics.Debug.WriteLine("Info", "[SNAPSHOT] System shutdown complete");
+            DLogger.Log(LogSubsystems.Snapshot, "Info", "[SNAPSHOT] System shutdown complete");
         }
 
         //---------------------------------------------------------------------
@@ -219,7 +237,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
         private static void RegisterCommands()
         {
             //TODO: Register with console command system
-            System.Diagnostics.Debug.WriteLine("Info", "[SNAPSHOT] Commands registered with console system");
+            DLogger.Log(LogSubsystems.Snapshot, "Info", "[SNAPSHOT] Commands registered with console system");
         }
     }
 }

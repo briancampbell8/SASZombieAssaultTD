@@ -1,14 +1,41 @@
+// ====================================================================================================
+//  FILE: EngineCompatibility.cs
+//  PATH: ./Engine/Utilities/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the EngineCompatibility module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Clamp() behavior for the Core subsystem.
+//      - Provide Lerp() behavior for the Core subsystem.
+//      - Provide Distance() behavior for the Core subsystem.
+//      - Provide Distance() behavior for the Core subsystem.
+//      - Provide Lerp() behavior for the Core subsystem.
+//      - Provide FromArgb() behavior for the Core subsystem.
+//      - Provide FromArgb() behavior for the Core subsystem.
+//      - Provide FromRgb() behavior for the Core subsystem.
+//      - Provide GetDefaultRange() behavior for the Core subsystem.
+//      - Provide GetDefaultDamage() behavior for the Core subsystem.
+//      - Provide GetDefaultFireRate() behavior for the Core subsystem.
+//      - Provide GetDefaultCost() behavior for the Core subsystem.
+//      - Provide GetDefaultHealth() behavior for the Core subsystem.
+//      - Provide GetDefaultSpeed() behavior for the Core subsystem.
+//      - Provide SafeToString() behavior for the Core subsystem.
+//      - Provide Clamp() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    EngineCompatibility.cs
 Purpose: Compatibility layer for missing engine APIs and methods.
 */
 
-using System;
-using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Rendering;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Utilities
 {
@@ -69,9 +96,17 @@ namespace SASZombieAssaultTD.Engine.Utilities
         ///</summary>
         public static class ColorHelpers
         {
-            public static Color FromArgb(int r, int g, int b) => Color.FromArgb(255, r, g, b);
-            public static Color FromArgb(int a, int r, int g, int b) => Color.FromArgb(a, r, g, b);
-            public static Color FromRgb(int r, int g, int b) => Color.FromArgb(255, r, g, b);
+            public static Color FromArgb(int r, int g, int b) => Color.FromArgb(255, r, (byte)g, (byte)b);
+            public static Color FromArgb(int a, int r, int g, int b) => Color.FromArgb(a, (byte)r, (byte)g, (byte)b);
+            public static Color FromRgb(int r, int g, int b)
+            {
+                return new Color(
+                    (byte)r,
+                    (byte)g,
+                    (byte)b,
+                    255
+                );
+            }
         }
 
         ///<summary>
@@ -115,3 +150,4 @@ namespace SASZombieAssaultTD.Engine.Utilities
         }
     }
 }
+

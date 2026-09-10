@@ -1,234 +1,201 @@
-﻿// ====================================================================================================
+// =====================================================================================================
 //  FILE: HUDPanelFinalizer_Manager.cs
-//  PATH: Engine/UI/HUDPanels/
-//  MODULE: HUD Panel Finalizer Manager (Controlling Program)
+//  PATH: Engine/UI/HUDPanels/HUDPanelFinalizer_Manager.cs
+//  MODULE: HUD Finalizer Pipeline Coordinator
+//  LAYER: UI → HUDPanels → Finalizer
 //
 //  ROLE:
-//      Central orchestrator for the CASH HUD panel finalization pipeline. Coordinates manual override
-//      control, color parsing, geometry/crosshair resolution, and UIState generation. Acts as the
-//      controlling program that wires all smaller Finalizer modules together.
+//      Manager of the HUDPanelFinalizer subsystem. Coordinates the deterministic pipeline:
+//      Control → ColorParser → Resolver → UIStateBuilder. Produces a resolved UIState and applies
+//      it to the CASH panel. Exposes resolved state and panel metrics for HUDOverlay diagnostics.
 //
 //  RESPONSIBILITIES:
-//      - Own the lifecycle of HUDPanelFinalizer_Control, _ColorParser, _Resolver, and _UIStateBuilder.
-//      - Load persisted configuration via HUDConfigManager and distribute it to submodules.
-//      - Invoke manual override processing and color parsing in deterministic order.
-//      - Resolve final geometry, colors, and crosshair configuration for HUDPanel_Cash.
-//      - Produce UIState objects for the GPU UI pipeline via the UIStateBuilder.
-//      - Emit DiagnosticEntry messages for all orchestration steps.
+//      - Own and sequence the Finalizer pipeline.
+//      - Process manual color overrides.
+//      - Resolve geometry and normalized color state.
+//      - Build the final UIState consumed by HUDPanel_CashUpdate.
+//      - Apply resolved state to the CASH panel.
+//      - Expose resolved state and panel metrics for HUDOverlay diagnostics.
+//      - Emit full tracing for all pipeline phases.
 //
 //  NON-RESPONSIBILITIES:
-//      - Direct rendering of the HUD panel (handled by HUDPanel_Cash).
-//      - Low-level color parsing logic (delegated to HUDPanelFinalizer_ColorParser).
-//      - Manual override field management (delegated to HUDPanelFinalizer_Control).
-//      - Geometry/crosshair normalization (delegated to HUDPanelFinalizer_Resolver).
-//      - UIState element construction (delegated to HUDPanelFinalizer_UIStateBuilder).
-//
-//  ARCHITECTURAL NOTES:
-//      - This manager is the single entry point for the CASH HUD finalization pipeline.
-//      - All submodules are composed here to maintain deterministic ordering and traceability.
-//      - Designed to be extensible for additional HUD panels and future Finalizer modules.
-//      - Integrates with the diagnostics pipeline for full traceability across UI subsystems.
-// ====================================================================================================
-using SASZombieAssaultTD.Engine.Diagnostics;
+//      - Rendering (delegated to HUDPanel_CashUpdate).
+//      - UI tree participation (no UIElement inheritance).
+//      - HUDManager integration (removed).
+//      - HUDConfigManager integration (removed).
+// =====================================================================================================
+
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.UI.HUDPanels;
-using IDrawingContext = SASZombieAssaultTD.Engine.Rendering.IDrawingContext;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
-    public class HUDPanelFinalizer_Manager : IHUDElement
+    /// <summary>
+    /// Manager-only coordinator for the HUDPanel Finalizer pipeline.
+    /// </summary>
+    public sealed class HUDPanelFinalizer_Manager
     {
-        public HUDManager _hudManager;
-        public HUDPanel_CashUpdate _cashPanel;
-
+        private readonly HUDPanel_CashUpdate _cashPanel;
         private readonly HUDPanelFinalizer_Control _control;
         private readonly HUDPanelFinalizer_ColorParser _colorParser;
         private readonly HUDPanelFinalizer_Resolver _resolver;
         private readonly HUDPanelFinalizer_UIStateBuilder _uiStateBuilder;
 
-        // Use the HUDPanels.UIState type, not Engine.UI.UIState
-        private HUDPanels.UIState _cachedState;
+        private HUDPanels.UIState? _cachedState;
 
-        public string Id => "cash_panel_manager";
-        public int Layer => 998;
+        // Manual override fields
+        public Color ManualFillColor { get; set; } = Color.FromArgb(32, 32, 32);
+        public Color ManualTextColor { get; set; } = Color.FromArgb(0, 224, 255);
+        public bool ManualColorOverrideEnabled { get; set; } = false;
 
-        string IHUDElement.Id => Id;
-        int IHUDElement.Layer => Layer;
+        /// <summary>
+        /// Logical layer used only for diagnostics (HUDOverlay).
+        /// </summary>
+        public int Layer { get; } = 998;
 
         public HUDPanelFinalizer_Manager(
-            HUDManager hudManager,
             HUDPanel_CashUpdate cashPanel,
             HUDPanelFinalizer_Control control,
             HUDPanelFinalizer_ColorParser colorParser,
             HUDPanelFinalizer_Resolver resolver,
             HUDPanelFinalizer_UIStateBuilder uiStateBuilder)
         {
-            _hudManager = hudManager;
-            _cashPanel = cashPanel;
-            _control = control;
-            _colorParser = colorParser;
-            _resolver = resolver;
-            _uiStateBuilder = uiStateBuilder;
+            _cashPanel = cashPanel ?? throw new ArgumentNullException(nameof(cashPanel));
+            _control = control ?? throw new ArgumentNullException(nameof(control));
+            _colorParser = colorParser ?? throw new ArgumentNullException(nameof(colorParser));
+            _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
+            _uiStateBuilder = uiStateBuilder ?? throw new ArgumentNullException(nameof(uiStateBuilder));
 
-            DLogger.Log("UI", "FinalizerManager",
-                "HUDPanelFinalizer_Manager constructed and wired to submodules.",
-                "FinalizerManager_Created", 0);
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Info,
+                "HUDPanelFinalizer_Manager: Constructed and wired to submodules.");
         }
+
+        // -------------------------------------------------------------------------------------------------
+        //  PIPELINE SEQUENCING
+        // -------------------------------------------------------------------------------------------------
 
         public void Initialize()
         {
-            HUDConfigManager.LoadPanel("cash_panel", _control);
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Info,
+                "HUDPanelFinalizer_Manager: Initialize ENTRY.");
 
             ProcessManualOverrides();
             ResolveFinalState();
             BuildUIState();
+
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Info,
+                "HUDPanelFinalizer_Manager: Initialize EXIT.");
         }
 
-        private void ProcessManualOverrides()
+        public void ProcessManualOverrides()
         {
-            var controlData = _control.GetManualEntryData();
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                "HUDPanelFinalizer_Manager: Processing manual overrides.");
 
-            var fillResult = _colorParser.TryParse(controlData.FillColorToken);
-            var textResult = _colorParser.TryParse(controlData.TextColorToken);
-            var priceResult = _colorParser.TryParse(controlData.ItemPriceColorToken);
+            _colorParser.ParseColors(
+                ManualFillColor,
+                ManualTextColor,
+                ManualColorOverrideEnabled
+            );
+        }
 
-            if (!fillResult.Success || !textResult.Success || !priceResult.Success)
+        public void ResolveFinalState()
+        {
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                "HUDPanelFinalizer_Manager: Resolving final geometry and color state.");
+
+            _resolver.ResolveGeometry(
+                _control.X,
+                _control.Y,
+                _control.Width,
+                _control.Height,
+                _colorParser
+            );
+        }
+
+        public void BuildUIState()
+        {
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                "HUDPanelFinalizer_Manager: Building UIState.");
+
+            _cachedState = _uiStateBuilder.ConstructState(_resolver);
+            ApplyToPanel(_cashPanel, _cachedState);
+        }
+
+        // -------------------------------------------------------------------------------------------------
+        //  STATE ACCESSORS (HUDOverlay Diagnostics)
+        // -------------------------------------------------------------------------------------------------
+
+        public HUDPanels.UIState GetResolvedState()
+        {
+            if (_cachedState == null)
             {
-                _control.SetErrorMessage(
-                    fillResult.Error ?? textResult.Error ?? priceResult.Error
-                );
-                _control.SetManualOverrideEnabled(false);
+                DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Warn,
+                    "HUDPanelFinalizer_Manager: Cached state missing; rebuilding.");
+                BuildUIState();
+            }
+
+            return _cachedState!;
+        }
+
+        public HUDPanel_CashUpdate GetCashPanel()
+        {
+            return _cashPanel;
+        }
+
+        public bool UseManualPanelColors => ManualColorOverrideEnabled;
+
+        public FinalizerElement GetActiveElement()
+        {
+            var state = GetResolvedState();
+
+            return new FinalizerElement
+            {
+                Id = "cash_panel",
+                AnchorPanelId = "cash_panel",
+                PanelX = state.PanelX,
+                PanelY = state.PanelY,
+                PanelWidth = state.PanelWidth,
+                PanelHeight = state.PanelHeight
+            };
+        }
+
+        // -------------------------------------------------------------------------------------------------
+        //  STATE APPLICATION
+        // -------------------------------------------------------------------------------------------------
+
+        public void ApplyToPanel(HUDPanel_CashUpdate panel, HUDPanels.UIState state)
+        {
+            if (panel == null || state == null)
                 return;
-            }
 
-            _resolver.SetManualColors(fillResult.Color, textResult.Color);
-            _resolver.SetItemPriceColor(priceResult.Color);
-            _control.SetManualOverrideEnabled(true);
-        }
+            panel.X = state.PanelX;
+            panel.Y = state.PanelY;
+            panel.Width = state.PanelWidth;
+            panel.Height = state.PanelHeight;
 
-        private void ResolveFinalState()
-        {
-            var controlData = _control.GetManualEntryData();
+            panel.ManualFillColor = state.PanelFillColor;
+            panel.ManualTextColor = state.PanelTextColor;
+            panel.ManualItemPriceColor = state.ItemPriceColor;
+            panel.UseManualColors = state.UseManualColors;
 
-            _resolver.SetGeometry(controlData.X, controlData.Y, controlData.Width, controlData.Height);
-
-            _resolver.SetCrosshair(
-                controlData.CrosshairCenterX,
-                controlData.CrosshairCenterY,
-                controlData.CrosshairArmLength,
-                controlData.CrosshairThickness,
-                controlData.CrosshairColor,
-                controlData.UseFlashColor,
-                controlData.FlashColor
-            );
-
-            _resolver.Resolve();
-        }
-
-        private void BuildUIState()
-        {
-            var resolved = _resolver.GetResolvedState();
-
-            _cachedState = _uiStateBuilder.Build(
-                x: resolved.X,
-                y: resolved.Y,
-                width: resolved.Width,
-                height: resolved.Height,
-                fillColor: resolved.FillColor,
-                textColor: resolved.TextColor,
-                itemPriceColor: resolved.ItemPriceColor,
-                crosshairCenterX: resolved.CrosshairCenterX,
-                crosshairCenterY: resolved.CrosshairCenterY,
-                crosshairArmLength: resolved.CrosshairArmLength,
-                crosshairThickness: resolved.CrosshairThickness,
-                crosshairColor: resolved.CrosshairColor,
-                useFlashColor: resolved.UseFlashColor,
-                flashColor: resolved.FlashColor
-            );
-        }
-
-        // HUDManager uses this to get the resolved state
-        public HUDPanelFinalizerResolvedState GetResolved()
-        {
-            return _resolver.GetResolvedState();
-        }
-
-        public void ApplyToPanel(HUDPanel_CashUpdate cashPanel, HUDPanelFinalizerResolvedState resolved)
-        {
-            if (resolved.ManualOverrideEnabled)
-            {
-                cashPanel.ManualItemPriceColor = resolved.ItemPriceColor;
-
-                cashPanel.ManualFillColor = resolved.FillColor;
-                cashPanel.ManualTextColor = resolved.TextColor;
-                cashPanel.UseManualColors = true;
-                cashPanel.DisplayText = "Zero";
-            }
-            else
-            {
-                cashPanel.UseManualColors = false;
-            }
-        }
-
-        public void Update(float deltaTime)
-        {
-            _cashPanel.Update(deltaTime);
-        }
-
-        // Draw uses IDrawingContext, matching HUDPanel_CashUpdate.Draw
-        public void Draw(IDrawingContext context)
-        {
-            _cashPanel.Draw(context);
-        }
-
-        // Return the HUDPanels.UIState type
-        public HUDPanels.UIState GetUIState()
-        {
-            return _cachedState;
-        }
-
-        public void SaveConfig()
-        {
-            var resolved = _resolver.GetResolvedState();
-
-            HUDConfigManager.SetPanel(
-                "cash_panel",
-                resolved.X,
-                resolved.Y,
-                resolved.Width,
-                resolved.Height,
-                Layer
-            );
-
-            HUDConfigManager.SetCrosshair(
-                "cash_panel",
-                resolved.CrosshairCenterX,
-                resolved.CrosshairCenterY,
-                resolved.CrosshairArmLength,
-                resolved.CrosshairThickness,
-                resolved.CrosshairColor,
-                resolved.UseFlashColor,
-                resolved.FlashColor
-            );
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                "HUDPanelFinalizer_Manager: Applied resolved state to CASH panel.");
         }
     }
 
-    public struct HUDPanelFinalizerControlData
+    /// <summary>
+    /// Lightweight descriptor used by HUDOverlayDiagnostics.
+    /// </summary>
+    public sealed class FinalizerElement
     {
-        public int X, Y, Width, Height;
-        public string FillColorToken, TextColorToken;
-        public string ItemPriceColorToken;
-        public int CrosshairCenterX, CrosshairCenterY, CrosshairArmLength, CrosshairThickness;
-        public System.Drawing.Color CrosshairColor, FlashColor;
-        public bool UseFlashColor;
-    }
+        public string Id { get; set; } = "cash_panel";
+        public string AnchorPanelId { get; set; } = "cash_panel";
 
-    public struct HUDPanelFinalizerResolvedState
-    {
-        public int X, Y, Width, Height;
-        public Color FillColor, TextColor, ItemPriceColor;
-        public int CrosshairCenterX, CrosshairCenterY, CrosshairArmLength, CrosshairThickness;
-        public System.Drawing.Color CrosshairColor, FlashColor;
-        public bool UseFlashColor;
-        public bool ManualOverrideEnabled;
+        public float PanelX { get; set; }
+        public float PanelY { get; set; }
+        public float PanelWidth { get; set; }
+        public float PanelHeight { get; set; }
     }
 }

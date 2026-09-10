@@ -1,201 +1,167 @@
-// ============================================================================
-// File:    Program.cs
-// Path:    Engine/Program.cs
-// Author:  BDC
-// Purpose: Main entry point for SASZombieAssaultTD using the D3D11 pipeline.
-// Notes:   Modern engine-driven version. GameRoot owns all update/render logic.
-// ============================================================================
+// =====================================================================================================
+// FILE: Program.cs
+// PATH: Engine/Program.cs
+// SUBSYSTEM: Platform Abstraction Layer
+//
+// ROLE: Defines the minimal deterministic lifecycle contract for any engine-hosted program. This
+// interface is implemented by engine hosts (e.g., GameRootMain) to provide a clean, engine-facing
+// API for startup, execution entry, and deterministic shutdown operations.
+//
+// RESPONSIBILITIES:
+// - Provide a strict, minimal lifecycle surface for program orchestration.
+// - Enforce the structural sequencing contract: Initialize → Run Loop Execution → Shutdown.
+// - Serve as the base contract for any future top-level engine-hosted program modules.
+//
+// NON-RESPONSIBILITIES:
+// - Implementing deep frame-level update calculation rules or rendering commands directly.
+// - Managing active systems registration pools, engine assets, or game states.
+// - Handling discrete hardware device allocation boundaries.
+//
+// ARCHITECTURAL NOTES:
+// - This interface replaces the legacy GameRoot partial lifecycle methods.
+// - GameRootMain implements this interface and delegates to its subsystems:
+//   • GameRootInitialization
+//   • GameRootUpdateLoop
+//   • GameRootStateController
+//   • GameRootSystemRegistration
+// - All engine-hosted programs MUST implement this interface without exception.
+// =====================================================================================================
 
-using SASZombieAssaultTD.Engine.Diagnostics;
-using SASZombieAssaultTD.Engine.Interfaces;
-using SASZombieAssaultTD.Engine.Managers;
-using SASZombieAssaultTD.Engine.Platform;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Rendering.D3D11;
-using SASZombieAssaultTD.Engine.State;
-using SASZombieAssaultTD.Engine.Systems;
-using SASZombieAssaultTD.Engine.UI.Input;
 using System;
-using System.Diagnostics;
+using System.Runtime.InteropServices;
+using SASZombieAssaultTD.Engine;
+using SASZombieAssaultTD.Engine.Platform;
+using SASZombieAssaultTD.Engine.Render.D3D11.DeviceCore;
 
-namespace SASZombieAssaultTD.Engine
+namespace SASZombieAssaultTD
 {
     internal static class Program
     {
         [STAThread]
-        private static void Main()
+        private static void Main(string[] args)
         {
-            DebugLogger.Initialize();
-            DebugLogger.LogInfo("TEST: Markdown creation check");
-            DebugLogger.LogInfo("Program.Main: starting SASZombieAssaultTD.");
+            // -----------------------------------------------------------------------------------------
+            // 1. Deterministic Win32 host creation
+            // -----------------------------------------------------------------------------------------
+            IntPtr hwnd = CreateMainWindowHandle();
+            if (hwnd == IntPtr.Zero)
+                throw new InvalidOperationException("Program.cs: Win32 window creation failed.");
 
-            // ----------------------------------------------------------------
-            // 1. Create D3D11 window (no framebuffer)
-            // ----------------------------------------------------------------
-            var window = new D3D11Window(1280, 720, "SAS Zombie Assault TD");
+            // -----------------------------------------------------------------------------------------
+            // 2. Construct GPU device core (authoritative D3D11 HAL)
+            // -----------------------------------------------------------------------------------------
+            using var deviceCore = new D3D11DeviceCore(hwnd);
 
-            try
-            {
-                window.Create();
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException("Program.Main: Exception during D3D11Window.Create()", ex);
-                return;
-            }
+            // -----------------------------------------------------------------------------------------
+            // 3. Wrap window + device core into deterministic engine host
+            // -----------------------------------------------------------------------------------------
+            using var window = new D3D11Window(hwnd, deviceCore);
 
-            if (window.Handle == IntPtr.Zero)
-            {
-                DebugLogger.LogError("Program.Main: window.Handle is NULL after Create().");
-                return;
-            }
+            // -----------------------------------------------------------------------------------------
+            // 4. Build composition root (GameRootMain)
+            // -----------------------------------------------------------------------------------------
+            GameRootMain gameRoot = EngineBootstrap.CreateGameRootMain(window, deviceCore);
 
-            DebugLogger.LogInfo($"Program.Main: D3D11Window created, HWND=0x{window.Handle.ToString("X")}.");
-
-            // ----------------------------------------------------------------
-            // 2. Create D3D11 device core
-            // ----------------------------------------------------------------
-            D3D11DeviceCore deviceCore;
-
-            try
-            {
-                deviceCore = new D3D11DeviceCore(window.Handle, 1280, 720, true);
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException("Program.Main: Exception during D3D11DeviceCore construction.", ex);
-                return;
-            }
-
-            // ----------------------------------------------------------------
-            // 3. Create high-level render context
-            // ----------------------------------------------------------------
-            RenderContextD3D11 renderContext;
-
-            try
-            {
-                renderContext = new RenderContextD3D11(deviceCore);
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException("Program.Main: Exception during RenderContextD3D11 construction.", ex);
-                return;
-            }
-
-            renderContext.SetClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
-            // ----------------------------------------------------------------
-            // 4. Build GameRoot (engine orchestrator)
-            // ----------------------------------------------------------------
-            var systemRegistry = new SystemRegistry();
-            var systemManager = new SystemManager();
-            var updateManager = new UpdateManager();
-            var renderManager = new RenderManager();
-            var inputState = new UIInputState();
-            var focusManager = new UIFocusManager();
-            var inputRouter = new UIInputRouter(inputState, focusManager);
-
-            var stateMachine = new StateMachine();
-            var renderContextAdapter = new Rendering.RenderContextD3D11Adapter(renderContext);
-
-            GameRoot game;
-            try
-            {
-                game = new GameRoot(
-                    systemRegistry,
-                    systemManager,
-                    updateManager,
-                    renderManager,
-                    inputRouter,
-                    stateMachine as IGameStateMachine,
-                    renderContextAdapter);
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException("Program.Main: Exception during GameRoot construction.", ex);
-                return;
-            }
-
-            // IProgram adapter with explicit cast logging
-            IProgram program;
-            try
-            {
-                program = (IProgram)game;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException("Program.Main: Invalid cast to IProgram.", ex);
-                return;
-            }
-
-            // ----------------------------------------------------------------
-            // 5. Initialize engine
-            // ----------------------------------------------------------------
-            try
-            {
-                program.Initialize();
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException("Program.Main: Exception during GameRoot.Initialize().", ex);
-                return;
-            }
-
-            DebugLogger.LogInfo("Program.Main: entering engine-driven main loop.");
-
-            // ----------------------------------------------------------------
-            // 6. Main loop (engine-driven)
-            // ----------------------------------------------------------------
-            var stopwatch = Stopwatch.StartNew();
-            var last = stopwatch.Elapsed;
-
-            while (true)
-            {
-                bool keepRunning;
-
-                try
-                {
-                    keepRunning = window.PumpMessages();
-                }
-                catch (Exception ex)
-                {
-                    DebugLogger.LogException("Program.Main: Exception during window.PumpMessages().", ex);
-                    break;
-                }
-
-                if (!keepRunning)
-                {
-                    DebugLogger.LogInfo("Program.Main: PumpMessages returned false.");
-                    break;
-                }
-
-                var now = stopwatch.Elapsed;
-                var delta = now - last;
-                last = now;
-
-                try
-                {
-                    program.Update(delta);
-                    program.Render();
-                }
-                catch (Exception ex)
-                {
-                    DebugLogger.LogException("Program.Main: Exception during engine Update/Render.", ex);
-                    break;
-                }
-            }
-
-            // ----------------------------------------------------------------
-            // 7. Shutdown
-            // ----------------------------------------------------------------
-            DebugLogger.LogInfo("Program.Main: shutting down.");
-
-            try { program.Shutdown(); } catch { }
-            try { renderContext.Dispose(); } catch { }
-            try { deviceCore.Dispose(); } catch { }
-            try { window.Dispose(); } catch { }
-
-            DebugLogger.LogInfo("Program.Main: shutdown complete.");
+            // -----------------------------------------------------------------------------------------
+            // 5. Delegate lifecycle control to the engine host
+            // -----------------------------------------------------------------------------------------
+            window.Run(gameRoot);
         }
+
+        // =================================================================================================
+        // WIN32 WINDOW CREATION (Deterministic Host)
+        // =================================================================================================
+
+        private const string WindowClassName = "SASZombieAssaultTD_MainWindow";
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern ushort RegisterClassEx(ref WNDCLASSEX lpwcx);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr CreateWindowEx(
+            uint dwExStyle,
+            string lpClassName,
+            string lpWindowName,
+            uint dwStyle,
+            int x,
+            int y,
+            int nWidth,
+            int nHeight,
+            IntPtr hWndParent,
+            IntPtr hMenu,
+            IntPtr hInstance,
+            IntPtr lpParam);
+
+        [DllImport("kernel32.dll")]
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr DefWindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct WNDCLASSEX
+        {
+            public uint cbSize;
+            public uint style;
+            public IntPtr lpfnWndProc;
+            public int cbClsExtra;
+            public int cbWndExtra;
+            public IntPtr hInstance;
+            public IntPtr hIcon;
+            public IntPtr hCursor;
+            public IntPtr hbrBackground;
+            public string lpszMenuName;
+            public string lpszClassName;
+            public IntPtr hIconSm;
+        }
+
+        private static IntPtr WindowProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
+        {
+            return DefWindowProc(hWnd, msg, wParam, lParam);
+        }
+
+        private static IntPtr CreateMainWindowHandle()
+        {
+            IntPtr hInstance = GetModuleHandle(null);
+
+            var wndClass = new WNDCLASSEX
+            {
+                cbSize = (uint)Marshal.SizeOf<WNDCLASSEX>(),
+                style = 0,
+                lpfnWndProc = Marshal.GetFunctionPointerForDelegate((WndProcDelegate)WindowProc),
+                cbClsExtra = 0,
+                cbWndExtra = 0,
+                hInstance = hInstance,
+                hIcon = IntPtr.Zero,
+                hCursor = IntPtr.Zero,
+                hbrBackground = IntPtr.Zero,
+                lpszMenuName = null,
+                lpszClassName = WindowClassName,
+                hIconSm = IntPtr.Zero
+            };
+
+            ushort atom = RegisterClassEx(ref wndClass);
+            if (atom == 0)
+                return IntPtr.Zero;
+
+            const uint WS_OVERLAPPEDWINDOW = 0x00CF0000;
+            const uint WS_VISIBLE = 0x10000000;
+
+            return CreateWindowEx(
+                0,
+                WindowClassName,
+                "SAS Zombie Assault TD",
+                WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                100,
+                100,
+                1280,
+                720,
+                IntPtr.Zero,
+                IntPtr.Zero,
+                hInstance,
+                IntPtr.Zero);
+        }
+
+        private delegate IntPtr WndProcDelegate(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
     }
 }

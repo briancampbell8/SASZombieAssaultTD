@@ -1,3 +1,28 @@
+// ====================================================================================================
+//  FILE: EnemyManager.cs
+//  PATH: ./Engine/Enemies/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the EnemyManager module.
+//
+//  RESPONSIBILITIES:
+//      - Provide SpawnEnemy() behavior for the Core subsystem.
+//      - Provide GetAllEnemies() behavior for the Core subsystem.
+//      - Provide GetAllEnemiesReadOnly() behavior for the Core subsystem.
+//      - Provide GetAllEnemiesIncludingInactive() behavior for the Core subsystem.
+//      - Provide GetEnemiesByType() behavior for the Core subsystem.
+//      - Provide GetEnemiesInRadius() behavior for the Core subsystem.
+//      - Provide RemoveEnemy() behavior for the Core subsystem.
+//      - Provide Update() behavior for the Core subsystem.
+//      - Provide ClearAllEnemies() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    EnemyManager.cs
 Folder:  Engine/Enemies/
@@ -8,152 +33,178 @@ Features: Enemy spawning, enumeration, and lifecycle management.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.ECS;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.ECS;
+using SASZombieAssaultTD.Engine.VectorMath;
+using static SASZombieAssaultTD.Engine.Enemies.EnemiesEnums;
 
 namespace SASZombieAssaultTD.Engine.Enemies
 {
-    ///<summary>
-    ///Enemy management system for SAS Zombie Assault TD.
-    ///Handles enemy spawning, tracking, and lifecycle management.
-    ///</summary>
-    public class EnemyManager
+    /// <summary>
+    /// Enemy management system for SAS Zombie Assault TD. Handles enemy spawning, tracking, and lifecycle management.
+    /// </summary>
+    public class EnemyManager : IEnemyManager
+
     {
-        /// Private Fields
+        // ---------------------------------------------------------------------------------------------
+        // Private Fields
+        // ---------------------------------------------------------------------------------------------
 
         private readonly List<Enemy> _enemies = new();
-        private readonly ECSWorld _ecsWorld;
+        private readonly ECSRuntimeCore _ecsWorld;
         private uint _nextEnemyId = 1;
 
-        ///
+        private int _totalSpawned;
+        private int _totalKilled;
+        private int _totalEscaped;
 
-        /// Constructor
+        // ---------------------------------------------------------------------------------------------
+        // Singleton Instance
+        // ---------------------------------------------------------------------------------------------
 
-        ///<summary>
-        ///Creates a new enemy manager.
-        ///</summary>
-        ///<param name="ecsWorld">The ECS world for entity management.</param>
-        public EnemyManager(ECSWorld ecsWorld)
+        public static EnemyManager Instance { get; private set; }
+
+        public EnemyManager(ECSRuntimeCore ecsWorld)
         {
-            _ecsWorld = ecsWorld ?? throw new ArgumentNullException(nameof(ecsWorld));
+            _ecsWorld = ecsWorld;
+            Instance = this;
         }
 
-        ///
+        // ---------------------------------------------------------------------------------------------
+        // Public API
+        // ---------------------------------------------------------------------------------------------
 
-        /// Public API
-
-        ///<summary>
-        ///Spawns a new enemy of the specified type at the given position.
-        ///</summary>
-        ///<param name="enemyType">The type of enemy to spawn.</param>
-        ///<param name="position">The spawn position.</param>
-        ///<returns>The spawned enemy, or null if spawn failed.</returns>
+        /// <summary>
+        /// Spawns a new enemy of the specified type at the given position.
+        /// </summary>
+        /// <param name="enemyType">The type of enemy to spawn.</param>
+        /// <param name="position">The spawn position.</param>
+        /// <returns>The spawned enemy, or null if spawn failed.</returns>
         public Enemy SpawnEnemy(EnemyType enemyType, Vector3 position)
         {
             try
             {
-                //Create ECS entity for the enemy
-                var entity = _ecsWorld.CreateEntity();
-                var enemy = new Enemy(entity);
-                enemy.Type = enemyType.ToString();
-                enemy.Position = position;
-                
-                //Add enemy to tracking list
+                var ECSEntityCore = _ecsWorld.CreateEntity();
+                var enemy = new Enemy(ECSEntityCore)
+                {
+                    Type = enemyType.ToString(),
+                    Position = position,
+                    IsActive = true
+                };
+
                 _enemies.Add(enemy);
-                
+                _totalSpawned++;
+
                 return enemy;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to spawn enemy {enemyType}: {ex.Message}");
+                DLogger.Log($"Failed to spawn enemy {enemyType}: {ex.Message}");
                 return null;
             }
         }
 
-        ///<summary>
-        ///Gets all currently active enemies.
-        ///</summary>
-        ///<returns>Collection of all active enemies.</returns>
+        /// <summary>
+        /// Gets all currently active enemies.
+        /// </summary>
         public IEnumerable<Enemy> GetAllEnemies()
         {
             return _enemies.Where(e => e.IsActive);
         }
 
-        ///<summary>
-        ///Gets all enemies as IReadOnlyList for compatibility.
-        ///</summary>
-        ///<returns>ReadOnly list of all enemies.</returns>
+        /// <summary>
+        /// Gets all enemies as IReadOnlyList for compatibility.
+        /// </summary>
         public IReadOnlyList<Enemy> GetAllEnemiesReadOnly()
         {
             return _enemies.AsReadOnly();
         }
 
-        ///<summary>
-        ///Gets all enemies (including inactive ones).
-        ///</summary>
-        ///<returns>Collection of all enemies.</returns>
+        /// <summary>
+        /// Gets all enemies (including inactive ones).
+        /// </summary>
         public IEnumerable<Enemy> GetAllEnemiesIncludingInactive()
         {
             return _enemies;
         }
 
-        ///<summary>
-        ///Gets enemies of a specific type.
-        ///</summary>
-        ///<param name="enemyType">The enemy type to filter by.</param>
-        ///<returns>Collection of enemies of the specified type.</returns>
+        /// <summary>
+        /// Gets the next available enemy ID.
+        /// </summary>
+        public uint GetNextEnemyId() => _nextEnemyId++;
+
+        /// <summary>
+        /// Gets enemies of a specific type.
+        /// </summary>
         public IEnumerable<Enemy> GetEnemiesByType(EnemyType enemyType)
         {
-            return _enemies.Where(e => e.Type.ToString() == enemyType.ToString() && e.IsActive);
+            var typeName = enemyType.ToString();
+            return _enemies.Where(e => e.Type == typeName && e.IsActive);
         }
 
-        ///<summary>
-        ///Gets enemies within a specified radius.
-        ///</summary>
-        ///<param name="center">The center position.</param>
-        ///<param name="radius">The search radius.</param>
-        ///<returns>Collection of enemies within the radius.</returns>
+        /// <summary>
+        /// Gets enemies within a specified radius.
+        /// </summary>
         public IEnumerable<Enemy> GetEnemiesInRadius(Vector3 center, float radius)
         {
-            return _enemies.Where(e => e.IsActive && 
+            return _enemies.Where(e => e.IsActive &&
                 Vector3.Distance(e.Position, center) <= radius);
         }
 
-        ///<summary>
-        ///Removes an enemy from the game.
-        ///</summary>
-        ///<param name="enemy">The enemy to remove.</param>
+        /// <summary>
+        /// Removes an enemy from the game.
+        /// </summary>
         public void RemoveEnemy(Enemy enemy)
         {
             if (enemy == null) return;
 
-            enemy.IsActive = false;
-            
-            //Remove from ECS world if entity exists
-            if (enemy.Entity != null)
+            if (enemy.IsActive)
             {
-                _ecsWorld.DestroyEntity(enemy.Entity);
+                _totalKilled++;
             }
-            
+
+            enemy.IsActive = false;
+
+            if (enemy.ECSEntityCore != null)
+            {
+                _ecsWorld.DestroyEntity(enemy.ECSEntityCore);
+            }
+
             _enemies.Remove(enemy);
         }
 
-        ///<summary>
-        ///Updates all enemies.
-        ///</summary>
-        ///<param name="deltaTime">Time since last update.</param>
+        /// <summary>
+        /// Marks an enemy as escaped.
+        /// </summary>
+        public void MarkEnemyEscaped(Enemy enemy)
+        {
+            if (enemy == null) return;
+
+            if (enemy.IsActive)
+            {
+                _totalEscaped++;
+            }
+
+            enemy.IsActive = false;
+
+            if (enemy.ECSEntityCore != null)
+            {
+                _ecsWorld.DestroyEntity(enemy.ECSEntityCore);
+            }
+
+            _enemies.Remove(enemy);
+        }
+
+        /// <summary>
+        /// Updates all enemies.
+        /// </summary>
         public void Update(float deltaTime)
         {
-            //Update all active enemies
             foreach (var enemy in _enemies.Where(e => e.IsActive))
             {
                 enemy.Update(deltaTime);
             }
 
-            //Remove dead enemies
             var deadEnemies = _enemies.Where(e => !e.IsActive).ToList();
             foreach (var deadEnemy in deadEnemies)
             {
@@ -161,46 +212,76 @@ namespace SASZombieAssaultTD.Engine.Enemies
             }
         }
 
-        ///<summary>
-        ///Gets the count of active enemies.
-        ///</summary>
+        /// <summary>
+        /// Gets the count of active enemies.
+        /// </summary>
         public int ActiveEnemyCount => _enemies.Count(e => e.IsActive);
 
-        ///<summary>
-        ///Gets the total count of enemies (including inactive).
-        ///</summary>
+        /// <summary>
+        /// Gets the total count of enemies (including inactive).
+        /// </summary>
         public int TotalEnemyCount => _enemies.Count;
 
-        ///<summary>
-        ///Clears all enemies.
-        ///</summary>
+        public IEnumerable<Enemy> ActiveEnemies => _enemies.Where(e => e.IsActive);
+
+        // ---------------------------------------------------------------------------------------------
+        // Save Pipeline API (used by GSCapture)
+        // ---------------------------------------------------------------------------------------------
+
+        public int GetTotalSpawned()
+        {
+            return _totalSpawned;
+        }
+
+        public int GetTotalKilled()
+        {
+            return _totalKilled;
+        }
+
+        public int GetTotalEscaped()
+        {
+            return _totalEscaped;
+        }
+
+        public int GetActiveEnemyCount()
+        {
+            return ActiveEnemyCount;
+        }
+
+        /// <summary>
+        /// Allows external systems to set total spawned (if needed).
+        /// </summary>
+        public void SetTotalSpawned(int totalSpawned)
+        {
+            _totalSpawned = totalSpawned;
+        }
+
+        /// <summary>
+        /// Clears all enemies.
+        /// </summary>
         public void ClearAllEnemies()
         {
             foreach (var enemy in _enemies)
             {
-                if (enemy.Entity != null)
+                if (enemy.ECSEntityCore != null)
                 {
-                    _ecsWorld.DestroyEntity(enemy.Entity);
+                    _ecsWorld.DestroyEntity(enemy.ECSEntityCore);
                 }
             }
-            
+
             _enemies.Clear();
+            _totalSpawned = 0;
+            _totalKilled = 0;
+            _totalEscaped = 0;
         }
 
-        ///
+        // ---------------------------------------------------------------------------------------------
+        // Private Methods
+        // ---------------------------------------------------------------------------------------------
 
-        /// Private Methods
-
-        ///<summary>
-        ///Updates enemy statistics.
-        ///</summary>
-        ///<param name="enemy">The enemy to update.</param>
         private void UpdateEnemyStats(Enemy enemy)
         {
-            //Update enemy stats based on difficulty, wave, etc.
-            //This would integrate with the difficulty system
+            // Integrate with difficulty/wave systems when available.
         }
-
-        ///
     }
 }

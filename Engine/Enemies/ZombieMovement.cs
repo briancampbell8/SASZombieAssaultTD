@@ -1,4 +1,22 @@
-using System;
+// ====================================================================================================
+//  FILE: ZombieMovement.cs
+//  PATH: ./Engine/Enemies/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ZombieMovement module.
+//
+//  RESPONSIBILITIES:
+//      - Provide MoveTowards() behavior for the Core subsystem.
+//      - Provide DistanceTo() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Drawing;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -6,7 +24,7 @@ using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Enemies
 {
     ///<summary>
-    ///Handles movement logic for a zombie entity.
+    ///Handles movement logic for a zombie ECSEntityCore.
     ///</summary>
     public class ZombieMovement
     {
@@ -24,10 +42,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
         ///Initializes a new instance of the <see cref="ZombieMovement"/> class.
         ///</summary>
         ///<param name="start">The starting position of the zombie.</param>
-        public ZombieMovement(PointF start)
-        {
-            Position = start;
-        }
+        public ZombieMovement(PointF start) => Position = start;
 
         ///<summary>
         ///Moves the zombie towards the specified target position.
@@ -65,6 +80,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
         }
     }
 }
+
 
 
 

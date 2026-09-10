@@ -1,3 +1,26 @@
+// ====================================================================================================
+//  FILE: SaveLoadCore.cs
+//  PATH: ./Engine/Player/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the SaveLoadCore module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Serialize() behavior for the Core subsystem.
+//      - Provide Deserialize() behavior for the Core subsystem.
+//      - Provide ValidatePlayerData() behavior for the Core subsystem.
+//      - Provide ValidatePlayerSystemForSave() behavior for the Core subsystem.
+//      - Provide IsValidJson() behavior for the Core subsystem.
+//      - Provide IsValidFileSize() behavior for the Core subsystem.
+//      - Provide IsCompatibleVersion() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //File:    SaveLoadCore.cs
 //Purpose: Pure serialization and deserialization logic.
 //         No state, no side effects, no logging, no file I/O.
@@ -5,11 +28,11 @@
 
 //
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using System.Text.Json;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Player
 
@@ -288,3 +311,4 @@ namespace SASZombieAssaultTD.Engine.Player
     //{
     //}
 }
+

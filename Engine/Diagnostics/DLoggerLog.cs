@@ -1,4 +1,21 @@
-﻿// ============================================================================
+// ====================================================================================================
+//  FILE: DLoggerLog.cs
+//  PATH: ./Engine/Diagnostics/
+//  MODULE: Diagnostics
+//
+//  ROLE:
+//      Provide logging, profiling, or diagnostic instrumentation.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Diagnostics subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+// ============================================================================
 //  FILE: DLoggerLog.cs
 //  MODULE: Diagnostics Compatibility Bridge
 //  PARTIAL: DLogger
@@ -7,14 +24,15 @@
 //      without defining duplicate overloads. Prevents ambiguity errors by
 //      exposing uniquely named forwarding methods.
 // ============================================================================
-
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
     public static partial class DLogger
     {
         internal static void ForwardLog(string category, string message)
         {
-            DLogger.Log(category, message);
+            DLogger.Log(LogSubsystems.Diagnostics,
+                category, message);
         }
 
         internal static void ForwardLog(object anything)
@@ -33,3 +51,4 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         }
     }
 }
+

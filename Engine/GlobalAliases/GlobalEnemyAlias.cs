@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: GlobalEnemyAlias.cs
+//  PATH: ./Engine/GlobalAliases/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the GlobalEnemyAlias module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Initialize() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    GlobalEnemyAlias.cs
 Purpose: Creates global namespace alias for Enemy class to resolve all visibility issues.
@@ -32,3 +49,4 @@ namespace SASZombieAssaultTD.Engine.GlobalAliases
         }
     }
 }
+

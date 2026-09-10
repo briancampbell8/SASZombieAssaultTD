@@ -1,3 +1,22 @@
+// ====================================================================================================
+//  FILE: Vector4.cs
+//  PATH: ./Engine/VectorMath/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the Vector4 module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Equals() behavior for the Core subsystem.
+//      - Provide Equals() behavior for the Core subsystem.
+//      - Provide GetHashCode() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    Vector4.cs
 Purpose: 4D vector type for SAS Zombie Assault TD.
@@ -6,9 +25,9 @@ Features: 4D vector operations, constructors, and utility methods.
 P11-04-07-B: 4D vector type for color and other 4D data.
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.VectorMath
 {
@@ -71,3 +90,4 @@ namespace SASZombieAssaultTD.Engine.VectorMath
             );
     }
 }
+

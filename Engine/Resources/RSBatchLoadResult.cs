@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: RSBatchLoadResult.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSBatchLoadResult module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    AssetBatchLoadResult.cs
 Author:  BDC
@@ -6,7 +23,7 @@ Purpose: Represents the result of a batch asset loading operation.
 Notes:   Contains success and failure counts for pipeline operations.
 */
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Assets
 {
@@ -37,5 +54,6 @@ namespace SASZombieAssaultTD.Engine.Assets
         }
     }
 }
+
 
 

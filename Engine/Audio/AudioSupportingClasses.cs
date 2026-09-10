@@ -18,13 +18,13 @@
 //      - These classes must be efficient and allocation-minimal in hot paths.
 // ====================================================================================================
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.VectorMath;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
-namespace SASZombieAssaultTD.Engine.Audio
+namespace SASZombieAssaultTD.Engine.ECS
 {
     ///<summary>
     ///Audio sample data loaded from audio files.
@@ -129,7 +129,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         {
             if (_initialized) return;
             _initialized = true;
-            System.Diagnostics.Debug.WriteLine("AudioMixer: Initialized");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "AudioMixer: Initialized");
         }
 
         public void PlaySource(AudioSource source)
@@ -166,7 +166,7 @@ namespace SASZombieAssaultTD.Engine.Audio
             if (source == null || !source.Is3D) return;
             //Calculate 3D audio parameters
             //This would integrate with the listener position system
-            System.Diagnostics.Debug.WriteLine($"AudioMixer: Updated 3D source at {source.Position}");
+            DLogger.Log($"AudioMixer: Updated 3D source at {source.Position}");
         }
 
         public void Dispose()
@@ -174,7 +174,7 @@ namespace SASZombieAssaultTD.Engine.Audio
             if (_disposed) return;
             _disposed = true;
             _sources.Clear();
-            System.Diagnostics.Debug.WriteLine("AudioMixer: Disposed");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "AudioMixer: Disposed");
         }
 
         ///<summary>

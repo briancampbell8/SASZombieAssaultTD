@@ -1,39 +1,37 @@
-﻿// ====================================================================================================
+// =====================================================================================================
 //  FILE: HUDPanelFinalizer_ColorParser.cs
-//  PATH: Engine/UI/HUDPanels/
-//  MODULE: Finalizer Color Parser
+//  PATH: Engine/UI/HUDPanels/HUDPanelFinalizer_ColorParser.cs
+//  SUBSYSTEM: HUDPanels → Finalizer
 //
 //  ROLE:
-//      Validates and normalizes developer-facing color tokens from HUDPanelFinalizer_Control. Converts
-//      raw string tokens (e.g., "#FF00AA", "red", "255,128,0") into deterministic engine Color values.
-//      Produces a structured parse result consumed by HUDPanelFinalizer_Manager and Resolver.
+//      Deterministic parser for developer-facing color tokens used in the HUD Finalizer pipeline.
+//      Converts raw string tokens (#RRGGBB, #AARRGGBB, "red", "255,128,0") into engine Color values.
+//      Produces structured parse results consumed by Control, Resolver, and Manager.
 //
 //  RESPONSIBILITIES:
-//      - Accept raw color tokens from the Control module.
-//      - Parse hex, named colors, and RGB formats deterministically.
-//      - Return structured success/error results for diagnostics.
-//      - Ensure no implicit defaults: invalid tokens must produce explicit errors.
-//      - Provide normalized engine Color values for the Finalizer pipeline.
+//      - Parse hex, named, and RGB color formats.
+//      - Validate all tokens strictly; invalid formats produce explicit errors.
+//      - Return normalized engine Color values (byte-based).
+//      - Provide deterministic, side-effect-free parsing for the Finalizer pipeline.
+//      - Emit tracing for all parsing operations.
 //
 //  NON-RESPONSIBILITIES:
-//      - Manual override logic (handled by Control).
-//      - Geometry/crosshair resolution (handled by Resolver).
-//      - UIState construction (handled by UIStateBuilder).
-//      - Rendering (handled by HUDPanel_CashUpdate and HUDManager).
+//      - Manual override enablement (Control).
+//      - Geometry/crosshair resolution (Resolver).
+//      - UIState construction (UIStateBuilder).
+//      - Rendering (HUDPanel_CashUpdate).
 //
-//  ARCHITECTURAL NOTES:
-//      - ColorParser is intentionally strict: invalid tokens never silently fallback.
-//      - All parsing paths produce deterministic results.
-//      - Error messages are surfaced through Control and logged by the Manager.
-// ====================================================================================================
+//  ARCHITECTURE NOTES:
+//      - Strict parser: no implicit defaults, no silent fallbacks.
+//      - Extended to expose ParseColors batch pipeline hooks for Manager orchestration.
+// =====================================================================================================
 
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Drawing;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-namespace SASZombieAssaultTD.Engine.UI.HUDPanels
+namespace SASZombieAssaultTD.Engine.UI
 {
-    /// <summary>
-    /// Structured result returned by the ColorParser.
-    /// </summary>
     public struct HUDPanelFinalizerColorParseResult
     {
         public bool Success;
@@ -41,76 +39,92 @@ namespace SASZombieAssaultTD.Engine.UI.HUDPanels
         public string Error;
     }
 
-    public class HUDPanelFinalizer_ColorParser
+    public sealed class HUDPanelFinalizer_ColorParser
     {
-        // ==============================================================================================
-        // PUBLIC API — Parse a raw color token deterministically
-        // ==============================================================================================
+        public Color ResolvedFillColor { get; private set; } = Color.FromArgb(255, 32, 32, 32);
+        public Color ResolvedTextColor { get; private set; } = Color.FromArgb(255, 0, 224, 255);
+        public Color ResolvedItemPriceColor { get; private set; } = Color.FromArgb(255, 0, 191, 255);
+        public bool HasOverrideActive { get; private set; }
+
+        // -------------------------------------------------------------------------------------------------
+        //  PUBLIC API — Deterministic color parsing
+        // -------------------------------------------------------------------------------------------------
 
         public HUDPanelFinalizerColorParseResult TryParse(string token)
         {
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                $"ColorParser: TryParse token='{token}'");
+
             if (string.IsNullOrWhiteSpace(token))
-            {
                 return Error("Color token is empty.");
-            }
 
             token = token.Trim();
 
-            // ------------------------------------------------------------------------------------------
-            // HEX FORMAT (#RRGGBB or #AARRGGBB)
-            // ------------------------------------------------------------------------------------------
             if (token.StartsWith("#"))
-            {
                 return ParseHex(token);
-            }
 
-            // ------------------------------------------------------------------------------------------
-            // RGB FORMAT ("255,128,0")
-            // ------------------------------------------------------------------------------------------
             if (token.Contains(","))
-            {
                 return ParseRgb(token);
-            }
 
-            // ------------------------------------------------------------------------------------------
-            // NAMED COLOR ("red", "lime", "blue")
-            // ------------------------------------------------------------------------------------------
             return ParseNamed(token);
         }
 
-        // ==============================================================================================
-        // HEX PARSING
-        // ==============================================================================================
+        public void ParseColors(Color manualFill, Color manualText, bool overrideEnabled)
+        {
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                $"ColorParser: ParseColors override={overrideEnabled}");
+
+            HasOverrideActive = overrideEnabled;
+
+            if (overrideEnabled)
+            {
+                ResolvedFillColor = manualFill;
+                ResolvedTextColor = manualText;
+
+                ResolvedItemPriceColor = Color.FromArgb(
+                    manualText.A,
+                    System.Math.Max(0, manualText.R - 30),
+                    manualText.G,
+                    manualText.B);
+            }
+            else
+            {
+                ResolvedFillColor = Color.FromArgb(255, 32, 32, 32);
+                ResolvedTextColor = Color.FromArgb(255, 0, 224, 255);
+                ResolvedItemPriceColor = Color.FromArgb(255, 0, 191, 255);
+            }
+        }
+
+        // -------------------------------------------------------------------------------------------------
+        //  HEX (#RRGGBB or #AARRGGBB)
+        // -------------------------------------------------------------------------------------------------
 
         private HUDPanelFinalizerColorParseResult ParseHex(string token)
         {
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                $"ColorParser: ParseHex token='{token}'");
+
             try
             {
-                // Remove '#'
                 string hex = token.Substring(1);
 
                 if (hex.Length == 6)
                 {
-                    // RRGGBB
-                    // Changing 'int' to 'float' here lets you divide by 255f cleanly
-                    float r = Convert.ToInt32(hex.Substring(0, 2), 16);
-                    float g = Convert.ToInt32(hex.Substring(2, 2), 16);
-                    float b = Convert.ToInt32(hex.Substring(4, 2), 16);
+                    byte r = Convert.ToByte(hex.Substring(0, 2), 16);
+                    byte g = Convert.ToByte(hex.Substring(2, 2), 16);
+                    byte b = Convert.ToByte(hex.Substring(4, 2), 16);
 
-                    return Ok(new Color(r / 255f, g / 255f, b / 255f, 1f));
+                    return Ok(Color.FromArgb((byte)255, r, g, b));
                 }
                 else if (hex.Length == 8)
                 {
-                    // AARRGGBB
-                    // Changing 'int' to 'float' here lets you divide by 255f cleanly
-                    float a = Convert.ToInt32(hex.Substring(0, 2), 16);
-                    float r = Convert.ToInt32(hex.Substring(2, 2), 16);
-                    float g = Convert.ToInt32(hex.Substring(4, 2), 16);
-                    float b = Convert.ToInt32(hex.Substring(6, 2), 16);
+                    byte a = Convert.ToByte(hex.Substring(0, 2), 16);
+                    byte r = Convert.ToByte(hex.Substring(2, 2), 16);
+                    byte g = Convert.ToByte(hex.Substring(4, 2), 16);
+                    byte b = Convert.ToByte(hex.Substring(6, 2), 16);
 
-                    return Ok(new Color(r / 255f, g / 255f, b / 255f, a / 255f));
+                    return Ok(Color.FromArgb(a, r, g, b));
                 }
-
 
                 return Error("Invalid hex color format.");
             }
@@ -120,12 +134,15 @@ namespace SASZombieAssaultTD.Engine.UI.HUDPanels
             }
         }
 
-        // ==============================================================================================
-        // RGB PARSING
-        // ==============================================================================================
+        // -------------------------------------------------------------------------------------------------
+        //  RGB ("255,128,0")
+        // -------------------------------------------------------------------------------------------------
 
         private HUDPanelFinalizerColorParseResult ParseRgb(string token)
         {
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                $"ColorParser: ParseRgb token='{token}'");
+
             try
             {
                 var parts = token.Split(',');
@@ -140,7 +157,11 @@ namespace SASZombieAssaultTD.Engine.UI.HUDPanels
                 if (!IsByte(r) || !IsByte(g) || !IsByte(b))
                     return Error("RGB values must be between 0 and 255.");
 
-                return Ok(new Color(r / 255f, g / 255f, b / 255f, 1f));
+                return Ok(Color.FromArgb(
+                    (byte)255,
+                    (byte)r,
+                    (byte)g,
+                    (byte)b));
             }
             catch
             {
@@ -148,22 +169,19 @@ namespace SASZombieAssaultTD.Engine.UI.HUDPanels
             }
         }
 
-        // ==============================================================================================
-        // NAMED COLOR PARSING
-        // ==============================================================================================
+        // -------------------------------------------------------------------------------------------------
+        //  NAMED ("red", "lime", "blue")
+        // -------------------------------------------------------------------------------------------------
 
         private HUDPanelFinalizerColorParseResult ParseNamed(string token)
         {
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Trace,
+                $"ColorParser: ParseNamed token='{token}'");
+
             try
             {
                 var sysColor = ColorTranslator.FromHtml(token);
-
-                return Ok(new Color(
-                    sysColor.R / 255f,
-                    sysColor.G / 255f,
-                    sysColor.B / 255f,
-                    sysColor.A / 255f
-                ));
+                return Ok(Color.FromArgb(sysColor.A, sysColor.R, sysColor.G, sysColor.B));
             }
             catch
             {
@@ -171,9 +189,14 @@ namespace SASZombieAssaultTD.Engine.UI.HUDPanels
             }
         }
 
-        // ==============================================================================================
-        // HELPERS
-        // ==============================================================================================
+        private HUDPanelFinalizerColorParseResult Ok(Color? color)
+        {
+            throw new NotImplementedException();
+        }
+
+        // -------------------------------------------------------------------------------------------------
+        //  HELPERS
+        // -------------------------------------------------------------------------------------------------
 
         private bool IsByte(int value) => value >= 0 && value <= 255;
 
@@ -183,16 +206,19 @@ namespace SASZombieAssaultTD.Engine.UI.HUDPanels
             {
                 Success = true,
                 Color = color,
-                Error = null
+                Error = string.Empty
             };
         }
 
         private HUDPanelFinalizerColorParseResult Error(string message)
         {
+            DLogger.Log(LogSubsystems.UI, LogEnums.LogLevel.Warn,
+                $"ColorParser: ERROR '{message}'");
+
             return new HUDPanelFinalizerColorParseResult
             {
                 Success = false,
-                Color = new Color(0, 0, 0, 0),
+                Color = Color.FromArgb(0, 0, 0, 0),
                 Error = message
             };
         }

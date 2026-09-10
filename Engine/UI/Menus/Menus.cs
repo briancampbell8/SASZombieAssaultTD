@@ -1,8 +1,27 @@
-using SASZombieAssaultTD.Engine.Rendering;
+// ====================================================================================================
+//  FILE: Menus.cs
+//  PATH: ./Engine/UI/Menus/
+//  MODULE: UI
+//
+//  ROLE:
+//      Provide UI layout, interaction logic, or HUD rendering.
+//
+//  RESPONSIBILITIES:
+//      - Provide Add() behavior for the UI subsystem.
+//      - Provide Update() behavior for the UI subsystem.
+//      - Provide Render() behavior for the UI subsystem.
+//      - Provide Update() behavior for the UI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 using System;
 using System.Collections.Generic;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.UI.Elements;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
@@ -22,10 +41,10 @@ namespace SASZombieAssaultTD.Engine.UI
                 element.Update(deltaTime);
         }
 
-        public void Render(IRenderContext context)
+        public void Render(D3D11Adapter_Core context)
         {
             foreach (var element in _elements)
-                element.Render(context);
+                element.RenderWithContext(context);
         }
 
         //Compatibility overloads for old scene code
@@ -35,5 +54,6 @@ namespace SASZombieAssaultTD.Engine.UI
         }
     }
 }
+
 
 

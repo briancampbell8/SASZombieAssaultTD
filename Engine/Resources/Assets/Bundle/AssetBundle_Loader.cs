@@ -1,3 +1,26 @@
+// ====================================================================================================
+//  FILE: AssetBundle_Loader.cs
+//  PATH: ./Engine/Resources/Assets/Bundle/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetBundle_Loader module.
+//
+//  RESPONSIBILITIES:
+//      - Provide LoadAsync() behavior for the Core subsystem.
+//      - Provide Load() behavior for the Core subsystem.
+//      - Provide Unload() behavior for the Core subsystem.
+//      - Provide ContainsAsset() behavior for the Core subsystem.
+//      - Provide GetAssetPaths() behavior for the Core subsystem.
+//      - Provide GetAssetPaths() behavior for the Core subsystem.
+//      - Provide GetStatistics() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetBundle_Loader.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Bundle\AssetBundle_Loader.cs
@@ -52,20 +75,19 @@
 ///<example>
 ///<code>
 ///await bundle.LoadAsync();
-///System.Diagnostics.Debug.WriteLine($"Loaded {bundle.AssetCount} assets");
+///DLogger.Log($"Loaded {bundle.AssetCount} assets");
 ///</code>
 ///</example>
 //
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
-
 namespace SASZombieAssaultTD.Engine.Resources
 {
     public partial class AssetBundle
@@ -73,7 +95,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         private readonly SemaphoreSlim _loadingSemaphore = new(1, 1);
         private readonly Dictionary<string, Task<object>> _loadingTasks = new();
 
-      
+
         public async Task LoadAsync(CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
@@ -98,7 +120,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
                 _isLoaded = true;
 
-                System.Diagnostics.Debug.WriteLine($"AssetBundle: Loaded '{_bundlePath}' with {_entries.Count} assets");
+                DLogger.Log($"AssetBundle: Loaded '{_bundlePath}' with {_entries.Count} assets");
             }
             catch (Exception ex)
             {
@@ -131,7 +153,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         ///<example>
         ///<code>
         ///bundle.Load();
-        ///System.Diagnostics.Debug.WriteLine($"Loaded {bundle.AssetCount} assets");
+        ///DLogger.Log($"Loaded {bundle.AssetCount} assets");
         ///</code>
         ///</example>
         public void Load()
@@ -157,7 +179,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
                 _isLoaded = true;
 
-                System.Diagnostics.Debug.WriteLine($"AssetBundle: Loaded '{_bundlePath}' with {_entries.Count} assets");
+                DLogger.Log($"AssetBundle: Loaded '{_bundlePath}' with {_entries.Count} assets");
             }
             catch (Exception ex)
             {
@@ -202,7 +224,7 @@ namespace SASZombieAssaultTD.Engine.Resources
 
             _isLoaded = false;
 
-            System.Diagnostics.Debug.WriteLine($"AssetBundle: Unloaded '{_bundlePath}'");
+            DLogger.Log($"AssetBundle: Unloaded '{_bundlePath}'");
         }
 
         ///<summary>
@@ -332,7 +354,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         ///<code>
         ///foreach (var assetPath in bundle.GetAssetPaths())
         ///{
-        ///    System.Diagnostics.Debug.WriteLine($"Asset: {assetPath}");
+        ///    DLogger.Log($"Asset: {assetPath}");
         ///}
         ///</code>
         ///</example>
@@ -369,7 +391,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         ///<example>
         ///<code>
         ///var stats = bundle.GetStatistics();
-        ///System.Diagnostics.Debug.WriteLine($"Compression: {stats.CompressionRatio:F1}%");
+        ///DLogger.Log($"Compression: {stats.CompressionRatio:F1}%");
         ///</code>
         ///</example>
         public BundleStatistics GetStatistics()
@@ -638,3 +660,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+

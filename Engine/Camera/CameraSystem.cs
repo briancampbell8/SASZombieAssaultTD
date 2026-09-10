@@ -1,4 +1,27 @@
-using System;
+// ====================================================================================================
+//  FILE: CameraSystem.cs
+//  PATH: ./Engine/Camera/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the CameraSystem module.
+//
+//  RESPONSIBILITIES:
+//      - Provide SetPosition() behavior for the Core subsystem.
+//      - Provide Move() behavior for the Core subsystem.
+//      - Provide SetZoom() behavior for the Core subsystem.
+//      - Provide WorldToScreen() behavior for the Core subsystem.
+//      - Provide ScreenToWorld() behavior for the Core subsystem.
+//      - Provide ScreenToWorld() behavior for the Core subsystem.
+//      - Provide Shake() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Drawing;
 using SASZombieAssaultTD.Engine.VectorMath;
 
@@ -60,10 +83,11 @@ namespace SASZombieAssaultTD.Engine.Camera
         ///</summary>
         public void Shake(float intensity, float duration)
         {
-            System.Diagnostics.Debug.WriteLine($"Shaking camera with intensity {intensity} for {duration} seconds.");
+            DLogger.Log($"Shaking camera with intensity {intensity} for {duration} seconds.");
         }
     }
 }
+
 
 
 

@@ -1,356 +1,92 @@
-using System;
-using System.Collections.Generic;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+// ====================================================================================================
+//  FILE: UIStyleSheet.cs
+//  PATH: ./Engine/UI/Styles/
+//  MODULE: UI.Styles
+//
+//  ROLE:
+//      Centralized deterministic style registry for all UI subsystems. Provides static, immutable
+//      color palettes and visual constants for MainMenu, MapMenu, ModsMenu, HUD, and future UI
+//      modules. Ensures consistent visual identity across the deterministic Option‑B UI pipeline.
+//
+// ====================================================================================================
 
 namespace SASZombieAssaultTD.Engine.UI.Styles
 {
-    ///<summary>
-    ///A collection of UIStyle objects and lookup utilities
-    ///P80-06-02: UIStyleSheet providing a collection of UIStyle objects and lookup utilities
-    ///</summary>
-    public class UIStyleSheet
+    internal static class UIStyleSheet
     {
-        private readonly Dictionary<string, UIStyle> _styles;
-        private readonly Dictionary<Type, UIStyle> _typeStyles;
-
-        ///<summary>
-        ///Gets the number of styles in the sheet
-        ///</summary>
-        public int Count => _styles.Count;
-
-        ///<summary>
-        ///Gets the number of type styles in the sheet
-        ///</summary>
-        public int TypeStyleCount => _typeStyles.Count;
-
-        ///<summary>
-        ///Initializes a new UIStyleSheet
-        ///</summary>
-        public UIStyleSheet()
+        // ====================================================================================================
+        // MAIN MENU STYLE DEFINITIONS — FIXED & FULLY INITIALIZED
+        // ====================================================================================================
+        internal static class MainMenu
         {
-            _styles = new Dictionary<string, UIStyle>();
-            _typeStyles = new Dictionary<Type, UIStyle>();
+            // Border + shadow colors
+            public static readonly Color BorderColor = Color.Black;
+            public static readonly Color ShadowColor = Color.FromArgb(20, 20, 20);
 
-            System.Diagnostics.Debug.WriteLine("UIStyleSheet: Created new style sheet");
+            // Button colors
+            public static readonly Color ButtonBackground = Color.FromArgb(40, 40, 40);
+            public static readonly Color ButtonHover = Color.FromArgb(60, 60, 60);
+            public static readonly Color ButtonPressed = Color.FromArgb(80, 80, 80);
+            public static readonly Color ButtonActive = Color.FromArgb(100, 100, 100);
+
+            // Shadow offset
+            public static readonly float ShadowOffset = 2f;
+
+            // ------------------------------------------------------------------------------------------------
+            // FIX: BackgroundStyle MUST be initialized or the UI layer draws a full‑screen black panel.
+            // ------------------------------------------------------------------------------------------------
+            public static readonly UIStyle BackgroundStyle = new UIStyle
+            {
+                BackgroundColor = Color.Transparent,   // Do NOT cover the scene
+                BorderColor = Color.Transparent,
+                ShadowColor = Color.Transparent,
+                ShadowOffset = 0f
+            };
+
+            // Title style (safe defaults)
+            public static readonly UIStyle TitleStyle = new UIStyle
+            {
+                BackgroundColor = Color.Transparent,
+                BorderColor = Color.Transparent,
+                ShadowColor = Color.Black,
+                ShadowOffset = 2f
+            };
         }
 
-        ///<summary>
-        ///Adds a style to the sheet
-        ///</summary>
-        ///<param name="name">Style name</param>
-        ///<param name="style">Style to add</param>
-        public void AddStyle(string name, UIStyle style)
+        // ====================================================================================================
+        // MAP MENU STYLE DEFINITIONS (unchanged)
+        // ====================================================================================================
+        internal static class MapMenu
         {
-            try
-            {
-                if (string.IsNullOrEmpty(name))
-                {
-                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot add style with null or empty name");
-                    return;
-                }
+            public static readonly Color MapEntryBackground = Color.FromArgb(40, 40, 40);
+            public static readonly Color MapEntryBackgroundHover = Color.FromArgb(60, 60, 60);
+            public static readonly Color MapEntryBackgroundPressed = Color.FromArgb(80, 80, 80);
 
-                if (style == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot add null style");
-                    return;
-                }
+            public static readonly Color BackgroundColor = Color.FromArgb(20, 20, 20);
+            public static readonly Color Background = Color.FromArgb(20, 20, 20);
+            public static readonly Color BackgroundHover = Color.FromArgb(40, 40, 40);
+            public static readonly Color BackgroundPressed = Color.FromArgb(60, 60, 60);
 
-                _styles[name] = style;
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Added style '{name}'");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error adding style '{name}' - {ex.Message}");
-            }
-        }
+            public static readonly Color Border = Color.FromArgb(80, 80, 80);
+            public static readonly Color BorderHover = Color.FromArgb(100, 100, 100);
+            public static readonly Color BorderPressed = Color.FromArgb(120, 120, 120);
 
-        ///<summary>
-        ///Adds a style for a specific type
-        ///</summary>
-        ///<param name="type">Type to associate with style</param>
-        ///<param name="style">Style to add</param>
-        public void AddTypeStyle(Type type, UIStyle style)
-        {
-            try
-            {
-                if (type == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot add type style with null type");
-                    return;
-                }
+            public static readonly Color Text = Color.FromArgb(160, 160, 160);
+            public static readonly Color TextHover = Color.FromArgb(180, 180, 180);
+            public static readonly Color TextPressed = Color.FromArgb(200, 200, 200);
 
-                if (style == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot add null type style");
-                    return;
-                }
-
-                _typeStyles[type] = style;
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Added type style for '{type.Name}'");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error adding type style for '{type?.Name}' - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Gets a style by name
-        ///</summary>
-        ///<param name="name">Style name</param>
-        ///<returns>Style, or null if not found</returns>
-        public UIStyle GetStyle(string name)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(name))
-                {
-                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot get style with null or empty name");
-                    return null;
-                }
-
-                _styles.TryGetValue(name, out var style);
-                return style;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error getting style '{name}' - {ex.Message}");
-                return null;
-            }
-        }
-
-        ///<summary>
-        ///Gets a style by type
-        ///</summary>
-        ///<param name="type">Type to get style for</param>
-        ///<returns>Style, or null if not found</returns>
-        public UIStyle GetStyle(Type type)
-        {
-            try
-            {
-                if (type == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot get style for null type");
-                    return null;
-                }
-
-                _typeStyles.TryGetValue(type, out var style);
-                return style;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error getting style for type '{type.Name}' - {ex.Message}");
-                return null;
-            }
-        }
-
-        ///<summary>
-        ///Gets a style by type (generic version)
-        ///</summary>
-        ///<typeparam name="T">Type to get style for</typeparam>
-        ///<returns>Style, or null if not found</returns>
-        public UIStyle GetStyle<T>()
-        {
-            return GetStyle(typeof(T));
-        }
-
-        ///<summary>
-        ///Removes a style by name
-        ///</summary>
-        ///<param name="name">Style name to remove</param>
-        ///<returns>True if style was removed</returns>
-        public bool RemoveStyle(string name)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(name))
-                {
-                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot remove style with null or empty name");
-                    return false;
-                }
-
-                bool removed = _styles.Remove(name);
-                if (removed)
-                {
-                    System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Removed style '{name}'");
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Style '{name}' not found");
-                }
-
-                return removed;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error removing style '{name}' - {ex.Message}");
-                return false;
-            }
-        }
-
-        ///<summary>
-        ///Removes a style by type
-        ///</summary>
-        ///<param name="type">Type to remove style for</param>
-        ///<returns>True if style was removed</returns>
-        public bool RemoveTypeStyle(Type type)
-        {
-            try
-            {
-                if (type == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cannot remove type style for null type");
-                    return false;
-                }
-
-                bool removed = _typeStyles.Remove(type);
-                if (removed)
-                {
-                    System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Removed type style for '{type.Name}'");
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Type style for '{type.Name}' not found");
-                }
-
-                return removed;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error removing type style for '{type?.Name}' - {ex.Message}");
-                return false;
-            }
-        }
-
-        ///<summary>
-        ///Checks if a style exists by name
-        ///</summary>
-        ///<param name="name">Style name to check</param>
-        ///<returns>True if style exists</returns>
-        public bool HasStyle(string name)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(name))
-                    return false;
-
-                return _styles.ContainsKey(name);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error checking style '{name}' - {ex.Message}");
-                return false;
-            }
-        }
-
-        ///<summary>
-        ///Checks if a style exists by type
-        ///</summary>
-        ///<param name="type">Type to check</param>
-        ///<returns>True if style exists</returns>
-        public bool HasStyle(Type type)
-        {
-            try
-            {
-                if (type == null)
-                    return false;
-
-                return _typeStyles.ContainsKey(type);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error checking type style for '{type?.Name}' - {ex.Message}");
-                return false;
-            }
-        }
-
-        ///<summary>
-        ///Gets all style names
-        ///</summary>
-        ///<returns>Collection of style names</returns>
-        public IEnumerable<string> GetStyleNames()
-        {
-            try
-            {
-                return _styles.Keys;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error getting style names - {ex.Message}");
-                return new List<string>();
-            }
-        }
-
-        ///<summary>
-        ///Clears all styles
-        ///</summary>
-        public void Clear()
-        {
-            try
-            {
-                _styles.Clear();
-                _typeStyles.Clear();
-
-                System.Diagnostics.Debug.WriteLine("UIStyleSheet: Cleared all styles");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error clearing styles - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Creates a copy of this style sheet
-        ///</summary>
-        ///<returns>Copy of the style sheet</returns>
-        public UIStyleSheet Copy()
-        {
-            try
-            {
-                var copy = new UIStyleSheet();
-
-                //Copy named styles
-                foreach (var kvp in _styles)
-                {
-                    copy.AddStyle(kvp.Key, kvp.Value.Copy());
-                }
-
-                //Copy type styles
-                foreach (var kvp in _typeStyles)
-                {
-                    copy.AddTypeStyle(kvp.Key, kvp.Value.Copy());
-                }
-
-                System.Diagnostics.Debug.WriteLine("UIStyleSheet: Created style sheet copy");
-                return copy;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error creating copy - {ex.Message}");
-                return new UIStyleSheet();
-            }
-        }
-
-        ///<summary>
-        ///Gets a string representation of the style sheet
-        ///</summary>
-        ///<returns>String representation</returns>
-        public override string ToString()
-        {
-            try
-            {
-                return $"UIStyleSheet: {_styles.Count} styles, {_typeStyles.Count} type styles";
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIStyleSheet: Error creating string representation - {ex.Message}");
-                return "UIStyleSheet: Error";
-            }
+            // Extended style fields (left uninitialized intentionally)
+            public static Color BorderColor { get; internal set; }
+            public static Color ButtonBackground { get; internal set; }
+            public static Color ShadowColor { get; internal set; }
+            public static Color ButtonHover { get; internal set; }
+            public static Color ButtonPressed { get; internal set; }
+            public static Color ButtonActive { get; internal set; }
+            public static UIStyle BackgroundStyle { get; internal set; }
+            public static UIStyle TitleStyle { get; internal set; }
+            public static UIStyle MapEntryStyle { get; internal set; }
+            public static object MapEntryLabelStyle { get; internal set; }
+            public static Color MapEntryHover { get; internal set; }
         }
     }
 }
-
-
-
-

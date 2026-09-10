@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: AssetPipeline_Interfaces.cs
+//  PATH: ./Engine/Resources/Assets/Pipeline/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetPipeline_Interfaces module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //============================================================================
 //File:        AssetPipeline_Interfaces.cs
@@ -40,10 +57,10 @@
 */
 
 //
-using System.Collections.Generic;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Threading.Tasks;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -84,3 +101,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         void UpdateConfig(AssetProcessorConfig config);
     }
 }
+

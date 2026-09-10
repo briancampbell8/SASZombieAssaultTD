@@ -1,116 +1,31 @@
-using SASZombieAssaultTD.Engine.Diagnostics;
-
+// ====================================================================================================
+//  FILE: UILayoutTypes.cs
+//  PATH: ./Engine/UI/Layout/
+//  MODULE: UI
+//
+//  ROLE:
+//      Provide UI layout, interaction logic, or HUD rendering.
+//
+//  RESPONSIBILITIES:
+//      - Provide Uniform() behavior for the UI subsystem.
+//      - Provide Symmetric() behavior for the UI subsystem.
+//      - Provide Uniform() behavior for the UI subsystem.
+//      - Provide Symmetric() behavior for the UI subsystem.
+//      - Provide Fixed() behavior for the UI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 namespace SASZombieAssaultTD.Engine.UI.Layout
 {
     ///<summary>
     ///Layout alignment options for UI elements
     ///P80-02-02: UILayoutTypes defining layout enums and structs for alignment, anchoring, and padding
     ///</summary>
-    public enum UIAlignment
-    {
-        ///<summary>
-        ///Align to the left edge
-        ///</summary>
-        Left,
 
-        ///<summary>
-        ///Align to the center horizontally
-        ///</summary>
-        Center,
-
-        ///<summary>
-        ///Align to the right edge
-        ///</summary>
-        Right
-    }
-
-    ///<summary>
-    ///Vertical alignment options for UI elements
-    ///</summary>
-    public enum UIVerticalAlignment
-    {
-        ///<summary>
-        ///Align to the top edge
-        ///</summary>
-        Top,
-
-        ///<summary>
-        ///Align to the center vertically
-        ///</summary>
-        Middle,
-
-        ///<summary>
-        ///Align to the bottom edge
-        ///</summary>
-        Bottom
-    }
-
-    ///<summary>
-    ///Anchor points for UI elements relative to their parent
-    ///</summary>
-    public enum UIAnchor
-    {
-        ///<summary>
-        ///Anchor to the top-left corner
-        ///</summary>
-        TopLeft,
-
-        ///<summary>
-        ///Anchor to the top-center
-        ///</summary>
-        TopCenter,
-
-        ///<summary>
-        ///Anchor to the top-right corner
-        ///</summary>
-        TopRight,
-
-        ///<summary>
-        ///Anchor to the middle-left
-        ///</summary>
-        MiddleLeft,
-
-        ///<summary>
-        ///Anchor to the center
-        ///</summary>
-        MiddleCenter,
-
-        ///<summary>
-        ///Anchor to the middle-right
-        ///</summary>
-        MiddleRight,
-
-        ///<summary>
-        ///Anchor to the bottom-left corner
-        ///</summary>
-        BottomLeft,
-
-        ///<summary>
-        ///Anchor to the bottom-center
-        ///</summary>
-        BottomCenter,
-
-        ///<summary>
-        ///Anchor to the bottom-right corner
-        ///</summary>
-        BottomRight
-    }
-
-    ///<summary>
-    ///Layout direction for UI elements
-    ///</summary>
-    public enum UILayoutDirection
-    {
-        ///<summary>
-        ///Layout elements horizontally
-        ///</summary>
-        Horizontal,
-
-        ///<summary>
-        ///Layout elements vertically
-        ///</summary>
-        Vertical
-    }
 
     ///<summary>
     ///Structure defining padding for UI elements
@@ -284,6 +199,7 @@ namespace SASZombieAssaultTD.Engine.UI.Layout
         };
     }
 }
+
 
 
 

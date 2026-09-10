@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: SaveLoadController_Save.cs
+//  PATH: ./Engine/Player/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the SaveLoadController_Save module.
+//
+//  RESPONSIBILITIES:
+//      - Provide SaveGame() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 ///File:    E:\BDC\Projects\SASZombieAssaultTD\Engine\Player\SaveLoadController_Save.cs
 ///Purpose: Player action validation and execution system for SAS Zombie Assault TD.
 ///Features: Tower placement validation, upgrade processing, damage handling, and game state management.
@@ -11,9 +28,8 @@
 
 using System;
 using System.Collections.Generic;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
-
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Player
 {
     public partial class SaveLoadController
@@ -32,12 +48,12 @@ namespace SASZombieAssaultTD.Engine.Player
             {
                 try
                 {
-                    System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: Starting save operation");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "Info", "SaveLoadController: Starting save operation");
 
                     //Validate player system state
                     if (!SaveLoadCore.ValidatePlayerSystemForSave(playerSystem))
                     {
-                        System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Player system validation failed");
+                        DLogger.Log(LogSubsystems.ResourcesPipeline, "Error", "SaveLoadController: Player system validation failed");
                         return false;
                     }
 
@@ -47,7 +63,7 @@ namespace SASZombieAssaultTD.Engine.Player
                     //Validate player data
                     if (!SaveLoadCore.ValidatePlayerData(playerData))
                     {
-                        System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Player data validation failed");
+                        DLogger.Log(LogSubsystems.ResourcesPipeline, "Error", "SaveLoadController: Player data validation failed");
                         return false;
                     }
 
@@ -63,12 +79,12 @@ namespace SASZombieAssaultTD.Engine.Player
                     //Verify file integrity
                     if (!VerifySaveFile())
                     {
-                        System.Diagnostics.Debug.WriteLine("Error", "SaveLoadController: Save file verification failed");
+                        DLogger.Log(LogSubsystems.ResourcesPipeline, "Error", "SaveLoadController: Save file verification failed");
                         RestoreBackup();
                         return false;
                     }
 
-                    System.Diagnostics.Debug.WriteLine(
+                    DLogger.Log(LogSubsystems.ResourcesPipeline,
                         "Info",
                         $"SaveLoadController: Save completed successfully - File: {_savePath}, Size: {json.Length} bytes");
 
@@ -76,17 +92,17 @@ namespace SASZombieAssaultTD.Engine.Player
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: Save failed - Error: {ex.Message}");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "Error", $"SaveLoadController: Save failed - Error: {ex.Message}");
 
                     //Attempt to restore backup on failure
                     try
                     {
                         RestoreBackup();
-                        System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: Backup restored after save failure");
+                        DLogger.Log(LogSubsystems.ResourcesPipeline, "Info", "SaveLoadController: Backup restored after save failure");
                     }
                     catch (Exception backupEx)
                     {
-                        System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: Backup restore failed - Error: {backupEx.Message}");
+                        DLogger.Log(LogSubsystems.ResourcesPipeline, "Error", $"SaveLoadController: Backup restore failed - Error: {backupEx.Message}");
                     }
 
                     return false;
@@ -131,3 +147,4 @@ namespace SASZombieAssaultTD.Engine.Player
 
     }
 }
+

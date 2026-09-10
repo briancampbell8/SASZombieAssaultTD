@@ -1,3 +1,21 @@
+// ====================================================================================================
+//  FILE: SaveLoadController_Files.cs
+//  PATH: ./Engine/Player/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the SaveLoadController_Files module.
+//
+//  RESPONSIBILITIES:
+//      - Provide HasSaveFile() behavior for the Core subsystem.
+//      - Provide DeleteSaveFile() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 ///File:    E:\BDC\Projects\SASZombieAssaultTD\Engine\Player\SaveLoadController_Files.cs
 ///Purpose: Player action validation and execution system for SAS Zombie Assault TD.
 ///Features: Tower placement validation, upgrade processing, damage handling, and game state management.
@@ -9,19 +27,19 @@
 ///****************************************************************************************************
 //
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Player
 {
     public partial class SaveLoadController
     {
-        ///<summary>
-        ///Checks if a save file exists.
-        ///</summary>
-        ///<returns>True if a valid save file exists, false otherwise.</returns>
+        /// <summary>
+        /// Checks if a save file exists.
+        /// </summary>
+        /// <returns>True if a valid save file exists, false otherwise.</returns>
         public bool HasSaveFile()
         {
             lock (_lock)
@@ -36,7 +54,8 @@ namespace SASZombieAssaultTD.Engine.Player
 
                     if (!SaveLoadCore.IsValidFileSize(fileInfo.Length))
                     {
-                        System.Diagnostics.Debug.WriteLine("Warning", $"SaveLoadController: Save file has invalid size: {fileInfo.Length} bytes");
+                        DLogger.Log(LogSubsystems.Player,
+                            "Warning", $"SaveLoadController: Save file has invalid size: {fileInfo.Length} bytes");
                         return false;
                     }
 
@@ -48,13 +67,15 @@ namespace SASZombieAssaultTD.Engine.Player
 
                         if (string.IsNullOrEmpty(firstLine) || !firstLine.TrimStart().StartsWith("{"))
                         {
-                            System.Diagnostics.Debug.WriteLine("Warning", "SaveLoadController: Save file does not appear to be valid JSON");
+                            DLogger.Log(LogSubsystems.Player,
+                                "Warning", "SaveLoadController: Save file does not appear to be valid JSON");
                             return false;
                         }
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine("Warning", $"SaveLoadController: Save file readability check failed: {ex.Message}");
+                        DLogger.Log(LogSubsystems.Player,
+                            "Warning", $"SaveLoadController: Save file readability check failed: {ex.Message}");
                         return false;
                     }
 
@@ -62,16 +83,17 @@ namespace SASZombieAssaultTD.Engine.Player
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: HasSaveFile check failed: {ex.Message}");
+                    DLogger.Log(LogSubsystems.Player,
+                        "Error", $"SaveLoadController: HasSaveFile check failed: {ex.Message}");
                     return false;
                 }
             }
         }
 
-        ///<summary>
-        ///Deletes the save file and backup.
-        ///</summary>
-        ///<returns>True if the deletion was successful, false otherwise.</returns>
+        /// <summary>
+        /// Deletes the save file and backup.
+        /// </summary>
+        /// <returns>True if the deletion was successful, false otherwise.</returns>
         public bool DeleteSaveFile()
         {
             lock (_lock)
@@ -86,7 +108,8 @@ namespace SASZombieAssaultTD.Engine.Player
                     {
                         File.Delete(_savePath);
                         mainDeleted = true;
-                        System.Diagnostics.Debug.WriteLine("Info", $"SaveLoadController: Main save file deleted: {_savePath}");
+                        DLogger.Log(LogSubsystems.Player,
+                            "Info", $"SaveLoadController: Main save file deleted: {_savePath}");
                     }
 
                     //Delete backup save file
@@ -94,31 +117,32 @@ namespace SASZombieAssaultTD.Engine.Player
                     {
                         File.Delete(_backupPath);
                         backupDeleted = true;
-                        System.Diagnostics.Debug.WriteLine("Info", $"SaveLoadController: Backup save file deleted: {_backupPath}");
+                        DLogger.Log(LogSubsystems.Player,
+                            "Info", $"SaveLoadController: Backup save file deleted: {_backupPath}");
                     }
 
                     if (mainDeleted || backupDeleted)
                     {
-                        System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: Save file deletion completed successfully");
+                        DLogger.Log(LogSubsystems.Player, "Info", "SaveLoadController: Save file deletion completed successfully");
                         return true;
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("Info", "SaveLoadController: No save files to delete");
+                        DLogger.Log(LogSubsystems.Player, "Info", "SaveLoadController: No save files to delete");
                         return true; //Success if no files existed
                     }
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: Delete save file failed: {ex.Message}");
+                    DLogger.Log(LogSubsystems.Player, "Error", $"SaveLoadController: Delete save file failed: {ex.Message}");
                     return false;
                 }
             }
         }
 
-        ///<summary>
-        ///Creates a backup of the existing save file.
-        ///</summary>
+        /// <summary>
+        /// Creates a backup of the existing save file.
+        /// </summary>
         private void CreateBackup()
         {
             try
@@ -127,36 +151,36 @@ namespace SASZombieAssaultTD.Engine.Player
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(_backupPath));
                     File.Copy(_savePath, _backupPath, true);
-                    System.Diagnostics.Debug.WriteLine("Debug", $"SaveLoadController: Backup created: {_backupPath}");
+                    DLogger.Log(LogSubsystems.Player, "Debug", $"SaveLoadController: Backup created: {_backupPath}");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Warning", $"SaveLoadController: Backup creation failed: {ex.Message}");
+                DLogger.Log(LogSubsystems.Player, "Warning", $"SaveLoadController: Backup creation failed: {ex.Message}");
             }
         }
 
-        ///<summary>
-        ///Writes the save data to file.
-        ///</summary>
+        /// <summary>
+        /// Writes the save data to file.
+        /// </summary>
         private void WriteSaveFile(string json)
         {
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_savePath));
                 File.WriteAllText(_savePath, json);
-                System.Diagnostics.Debug.WriteLine("Debug", $"SaveLoadController: Save file written: {_savePath}");
+                DLogger.Log(LogSubsystems.Player, "Debug", $"SaveLoadController: Save file written: {_savePath}");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: Save file write failed: {ex.Message}");
+                DLogger.Log(LogSubsystems.Player, "Error", $"SaveLoadController: Save file write failed: {ex.Message}");
                 throw;
             }
         }
 
-        ///<summary>
-        ///Reads the save data from file.
-        ///</summary>
+        /// <summary>
+        /// Reads the save data from file.
+        /// </summary>
         private string ReadSaveFile()
         {
             try
@@ -165,14 +189,14 @@ namespace SASZombieAssaultTD.Engine.Player
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: Save file read failed: {ex.Message}");
+                DLogger.Log(LogSubsystems.Player, "Error", $"SaveLoadController: Save file read failed: {ex.Message}");
                 throw;
             }
         }
 
-        ///<summary>
-        ///Verifies the integrity of the save file.
-        ///</summary>
+        /// <summary>
+        /// Verifies the integrity of the save file.
+        /// </summary>
         private bool VerifySaveFile()
         {
             try
@@ -183,14 +207,14 @@ namespace SASZombieAssaultTD.Engine.Player
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: Save file verification failed: {ex.Message}");
+                DLogger.Log(LogSubsystems.Player, "Error", $"SaveLoadController: Save file verification failed: {ex.Message}");
                 return false;
             }
         }
 
-        ///<summary>
-        ///Restores the backup save file.
-        ///</summary>
+        /// <summary>
+        /// Restores the backup save file.
+        /// </summary>
         private void RestoreBackup()
         {
             try
@@ -198,12 +222,12 @@ namespace SASZombieAssaultTD.Engine.Player
                 if (File.Exists(_backupPath))
                 {
                     File.Copy(_backupPath, _savePath, true);
-                    System.Diagnostics.Debug.WriteLine("Info", $"SaveLoadController: Backup restored: {_savePath}");
+                    DLogger.Log(LogSubsystems.Player, "Info", $"SaveLoadController: Backup restored: {_savePath}");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error", $"SaveLoadController: Backup restoration failed: {ex.Message}");
+                DLogger.Log(LogSubsystems.Player, "Error", $"SaveLoadController: Backup restoration failed: {ex.Message}");
             }
         }
     }

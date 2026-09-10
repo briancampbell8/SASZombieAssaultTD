@@ -34,14 +34,15 @@
 //     - JSON schema must match StaticLayout model
 //     - All loaded handles are released on Dispose()
 //     - This class is part of the legacy UI/Rendering subsystem and is
-//       scheduled for migration into the unified Engine.Rendering pipeline
+//       scheduled for migration into the unified Engine.Render pipeline
 //============================================================================
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Resources;
 
 namespace SASZombieAssaultTD.Engine.UI
@@ -81,14 +82,14 @@ namespace SASZombieAssaultTD.Engine.UI
         {
             //Load JSON text
             var json = await File.ReadAllTextAsync(path);
-            System.Diagnostics.Debug.WriteLine(
+            DLogger.Log(
                 $"[StaticLayoutLoader] JSON loaded: {json.Length} chars");
 
             //Deserialize layout
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             var layout = JsonSerializer.Deserialize<StaticLayout>(json, options);
 
-            System.Diagnostics.Debug.WriteLine(
+            DLogger.Log(
                 $"[StaticLayoutLoader] Deserialized Images count: {layout?.Images?.Count ?? -1}");
 
             //Resolve all image references

@@ -1,22 +1,54 @@
+// ====================================================================================================
+//  FILE: ModernResourcePipeline.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
 //
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Rendering;
+//  ROLE:
+//      Encapsulate core engine behavior for the ModernResourcePipeline module.
+//
+//  RESPONSIBILITIES:
+//      - Provide RegisterLoader() behavior for the Core subsystem.
+//      - Provide LoadSpriteAsync() behavior for the Core subsystem.
+//      - Provide LoadFontAsync() behavior for the Core subsystem.
+//      - Provide LoadTextureAsync() behavior for the Core subsystem.
+//      - Provide PreloadAssetsAsync() behavior for the Core subsystem.
+//      - Provide UnloadUnusedAssets() behavior for the Core subsystem.
+//      - Provide GetCacheStats() behavior for the Core subsystem.
+//      - Provide Dispose() behavior for the Core subsystem.
+//      - Provide LoadAsync() behavior for the Core subsystem.
+//      - Provide CanLoad() behavior for the Core subsystem.
+//      - Provide LoadAsync() behavior for the Core subsystem.
+//      - Provide CanLoad() behavior for the Core subsystem.
+//      - Provide LoadAsync() behavior for the Core subsystem.
+//      - Provide CanLoad() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+//
 using System;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
-using System.Security.AccessControl;
 using System.Threading;
 using System.Threading.Tasks;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.Render.Sprites;
+using SASZombieAssaultTD.Engine.TextureRendering;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
-    ///<summary>
-    ///Modern resource management system with async loading, caching, and lifecycle management.
-    ///Replaces legacy SpriteCache and FontCache with complete modern implementation.
-    ///</summary>
+    /// <summary>
+    /// Modern resource management system with async loading, caching, and lifecycle management. Replaces legacy
+    /// SpriteCache and FontCache with complete modern implementation.
+    /// </summary>
     public sealed class ModernResourcePipeline : IDisposable
     {
         private readonly ConcurrentDictionary<string, WeakReference<object>> _cache = new();
@@ -27,6 +59,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         public interface IResourceLoader
         {
             Task<object> LoadAsync(string path);
+
             bool CanLoad(Type type);
         }
 
@@ -38,42 +71,42 @@ namespace SASZombieAssaultTD.Engine.Resources
             RegisterLoader(new TextureLoader());
         }
 
-        ///<summary>
-        ///Register a custom resource loader.
-        ///</summary>
+        /// <summary>
+        /// Register a custom resource loader.
+        /// </summary>
         public void RegisterLoader(IResourceLoader loader)
         {
             _loaders[loader.GetType()] = loader;
         }
 
-        ///<summary>
-        ///Load a sprite asynchronously.
-        ///</summary>
+        /// <summary>
+        /// Load a sprite asynchronously.
+        /// </summary>
         public async Task<Sprite> LoadSpriteAsync(string assetPath)
         {
             return await LoadResourceAsync<Sprite>(assetPath);
         }
 
-        ///<summary>
-        ///Load a font asynchronously.
-        ///</summary>
+        /// <summary>
+        /// Load a font asynchronously.
+        /// </summary>
         public async Task<Font> LoadFontAsync(string fontPath, int size)
         {
             var cacheKey = $"font:{fontPath}:{size}";
             return await LoadResourceAsync<Font>(cacheKey);
         }
 
-        ///<summary>
-        ///Load a texture asynchronously.
-        ///</summary>
+        /// <summary>
+        /// Load a texture asynchronously.
+        /// </summary>
         public async Task<Texture2D> LoadTextureAsync(string texturePath)
         {
             return await LoadResourceAsync<Texture2D>(texturePath);
         }
 
-        ///<summary>
-        ///Generic resource loading with caching.
-        ///</summary>
+        /// <summary>
+        /// Generic resource loading with caching.
+        /// </summary>
         public async Task<T> LoadResourceAsync<T>(string resourceKey) where T : class
         {
             if (_disposed) throw new ObjectDisposedException(nameof(ModernResourcePipeline));
@@ -118,9 +151,9 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
         }
 
-        ///<summary>
-        ///Get a cached resource without loading.
-        ///</summary>
+        /// <summary>
+        /// Get a cached resource without loading.
+        /// </summary>
         public T GetResource<T>(string resourceKey) where T : class
         {
             if (_cache.TryGetValue(resourceKey, out var weakRef) && weakRef.TryGetTarget(out var cached))
@@ -130,9 +163,9 @@ namespace SASZombieAssaultTD.Engine.Resources
             return null;
         }
 
-        ///<summary>
-        ///Preload multiple assets asynchronously.
-        ///</summary>
+        /// <summary>
+        /// Preload multiple assets asynchronously.
+        /// </summary>
         public async Task PreloadAssetsAsync(IEnumerable<string> assetPaths)
         {
             var tasks = new List<Task>();
@@ -152,9 +185,9 @@ namespace SASZombieAssaultTD.Engine.Resources
             await Task.WhenAll(tasks);
         }
 
-        ///<summary>
-        ///Unload unused resources to free memory.
-        ///</summary>
+        /// <summary>
+        /// Unload unused resources to free memory.
+        /// </summary>
         public void UnloadUnusedAssets()
         {
             var keysToRemove = new List<string>();
@@ -172,9 +205,9 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
         }
 
-        ///<summary>
-        ///Get cache statistics.
-        ///</summary>
+        /// <summary>
+        /// Get cache statistics.
+        /// </summary>
         public ResourceCacheStats GetCacheStats()
         {
             var stats = new ResourceCacheStats
@@ -217,9 +250,9 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 
-    ///<summary>
-    ///Resource cache statistics.
-    ///</summary>
+    /// <summary>
+    /// Resource cache statistics.
+    /// </summary>
     public class ResourceCacheStats
     {
         public int TotalEntries { get; set; }
@@ -266,17 +299,16 @@ namespace SASZombieAssaultTD.Engine.Resources
     }
 
     //Placeholder types (would be defined elsewhere in the engine)
-    public class Font { }
+    public class Font
+    { }
+
     public class Texture2D
     {
         private static object TheType;
         private static object TheMember;
-        private Rendering.Texture2D texture2D;
+        private TextureRendering.Texture2D texture2D;
 
-        public Texture2D(Rendering.Texture2D texture2D)
-        {
-            this.texture2D = texture2D;
-        }
+        public Texture2D(TextureRendering.Texture2D texture2D) => this.texture2D = texture2D;
 
         internal static Texture2D LoadFromFile(string path, TextureCache textureCache)
         {

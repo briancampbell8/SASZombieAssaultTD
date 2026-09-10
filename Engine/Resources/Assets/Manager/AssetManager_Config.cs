@@ -1,3 +1,23 @@
+// ====================================================================================================
+//  FILE: AssetManager_Config.cs
+//  PATH: ./Engine/Resources/Assets/Manager/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetManager_Config module.
+//
+//  RESPONSIBILITIES:
+//      - Provide CreateDefault() behavior for the Core subsystem.
+//      - Provide Create() behavior for the Core subsystem.
+//      - Provide CreateHighPerformance() behavior for the Core subsystem.
+//      - Provide CreateLowMemory() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetManager_Config.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Manager\AssetManager_Config.cs
@@ -170,3 +190,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         internal bool EnableStreaming;
     }
 }
+

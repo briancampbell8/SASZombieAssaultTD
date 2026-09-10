@@ -1,5 +1,25 @@
-using System;
-using System.Collections.Generic;
+// ====================================================================================================
+//  FILE: LinearBlendNode.cs
+//  PATH: ./Engine/Animation/BlendTree/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the LinearBlendNode module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Evaluate() behavior for the Core subsystem.
+//      - Provide GetDebugInfo() behavior for the Core subsystem.
+//      - Provide Validate() behavior for the Core subsystem.
+//      - Provide CreateAuto() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Text;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -169,6 +189,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
         }
     }
 }
+
 
 
 

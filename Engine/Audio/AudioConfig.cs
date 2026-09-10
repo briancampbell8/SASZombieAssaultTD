@@ -18,17 +18,16 @@
 //      - Keep this class small and POCO-like to simplify serialization and testing.
 // ====================================================================================================
 
-using System;
-using System.Collections.Generic;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
-namespace SASZombieAssaultTD.Engine.Audio
+namespace SASZombieAssaultTD.Engine.ECS
 {
-    ///<summary>
-    ///Audio configuration settings for the audio subsystem.
-    ///P90-04: AudioConfig implementation for centralized audio settings
-    ///</summary>
+    /// <summary>
+    /// Audio configuration settings for the audio subsystem. P90-04: AudioConfig implementation for centralized audio
+    /// settings
+    /// </summary>
     public class AudioConfig
     {
         public float MasterVolume { get; set; } = 1.0f;
@@ -41,14 +40,14 @@ namespace SASZombieAssaultTD.Engine.Audio
         public int SampleRate { get; set; } = 44100;
         public int BufferSize { get; set; } = 512;
 
-        ///<summary>
-        ///Creates a default audio configuration.
-        ///</summary>
+        /// <summary>
+        /// Creates a default audio configuration.
+        /// </summary>
         public static AudioConfig Default => new AudioConfig();
 
-        ///<summary>
-        ///Validates the configuration.
-        ///</summary>
+        /// <summary>
+        /// Validates the configuration.
+        /// </summary>
         public bool Validate()
         {
             return MasterVolume >= 0f && MasterVolume <= 1f &&
@@ -61,18 +60,18 @@ namespace SASZombieAssaultTD.Engine.Audio
         }
     }
 
-    ///<summary>
-    ///Audio registry mapping sound names to file paths.
-    ///P90-05: AudioRegistry implementation for sound asset management
-    ///</summary>
+    /// <summary>
+    /// Audio registry mapping sound names to file paths. P90-05: AudioRegistry implementation for sound asset
+    /// management
+    /// </summary>
     public class AudioRegistry
     {
         private readonly Dictionary<string, string> _soundPaths = new();
         private readonly Dictionary<string, AudioCategory> _soundCategories = new();
 
-        ///<summary>
-        ///Registers a sound with its file path.
-        ///</summary>
+        /// <summary>
+        /// Registers a sound with its file path.
+        /// </summary>
         public void RegisterSound(string soundName, string filePath, AudioCategory category = AudioCategory.SFX)
         {
             if (string.IsNullOrWhiteSpace(soundName) || string.IsNullOrWhiteSpace(filePath))
@@ -81,54 +80,54 @@ namespace SASZombieAssaultTD.Engine.Audio
             _soundPaths[soundName] = filePath;
             _soundCategories[soundName] = category;
 
-            System.Diagnostics.Debug.WriteLine($"AudioRegistry: Registered sound '{soundName}' -> '{filePath}' (Category: {category})");
+            DLogger.Log($"AudioRegistry: Registered sound '{soundName}' -> '{filePath}' (Category: {category})");
         }
 
-        ///<summary>
-        ///Gets the file path for a sound.
-        ///</summary>
+        /// <summary>
+        /// Gets the file path for a sound.
+        /// </summary>
         public string GetSoundPath(string soundName)
         {
             return _soundPaths.TryGetValue(soundName, out var path) ? path : null;
         }
 
-        ///<summary>
-        ///Gets the category for a sound.
-        ///</summary>
+        /// <summary>
+        /// Gets the category for a sound.
+        /// </summary>
         public AudioCategory GetSoundCategory(string soundName)
         {
             return _soundCategories.TryGetValue(soundName, out var category) ? category : AudioCategory.SFX;
         }
 
-        ///<summary>
-        ///Checks if a sound is registered.
-        ///</summary>
+        /// <summary>
+        /// Checks if a sound is registered.
+        /// </summary>
         public bool IsSoundRegistered(string soundName)
         {
             return _soundPaths.ContainsKey(soundName);
         }
 
-        ///<summary>
-        ///Gets all registered sound names.
-        ///</summary>
+        /// <summary>
+        /// Gets all registered sound names.
+        /// </summary>
         public IEnumerable<string> GetRegisteredSounds()
         {
             return _soundPaths.Keys;
         }
 
-        ///<summary>
-        ///Clears all registered sounds.
-        ///</summary>
+        /// <summary>
+        /// Clears all registered sounds.
+        /// </summary>
         public void Clear()
         {
             _soundPaths.Clear();
             _soundCategories.Clear();
-            System.Diagnostics.Debug.WriteLine("AudioRegistry: Cleared all sounds");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "AudioRegistry: Cleared all sounds");
         }
 
-        ///<summary>
-        ///Loads default sound registrations.
-        ///</summary>
+        /// <summary>
+        /// Loads default sound registrations.
+        /// </summary>
         public void LoadDefaults()
         {
             //Success sounds
@@ -173,13 +172,13 @@ namespace SASZombieAssaultTD.Engine.Audio
             RegisterSound("music_victory", "Audio/Music/victory.ogg", AudioCategory.Music);
             RegisterSound("music_defeat", "Audio/Music/defeat.ogg", AudioCategory.Music);
 
-            System.Diagnostics.Debug.WriteLine("AudioRegistry: Loaded default sound registrations");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "AudioRegistry: Loaded default sound registrations");
         }
     }
 
-    ///<summary>
-    ///Audio category for volume grouping.
-    ///</summary>
+    /// <summary>
+    /// Audio category for volume grouping.
+    /// </summary>
     public enum AudioCategory
     {
         Music,

@@ -1,10 +1,27 @@
+// ====================================================================================================
+//  FILE: BlendTreeSerializer.cs
+//  PATH: ./Engine/Animation/BlendTree/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the BlendTreeSerializer module.
+//
+//  RESPONSIBILITIES:
+//      - Provide SerializeBlendTree() behavior for the Core subsystem.
+//      - Provide DeserializeBlendTree() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
-
 using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Animation.BlendTree
 //
 {
@@ -35,7 +52,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
             if (blendTree == null)
             {
                 DLogger.Log(
-                    LogSubsystems.Animation, LogLevel.Error, "BlendTreeSerializer: Cannot serialize null blend tree");
+                    LogSubsystems.Animation, LogEnums.LogLevel.Error, "BlendTreeSerializer: Cannot serialize null blend tree");
                 return string.Empty;
             }
 
@@ -55,12 +72,12 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 //Serialize to JSON
                 var json = JsonSerializer.Serialize(serializableTree, _serializerOptions);
 
-                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"BlendTreeSerializer: Successfully serialized blend tree '{blendTree.TreeId}'");
+                DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Debug, $"BlendTreeSerializer: Successfully serialized blend tree '{blendTree.TreeId}'");
                 return json;
             }
             catch (Exception ex)
             {
-                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"BlendTreeSerializer: Error serializing blend tree '{blendTree.TreeId}': {ex.Message}");
+                DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Error, $"BlendTreeSerializer: Error serializing blend tree '{blendTree.TreeId}': {ex.Message}");
                 return string.Empty;
             }
         }
@@ -76,7 +93,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
         {
             if (string.IsNullOrEmpty(json))
             {
-                DLogger.Log(LogSubsystems.Animation, LogLevel.Warning, "BlendTreeSerializer: Cannot deserialize null or empty JSON string");
+                DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Warning, "BlendTreeSerializer: Cannot deserialize null or empty JSON string");
                 return fallbackTree;
             }
 
@@ -86,7 +103,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 var serializableTree = JsonSerializer.Deserialize<SerializableBlendTree>(json, _serializerOptions);
                 if (serializableTree == null)
                 {
-                    DLogger.Log(LogSubsystems.Animation, LogLevel.Error, "BlendTreeSerializer: Deserialized JSON resulted in null blend tree");
+                    DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Error, "BlendTreeSerializer: Deserialized JSON resulted in null blend tree");
                     return fallbackTree;
                 }
 
@@ -94,7 +111,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                 var blendTree = ConvertFromSerializableFormat(serializableTree);
                 if (blendTree == null)
                 {
-                    DLogger.Log(LogSubsystems.Animation, LogLevel.Error, "BlendTreeSerializer: Failed to convert from serializable format");
+                    DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Error, "BlendTreeSerializer: Failed to convert from serializable format");
                     return fallbackTree;
                 }
 
@@ -106,17 +123,17 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
                     return fallbackTree;
                 }
 
-                DLogger.Log(LogSubsystems.Animation, LogLevel.Debug, $"BlendTreeSerializer: Successfully deserialized blend tree '{blendTree.TreeId}'");
+                DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Debug, $"BlendTreeSerializer: Successfully deserialized blend tree '{blendTree.TreeId}'");
                 return blendTree;
             }
             catch (JsonException ex)
             {
-                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"BlendTreeSerializer: JSON error during deserialization: {ex.Message}");
+                DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Error, $"BlendTreeSerializer: JSON error during deserialization: {ex.Message}");
                 return fallbackTree;
             }
             catch (Exception ex)
             {
-                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"BlendTreeSerializer: Error deserializing blend tree: {ex.Message}");
+                DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Error, $"BlendTreeSerializer: Error deserializing blend tree: {ex.Message}");
                 return fallbackTree;
             }
         }
@@ -393,10 +410,10 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
 
         private static void LogValidationErrors(string treeId, IEnumerable<string> errors)
         {
-            DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"BlendTreeSerializer: Blend tree '{treeId}' failed validation");
+            DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Error, $"BlendTreeSerializer: Blend tree '{treeId}' failed validation");
             foreach (var error in errors)
             {
-                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"  Validation Error: {error}");
+                DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Error, $"  Validation Error: {error}");
             }
         }
     }
@@ -441,6 +458,7 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
         public string ChildTopRightId { get; set; } = string.Empty;
     }
 }
+
 
 
 

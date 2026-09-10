@@ -1,3 +1,25 @@
+// ====================================================================================================
+//  FILE: RSRegistry.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSRegistry module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Register() behavior for the Core subsystem.
+//      - Provide Resolve() behavior for the Core subsystem.
+//      - Provide TryResolve() behavior for the Core subsystem.
+//      - Provide Contains() behavior for the Core subsystem.
+//      - Provide Unregister() behavior for the Core subsystem.
+//      - Provide Clear() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    AssetRegistry.cs
 Author:  BDC
@@ -13,9 +35,9 @@ consistent locking is required.
 All() returns a snapshot for safe iteration outside the lock.
 */
 //
-using System;
-using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Scenes.Battlefields;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Resources
 {
     public static class RSRegistry
@@ -56,7 +78,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                     return path;
             }
 
-            Dlogger.Log("Warning", $"Asset key '{key}' not found in registry.");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Warning", $"Asset key '{key}' not found in registry.");
             throw new KeyNotFoundException($"Asset key '{key}' is not registered.");
         }
 
@@ -109,6 +131,7 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 }
+
 
 
 

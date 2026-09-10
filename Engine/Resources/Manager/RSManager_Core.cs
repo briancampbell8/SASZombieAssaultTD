@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: RSManager_Core.cs
+//  PATH: ./Engine/Resources/Manager/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSManager_Core module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //File: RSManager_Core.cs
 
@@ -57,7 +74,7 @@
 //var audio = rsManager.LoadResource<AudioClip>("audio/explosion.wav");
 
 ////Load with progress tracking
-//var progress = new Progress<float>(p => System.Diagnostics.Debug.WriteLine($"Loading: {p:P0%}"));
+//var progress = new Progress<float>(p => DLogger.Log($"Loading: {p:P0%}"));
 //await rsManager.LoadResourceAsync<Texture2D>("ui/loading_screen.png", progress);
 
 ////Batch load multiple resources
@@ -67,7 +84,7 @@
 
 ////Monitor RSManager performance
 //var stats = rsManager.GetPerformanceStats();
-//System.Diagnostics.Debug.WriteLine($"Loaded {stats.LoadedResources} resources, cache hits: {stats.CacheHits}");
+//DLogger.Log($"Loaded {stats.LoadedResources} resources, cache hits: {stats.CacheHits}");
 
 ////Configure RSManager settings
 //var config = new RSManager_Config
@@ -82,19 +99,19 @@
 
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SASZombieAssaultTD.Engine.VectorMath;
 using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.Extensions;
-using SASZombieAssaultTD.Engine.Rendering;
-using SASZombieAssaultTD.Engine.Audio;
+// using SASZombieAssaultTD.Engine.Extensions; // Extensions Removed
+using SASZombieAssaultTD.Engine.Render;
+using SASZombieAssaultTD.Engine.ECS;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -120,3 +137,4 @@ namespace SASZombieAssaultTD.Engine.Resources
     {
     }
 }
+

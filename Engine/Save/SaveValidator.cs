@@ -8,10 +8,10 @@ Features: Version compatibility, data range validation, required field validatio
 using System;
 using System.Collections.Generic;
 using SASZombieAssaultTD.Engine.Diagnostics;
-
 //
-using SASZombieAssaultTD.Engine.Gameplay;
-using SASZombieAssaultTD.Engine.Scenes.Battlefields;
+
+using SASZombieAssaultTD.Engine.GameRoot.GamePlay;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Save
 {
     ///<summary>
@@ -130,7 +130,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 Validate = (data) => data.Settings.QualityLevel >= 0 && data.Settings.QualityLevel <= 3
             });
 
-            Dlogger.Log(LogSubsystems.Save, LogLevel.Info, $"SaveValidator: Initialized {_validationRules.Count} validation rules");
+            DLogger.Log(LogSubsystems.Save, LogEnums.LogLevel.Info, $"SaveValidator: Initialized {_validationRules.Count} validation rules");
         }
 
         ///<summary>
@@ -182,7 +182,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 ValidateExtendedData(extendedData, result);
             }
 
-            Dlogger.Log(LogSubsystems.Save, LogLevel.Info,
+            DLogger.Log(LogSubsystems.Save, LogEnums.LogLevel.Info,
                 $"SaveValidator: Validation {(result.IsValid ? "passed" : "failed")} - Errors: {result.Errors.Count}, Warnings: {result.Warnings.Count}");
 
             return result;
@@ -320,7 +320,7 @@ namespace SASZombieAssaultTD.Engine.Save
                 }
             }
 
-            Dlogger.Log(LogSubsystems.Save, LogLevel.Info,
+            DLogger.Log(LogSubsystems.Save, LogEnums.LogLevel.Info,
                 $"SaveValidator: Validated {files.Length} saves - {(result.IsValid ? "All valid" : "Some invalid")}");
 
             return result;

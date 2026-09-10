@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: EnemyTypes.cs
+//  PATH: ./Engine/Shared/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the EnemyTypes module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    EnemyTypes.cs
 Purpose: Shared namespace bridge to resolve circular dependencies.
@@ -38,3 +55,4 @@ namespace SASZombieAssaultTD.Engine.Shared
         //This is just a namespace bridge
     }
 }
+

@@ -1,13 +1,33 @@
+// ====================================================================================================
+//  FILE: GetUpgradeInfoText.cs
+//  PATH: ./Engine/UI/Rendering/
+//  MODULE: Rendering
+//
+//  ROLE:
+//      Provide rendering logic, draw calls, batching, or GPU resource management.
+//
+//  RESPONSIBILITIES:
+//      - Provide GetBasicInfo() behavior for the Rendering subsystem.
+//      - Provide GetDetailedInfo() behavior for the Rendering subsystem.
+//      - Provide GetLockedInfo() behavior for the Rendering subsystem.
+//      - Provide GetUnaffordableInfo() behavior for the Rendering subsystem.
+//      - Provide GetMaxedInfo() behavior for the Rendering subsystem.
+//      - Provide GetInfoWithAbilities() behavior for the Rendering subsystem.
+//      - Provide GetInfoByStatus() behavior for the Rendering subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    GetUpgradeInfoText.cs
 Purpose: Generates descriptive text for upgrade tooltips.
 */
 
-using System;
 using System.Text;
-using SASZombieAssaultTD.Engine.Core;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.UI.UIEnums;
 
 namespace SASZombieAssaultTD.Engine.UI.Rendering
 {
@@ -31,7 +51,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             sb.AppendLine($"<color=yellow>Cost: ${cost}</color>");
             return sb.ToString();
         }
-        
+
         ///<summary>
         ///Generates detailed upgrade info text with stats.
         ///</summary>
@@ -42,25 +62,25 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         ///<param name="rangeIncrease">Range increase value.</param>
         ///<param name="fireRateIncrease">Fire rate increase value.</param>
         ///<returns>Formatted upgrade info text with stats.</returns>
-        public static string GetDetailedInfo(string upgradeName, string description, int cost, 
+        public static string GetDetailedInfo(string upgradeName, string description, int cost,
             float damageIncrease = 0, float rangeIncrease = 0, float fireRateIncrease = 0)
         {
             var sb = new StringBuilder();
             sb.AppendLine($"<b>{upgradeName}</b>");
             sb.AppendLine(description);
             sb.AppendLine();
-            
+
             if (damageIncrease > 0)
                 sb.AppendLine($"<color=green>Damage: +{damageIncrease:F1}</color>");
             if (rangeIncrease > 0)
                 sb.AppendLine($"<color=green>Range: +{rangeIncrease:F1}</color>");
             if (fireRateIncrease > 0)
                 sb.AppendLine($"<color=green>Fire Rate: +{fireRateIncrease:F1}</color>");
-                
+
             sb.AppendLine($"<color=yellow>Cost: ${cost}</color>");
             return sb.ToString();
         }
-        
+
         ///<summary>
         ///Generates upgrade info text for locked upgrades.
         ///</summary>
@@ -75,15 +95,15 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             sb.AppendLine("<color=gray>LOCKED</color>");
             sb.AppendLine();
             sb.AppendLine($"<color=orange>Requires Level {requiredLevel}</color>");
-            
+
             if (!string.IsNullOrEmpty(prerequisite))
             {
                 sb.AppendLine($"<color=orange>Requires: {prerequisite}</color>");
             }
-            
+
             return sb.ToString();
         }
-        
+
         ///<summary>
         ///Generates upgrade info text for unaffordable upgrades.
         ///</summary>
@@ -103,7 +123,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             sb.AppendLine($"<color=red>Need: ${cost - playerCash} more</color>");
             return sb.ToString();
         }
-        
+
         ///<summary>
         ///Generates upgrade info text for maxed upgrades.
         ///</summary>
@@ -120,7 +140,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             sb.AppendLine("<color=gold>Already at maximum level</color>");
             return sb.ToString();
         }
-        
+
         ///<summary>
         ///Generates upgrade info text with special abilities.
         ///</summary>
@@ -135,7 +155,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
             sb.AppendLine($"<b>{upgradeName}</b>");
             sb.AppendLine(description);
             sb.AppendLine();
-            
+
             if (specialAbilities != null && specialAbilities.Length > 0)
             {
                 sb.AppendLine("<color=cyan>Special Abilities:</color>");
@@ -145,11 +165,11 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
                 }
                 sb.AppendLine();
             }
-            
+
             sb.AppendLine($"<color=yellow>Cost: ${cost}</color>");
             return sb.ToString();
         }
-        
+
         ///<summary>
         ///Generates upgrade info text based on status.
         ///</summary>
@@ -161,7 +181,7 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         ///<param name="requiredLevel">Required level (for locked status).</param>
         ///<param name="prerequisite">Prerequisite upgrade (for locked status).</param>
         ///<returns>Appropriate formatted upgrade info text.</returns>
-        public static string GetInfoByStatus(string upgradeName, string description, int cost, 
+        public static string GetInfoByStatus(string upgradeName, string description, int cost,
             UpgradeStatus status, int playerCash = 0, int requiredLevel = 0, string prerequisite = "")
         {
             return status switch
@@ -175,3 +195,4 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         }
     }
 }
+

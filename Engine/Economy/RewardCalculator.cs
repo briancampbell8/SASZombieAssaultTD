@@ -1,16 +1,43 @@
-﻿/*
+// ====================================================================================================
+//  FILE: RewardCalculator.cs
+//  PATH: ./Engine/Economy/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RewardCalculator module.
+//
+//  RESPONSIBILITIES:
+//      - Provide CalculateKillReward() behavior for the Core subsystem.
+//      - Provide CalculateWaveBonus() behavior for the Core subsystem.
+//      - Provide CalculateAchievementReward() behavior for the Core subsystem.
+//      - Provide CalculateComboReward() behavior for the Core subsystem.
+//      - Provide CalculatePerformanceBonus() behavior for the Core subsystem.
+//      - Provide UpdateParameters() behavior for the Core subsystem.
+//      - Provide SetDifficultyMultiplier() behavior for the Core subsystem.
+//      - Provide GetEnemyKillReward() behavior for the Core subsystem.
+//      - Provide SetEnemyKillReward() behavior for the Core subsystem.
+//      - Provide GetWaveBonus() behavior for the Core subsystem.
+//      - Provide ResetToDefaults() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+/*
 File:    RewardCalculator.cs
 Purpose: Calculates rewards from kills, waves, and achievements.
 Features: Kill rewards, wave bonuses, achievement rewards, difficulty scaling.
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Core;
 using SASZombieAssaultTD.Engine.Enemies;
 using EnemyType = SASZombieAssaultTD.Engine.Dictionary.EnemyType;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Economy
 //
 {
@@ -47,7 +74,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _enemyKillRewards = new Dictionary<EnemyType, int>();
             _waveCompletionBonuses = new Dictionary<string, int>();
             InitializeRewardTables();
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, "RewardCalculator: Initialized with reward tables");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, "RewardCalculator: Initialized with reward tables");
         }
 
         ///<summary>
@@ -81,7 +108,7 @@ namespace SASZombieAssaultTD.Engine.Economy
                 _waveCompletionBonuses[$"wave_{i}"] = bonus;
             }
 
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"RewardCalculator: Initialized {_enemyKillRewards.Count} enemy rewards and {_waveCompletionBonuses.Count} wave bonuses");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"RewardCalculator: Initialized {_enemyKillRewards.Count} enemy rewards and {_waveCompletionBonuses.Count} wave bonuses");
         }
 
         ///<summary>
@@ -97,7 +124,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             var waveMultiplier = 1.0f + (waveNumber * 0.1f);
             var finalReward = (int)(baseReward * _parameters.DifficultyMultiplier * waveMultiplier * performanceScore);
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"RewardCalculator: Kill reward for {enemyType} = {finalReward} (base: {baseReward}, wave: {waveMultiplier:F2}, performance: {performanceScore:F2})");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"RewardCalculator: Kill reward for {enemyType} = {finalReward} (base: {baseReward}, wave: {waveMultiplier:F2}, performance: {performanceScore:F2})");
             return finalReward;
         }
 
@@ -119,7 +146,7 @@ namespace SASZombieAssaultTD.Engine.Economy
 
             var finalBonus = (int)(baseBonus * totalMultiplier);
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"RewardCalculator: Wave bonus for wave {waveNumber} = {finalBonus} (base: {baseBonus}, performance: {completionBonus:F2}, survival: {survivalBonus:F2})");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"RewardCalculator: Wave bonus for wave {waveNumber} = {finalBonus} (base: {baseBonus}, performance: {completionBonus:F2}, survival: {survivalBonus:F2})");
             return finalBonus;
         }
 
@@ -132,7 +159,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             var difficultyBonus = 1.0f + (difficultyLevel * 0.2f);
             var finalReward = (int)(baseReward * difficultyBonus * _parameters.DifficultyMultiplier);
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"RewardCalculator: Achievement reward for {achievementId} = {finalReward} (base: {baseReward}, difficulty: {difficultyLevel})");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"RewardCalculator: Achievement reward for {achievementId} = {finalReward} (base: {baseReward}, difficulty: {difficultyLevel})");
             return finalReward;
         }
 
@@ -147,7 +174,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             var comboMultiplier = System.Math.Min(5.0f, 1.0f + (comboCount * 0.25f));
             var comboReward = (int)(baseKillReward * comboMultiplier * _parameters.ComboMultiplier);
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"RewardCalculator: Combo reward for {comboCount}x combo = {comboReward}");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"RewardCalculator: Combo reward for {comboCount}x combo = {comboReward}");
             return comboReward;
         }
 
@@ -160,7 +187,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             var livesBonus = livesLost == 0 ? 1.2f : (1.0f - (float)livesLost / startingLives * 0.3f);
             var performanceBonus = timeBonus * livesBonus * _parameters.PerformanceBonus;
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"RewardCalculator: Performance bonus = {performanceBonus:F2} (time: {timeBonus:F2}, lives: {livesBonus:F2})");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"RewardCalculator: Performance bonus = {performanceBonus:F2} (time: {timeBonus:F2}, lives: {livesBonus:F2})");
             return performanceBonus;
         }
 
@@ -171,7 +198,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _parameters = parameters;
             OnParametersChanged?.Invoke(_parameters);
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"RewardCalculator: Updated parameters - Difficulty: {parameters.DifficultyMultiplier:F2}, Wave: {parameters.WaveMultiplier:F2}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"RewardCalculator: Updated parameters - Difficulty: {parameters.DifficultyMultiplier:F2}, Wave: {parameters.WaveMultiplier:F2}");
         }
 
         ///<summary>
@@ -181,7 +208,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _parameters.DifficultyMultiplier = System.Math.Max(0.1f, multiplier);
             OnParametersChanged?.Invoke(_parameters);
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"RewardCalculator: Set difficulty multiplier to {_parameters.DifficultyMultiplier:F2}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"RewardCalculator: Set difficulty multiplier to {_parameters.DifficultyMultiplier:F2}");
         }
 
         ///<summary>
@@ -198,7 +225,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         public void SetEnemyKillReward(EnemyType enemyType, int reward)
         {
             _enemyKillRewards[enemyType] = reward;
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"RewardCalculator: Set {enemyType} kill reward to {reward}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"RewardCalculator: Set {enemyType} kill reward to {reward}");
         }
 
         ///<summary>
@@ -218,7 +245,8 @@ namespace SASZombieAssaultTD.Engine.Economy
             _parameters = new RewardParameters();
             InitializeRewardTables();
             OnParametersChanged?.Invoke(_parameters);
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, "RewardCalculator: Reset to default parameters");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, "RewardCalculator: Reset to default parameters");
         }
     }
 }
+

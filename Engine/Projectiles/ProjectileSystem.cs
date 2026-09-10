@@ -1,21 +1,45 @@
-using System;
-using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Rendering;
-//audio system using removed; AudioSystem lives in Engine.Systems
-using SASZombieAssaultTD.Engine.Enemies;
-using SASZombieAssaultTD.Engine.Performance;
-using SASZombieAssaultTD.Engine.Towers;
-using SASZombieAssaultTD.Engine.Extensions;
-
+// ====================================================================================================
+//  FILE: ProjectileSystem.cs
+//  PATH: ./Engine/Projectiles/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ProjectileSystem module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Initialize() behavior for the Core subsystem.
+//      - Provide Update() behavior for the Core subsystem.
+//      - Provide Render() behavior for the Core subsystem.
+//      - Provide FireProjectile() behavior for the Core subsystem.
+//      - Provide FireProjectileAt() behavior for the Core subsystem.
+//      - Provide FireProjectileSpread() behavior for the Core subsystem.
+//      - Provide GetActiveProjectileCount() behavior for the Core subsystem.
+//      - Provide GetProjectilesByType() behavior for the Core subsystem.
+//      - Provide ClearAllProjectiles() behavior for the Core subsystem.
+//      - Provide GetStats() behavior for the Core subsystem.
+//      - Provide Shutdown() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Diagnostics;
+
+//audio system using removed; AudioSystem lives in Engine.Systems
+using SASZombieAssaultTD.Engine.Performance;
+using SASZombieAssaultTD.Engine.Render;
+using SASZombieAssaultTD.Engine.Towers;
+using SASZombieAssaultTD.Engine.VectorMath;
 
 namespace SASZombieAssaultTD.Engine.Projectiles
 {
-    ///<summary>
-    ///Projectile system for SAS Zombie Assault TD.
-    ///Manages all active projectiles, spawning, and collision detection.
-    ///</summary>
+    /// <summary>
+    /// Projectile system for SAS Zombie Assault TD. Manages all active projectiles, spawning, and collision detection.
+    /// </summary>
     public class ProjectileSystem
     {
         private readonly List<Projectile> _activeProjectiles = new();
@@ -23,21 +47,22 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         private bool _isInitialized = false;
         private static ProjectileSystem _instance;
 
-        ///<summary>
-        ///Singleton instance.
-        ///</summary>
+        /// <summary>
+        /// Singleton instance.
+        /// </summary>
         public static ProjectileSystem Instance => _instance ??= new ProjectileSystem();
 
-        private ProjectileSystem() { }
+        private ProjectileSystem()
+        { }
 
-        ///<summary>
-        ///Initialize the projectile system.
-        ///</summary>
+        /// <summary>
+        /// Initialize the projectile system.
+        /// </summary>
         public void Initialize()
         {
             if (_isInitialized) return;
 
-            System.Diagnostics.Debug.WriteLine("Initializing Projectile System");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Initializing Projectile System");
 
             try
             {
@@ -45,18 +70,18 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                 InitializePools();
 
                 _isInitialized = true;
-                System.Diagnostics.Debug.WriteLine("Projectile System initialized successfully");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "Projectile System initialized successfully");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to initialize Projectile System: {ex.Message}");
+                DLogger.Log($"Failed to initialize Projectile System: {ex.Message}");
                 throw;
             }
         }
 
-        ///<summary>
-        ///Update all active projectiles.
-        ///</summary>
+        /// <summary>
+        /// Update all active projectiles.
+        /// </summary>
         public void Update(float deltaTime)
         {
             if (!_isInitialized) return;
@@ -82,13 +107,13 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error updating Projectile System: {ex.Message}");
+                DLogger.Log($"Error updating Projectile System: {ex.Message}");
             }
         }
 
-        ///<summary>
-        ///Render all active projectiles.
-        ///</summary>
+        /// <summary>
+        /// Render all active projectiles.
+        /// </summary>
         public void Render()
         {
             if (!_isInitialized) return;
@@ -105,17 +130,17 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error rendering Projectile System: {ex.Message}");
+                DLogger.Log($"Error rendering Projectile System: {ex.Message}");
             }
         }
 
-        ///<summary>
-        ///Fire a projectile from a tower.
-        ///</summary>
-        ///<param name="tower">The tower firing the projectile.</param>
-        ///<param name="target">The target enemy.</param>
-        ///<param name="projectileType">Type of projectile to fire.</param>
-        ///<returns>The fired projectile, or null if failed.</returns>
+        /// <summary>
+        /// Fire a projectile from a tower.
+        /// </summary>
+        /// <param name="tower">The tower firing the projectile.</param>
+        /// <param name="target">The target enemy.</param>
+        /// <param name="projectileType">Type of projectile to fire.</param>
+        /// <returns>The fired projectile, or null if failed.</returns>
         public Projectile FireProjectile(Tower tower, Enemy target, ProjectileType projectileType)
         {
             if (!_isInitialized || tower == null || target == null)
@@ -151,18 +176,18 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error firing projectile: {ex.Message}");
+                DLogger.Log($"Error firing projectile: {ex.Message}");
                 return null;
             }
         }
 
-        ///<summary>
-        ///Fire a projectile in a direction (for area targeting).
-        ///</summary>
-        ///<param name="tower">The tower firing the projectile.</param>
-        ///<param name="targetPosition">Target position.</param>
-        ///<param name="projectileType">Type of projectile to fire.</param>
-        ///<returns>The fired projectile, or null if failed.</returns>
+        /// <summary>
+        /// Fire a projectile in a direction (for area targeting).
+        /// </summary>
+        /// <param name="tower">The tower firing the projectile.</param>
+        /// <param name="targetPosition">Target position.</param>
+        /// <param name="projectileType">Type of projectile to fire.</param>
+        /// <returns>The fired projectile, or null if failed.</returns>
         public Projectile FireProjectileAt(Tower tower, Vector3 targetPosition, ProjectileType projectileType)
         {
             if (!_isInitialized || tower == null)
@@ -198,20 +223,20 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error firing projectile at position: {ex.Message}");
+                DLogger.Log($"Error firing projectile at position: {ex.Message}");
                 return null;
             }
         }
 
-        ///<summary>
-        ///Fire multiple projectiles (for shotgun or spread attacks).
-        ///</summary>
-        ///<param name="tower">The tower firing projectiles.</param>
-        ///<param name="target">The target enemy.</param>
-        ///<param name="projectileType">Type of projectile to fire.</param>
-        ///<param name="count">Number of projectiles to fire.</param>
-        ///<param name="spreadAngle">Spread angle in degrees.</param>
-        ///<returns>List of fired projectiles.</returns>
+        /// <summary>
+        /// Fire multiple projectiles (for shotgun or spread attacks).
+        /// </summary>
+        /// <param name="tower">The tower firing projectiles.</param>
+        /// <param name="target">The target enemy.</param>
+        /// <param name="projectileType">Type of projectile to fire.</param>
+        /// <param name="count">Number of projectiles to fire.</param>
+        /// <param name="spreadAngle">Spread angle in degrees.</param>
+        /// <returns>List of fired projectiles.</returns>
         public List<Projectile> FireProjectileSpread(Tower tower, Enemy target, ProjectileType projectileType, int count, float spreadAngle)
         {
             var projectiles = new List<Projectile>();
@@ -237,7 +262,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                         continue;
 
                     //Set projectile data
-                    projectile.SetFromTowerData((TowerData)tower.TowerData());
+                    var data = tower.Data;
+                    projectile.SetFromTowerData(data);
+                    // Ensure projectile inherits tower data
                     projectile.Source = tower;
                     projectile.Target = target;
                     projectile.Type = projectileType;
@@ -257,22 +284,22 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error firing projectile spread: {ex.Message}");
+                DLogger.Log($"Error firing projectile spread: {ex.Message}");
                 return projectiles;
             }
         }
 
-        ///<summary>
-        ///Get the number of active projectiles.
-        ///</summary>
+        /// <summary>
+        /// Get the number of active projectiles.
+        /// </summary>
         public int GetActiveProjectileCount()
         {
             return _activeProjectiles.Count;
         }
 
-        ///<summary>
-        ///Get projectiles by type.
-        ///</summary>
+        /// <summary>
+        /// Get projectiles by type.
+        /// </summary>
         public List<Projectile> GetProjectilesByType(ProjectileType type)
         {
             var result = new List<Projectile>();
@@ -286,9 +313,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             return result;
         }
 
-        ///<summary>
-        ///Clear all active projectiles.
-        ///</summary>
+        /// <summary>
+        /// Clear all active projectiles.
+        /// </summary>
         public void ClearAllProjectiles()
         {
             foreach (var projectile in _activeProjectiles)
@@ -298,9 +325,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             _activeProjectiles.Clear();
         }
 
-        ///<summary>
-        ///Get system statistics.
-        ///</summary>
+        /// <summary>
+        /// Get system statistics.
+        /// </summary>
         public string GetStats()
         {
             var stats = $"Projectile System Stats:\n";
@@ -315,9 +342,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             return stats;
         }
 
-        ///<summary>
-        ///Initialize projectile pools.
-        ///</summary>
+        /// <summary>
+        /// Initialize projectile pools.
+        /// </summary>
         private void InitializePools()
         {
             //Create pools for each projectile type
@@ -329,12 +356,12 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             _pools[ProjectileType.Arrow] = new ProjectilePool(ProjectileType.Arrow);
             _pools[ProjectileType.Magic] = new ProjectilePool(ProjectileType.Magic);
 
-            System.Diagnostics.Debug.WriteLine($"Initialized {_pools.Count} projectile pools");
+            DLogger.Log($"Initialized {_pools.Count} projectile pools");
         }
 
-        ///<summary>
-        ///Get a projectile from the appropriate pool.
-        ///</summary>
+        /// <summary>
+        /// Get a projectile from the appropriate pool.
+        /// </summary>
         private Projectile GetProjectileFromPool(ProjectileType type)
         {
             if (_pools.TryGetValue(type, out var pool))
@@ -346,18 +373,18 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             return PerformanceManager.Instance?.Get<Projectile>();
         }
 
-        ///<summary>
-        ///Get the firing position for a tower.
-        ///</summary>
+        /// <summary>
+        /// Get the firing position for a tower.
+        /// </summary>
         private Vector3 GetFirePosition(Tower tower)
         {
-            //Get tower's fire point (could be barrel position, etc.)
-            return (Vector3)(tower.GetFirePosition() ?? Vector3.Zero);
+            // Fetches the coordinate vector from the tower's native layout metrics
+            return tower != null ? new Vector3(tower.Position.X, tower.Position.Y, 0f) : Vector3.Zero;
         }
 
-        ///<summary>
-        ///Calculate firing direction with prediction for moving targets.
-        ///</summary>
+        /// <summary>
+        /// Calculate firing direction with prediction for moving targets.
+        /// </summary>
         private Vector3 CalculateFireDirection(Vector3 firePosition, Vector3 targetPosition, ProjectileType projectileType)
         {
             var direction = (targetPosition - firePosition).Normalized;
@@ -369,9 +396,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             return direction;
         }
 
-        ///<summary>
-        ///Rotate a 2D direction by an angle.
-        ///</summary>
+        /// <summary>
+        /// Rotate a 2D direction by an angle.
+        /// </summary>
         private Vector3 RotateDirection(Vector3 direction, float angle)
         {
             var cos = MathF.Cos(angle);
@@ -384,9 +411,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             );
         }
 
-        ///<summary>
-        ///Clean up inactive projectiles.
-        ///</summary>
+        /// <summary>
+        /// Clean up inactive projectiles.
+        /// </summary>
         private void CleanupInactiveProjectiles()
         {
             for (int i = _activeProjectiles.Count - 1; i >= 0; i--)
@@ -398,12 +425,12 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
         }
 
-        ///<summary>
-        ///Shutdown the projectile system.
-        ///</summary>
+        /// <summary>
+        /// Shutdown the projectile system.
+        /// </summary>
         public void Shutdown()
         {
-            System.Diagnostics.Debug.WriteLine("Shutting down Projectile System");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Shutting down Projectile System");
 
             ClearAllProjectiles();
 
@@ -411,13 +438,13 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             _pools.Clear();
 
             _isInitialized = false;
-            System.Diagnostics.Debug.WriteLine("Projectile System shutdown complete");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Projectile System shutdown complete");
         }
     }
 
-    ///<summary>
-    ///Specialized projectile pool for different projectile types.
-    ///</summary>
+    /// <summary>
+    /// Specialized projectile pool for different projectile types.
+    /// </summary>
     public class ProjectilePool : ObjectPool<Projectile>
     {
         private readonly ProjectileType _projectileType;
@@ -435,9 +462,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             Prewarm(prewarmCount);
         }
 
-        ///<summary>
-        ///Create a projectile of the specified type.
-        ///</summary>
+        /// <summary>
+        /// Create a projectile of the specified type.
+        /// </summary>
         private static Projectile CreateProjectile(ProjectileType type)
         {
             var projectile = new Projectile();
@@ -502,9 +529,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             return projectile;
         }
 
-        ///<summary>
-        ///Get prewarm count based on projectile type.
-        ///</summary>
+        /// <summary>
+        /// Get prewarm count based on projectile type.
+        /// </summary>
         private static int GetPrewarmCount(ProjectileType type)
         {
             return type switch

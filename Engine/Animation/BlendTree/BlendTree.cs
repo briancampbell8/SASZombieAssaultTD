@@ -1,8 +1,31 @@
+// ====================================================================================================
+//  FILE: BlendTree.cs
+//  PATH: ./Engine/Animation/BlendTree/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the BlendTree module.
+//
+//  RESPONSIBILITIES:
+//      - Provide EvaluateWeight() behavior for the Core subsystem.
+//      - Provide GetAllNodes() behavior for the Core subsystem.
+//      - Provide AddChildNode() behavior for the Core subsystem.
+//      - Provide SetRootNode() behavior for the Core subsystem.
+//      - Provide Evaluate() behavior for the Core subsystem.
+//      - Provide SetParameter() behavior for the Core subsystem.
+//      - Provide UpdateParameters() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //File: E:\BDC\Projects\SASZombieAssaultTD\Engine\Animation\BlendTrees\BlendTree.cs
 //Minimal, build-clean BlendTree implementation for triage purposes.
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -137,3 +160,4 @@ namespace SASZombieAssaultTD.Engine.Animation.BlendTree
         }
     }
 }
+

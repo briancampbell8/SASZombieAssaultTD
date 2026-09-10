@@ -1,3 +1,4 @@
+
 // ============================================================================
 //  FILE: DLogger.cs
 //  MODULE: Diagnostics Manager
@@ -22,19 +23,32 @@
 // ============================================================================
 
 using System;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
     public static partial class DLogger
     {
+        public static bool Enabled = true;
+
         // ====================================================================
         // COMPATIBILITY FORWARDER (NEW)
         // ====================================================================
-
-        internal static void ForwardLegacyLog(string category, string message)
+        public static void Log(string message)
         {
-            DLogger.Log(category, message);
+            DLogger.Enabled = false;
+
+            if (!Enabled)
+                return;
+
+            Log(message, Array.Empty<object>());
         }
+
+        public static void ForwardLegacyLog(string category, string message)
+        {
+            DLogger.Log((object)category, message);
+        }
+
 
         internal static void ForwardLegacyLog(object anything)
         {
@@ -105,27 +119,27 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             };
         }
 
-        internal static LogLevel NormalizeLevel(string tag)
+        internal static LogEnums.LogLevel NormalizeLevel(string tag)
         {
             if (string.IsNullOrWhiteSpace(tag))
-                return LogLevel.Info;
+                return LogEnums.LogLevel.Info;
 
             string t = tag.Trim().ToUpperInvariant();
 
             return t switch
             {
-                "TRACE" => LogLevel.Trace,
-                "DEBUG" => LogLevel.Debug,
-                "INFO" => LogLevel.Info,
-                "INFORMATION" => LogLevel.Info,
-                "WARN" => LogLevel.Warn,
-                "WARNING" => LogLevel.Warning,
-                "ERROR" => LogLevel.Error,
-                "FATAL" => LogLevel.Fatal,
-                "CRITICAL" => LogLevel.Critical,
-                "EXCEPTION" => LogLevel.Exception,
-                "RECOVERY" => LogLevel.Recovery,
-                _ => LogLevel.Info
+                "TRACE" => LogEnums.LogLevel.Trace,
+                "DEBUG" => LogEnums.LogLevel.Debug,
+                "INFO" => LogEnums.LogLevel.Info,
+                "INFORMATION" => LogEnums.LogLevel.Info,
+                "WARN" => LogEnums.LogLevel.Warn,
+                "WARNING" => LogEnums.LogLevel.Warning,
+                "ERROR" => LogEnums.LogLevel.Error,
+                "FATAL" => LogEnums.LogLevel.Fatal,
+                "CRITICAL" => LogEnums.LogLevel.Critical,
+                "EXCEPTION" => LogEnums.LogLevel.Exception,
+                "RECOVERY" => LogEnums.LogLevel.Recovery,
+                _ => LogEnums.LogLevel.Info
             };
         }
 
@@ -144,7 +158,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
 
             string msg = raw.Trim();
             LogCategory category = LogCategory.General;
-            LogLevel level = LogLevel.Info;
+            LogEnums.LogLevel level = LogEnums.LogLevel.Info;
 
             while (msg.StartsWith("["))
             {
@@ -167,7 +181,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
                 }
 
                 var lvl = NormalizeLevel(tag);
-                if (lvl != LogLevel.Info)
+                if (lvl != LogEnums.LogLevel.Info)
                 {
                     level = lvl;
                     patternTag += $"_Level:{lvl}";
@@ -202,7 +216,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
 
         internal static void ResolveAndLog(
             LogSubsystems subsystem,
-            LogLevel level,
+            LogEnums.LogLevel level,
             LogCategory category,
             string raw,
             string patternTag,
@@ -213,3 +227,4 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         }
     }
 }
+

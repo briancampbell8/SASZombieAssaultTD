@@ -44,7 +44,7 @@ var transform3x2 = element.Transform;
 var material = GetElementMaterial(element);
 if (material == null)
 {
-    ModernLoggingSystem.Log("Warning", $"RenderElement: Material is null...");
+    ModernLoggingSystem.Log(LogSubsystems.ResourcesPipeline, "Warning", $"RenderElement: Material is null...");
     return;
 }
 

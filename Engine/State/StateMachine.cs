@@ -1,196 +1,248 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SASZombieAssaultTD.Engine.Core;
+// =====================================================================================================
+//  FILE: StateMachine.cs
+//  PATH: Engine/State/StateMachine.cs
+//  SUBSYSTEM: State
 //
+//  ROLE:
+//      Provides deterministic, minimal, Option‑B‑architecture state management for the engine lifecycle.
+//      Stores simple state flags (Running, Paused, GameOver) and coordinates a single active scene
+//      without introducing polymorphic state classes or hierarchies.
+//
+//  RESPONSIBILITIES:
+//      - Maintain core engine state flags.
+//      - Provide deterministic transitions: Start → Pause → Resume → GameOver → Reset.
+//      - Provide state queries for GameRootMain, GameRootStateController, and GameRootUpdateLoop.
+//      - Coordinate a single active BaseScene instance for update and render.
+//      - Provide simple state and scene reporting for diagnostics and audit logging.
+//
+//  NON-RESPONSIBILITIES:
+//      - Managing complex scene graphs or nested scene hierarchies.
+//      - Managing gameplay logic.
+//      - Managing rendering backend logic.
+//      - Managing ECS systems.
+//      - Managing assets or subsystems.
+//
+//  ARCHITECTURAL NOTES:
+//      - Fully aligned with Option‑B architecture: no state polymorphism, no state classes, no hierarchy.
+//      - StateMachine is intentionally simple and flag‑driven, with a single active scene reference.
+//      - GameRootStateController orchestrates transitions; StateMachine stores state and active scene.
+//      - Deterministic and audit‑friendly; no randomness or external dependencies.
+//      - Designed for compatibility with GameRootMain.cs, GameRootUpdateLoop.cs, RenderManager, and scenes.
+// =====================================================================================================
 
+using System;
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.Scenes;
+using SASZombieAssaultTD.Engine.Systems;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+
 namespace SASZombieAssaultTD.Engine.State
 {
-    ///<summary>
-    ///State machine controller for managing game states.
-    ///P20-02-03: Handles state registration, transitions, and event forwarding.
-    ///</summary>
-    public class StateMachine
+    public sealed class StateMachine : IGameStateMachine
     {
-        private IGameState _currentState;
-        private readonly Dictionary<GameStateType, IGameState> _states;
-        private GameStateType _currentStateType;
-        
-        ///<summary>
-        ///Gets the current active state type.
-        ///</summary>
-        public GameStateType CurrentStateType => _currentStateType;
-        
-        ///<summary>
-        ///Gets the current active state instance.
-        ///</summary>
-        public IGameState CurrentState => _currentState;
-        
-        ///<summary>
-        ///Initializes a new state machine instance.
-        ///</summary>
+        // --------------------------------------------------------------------------------------------
+        //  STATE FLAGS
+        // --------------------------------------------------------------------------------------------
+
+        public bool IsRunning { get; private set; }
+        public bool IsPaused { get; private set; }
+        public bool IsGameOver { get; private set; }
+
+        private string _currentStateName = "Uninitialized";
+        private readonly SystemRegistry _systemRegistry;
+
+        // --------------------------------------------------------------------------------------------
+        //  ACTIVE SCENE
+        // --------------------------------------------------------------------------------------------
+
+        private BaseScene _activeScene;
+
+        public StateMachine(SystemRegistry systemRegistry)
+        {
+            _systemRegistry = systemRegistry ?? throw new ArgumentNullException(nameof(systemRegistry));
+        }
+
         public StateMachine()
         {
-            _states = new Dictionary<GameStateType, IGameState>();
-            _currentState = null;
-            _currentStateType = GameStateType.Boot; //Default to boot state
         }
-        
-        ///<summary>
-        ///Registers a state instance with the state machine.
-        ///</summary>
-        ///<param name="type">The state type identifier.</param>
-        ///<param name="state">The state instance to register.</param>
-        ///<exception cref="ArgumentNullException">Thrown when state is null.</exception>
-        ///<exception cref="ArgumentException">Thrown when state type is already registered.</exception>
-        public virtual void RegisterState(GameStateType type, IGameState state)
+
+        // --------------------------------------------------------------------------------------------
+        //  LIFECYCLE TRANSITIONS
+        // --------------------------------------------------------------------------------------------
+
+        public void StartGame()
         {
-            if (state == null)
-            throw new ArgumentNullException(nameof(state));
-            
-            if (_states.ContainsKey(type))
-            {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"StateMachine: State type {type} is already registered. Overwriting.");
-                _states[type] = state;
-            }
-            else
-            {
-                _states.Add(type, state);
-                DLogger.Log(LogSubsystems.State,LogLevel.Info, $"StateMachine: Registered state {type}");
-            }
+            IsRunning = true;
+            IsPaused = false;
+            IsGameOver = false;
+            _currentStateName = "Running";
+
+            DLogger.Log(LogSubsystems.State, LogLevel.Info,
+                "[StateMachine] StartGame: Engine entering Running state.");
         }
-        
-        ///<summary>
-        ///Changes to a new state, exiting the current state and entering the new one.
-        ///</summary>
-        ///<param name="type">The state type to transition to.</param>
-        ///<exception cref="ArgumentException">Thrown when state type is not registered.</exception>
-        public virtual void ChangeState(GameStateType type, GameEvent? triggerEvent = null)
+
+        public void PauseGame()
         {
-            if (!_states.TryGetValue(type, out var newState))
-            {
-DLogger.Log(LogSubsystems.State,LogLevel.Info,"ERROR",$"StateMachine: Cannot change to unregistered state {type}");
-                throw new ArgumentException($"State type {type} is not registered", nameof(type));
-            }
-            
-            //Exit current state if it exists
-            if (_currentState != null)
-            {
-                DLogger.Log(LogSubsystems.State,LogLevel.Info, $"StateMachine: Exited state {_currentStateType}");
-                _currentState.Exit();
-            }
-            
-            //Enter new state
-            _currentState = newState;
-            _currentStateType = type;
-            DLogger.Log(LogSubsystems.State,LogLevel.Info, $"StateMachine: Entered state {type}");
-            DLogger.Log(LogSubsystems.State,LogLevel.Info, $"StateMachine: Entering state {type}");
-            _currentState.Enter();
+            if (!IsRunning || IsGameOver)
+                return;
+
+            IsPaused = true;
+            _currentStateName = "Paused";
+
+            DLogger.Log(LogSubsystems.State, LogLevel.Info,
+                "[StateMachine] PauseGame: Engine entering Paused state.");
         }
-        
-        ///<summary>
-        ///Updates the current state with delta time.
-        ///</summary>
-        ///<param name="deltaTime">Time elapsed since last update in seconds.</param>
-        public virtual void Update(float deltaTime)
+
+        public void ResumeGame()
         {
-            if (_currentState != null)
-            {
-                _currentState.Update(deltaTime);
-            }
-            else
-            {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", "StateMachine: No current state to update");
-            }
+            if (!IsRunning || IsGameOver)
+                return;
+
+            IsPaused = false;
+            _currentStateName = "Running";
+
+            DLogger.Log(LogSubsystems.State, LogLevel.Info,
+                "[StateMachine] ResumeGame: Engine resuming Running state.");
         }
-        
-        ///<summary>
-        ///Forwards an event to the current state for handling.
-        ///</summary>
-        ///<param name="gameEvent">The game event to handle.</param>
-        ///<exception cref="ArgumentNullException">Thrown when gameEvent is null.</exception>
-        public virtual void HandleEvent(GameEvent gameEvent)
+
+        public void ResetGame()
         {
-            if (gameEvent == null)
-            throw new ArgumentNullException(nameof(gameEvent));
-            
-            if (_currentState != null)
+            IsRunning = false;
+            IsPaused = false;
+            IsGameOver = false;
+            _currentStateName = "Reset";
+
+            DLogger.Log(LogSubsystems.State, LogLevel.Info,
+                "[StateMachine] ResetGame: Engine reset to initial state.");
+        }
+
+        public void GameOver()
+        {
+            IsRunning = false;
+            IsPaused = false;
+            IsGameOver = true;
+            _currentStateName = "GameOver";
+
+            DLogger.Log(LogSubsystems.State, LogLevel.Info,
+                "[StateMachine] GameOver: Engine entering GameOver state.");
+        }
+
+        public void Shutdown()
+        {
+            IsRunning = false;
+            IsPaused = false;
+            IsGameOver = true;
+            _currentStateName = "Shutdown";
+
+            DLogger.Log(LogSubsystems.State, LogLevel.Info,
+                "[StateMachine] Shutdown: Engine entering Shutdown state.");
+
+            if (_activeScene != null)
             {
-                _currentState.HandleEvent(gameEvent);
-            }
-            else
-            {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"StateMachine: No current state to handle event {gameEvent.GetType().Name}");
+                _activeScene.Cleanup();
+                _activeScene = null;
             }
         }
-        
-        ///<summary>
-        ///Checks if a state type is registered with the state machine.
-        ///</summary>
-        ///<param name="type">The state type to check.</param>
-        ///<returns>True if the state type is registered, false otherwise.</returns>
-        public bool HasState(GameStateType type)
+
+        // --------------------------------------------------------------------------------------------
+        //  SCENE MANAGEMENT
+        // --------------------------------------------------------------------------------------------
+
+        public void SetScene(BaseScene scene)
         {
-            return _states.ContainsKey(type);
-        }
-        
-        ///<summary>
-        ///Gets a registered state instance without changing the current state.
-        ///</summary>
-        ///<param name="type">The state type to retrieve.</param>
-        ///<returns>The state instance if registered, null otherwise.</returns>
-        public IGameState GetState(GameStateType type)
-        {
-            _states.TryGetValue(type, out var state);
-            return state;
-        }
-        
-        ///<summary>
-        ///Gets all registered state types.
-        ///</summary>
-        ///<returns>Array of registered state types.</returns>
-        public GameStateType[] GetRegisteredStates()
-        {
-            var stateTypes = new GameStateType[_states.Count];
-            _states.Keys.CopyTo(stateTypes, 0);
-            return stateTypes;
-        }
-        
-        ///<summary>
-        ///Gets statistics about the state machine.
-        ///</summary>
-        ///<returns>State machine statistics.</returns>
-        public StateMachineStatistics GetStatistics()
-        {
-            return new StateMachineStatistics
+            if (scene == null)
+                throw new ArgumentNullException(nameof(scene));
+
+            if (_activeScene != null)
             {
-                CurrentState = _currentStateType,
-                RegisteredStates = GetRegisteredStates().Length,
-                ValidTransitions = GetRegisteredStates().Length,
-                HasCurrentState = _currentState != null
-            };
-        }
-        
-        ///<summary>
-        ///Resets the state machine by exiting the current state and clearing all registrations.
-        ///</summary>
-        public virtual void Reset()
-        {
-            if (_currentState != null)
-            {
-                DLogger.Log(LogSubsystems.State,LogLevel.Info, $"StateMachine: Exiting current state {_currentStateType} during reset");
-                _currentState.Exit();
-                _currentState = null;
+                DLogger.Log(LogSubsystems.State, LogLevel.Info,
+                    $"[StateMachine] SetScene: Cleaning up previous scene '{_activeScene.GetType().Name}'.");
+                _activeScene.Cleanup();
             }
-            
-            _states.Clear();
-            _currentStateType = GameStateType.Boot;
-            DLogger.Log(LogSubsystems.State,LogLevel.Info, "StateMachine: Reset complete - all states cleared");
+
+            _activeScene = scene;
+
+            DLogger.Log(LogSubsystems.State, LogLevel.Info,
+                $"[StateMachine] SetScene: Activating scene '{_activeScene.GetType().Name}'.");
+
+            _activeScene.Initialize();
+            _activeScene.OnLoad();
+            _activeScene.OnStart();
+        }
+
+        // --------------------------------------------------------------------------------------------
+        //  UPDATE / RENDER
+        // --------------------------------------------------------------------------------------------
+
+        public void Update(float deltaTime)
+        {
+            if (!IsRunning || IsPaused || IsGameOver)
+                return;
+
+            _activeScene?.Update(deltaTime);
+        }
+
+        public void Render(D3D11Adapter_Core adapter)
+        {
+            if (!IsRunning || IsGameOver)
+                return;
+
+            if (_activeScene == null || adapter == null)
+                return;
+
+            _activeScene.Render(adapter);
+        }
+
+        public void GetRender(D3D11Adapter_Core uiContext)
+        {
+            if (uiContext == null)
+                throw new ArgumentNullException(nameof(uiContext));
+
+            var scene = _activeScene;
+            if (scene == null)
+                return;
+
+            try
+            {
+                scene.Render(uiContext);
+            }
+            catch
+            {
+                // swallow to preserve render loop stability
+            }
+        }
+
+        // --------------------------------------------------------------------------------------------
+        //  NEXT LEVEL
+        // --------------------------------------------------------------------------------------------
+
+        public void NextLevel()
+        {
+            if (IsGameOver)
+                return;
+
+            IsPaused = false;
+            IsRunning = true;
+            _currentStateName = "Running";
+
+            DLogger.Log(LogSubsystems.State, LogLevel.Info,
+                "[StateMachine] NextLevel: Continuing in Running state.");
+        }
+
+        // --------------------------------------------------------------------------------------------
+        //  STATE QUERIES
+        // --------------------------------------------------------------------------------------------
+
+        public string GetCurrentState() => _currentStateName;
+
+        bool IGameStateMachine.IsPaused() => IsPaused;
+        bool IGameStateMachine.IsRunning() => IsRunning;
+        bool IGameStateMachine.IsGameOver() => IsGameOver;
+
+        internal T GetService<T>()
+        {
+            throw new NotImplementedException();
         }
     }
 }
-
-
-
-

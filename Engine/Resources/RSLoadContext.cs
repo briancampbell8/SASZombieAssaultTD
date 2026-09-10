@@ -1,3 +1,21 @@
+// ====================================================================================================
+//  FILE: RSLoadContext.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSLoadContext module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ResolvePath() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    AssetLoadContext.cs
 Author:  BDC
@@ -6,10 +24,10 @@ Purpose: Provides contextual information for asset loading operations.
 Notes:   Passed to loaders to supply environment, root paths, and configuration.
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Assets
 {
@@ -73,5 +91,6 @@ namespace SASZombieAssaultTD.Engine.Assets
         }
     }
 }
+
 
 

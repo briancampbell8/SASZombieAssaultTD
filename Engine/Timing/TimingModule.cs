@@ -1,7 +1,27 @@
-﻿using System.Diagnostics;
+// ====================================================================================================
+//  FILE: TimingModule.cs
+//  PATH: ./Engine/Timing/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the TimingModule module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Start() behavior for the Core subsystem.
+//      - Provide Tick() behavior for the Core subsystem.
+//      - Provide GetTimingStats() behavior for the Core subsystem.
+//      - Provide Reset() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System.Diagnostics;
 using SASZombieAssaultTD.Engine.Core;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Timing
 //
 {
@@ -67,7 +87,7 @@ namespace SASZombieAssaultTD.Engine.Timing
         ///</summary>
         public void Start()
         {
-            DLogger.Log(LogSubsystems.Timing,LogLevel.Info, "TimingModule started - P11-09-02: High-precision timing initialized");
+            DLogger.Log(LogSubsystems.Timing, LogEnums.LogLevel.Info, "TimingModule started - P11-09-02: High-precision timing initialized");
 
             _highPrecisionClock.Reset();
             _highPrecisionClock.Start();
@@ -113,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.Timing
             //Clamp delta time to prevent spiral of death
             if (DeltaTime > 0.1f) //Cap at 100ms delta time
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"Large delta time detected: {DeltaTime:F3}s, clamping to 0.1s");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", $"Large delta time detected: {DeltaTime:F3}s, clamping to 0.1s");
                 DeltaTime = 0.1f;
             }
 
@@ -160,7 +180,7 @@ namespace SASZombieAssaultTD.Engine.Timing
                 _totalFrameTime = 0f;
                 _frameTimeCount = 0;
 
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"Timing metrics - FPS: {CurrentFPS:F1}, Avg Frame Time: {AverageFrameTime:F3}ms");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"Timing metrics - FPS: {CurrentFPS:F1}, Avg Frame Time: {AverageFrameTime:F3}ms");
             }
         }
 
@@ -199,11 +219,12 @@ namespace SASZombieAssaultTD.Engine.Timing
         ///</summary>
         public void Reset()
         {
-            DLogger.Log(LogSubsystems.Timing,LogLevel.Info, "TimingModule reset");
+            DLogger.Log(LogSubsystems.Timing, LogEnums.LogLevel.Info, "TimingModule reset");
             Start();
         }
     }
 }
+
 
 
 

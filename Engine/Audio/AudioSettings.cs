@@ -1,8 +1,28 @@
-using System;
+// ====================================================================================================
+//  FILE: AudioSettings.cs
+//  PATH: ./Engine/Audio/
+//  MODULE: Audio
+//
+//  ROLE:
+//      Manage audio playback, mixing, or spatial sound behavior.
+//
+//  RESPONSIBILITIES:
+//      - Provide Clone() behavior for the Audio subsystem.
+//      - Provide ApplyFrom() behavior for the Audio subsystem.
+//      - Provide ResetToDefaults() behavior for the Audio subsystem.
+//      - Provide Validate() behavior for the Audio subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
-namespace SASZombieAssaultTD.Engine.Audio
+namespace SASZombieAssaultTD.Engine.ECS
 {
     ///<summary>
     ///Audio configuration settings for the game engine.
@@ -227,3 +247,4 @@ namespace SASZombieAssaultTD.Engine.Audio
         }
     }
 }
+

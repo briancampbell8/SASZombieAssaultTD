@@ -1,11 +1,41 @@
+// ====================================================================================================
+//  FILE: PlayerLevel.cs
+//  PATH: ./Engine/LevelUpControl/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the PlayerLevel module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Initialize() behavior for the Core subsystem.
+//      - Provide AddExperience() behavior for the Core subsystem.
+//      - Provide SetLevel() behavior for the Core subsystem.
+//      - Provide GetExperienceForNextLevel() behavior for the Core subsystem.
+//      - Provide GetLevelData() behavior for the Core subsystem.
+//      - Provide GetAvailableRewards() behavior for the Core subsystem.
+//      - Provide GetAvailableUnlocks() behavior for the Core subsystem.
+//      - Provide GetStatistics() behavior for the Core subsystem.
+//      - Provide ResetProgress() behavior for the Core subsystem.
+//      - Provide SaveProgress() behavior for the Core subsystem.
+//      - Provide LoadProgress() behavior for the Core subsystem.
+//      - Provide Serialize() behavior for the Core subsystem.
+//      - Provide Serialize() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 using SASZombieAssaultTD.Engine.Economy;
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using SASZombieAssaultTD.Engine.Audio;
-using SASZombieAssaultTD.Engine.Extensions;
+using SASZombieAssaultTD.Engine.ECS;
+// using SASZombieAssaultTD.Engine.Extensions; // Extensions Removed
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -68,7 +98,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         {
             if (_isInitialized) return;
 
-            System.Diagnostics.Debug.WriteLine("Initializing Player Level System");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Initializing Player Level System");
 
             try
             {
@@ -79,11 +109,11 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 SetupEventSubscriptions();
 
                 _isInitialized = true;
-                System.Diagnostics.Debug.WriteLine($"Player Level System initialized at level {_currentLevel} with {_currentExperience} XP");
+                DLogger.Log($"Player Level System initialized at level {_currentLevel} with {_currentExperience} XP");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to initialize Player Level System: {ex.Message}");
+                DLogger.Log($"Failed to initialize Player Level System: {ex.Message}");
                 throw;
             }
         }
@@ -118,17 +148,17 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                     //Check for unlocks
                     CheckLevelUnlocks(_currentLevel);
 
-                    System.Diagnostics.Debug.WriteLine($"Level up! Now level {_currentLevel}");
+                    DLogger.Log($"Level up! Now level {_currentLevel}");
                 }
 
                 //Trigger experience gained event
                 OnExperienceGained?.Invoke(_currentLevel, experience);
 
-                System.Diagnostics.Debug.WriteLine($"Added {experience} XP from {source}. Total: {_totalExperienceEarned}");
+                DLogger.Log($"Added {experience} XP from {source}. Total: {_totalExperienceEarned}");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error adding experience: {ex.Message}");
+                DLogger.Log($"Error adding experience: {ex.Message}");
             }
         }
 
@@ -156,11 +186,11 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
 
                 SaveProgress();
 
-                System.Diagnostics.Debug.WriteLine($"Set level to {_currentLevel} with {_currentExperience} XP");
+                DLogger.Log($"Set level to {_currentLevel} with {_currentExperience} XP");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error setting level: {ex.Message}");
+                DLogger.Log($"Error setting level: {ex.Message}");
             }
         }
 
@@ -239,11 +269,11 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
 
                 SaveProgress();
 
-                System.Diagnostics.Debug.WriteLine("Player progress reset to level 1");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "Player progress reset to level 1");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error resetting player progress: {ex.Message}");
+                DLogger.Log($"Error resetting player progress: {ex.Message}");
             }
         }
 
@@ -270,12 +300,12 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 Directory.CreateDirectory(Path.GetDirectoryName(savePath));
                 File.WriteAllText(savePath, json);
 
-                System.Diagnostics.Debug.WriteLine($"Player progress saved to {savePath}");
+                DLogger.Log($"Player progress saved to {savePath}");
                 return true;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error saving player progress: {ex.Message}");
+                DLogger.Log($"Error saving player progress: {ex.Message}");
                 return false;
             }
         }
@@ -291,7 +321,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 var savePath = Path.Combine("Data", "Player", "level.json");
                 if (!File.Exists(savePath))
                 {
-                    System.Diagnostics.Debug.WriteLine("No saved player progress found");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "No saved player progress found");
                     return false;
                 }
 
@@ -321,12 +351,12 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                     }
                 }
 
-                System.Diagnostics.Debug.WriteLine($"Player progress loaded from {savePath}");
+                DLogger.Log($"Player progress loaded from {savePath}");
                 return true;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error loading player progress: {ex.Message}");
+                DLogger.Log($"Error loading player progress: {ex.Message}");
                 return false;
             }
         }
@@ -572,7 +602,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                     //Play unlock sound
                     AudioSystem.PlaySound("unlock");
 
-                    System.Diagnostics.Debug.WriteLine($"Unlocked: {unlock.Name}");
+                    DLogger.Log($"Unlocked: {unlock.Name}");
                 }
             }
         }
@@ -737,3 +767,4 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         Ability
     }
 }
+

@@ -39,7 +39,7 @@
 //    var type = AssetType.Texture;
 //    var handle = new AssetHandle<Texture2D>(key, instance);
 //    if (handle.Instance is Texture2D tex)
-//        Debug.WriteLine($"Loaded texture: {tex.Width}x{tex.Height}");
+//        DLogger.Log($"Loaded texture: {tex.Width}x{tex.Height}");
 //============================================================================
 */
 

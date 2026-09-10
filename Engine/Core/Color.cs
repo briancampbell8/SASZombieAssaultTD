@@ -1,418 +1,264 @@
-/*
-File:    Color.cs
-Purpose: Canonical engine color type used by rendering, UI, particles, and effects.
-         Unifies all color usage across the engine with comprehensive color operations.
-         
-Features: Complete color operations with type safety, performance optimization, and math integration.
-          Supports ARGB and RGB color spaces, blending, and conversion operations.
-          All engine code must use this unified Color type.
-
-Created: Engine Core Implementation
-Notes:   This replaces all fragmented color implementations across the engine.
-         Provides conversion helpers for System.Drawing.Color when needed.
-*/
-
+// =====================================================================================================
+//  FILE: Color.cs
+//  PATH: Engine/Core/Color.cs
+//  SUBSYSTEM: Core
 //
+// PURPOSE:     Specific Engine-only case bridge wrapper interacting natively
+//              with standard System.Drawing.Color types.
+//
+//  RESPONSIBILITIES:
+//      - Provide a strict, minimal lifecycle surface for program orchestration.
+//      - Enforce the structural sequencing contract: Initialize → Run Loop Execution → Shutdown.
+//      - Serve as the base contract for any future top-level engine-hosted program modules.
+//
+//  NON-RESPONSIBILITIES:
+//      - Implementing deep frame-level update calculation rules or rendering commands directly.
+//      - Managing active systems registration pools, engine assets, or game states.
+//      - Handling discrete hardware device allocation boundaries.
+//
+//  ARCHITECTURAL NOTES:
+//      - This interface replaces the legacy GameRoot partial lifecycle methods.
+//      - GameRootMain implements this interface and delegates to its subsystems:
+//          • GameRootInitialization
+//          • GameRootUpdateLoop
+//          • GameRootStateController
+//          • GameRootSystemRegistration
+//      - All engine-hosted programs MUST implement this interface without exception.
+// =====================================================================================================
+
 using System;
-using System.Drawing;
-using System.Security.AccessControl;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
-
-namespace SASZombieAssaultTD.Engine.Core
+namespace SASZombieAssaultTD.Engine
 {
-    ///<summary>
-    ///Canonical engine color type representing RGBA color with single-precision floating point components.
-    ///Used by rendering, UI, particles, and effects systems throughout the engine.
-    ///</summary>
-    public readonly struct Color : IEquatable<Color>
+    public struct Color : IEquatable<Color>
     {
-        /// Components
-        
-        ///<summary>Red component (0.0 - 1.0).</summary>
-        public readonly float R;
-        
-        ///<summary>Green component (0.0 - 1.0).</summary>
-        public readonly float G;
-        
-        ///<summary>Blue component (0.0 - 1.0).</summary>
-        public readonly float B;
-        
-        ///<summary>Alpha component (0.0 - 1.0, where 0.0 is transparent and 1.0 is opaque).</summary>
-        public readonly float A;
-        
-        ///
+        // Backing case value using standard System.Drawing structure
+        public System.Drawing.Color _backingColor;
 
-        /// Predefined Colors
-        
-        ///<summary>Completely transparent color (0, 0, 0, 0).</summary>
-        public static readonly Color Transparent = new(0f, 0f, 0f, 0f);
-        
-        ///<summary>Completely black color (0, 0, 0, 1).</summary>
-        public static readonly Color Black = new(0f, 0f, 0f, 1f);
-        
-        ///<summary>Completely white color (1, 1, 1, 1).</summary>
-        public static readonly Color White = new(1f, 1f, 1f, 1f);
-        
-        ///<summary>Pure red color (1, 0, 0, 1).</summary>
-        public static readonly Color Red = new(1f, 0f, 0f, 1f);
-        
-        ///<summary>Pure green color (0, 1, 0, 1).</summary>
-        public static readonly Color Green = new(0f, 1f, 0f, 1f);
-        
-        ///<summary>Pure blue color (0, 0, 1, 1).</summary>
-        public static readonly Color Blue = new(0f, 0f, 1f, 1f);
-        
-        ///<summary>Pure yellow color (1, 1, 0, 1).</summary>
-        public static readonly Color Yellow = new(1f, 1f, 0f, 1f);
-        
-        ///<summary>Pure magenta color (1, 0, 1, 1).</summary>
-        public static readonly Color Magenta = new(1f, 0f, 1f, 1f);
-        
-        ///<summary>Gray color (0.5, 0.5, 0.5, 1).</summary>
-        public static readonly Color Gray = new(0.5f, 0.5f, 0.5f, 1f);
-        
-        ///<summary>Light green color (0.5, 1.0, 0.5, 1).</summary>
-        public static readonly Color LightGreen = new(0.5f, 1.0f, 0.5f, 1f);
-        
-        ///<summary>Light coral color (1.0, 0.5, 0.5, 1).</summary>
-        public static readonly Color LightCoral = new(1.0f, 0.5f, 0.5f, 1f);
-        
-        ///<summary>Orange color (1.0, 0.5, 0.0, 1).</summary>
-        public static readonly Color Orange = new(1.0f, 0.5f, 0.0f, 1f);
-        
-        ///<summary>Dark gray color (0.25, 0.25, 0.25, 1).</summary>
-        public static readonly Color DarkGray = new(0.25f, 0.25f, 0.25f, 1f);
-        
-        ///<summary>Brown color (0.6, 0.3, 0.1, 1).</summary>
-        public static readonly Color Brown = new(0.6f, 0.3f, 0.1f, 1f);
-        
-        ///<summary>Purple color (0.5, 0.0, 1.0, 1).</summary>
-        public static readonly Color Purple = new(0.5f, 0.0f, 1.0f, 1f);
-        
-        ///<summary>Cyan color (0.0, 1.0, 1.0, 1).</summary>
-        public static readonly Color Cyan = new(0f, 1f, 1f, 1f);
-        
-        ///<summary>Light gray color (0.827, 0.827, 0.827, 1).</summary>
-        public static readonly Color LightGray = new(0.827f, 0.827f, 0.827f, 1f);
-        
-        ///<summary>Gold color (1.0, 0.843, 0.0, 1).</summary>
-        public static readonly Color Gold = new(1f, 0.843f, 0f, 1f);
-        
-        ///<summary>Light blue color (0.678, 0.847, 0.902, 1).</summary>
-        public static readonly Color LightBlue = new(0.678f, 0.847f, 0.902f, 1f);
-        private static object TheType;
-        private static object TheMember;
+        // Optional packed tint value (reserved for future use)
+        private uint colorTint;
+
+        // Engine palette (internal for now; can be exposed via properties later)
+        internal static Color LightGray;
         internal static Color Lime;
+        internal static Color Cyan;
+        internal static Color Gray;
+        internal static Color White;
+        internal static Color Green;
+        internal static Color LightGreen;
+        internal static Color LightCoral;
+        internal static Color Red;
+        internal static Color Yellow;
+        internal static Color Purple;
+        internal static Color Blue;
+        internal static Color Brown;
+        internal static Color DarkGray;
+        internal static Color LightBlue;
+        internal static Color Gold;
+        internal static Color Magenta;
+        internal static Color Orange;
+        internal static Color Transparent;
+        internal static Color Black;
 
-        ///
-
-        /// Constructors
-
-        ///<summary>
-        ///Creates a new color with specified RGB components and full alpha (1.0).
-        ///</summary>
-        ///<param name="r">Red component (0.0 - 1.0).</param>
-        ///<param name="g">Green component (0.0 - 1.0).</param>
-        ///<param name="b">Blue component (0.0 - 1.0).</param>
-        public Color(float r, float g, float b) : this(r, g, b, 1f) { }
-        
-        ///<summary>
-        ///Creates a new color with specified RGBA components.
-        ///</summary>
-        ///<param name="r">Red component (0.0 - 1.0).</param>
-        ///<param name="g">Green component (0.0 - 1.0).</param>
-        ///<param name="b">Blue component (0.0 - 1.0).</param>
-        ///<param name="a">Alpha component (0.0 - 1.0).</param>
-        public Color(float r, float g, float b, float a)
+        static Color()
         {
-            R = System.Math.Clamp(r, 0f, 1f);
-            G = System.Math.Clamp(g, 0f, 1f);
-            B = System.Math.Clamp(b, 0f, 1f);
-            A = System.Math.Clamp(a, 0f, 1f);
-        }
-        
-        ///<summary>
-        ///Creates a new color from 32-bit ARGB integer value.
-        ///</summary>
-        ///<param name="argb">32-bit ARGB value (0xAARRGGBB format).</param>
-        public Color(uint argb)
-        {
-            A = ((argb >> 24) & 0xFF) / 255f;
-            R = ((argb >> 16) & 0xFF) / 255f;
-            G = ((argb >> 8) & 0xFF) / 255f;
-            B = (argb & 0xFF) / 255f;
-        }
-        
-        ///<summary>
-        ///Creates a new color from System.Drawing.Color for external API compatibility.
-        ///</summary>
-        ///<param name="color">System.Drawing.Color to convert.</param>
-        public Color(System.Drawing.Color color)
-        {
-            R = color.R / 255f;
-            G = color.G / 255f;
-            B = color.B / 255f;
-            A = color.A / 255f;
-        }
-        
-        ///<summary>
-        ///Copy constructor.
-        ///</summary>
-        ///<param name="other">Color to copy.</param>
-        public Color(Color other)
-        {
-            R = other.R;
-            G = other.G;
-            B = other.B;
-            A = other.A;
-        }
-        
-        ///
-
-        /// Properties
-        
-        ///<summary>
-        ///Gets the grayscale value of this color (luminance).
-        ///</summary>
-        public float Grayscale => 0.299f * R + 0.587f * G + 0.114f * B;
-        
-        ///<summary>
-        ///Gets the maximum component value.
-        ///</summary>
-        public float MaxComponent => System.Math.Max(System.Math.Max(R, G), B);
-        
-        ///<summary>
-        ///Gets the minimum component value.
-        ///</summary>
-        public float MinComponent => System.Math.Min(System.Math.Min(R, G), B);
-        
-        ///<summary>
-        ///Gets the color brightness (average of RGB components).
-        ///</summary>
-        public float Brightness => (R + G + B) / 3f;
-        
-        ///
-
-        /// Color Operations
-        
-        ///<summary>
-        ///Linearly interpolates between two colors.
-        ///</summary>
-        ///<param name="a">Start color.</param>
-        ///<param name="b">End color.</param>
-        ///<param name="t">Interpolation factor (0.0 = a, 1.0 = b).</param>
-        ///<returns>Interpolated color.</returns>
-        public static Color Lerp(Color a, Color b, float t)
-        {
-            t = System.Math.Clamp(t, 0f, 1f);
-            return new Color(
-                a.R + (b.R - a.R) * t,
-                a.G + (b.G - a.G) * t,
-                a.B + (b.B - a.B) * t,
-                a.A + (b.A - a.A) * t
-            );
-        }
-        
-        ///<summary>
-        ///Multiplies two colors component-wise (for lighting calculations).
-        ///</summary>
-        ///<param name="a">First color.</param>
-        ///<param name="b">Second color.</param>
-        ///<returns>Multiplied color.</returns>
-        public static Color Multiply(Color a, Color b)
-        {
-            return new Color(a.R * b.R, a.G * b.G, a.B * b.B, a.A * b.A);
-        }
-        
-        ///<summary>
-        ///Adds two colors component-wise with clamping.
-        ///</summary>
-        ///<param name="a">First color.</param>
-        ///<param name="b">Second color.</param>
-        ///<returns>Added color.</returns>
-        public static Color Add(Color a, Color b)
-        {
-            return new Color(
-                System.Math.Clamp(a.R + b.R, 0f, 1f),
-                System.Math.Clamp(a.G + b.G, 0f, 1f),
-                System.Math.Clamp(a.B + b.B, 0f, 1f),
-                System.Math.Clamp(a.A + b.A, 0f, 1f)
-            );
-        }
-        
-        ///<summary>
-        ///Creates a color with adjusted brightness.
-        ///</summary>
-        ///<param name="brightness">Brightness factor (1.0 = normal, >1.0 = brighter, <1.0 = darker).</param>
-        ///<returns>Brightness-adjusted color.</returns>
-        public Color WithBrightness(float brightness)
-        {
-            return new Color(R * brightness, G * brightness, B * brightness, A);
-        }
-        
-        ///<summary>
-        ///Creates a color with adjusted alpha.
-        ///</summary>
-        ///<param name="alpha">New alpha value (0.0 - 1.0).</param>
-        ///<returns>Alpha-adjusted color.</returns>
-        public Color WithAlpha(float alpha)
-        {
-            return new Color(R, G, B, alpha);
-        }
-        
-        ///<summary>
-        ///Converts this color to grayscale while preserving alpha.
-        ///</summary>
-        ///<returns>Grayscale version of this color.</returns>
-        public Color ToGrayscale()
-        {
-            return new Color(Grayscale, Grayscale, Grayscale, A);
-        }
-        
-        ///
-
-        /// Conversions
-        
-        ///<summary>
-        ///Converts this engine Color to System.Drawing.Color for external API compatibility.
-        ///</summary>
-        ///<returns>System.Drawing.Color equivalent.</returns>
-        public System.Drawing.Color ToSystemDrawingColor()
-        {
-            return System.Drawing.Color.FromArgb(
-                (int)(A * 255),
-                (int)(R * 255),
-                (int)(G * 255),
-                (int)(B * 255)
-            );
-        }
-        
-        ///<summary>
-        ///Converts this color to 32-bit ARGB integer value.
-        ///</summary>
-        ///<returns>32-bit ARGB value (0xAARRGGBB format).</returns>
-        public uint ToArgb()
-        {
-            return ((uint)(A * 255) << 24) |
-                   ((uint)(R * 255) << 16) |
-                   ((uint)(G * 255) << 8) |
-                   (uint)(B * 255);
-        }
-        
-        ///<summary>
-        ///Converts this color to HTML hex string format.
-        ///</summary>
-        ///<returns>Hex string in format "#RRGGBB" or "#AARRGGBB" if alpha is not 1.0.</returns>
-        public string ToHex()
-        {
-            if (System.Math.Abs(A - 1.0f) < 0.001f)
-            {
-                return $"#{(int)(R * 255):X2}{(int)(G * 255):X2}{(int)(B * 255):X2}";
-            }
-            else
-            {
-                return $"#{(int)(A * 255):X2}{(int)(R * 255):X2}{(int)(G * 255):X2}{(int)(B * 255):X2}";
-            }
-        }
-        
-        ///
-
-        /// Equality and Hashing
-        
-        ///<summary>
-        ///Determines if two colors are approximately equal within a small tolerance.
-        ///</summary>
-        ///<param name="other">Other color to compare.</param>
-        ///<param name="tolerance">Comparison tolerance (default: 0.001).</param>
-        ///<returns>True if colors are approximately equal.</returns>
-        public bool Equals(Color other, float tolerance = 0.001f)
-        {
-            return System.Math.Abs(R - other.R) < tolerance &&
-                   System.Math.Abs(G - other.G) < tolerance &&
-                   System.Math.Abs(B - other.B) < tolerance &&
-                   System.Math.Abs(A - other.A) < tolerance;
-        }
-        
-        public bool Equals(Color other) => Equals(other, 0.001f);
-        
-        public override bool Equals(object obj) => obj is Color other && Equals(other);
-        
-        public override int GetHashCode() => System.HashCode.Combine(R, G, B, A);
-        
-        ///
-
-        /// Operators
-        
-        public static bool operator ==(Color left, Color right) => left.Equals(right);
-        public static bool operator !=(Color left, Color right) => !left.Equals(right);
-        
-        public static Color operator *(Color color, float scalar) => color.WithBrightness(scalar);
-        public static Color operator *(float scalar, Color color) => color.WithBrightness(scalar);
-
-        public static implicit operator System.Drawing.Color(Color v)
-        {
-            NotImplementedGuard.Hit("NOT_IMPLEMENTED");
-
-            throw new NotImplementedException();
+            White = new Color(255, 255, 255);
+            Black = new Color(0, 0, 0);
+            Red = new Color(255, 0, 0);
+            Green = new Color(0, 255, 0);
+            Blue = new Color(0, 0, 255);
+            Yellow = new Color(255, 255, 0);
+            Purple = new Color(128, 0, 128);
+            Gold = new Color(255, 215, 0);
+            Orange = new Color(255, 165, 0);
+            LightGray = new Color(192, 192, 192);
+            Gray = new Color(128, 128, 128);
+            DarkGray = new Color(64, 64, 64);
+            Cyan = new Color(0, 255, 255);
+            LightBlue = new Color(173, 216, 230);
+            LightGreen = new Color(144, 238, 144);
+            LightCoral = new Color(240, 128, 128);
+            Lime = new Color(0, 255, 0);
+            Brown = new Color(165, 42, 42);
+            Transparent = new Color(0, 0, 0, 0);
+            Magenta = new Color(255, 0, 255);
         }
 
-        ///
+        public byte R => _backingColor.R;
+        public byte G => _backingColor.G;
+        public byte B => _backingColor.B;
+        public byte A => _backingColor.A;
 
-        /// Static Constructors
+        public Color(byte r, byte g, byte b, byte a = 255)
+        {
+            _backingColor = System.Drawing.Color.FromArgb(a, r, g, b);
+            colorTint = 0;
+        }
 
-        ///<summary>
-        ///Creates a Color from ARGB byte values.
-        ///</summary>
-        public static Color FromArgb(byte a, byte r, byte g, byte b)
+        public Color(System.Drawing.Color drawingColor)
         {
-            return new Color(r / 255f, g / 255f, b / 255f, a / 255f);
+            _backingColor = drawingColor;
+            colorTint = 0;
         }
-        
-        ///<summary>
-        ///Creates a Color from ARGB int values.
-        ///</summary>
-        public static Color FromArgb(int a, int r, int g, int b)
+
+        // Reserved tint constructor: currently only stores tint value for future use.
+        public Color(uint colorTint, int g, byte b)
         {
-            return new Color((byte)r, (byte)g, (byte)b, (byte)a);
+            _backingColor = System.Drawing.Color.FromArgb(255, 0, 0, 0);
+            this.colorTint = colorTint;
         }
-        
-        ///<summary>
-        ///Creates a Color from 32-bit uint value.
-        ///</summary>
-        public static Color FromUint(uint value)
+
+        // Reserved tint constructor: currently initializes from tint tuple as opaque color.
+        public Color(byte r, (float R, float G, float B, float A) tint)
         {
-            byte a = (byte)((value >> 24) & 0xFF);
-            byte r = (byte)((value >> 16) & 0xFF);
-            byte g = (byte)((value >> 8) & 0xFF);
-            byte b = (byte)(value & 0xFF);
+            byte rr = (byte)System.Math.Clamp((int)(tint.R * 255.0f), 0, 255);
+            byte gg = (byte)System.Math.Clamp((int)(tint.G * 255.0f), 0, 255);
+            byte bb = (byte)System.Math.Clamp((int)(tint.B * 255.0f), 0, 255);
+            byte aa = (byte)System.Math.Clamp((int)(tint.A * 255.0f), 0, 255);
+
+            _backingColor = System.Drawing.Color.FromArgb(aa, rr, gg, bb);
+            colorTint = 0;
+        }
+
+        // Implicit operators to let engine color drop cleanly into System.Drawing methods
+        public static implicit operator System.Drawing.Color(Color c) => c._backingColor;
+        public static implicit operator Color(System.Drawing.Color c) => new Color(c);
+
+        public bool Equals(Color other)
+        {
+            return R == other.R && G == other.G && B == other.B && A == other.A;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Color other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(R, G, B, A);
+        }
+
+        public static Color Lerp(Color start, Color end, float amount)
+        {
+            float clampedAmount = (float)System.Math.Max(0.0, System.Math.Min((double)amount, 1.0));
+
+            byte r = (byte)(start.R + (end.R - start.R) * clampedAmount);
+            byte g = (byte)(start.G + (end.G - start.G) * clampedAmount);
+            byte b = (byte)(start.B + (end.B - start.B) * clampedAmount);
+            byte a = (byte)(start.A + (end.A - start.A) * clampedAmount);
+
             return new Color(r, g, b, a);
         }
-        
-        ///
 
-        /// String Representation
-        
         public override string ToString()
         {
-            return $"Color(R: {R:F3}, G: {G:F3}, B: {B:F3}, A: {A:F3})";
+            return _backingColor.ToString();
         }
 
-        internal static Color FromArgb(int argb)
+        internal static Color FromUint(uint boundsColor)
+        {
+            // Interpret the uint as 0xAARRGGBB (alpha in highest byte)
+            byte a = (byte)((boundsColor >> 24) & 0xFFu);
+            byte r = (byte)((boundsColor >> 16) & 0xFFu);
+            byte g = (byte)((boundsColor >> 8) & 0xFFu);
+            byte b = (byte)(boundsColor & 0xFFu);
+
+            return new Color(r, g, b, a);
+        }
+
+        internal static Color? FromArgb(byte a, byte r, byte g, byte b)
+        {
+            // Treat fully transparent colors as null to allow callers to distinguish "no color".
+            if (a == 0)
+                return null;
+
+            return new Color(r, g, b, a);
+        }
+
+        internal static Color FromArgb(int v, int r, byte g, byte b)
+        {
+            byte a = (byte)System.Math.Clamp(v, 0, 255);
+            byte rr = (byte)System.Math.Clamp(r, 0, 255);
+
+            return new Color(rr, g, b, a);
+        }
+
+        internal static Color FromArgb(int v1, int v2, int v3, int v4)
+        {
+            static byte ClampToByte(int v) => (byte)System.Math.Max(0, System.Math.Min(255, v));
+
+            byte a = ClampToByte(v1);
+            byte r = ClampToByte(v2);
+            byte g = ClampToByte(v3);
+            byte b = ClampToByte(v4);
+
+            return new Color(r, g, b, a);
+        }
+
+        internal static Color FromArgb(byte v)
+        {
+            return new Color(v, v, v, 255);
+        }
+
+        internal static Color FromArgb(int v)
+        {
+            return new Color(System.Drawing.Color.FromArgb(v));
+        }
+
+        internal static Color FromArgb(int maxValue, int v, int r, int g1, int g2, int b)
+        {
+            if (maxValue <= 0)
+            {
+                maxValue = 255;
+            }
+
+            static int ClampToRange(int val, int min, int max)
+            {
+                if (val < min) return min;
+                if (val > max) return max;
+                return val;
+            }
+
+            int aInt = ClampToRange(v, 0, maxValue);
+            int rInt = ClampToRange(r, 0, maxValue);
+            int gInt = ClampToRange((g1 + g2) / 2, 0, maxValue);
+            int bInt = ClampToRange(b, 0, maxValue);
+
+            static byte ScaleToByte(int value, int max)
+            {
+                double scaled = value * 255.0 / max;
+                int rounded = (int)System.Math.Round(scaled);
+                if (rounded < 0) rounded = 0;
+                if (rounded > 255) rounded = 255;
+                return (byte)rounded;
+            }
+
+            byte a = ScaleToByte(aInt, maxValue);
+            byte rr = ScaleToByte(rInt, maxValue);
+            byte gg = ScaleToByte(gInt, maxValue);
+            byte bb = ScaleToByte(bInt, maxValue);
+
+            return new Color(rr, gg, bb, a);
+        }
+
+        internal static Color FromArgb(int v1, int v2, int v3)
+        {
+            if (v1 < 0) v1 = 0;
+            else if (v1 > 255) v1 = 255;
+
+            if (v2 < 0) v2 = 0;
+            else if (v2 > 255) v2 = 255;
+
+            if (v3 < 0) v3 = 0;
+            else if (v3 > 255) v3 = 255;
+
+            return new Color((byte)v1, (byte)v2, (byte)v3, 255);
+        }
+
+        internal static Color FromArgb(int v, Color textColor)
         {
             throw new NotImplementedException();
         }
-
-        internal static object FromName(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static Color FromArgb(object a, object r, object g, object b)
-        {
-            throw new NotImplementedException();
-        }
-
-        ///
     }
 }

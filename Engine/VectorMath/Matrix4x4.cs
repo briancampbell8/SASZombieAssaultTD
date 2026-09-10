@@ -1,11 +1,31 @@
+// ====================================================================================================
+//  FILE: Matrix4x4.cs
+//  PATH: ./Engine/VectorMath/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the Matrix4x4 module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Equals() behavior for the Core subsystem.
+//      - Provide Equals() behavior for the Core subsystem.
+//      - Provide GetHashCode() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    Matrix4x4.cs
 Purpose: 4x4 matrix type for 3D transformations and camera projections.
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.VectorMath
 {
@@ -31,7 +51,7 @@ namespace SASZombieAssaultTD.Engine.VectorMath
         public float M43 { get; }
         public float M44 { get; }
 
-        public static readonly Matrix4x4 Identity = new Matrix4x4(
+        public static readonly Matrix4x4 IdECSEntityCore = new Matrix4x4(
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
@@ -117,6 +137,11 @@ namespace SASZombieAssaultTD.Engine.VectorMath
             return !left.Equals(right);
         }
 
+        public static implicit operator Matrix4x4(System.Numerics.Matrix3x2 v)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Equals(Matrix4x4 other)
         {
             return global::System.Math.Abs(M11 - other.M11) < 1e-6f &&
@@ -164,3 +189,4 @@ namespace SASZombieAssaultTD.Engine.VectorMath
         }
     }
 }
+

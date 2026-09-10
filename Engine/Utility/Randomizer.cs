@@ -1,10 +1,32 @@
+// ====================================================================================================
+//  FILE: Randomizer.cs
+//  PATH: ./Engine/Utility/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the Randomizer module.
+//
+//  RESPONSIBILITIES:
+//      - Provide NextInt() behavior for the Core subsystem.
+//      - Provide NextFloat() behavior for the Core subsystem.
+//      - Provide NextBool() behavior for the Core subsystem.
+//      - Provide NextInt() behavior for the Core subsystem.
+//      - Provide NextFloat() behavior for the Core subsystem.
+//      - Provide NextBool() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    Randomizer.cs
 Purpose: NextInt, NextFloat; seeded constructor; NextBool.
 */
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Utility
 {
@@ -32,10 +54,7 @@ namespace SASZombieAssaultTD.Engine.Utility
     {
         private readonly Random _random;
 
-        public SeededRandomizer(int seed)
-        {
-            _random = new Random(seed);
-        }
+        public SeededRandomizer(int seed) => _random = new Random(seed);
 
         public int NextInt(int min, int max)
         {
@@ -53,6 +72,7 @@ namespace SASZombieAssaultTD.Engine.Utility
         }
     }
 }
+
 
 
 

@@ -1,3 +1,21 @@
+// ====================================================================================================
+//  FILE: PlayerStateData.cs
+//  PATH: ./Engine/Player/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the PlayerStateData module.
+//
+//  RESPONSIBILITIES:
+//      - Provide DeepClone() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        PlayerStateData.cs
 //File Path:   E:\SASZombieAssaultTD\Engine\Player
@@ -9,7 +27,7 @@
 //             Used exclusively for save/load, snapshot, and persistence.
 //============================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -88,3 +106,4 @@ namespace SASZombieAssaultTD.Engine.Snapshot
         }
     }
 }
+

@@ -1,3 +1,43 @@
+// ====================================================================================================
+//  FILE: Time.cs
+//  PATH: ./Engine/Animation/Core/Time/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the Time module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Update() behavior for the Core subsystem.
+//      - Provide FixedUpdate() behavior for the Core subsystem.
+//      - Provide Reset() behavior for the Core subsystem.
+//      - Provide Pause() behavior for the Core subsystem.
+//      - Provide Resume() behavior for the Core subsystem.
+//      - Provide SetTimeScale() behavior for the Core subsystem.
+//      - Provide GetFormattedTime() behavior for the Core subsystem.
+//      - Provide GetFormattedRealTime() behavior for the Core subsystem.
+//      - Provide GetInterpolationFactor() behavior for the Core subsystem.
+//      - Provide HasIntervalPassed() behavior for the Core subsystem.
+//      - Provide GetTimeUntilNextInterval() behavior for the Core subsystem.
+//      - Provide CreateTimer() behavior for the Core subsystem.
+//      - Provide CreateCooldown() behavior for the Core subsystem.
+//      - Provide CreatePeriodicTrigger() behavior for the Core subsystem.
+//      - Provide Start() behavior for the Core subsystem.
+//      - Provide Stop() behavior for the Core subsystem.
+//      - Provide Reset() behavior for the Core subsystem.
+//      - Provide TryUse() behavior for the Core subsystem.
+//      - Provide Use() behavior for the Core subsystem.
+//      - Provide Reset() behavior for the Core subsystem.
+//      - Provide ForceCooldown() behavior for the Core subsystem.
+//      - Provide ShouldTrigger() behavior for the Core subsystem.
+//      - Provide Reset() behavior for the Core subsystem.
+//      - Provide SetInterval() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    Time.cs
 Purpose: Provides delta time and timing utilities used by animation, movement, cooldowns, and ECS updates.
@@ -12,7 +52,7 @@ Notes:   This is the canonical time system for the entire engine.
          All time-related operations should use this unified Time system.
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -667,3 +707,4 @@ namespace SASZombieAssaultTD.Engine.Animation.Core.Time
         ///
     }
 }
+

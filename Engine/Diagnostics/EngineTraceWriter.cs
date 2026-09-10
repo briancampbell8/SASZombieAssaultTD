@@ -10,7 +10,7 @@
 //      MUST be written here without exception.
 // ====================================================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Reflection;
 

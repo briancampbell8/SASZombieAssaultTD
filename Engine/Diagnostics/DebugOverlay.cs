@@ -27,35 +27,34 @@
 //      - Acts as a visual consumer of diagnostics, not a producer.
 // ====================================================================================================
 
-
 using System;
-using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
 using SASZombieAssaultTD.Engine.VectorMath;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
-    ///<summary>
-    ///Modern debug overlay for showing FPS and diagnostic info.
-    ///</summary>
+    /// <summary>
+    /// Modern debug overlay for showing FPS and diagnostic info.
+    /// </summary>
     public sealed class DebugOverlay
     {
         private readonly FrameStats _stats;
-        private readonly IRenderContext _renderContext;
+        private readonly D3D11Adapter_Core _renderContext;
 
-        ///<summary>
-        ///Initializes a new instance of the <see cref="DebugOverlay"/> class.
-        ///</summary>
-        ///<param name="stats">The frame statistics to display.</param>
-        ///<param name="renderContext">The rendering context for drawing text.</param>
-        public DebugOverlay(FrameStats stats, IRenderContext renderContext)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DebugOverlay"/> class.
+        /// </summary>
+        /// <param name="stats">The frame statistics to display.</param>
+        /// <param name="renderContext">The rendering context for drawing text.</param>
+        public DebugOverlay(FrameStats stats, D3D11Adapter_Core renderContext)
         {
             _stats = stats ?? throw new ArgumentNullException(nameof(stats));
             _renderContext = renderContext ?? throw new ArgumentNullException(nameof(renderContext));
         }
 
-        ///<summary>
-        ///Renders the debug overlay with FPS, frame count, and memory usage.
-        ///</summary>
+        /// <summary>
+        /// Renders the debug overlay with FPS, frame count, and memory usage.
+        /// </summary>
         public void Render()
         {
             //Display FPS
@@ -69,17 +68,15 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             DrawText($"Memory: {memory} MB", 10, 50);
         }
 
-        ///<summary>
-        ///Draws text on the screen using the render context.
-        ///</summary>
-        ///<param name="text">The text to draw.</param>
-        ///<param name="x">The x-coordinate of the text.</param>
-        ///<param name="y">The y-coordinate of the text.</param>
+        /// <summary>
+        /// Draws text on the screen using the render context.
+        /// </summary>
+        /// <param name="text">The text to draw.</param>
+        /// <param name="x">The x-coordinate of the text.</param>
+        /// <param name="y">The y-coordinate of the text.</param>
         private void DrawText(string text, float x, float y)
         {
-            _renderContext.DrawText(text, new Vector3(x, y, 0), Color.White, 12.0f);
+            _renderContext.DrawText(text, new Vector2(x, y), 12.0f, Color.White);
         }
     }
 }
-
-

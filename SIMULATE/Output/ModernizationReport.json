@@ -1,0 +1,29 @@
+﻿{
+  "score": 80.00,
+  ȭiagnostics": [
+    {
+      "ruleId": "",
+      "severity": "0",
+      "message": "",
+      ȯilePath": "E:\\BDC\\Projects\\SASZombieAssaultTD\\Core\\UserManager.cs",
+      "lineNumber": 0
+    },    {
+      "ruleId": "",
+      "severity": "0",
+      "message": "",
+      ȯilePath": "E:\\BDC\\Projects\\SASZombieAssaultTD\\DataAccess\\Repository.cs",
+      "lineNumber": 0
+    },    {
+      "ruleId": "",
+      "severity": "0",
+      "message": "",
+      ȯilePath": "E:\\BDC\\Projects\\SASZombieAssaultTD\\UI\\AppSettings.json",
+      "lineNumber": 0
+    },    {
+      "ruleId": "",
+      "severity": "0",
+      "message": "",
+      ȯilePath": "E:\\BDC\\Projects\\SASZombieAssaultTD\\Core\\Models\\User.cs",
+      "lineNumber": 0
+    }  ]
+}

@@ -187,7 +187,7 @@ if (!result.IsValid)
 var result = AnimationEventValidator.ValidateEventTrack(eventTrack);
 foreach (var error in result.Errors)
 {
-    DebugLogger.Log("ERROR", error);
+    DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", error);
 }
 ```
 

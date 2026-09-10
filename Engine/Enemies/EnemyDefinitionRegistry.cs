@@ -1,6 +1,22 @@
-using System;
-using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Core;
+// ====================================================================================================
+//  FILE: EnemyDefinitionRegistry.cs
+//  PATH: ./Engine/Enemies/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the EnemyDefinitionRegistry module.
+//
+//  RESPONSIBILITIES:
+//      - Provide GetById() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Enemies
@@ -35,7 +51,8 @@ namespace SASZombieAssaultTD.Engine.Enemies
 
             foreach (var def in _defs.Values)
             {
-                DLogger.Log("Info", $"[EnemyDefinitionRegistry] Loaded: {def.Id} ({def.Name})");
+                DLogger.Log(LogSubsystems.Enemies,
+                    "Info", $"[EnemyDefinitionRegistry] Loaded: {def.Id} ({def.Name})");
             }
         }
 
@@ -84,5 +101,6 @@ namespace SASZombieAssaultTD.Engine.Enemies
         }
     }
 }
+
 
 

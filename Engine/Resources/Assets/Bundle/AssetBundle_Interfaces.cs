@@ -1,3 +1,26 @@
+// ====================================================================================================
+//  FILE: AssetBundle_Interfaces.cs
+//  PATH: ./Engine/Resources/Assets/Bundle/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetBundle_Interfaces module.
+//
+//  RESPONSIBILITIES:
+//      - Provide CreateBundle() behavior for the Core subsystem.
+//      - Provide CreateBundle() behavior for the Core subsystem.
+//      - Provide GetCreator() behavior for the Core subsystem.
+//      - Provide GetLoader() behavior for the Core subsystem.
+//      - Provide GetProcessor() behavior for the Core subsystem.
+//      - Provide GetValidator() behavior for the Core subsystem.
+//      - Provide GetMetadata() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //============================================================================
 //File:        AssetBundle_Interfaces.cs
@@ -41,8 +64,8 @@
 //============================================================================
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Threading;
 using System.Threading.Tasks;
 //
@@ -228,3 +251,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         public IAssetBundleMetadata GetMetadata() => _metadata;
     }
 }
+

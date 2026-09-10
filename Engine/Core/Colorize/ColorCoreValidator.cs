@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: ColorCoreValidator.cs
+//  PATH: ./Engine/Core/Colorize/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ColorCoreValidator module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ValidateColorCore() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File Path: Engine/Core/Colorize/ColorCoreValidator.cs
 //File: ColorCoreValidator.cs
@@ -27,14 +44,14 @@
 //    - This file is allowed because it performs *validation*, not definition
 //============================================================================
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 //
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-namespace SASZombieAssaultTD.Engine.Core.Colorize
+namespace SASZombieAssaultTD.Engine.CoreSize.Colorize
 {
     ///<summary>
     ///Utility program to validate ColorCore.cs structure and dependencies.
@@ -43,7 +60,7 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
     {
         public static void ValidateColorCore()
         {
-            System.Diagnostics.Debug.WriteLine("=== COLORCORE VALIDATION START ===");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "=== COLORCORE VALIDATION START ===");
 
             var errors = new List<string>();
             var warnings = new List<string>();
@@ -54,7 +71,7 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             try
             {
                 var crimson = Color.Crimson;
-                System.Diagnostics.Debug.WriteLine($"✅ Crimson field accessible: {crimson}");
+                DLogger.Log($"✅ Crimson field accessible: {crimson}");
             }
             catch (Exception ex)
             {
@@ -67,7 +84,7 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             try
             {
                 var testColor = Color.CreateUnchecked(0.5f, 0.7f, 0.3f, 0.9f);
-                System.Diagnostics.Debug.WriteLine(
+                DLogger.Log(
                     $"✅ CreateUnchecked works: R={testColor.R}, G={testColor.G}, B={testColor.B}, A={testColor.A}");
             }
             catch (Exception ex)
@@ -80,10 +97,10 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             //--------------------------------------------------------------------
             try
             {
-                var coreColor = new Core.Color(128, 64, 32, 255);
+                var coreColor = new Color(128, 64, 32, 255);
                 var engineColor = (Color)coreColor;
 
-                System.Diagnostics.Debug.WriteLine(
+                DLogger.Log(
                     $"✅ Implicit operator works: R={engineColor.R}, G={engineColor.G}, B={engineColor.B}, A={engineColor.A}");
             }
             catch (Exception ex)
@@ -97,7 +114,7 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             try
             {
                 var testColor = new Color(0.8f, 0.6f, 0.4f, 1.0f);
-                System.Diagnostics.Debug.WriteLine(
+                DLogger.Log(
                     $"✅ Property access works: RByte={testColor.RByte}, GByte={testColor.GByte}");
             }
             catch (Exception ex)
@@ -108,9 +125,9 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
             //--------------------------------------------------------------------
             //FINAL REPORT
             //--------------------------------------------------------------------
-            System.Diagnostics.Debug.WriteLine("=== COLORCORE VALIDATION COMPLETE ===");
-            System.Diagnostics.Debug.WriteLine($"Errors found: {errors.Count}");
-            System.Diagnostics.Debug.WriteLine($"Warnings found: {warnings.Count}");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "=== COLORCORE VALIDATION COMPLETE ===");
+            DLogger.Log($"Errors found: {errors.Count}");
+            DLogger.Log($"Warnings found: {warnings.Count}");
 
             if (errors.Count > 0)
             {
@@ -121,11 +138,12 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
 
             if (warnings.Count > 0)
             {
-                System.Diagnostics.Debug.WriteLine("Warnings:");
-                warnings.ForEach(w => System.Diagnostics.Debug.WriteLine($"  - {w}"));
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "Warnings:");
+                warnings.ForEach(w => DLogger.Log($"  - {w}"));
             }
 
-            System.Diagnostics.Debug.WriteLine("✅ ColorCore validation completed successfully!");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "✅ ColorCore validation completed successfully!");
         }
     }
 }
+

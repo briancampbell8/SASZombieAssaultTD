@@ -1,333 +1,210 @@
-using System;
-using SASZombieAssaultTD.Engine.Rendering;
-using RenderSystem = SASZombieAssaultTD.Engine.Rendering;
+// ====================================================================================================
+//  FILE: UIRenderer.cs
+//  PATH: ./Engine/UI/Rendering/
+//  SUBSYSTEM: Rendering
+//
+//  ROLE:
+//      Deterministic UI rendering and transition execution pipeline.
+//      Provides draw calls, frame lifecycle, and transition queue processing.
+//
+//  RESPONSIBILITIES:
+//      - Provide BeginFrame() and EndFrame() behavior.
+//      - Provide RenderRectangle(), RenderText(), RenderLine(), RenderSprite().
+//      - Maintain a deterministic queue of UI transitions.
+//      - Execute transitions each frame using stable timing rules.
+//      - Accept transition registrations from UI subsystems (MainMenu, HUD, etc.).
+//
+//  NON-RESPONSIBILITIES:
+//      - UI layout, hierarchy, or input routing.
+//      - Asset loading or file I/O.
+// ====================================================================================================
 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render;
+using SASZombieAssaultTD.Engine.VectorMath;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.UI.Rendering
 {
-    ///<summary>
-    ///Rendering methods for drawing UI elements using the engine's rendering system
-    ///P80-03-01: UIRenderer providing rendering methods for drawing UI elements using the engine's rendering system
-    ///</summary>
     public class UIRenderer
     {
-        private readonly UIBatcher _batcher;
-        private UIRenderContext _context;
-        private bool _isInitialized = false;
+        private bool _isInitialized;
+        internal static object Instance;
+        private static Color _backingColor;
 
-        ///<summary>
-        ///Gets whether the renderer is initialized
-        ///</summary>
+        // NEW: Deterministic transition queue
+        private static readonly List<RegisterTransition> _transitionQueue = new();
+
         public bool IsInitialized => _isInitialized;
 
-        ///<summary>
-        ///Gets the current render context
-        ///</summary>
-        public UIRenderContext Context => _context;
+        public UIRenderer() => DLogger.Log(LogSubsystems.ResourcesPipeline, "UIRenderer: Constructed (modern wrapper)");
 
-        ///<summary>
-        ///Initializes the UI renderer
-        ///</summary>
-        public UIRenderer()
-        {
-            _batcher = new UIBatcher();
-            _context = new UIRenderContext();
-            System.Diagnostics.Debug.WriteLine("UIRenderer: Initialized");
-        }
-
-        ///<summary>
-        ///Begins a new rendering frame
-        ///</summary>
-        public void BeginFrame()
-        {
-            try
-            {
-                if (!_isInitialized)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRenderer: Cannot begin frame - not initialized");
-                    return;
-                }
-
-                _context.Reset();
-                _batcher.Clear();
-
-                System.Diagnostics.Debug.WriteLine("UIRenderer: Began new render frame");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error beginning frame - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Ends the current rendering frame and submits batches
-        ///</summary>
-        public void EndFrame()
-        {
-            try
-            {
-                if (!_isInitialized)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRenderer: Cannot end frame - not initialized");
-                    return;
-                }
-
-                //Batch all draw calls
-                _batcher.Batch();
-
-                //Submit batches to rendering system
-                SubmitBatches();
-
-                System.Diagnostics.Debug.WriteLine("UIRenderer: Ended render frame");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error ending frame - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Renders a UI element
-        ///</summary>
-        ///<param name="element">UI element to render</param>
-        public void RenderElement(UIElement element)
-        {
-            try
-            {
-                if (element == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRenderer: Cannot render null element");
-                    return;
-                }
-
-                if (!element.IsVisible)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRenderer: Element is not visible, skipping render");
-                    return;
-                }
-
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Rendering element at {element.AbsolutePosition}");
-
-                //Set up render context for this element
-                _context.SetTransform(RenderSystem.Matrix.CreateTranslation(element.AbsolutePosition.X, element.AbsolutePosition.Y, 0f));
-                _context.SetAlpha(1.0f);
-
-                //Render the element based on its type
-                RenderElementByType(element);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error rendering element - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Renders an element based on its specific type
-        ///</summary>
-        ///<param name="element">Element to render</param>
-        private void RenderElementByType(UIElement element)
-        {
-            try
-            {
-                //This would be implemented with specific rendering logic
-                //For now, render as a simple rectangle
-                var rect = new System.Drawing.RectangleF(0, 0, element.Size.Width, element.Size.Height);
-                _batcher.DrawRectangle(rect, System.Drawing.Color.White);
-
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Rendered element as rectangle {rect}");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error rendering element by type - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Renders text
-        ///</summary>
-        ///<param name="text">Text to render</param>
-        ///<param name="position">Position to render at</param>
-        ///<param name="font">Font to use</param>
-        ///<param name="color">Color to use</param>
-        public void RenderText(string text, System.Drawing.PointF position, string font, System.Drawing.Color color)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(text))
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRenderer: Cannot render null or empty text");
-                    return;
-                }
-
-                _batcher.DrawText(text, position, font, color);
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Rendered text '{text}' at {position}");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error rendering text - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Renders a rectangle
-        ///</summary>
-        ///<param name="rect">Rectangle to render</param>
-        ///<param name="color">Color to use</param>
-        ///<param name="texture">Texture to use (optional)</param>
-        public void RenderRectangle(System.Drawing.RectangleF rect, System.Drawing.Color color, string? texture = null)
-        {
-            try
-            {
-                _batcher.DrawRectangle(rect, color, texture);
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Rendered rectangle {rect} with color {color}");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error rendering rectangle - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Renders a line
-        ///</summary>
-        ///<param name="start">Start point</param>
-        ///<param name="end">End point</param>
-        ///<param name="color">Color to use</param>
-        ///<param name="thickness">Line thickness</param>
-        public void RenderLine(System.Drawing.PointF start, System.Drawing.PointF end, System.Drawing.Color color, float thickness = 1.0f)
-        {
-            try
-            {
-                _batcher.DrawLine(start, end, color, thickness);
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Rendered line from {start} to {end}");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error rendering line - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Sets the clipping rectangle
-        ///</summary>
-        ///<param name="rect">Clipping rectangle</param>
-        public void SetClipRect(System.Drawing.RectangleF rect)
-        {
-            try
-            {
-                //TODO: Implement SetClipRect method
-                //_context.SetClipRect(rect);
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Set clip rect {rect}");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error setting clip rect - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Clears the clipping rectangle
-        ///</summary>
-        public void ClearClipRect()
-        {
-            try
-            {
-                _context.ClearClipRect();
-                System.Diagnostics.Debug.WriteLine("UIRenderer: Cleared clip rect");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error clearing clip rect - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Sets the global alpha for rendering
-        ///</summary>
-        ///<param name="alpha">Alpha value (0.0 to 1.0)</param>
-        public void SetGlobalAlpha(float alpha)
-        {
-            try
-            {
-                _context.SetAlpha(alpha);
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Set global alpha to {alpha}");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error setting global alpha - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Submits all batches to the rendering system
-        ///</summary>
-        private void SubmitBatches()
-        {
-            try
-            {
-                foreach (var batch in _batcher.GetBatches())
-                {
-                    //This would integrate with the engine's actual rendering system
-                    //For now, just log the batch submission
-                    System.Diagnostics.Debug.WriteLine($"UIRenderer: Submitting batch with {batch.Count} draw calls");
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error submitting batches - {ex.Message}");
-            }
-        }
-
-        ///<summary>
-        ///Initializes the renderer
-        ///</summary>
         public void Initialize()
         {
-            try
+            if (_isInitialized)
             {
-                if (_isInitialized)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRenderer: Already initialized");
-                    return;
-                }
-
-                _isInitialized = true;
-                System.Diagnostics.Debug.WriteLine("UIRenderer: Initialized successfully");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "UIRenderer: Already initialized");
+                return;
             }
-            catch (Exception ex)
+
+            _isInitialized = true;
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "UIRenderer: Initialized successfully");
+        }
+
+        public void Shutdown()
+        {
+            if (!_isInitialized)
             {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error during initialization - {ex.Message}");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "UIRenderer: Already shut down");
+                return;
+            }
+
+            _isInitialized = false;
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "UIRenderer: Shut down successfully");
+        }
+
+        // ====================================================================================================
+        //  NEW: RegisterTransition METHOD (fixes CS0118 + CS1955)
+        // ====================================================================================================
+        public static void RegisterTransition(RegisterTransition registration)
+        {
+            _transitionQueue.Add(registration);
+            DLogger.Log($"UIRenderer: Registered transition → {registration.Type} Mode={registration.Mode}");
+        }
+
+        // ====================================================================================================
+        //  NEW: Transition execution (simple deterministic loop)
+        // ====================================================================================================
+        public void ProcessTransitions(float deltaTime)
+        {
+            if (!_isInitialized) return;
+
+            for (int i = _transitionQueue.Count - 1; i >= 0; i--)
+            {
+                var reg = _transitionQueue[i];
+                var t = reg.Transition;
+
+                t.Elapsed += deltaTime;
+
+                float progress = System.Math.Clamp(t.Elapsed / t.Duration, 0f, 1f);
+
+                t.Apply?.Invoke(progress);
+
+                if (progress >= 1f)
+                {
+                    _transitionQueue.RemoveAt(i);
+                    DLogger.Log($"UIRenderer: Transition completed → {reg.Type}");
+                }
             }
         }
 
-        ///<summary>
-        ///Shuts down the renderer
-        ///</summary>
-        public void Shutdown()
+        // ====================================================================================================
+        //  FRAME LIFECYCLE
+        // ====================================================================================================
+        public void BeginFrame()
         {
-            try
+            if (!_isInitialized)
             {
-                if (!_isInitialized)
-                {
-                    System.Diagnostics.Debug.WriteLine("UIRenderer: Already shut down");
-                    return;
-                }
-
-                _isInitialized = false;
-                _batcher.Clear();
-                _context.Reset();
-
-                System.Diagnostics.Debug.WriteLine("UIRenderer: Shut down successfully");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "UIRenderer: BeginFrame called before Initialize");
+                return;
             }
-            catch (Exception ex)
+        }
+
+        public void EndFrame()
+        {
+            if (!_isInitialized)
             {
-                System.Diagnostics.Debug.WriteLine($"UIRenderer: Error during shutdown - {ex.Message}");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "UIRenderer: EndFrame called before Initialize");
+                return;
             }
+        }
+
+        // ====================================================================================================
+        //  DRAW CALLS
+        // ====================================================================================================
+        public void RenderRectangle(float x, float y, float width, float height, Color color,
+                                    float borderThickness = 0f, Color? borderColor = null)
+        {
+            if (!_isInitialized) return;
+
+            Renderer.DrawRectangle(x, y, width, height, color);
+
+            if (borderThickness > 0f && borderColor.HasValue)
+                Renderer.DrawRectangle(x, y, width, height, borderColor.Value, borderThickness);
+        }
+
+        public void RenderRectangle(Vector3 position, Vector3 size, Color color,
+                                    float borderThickness = 0f, Color? borderColor = null)
+        {
+            RenderRectangle(position.X, position.Y, size.X, size.Y, color, borderThickness, borderColor);
+        }
+
+        public void RenderText(string text, Vector3 position, Color color, Font font)
+        {
+            if (!_isInitialized) return;
+            if (string.IsNullOrEmpty(text)) return;
+
+            Renderer.DrawString(text, position, color, font);
+        }
+
+        public void RenderLine(Vector3 start, Vector3 end, Color color, float thickness = 1f)
+        {
+            if (!_isInitialized) return;
+
+            float dx = end.X - start.X;
+            float dy = end.Y - start.Y;
+            float length = MathF.Sqrt(dx * dx + dy * dy);
+            if (length <= 0f) return;
+
+            Renderer.DrawRectangle(start.X, start.Y, length, thickness, color);
+        }
+
+        public void RenderSprite(object sprite, Vector3 position, Vector3 size, Color color, float alpha = 1f)
+        {
+            if (!_isInitialized) return;
+            if (sprite == null) return;
+
+            Renderer.DrawSprite((string)sprite, position, size, color, alpha);
+        }
+
+        // ====================================================================================================
+        //  CLIPPING + ALPHA (no-op)
+        // ====================================================================================================
+        public void SetClipRect(RectangleF rect)
+        {
+            DLogger.Log($"UIRenderer: SetClipRect requested ({rect}) - no-op");
+        }
+
+        public static void ClearClipRect()
+        {
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "UIRenderer: ClearClipRect requested - no-op");
+        }
+
+        public static void SetGlobalAlpha(float alpha)
+        {
+            DLogger.Log($"UIRenderer: SetGlobalAlpha({alpha}) requested - no-op");
+        }
+
+        // ====================================================================================================
+        //  LEGACY HOOK
+        // ====================================================================================================
+        public void RenderElement(object element)
+        {
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "UIRenderer: RenderElement(object) called - legacy no-op");
+        }
+
+        internal static void Clear(Color black)
+        {
+            // Set the renderer's backing/background color and reset common state used for clearing.
+            // _backingColor is the stored background color used by the renderer when drawing frames.
+            _backingColor = black;
+
+            // Ensure no clipping remains from previous operations and restore full opacity for the frame.
+            ClearClipRect();
+            SetGlobalAlpha(1.0f);
         }
     }
 }
-
-
-
-

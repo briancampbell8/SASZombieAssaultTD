@@ -1,4 +1,21 @@
-﻿// -----------------------------------------------------------------------------
+// ====================================================================================================
+//  FILE: DiagnosticsTableLoader.cs
+//  PATH: ./Engine/Diagnostics/
+//  MODULE: Diagnostics
+//
+//  ROLE:
+//      Provide logging, profiling, or diagnostic instrumentation.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Diagnostics subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+// -----------------------------------------------------------------------------
 // File: DiagnosticsTableLoader.cs
 // Purpose: Ensures the diagnostics table file exists, loads it, and repairs it
 // -----------------------------------------------------------------------------
@@ -62,3 +79,4 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         }
     }
 }
+

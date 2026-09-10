@@ -1,5 +1,22 @@
-using System;
-using System.Collections.Generic;
+// ====================================================================================================
+//  FILE: ZombieSpawner.cs
+//  PATH: ./Engine/Enemies/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ZombieSpawner module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Update() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Drawing;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -33,10 +50,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
         ///Initializes a new instance of the <see cref="ZombieSpawner"/> class.
         ///</summary>
         ///<param name="spawnPoint">The initial spawn point for zombies.</param>
-        public ZombieSpawner(PointF spawnPoint)
-        {
-            SpawnPoint = spawnPoint;
-        }
+        public ZombieSpawner(PointF spawnPoint) => SpawnPoint = spawnPoint;
 
         ///<summary>
         ///Updates the spawner, spawning zombies at the specified interval.
@@ -68,10 +82,11 @@ namespace SASZombieAssaultTD.Engine.Enemies
         ///<param name="zombie">The spawned zombie.</param>
         private void LogSpawn(ZombieMovement zombie)
         {
-            System.Diagnostics.Debug.WriteLine($"[ZombieSpawner] Spawned zombie at {SpawnPoint} (total: {_spawned.Count})");
+            DLogger.Log($"[ZombieSpawner] Spawned zombie at {SpawnPoint} (total: {_spawned.Count})");
         }
     }
 }
+
 
 
 

@@ -1,3 +1,27 @@
+// ====================================================================================================
+//  FILE: RenderBackground.cs
+//  PATH: ./Engine/UI/Rendering/
+//  MODULE: Rendering
+//
+//  ROLE:
+//      Provide rendering logic, draw calls, batching, or GPU resource management.
+//
+//  RESPONSIBILITIES:
+//      - Provide RenderRectangle() behavior for the Rendering subsystem.
+//      - Provide RenderRoundedRectangle() behavior for the Rendering subsystem.
+//      - Provide RenderWithBorder() behavior for the Rendering subsystem.
+//      - Provide RenderGradient() behavior for the Rendering subsystem.
+//      - Provide RenderWithShadow() behavior for the Rendering subsystem.
+//      - Provide RenderCircle() behavior for the Rendering subsystem.
+//      - Provide RenderNineSlice() behavior for the Rendering subsystem.
+//      - Provide RenderTiled() behavior for the Rendering subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    RenderBackground.cs
 Purpose: Draws UI panel backgrounds, borders, and surfaces.
@@ -5,6 +29,7 @@ Purpose: Draws UI panel backgrounds, borders, and surfaces.
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.VectorMath;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.UI.Rendering
 //
 {
@@ -119,3 +144,4 @@ namespace SASZombieAssaultTD.Engine.UI.Rendering
         }
     }
 }
+

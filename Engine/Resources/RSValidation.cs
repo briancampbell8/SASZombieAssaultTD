@@ -1,3 +1,23 @@
+// ====================================================================================================
+//  FILE: RSValidation.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSValidation module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ToString() behavior for the Core subsystem.
+//      - Provide ValidateInstanceType() behavior for the Core subsystem.
+//      - Provide ValidateMetadata() behavior for the Core subsystem.
+//      - Provide ValidateExtension() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    AssetValidation.cs
 Author:  BDC
@@ -6,19 +26,18 @@ Purpose: Provides validation helpers for asset integrity and compatibility.
 Notes:   Stateless. Used by loaders, registries, and bundle systems.
 */
 
-using SASZombieAssaultTD.Engine.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using SASZombieAssaultTD.Engine.Extensions;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+
+// using SASZombieAssaultTD.Engine.Extensions; // Extensions Removed
 
 using SASZombieAssaultTD.Engine.Diagnostics;
+
 namespace SASZombieAssaultTD.Engine.Resources
 //
 {
-    ///<summary>
-    ///Asset key for identifying assets in the resource system.
-    ///</summary>
+    /// <summary>
+    /// Asset key for identifying assets in the resource system.
+    /// </summary>
     public class AssetKey
     {
         public string Name { get; set; }
@@ -38,28 +57,28 @@ namespace SASZombieAssaultTD.Engine.Resources
         }
     }
 
-    ///<summary>
-    ///Provides validation helpers for asset loading and metadata.
-    ///</summary>
+    /// <summary>
+    /// Provides validation helpers for asset loading and metadata.
+    /// </summary>
     public static class AssetValidation
     {
-        ///<summary>
-        ///Validates that the loaded instance matches the expected asset type.
-        ///</summary>
+        /// <summary>
+        /// Validates that the loaded instance matches the expected asset type.
+        /// </summary>
         public static bool ValidateInstanceType(AssetKey key, object instance)
         {
             try
             {
                 if (instance is null)
                 {
-                    DLogger.Log("Error", $"[Assets] Validation failed for '{key}': instance is null.");
+                    DLogger.Log(LogSubsystems.Resources, "Error", $"[Assets] Validation failed for '{key}': instance is null.");
                     return false;
                 }
 
                 bool isValid = instance != null;
                 if (!isValid)
                 {
-                    DLogger.Log("Error",
+                    DLogger.Log(LogSubsystems.Resources, "Error",
                     $"[Assets] Validation failed for '{key}': instance type mismatch.");
                 }
 
@@ -67,35 +86,35 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                DLogger.Log("Error", $"[Assets] Validation failed for '{key}': {ex.Message}");
+                DLogger.Log(LogSubsystems.Resources, "Error", $"[Assets] Validation failed for '{key}': {ex.Message}");
                 return false;
             }
         }
 
-        ///<summary>
-        ///Validates that metadata is consistent with the asset type.
-        ///</summary>
+        /// <summary>
+        /// Validates that metadata is consistent with the asset type.
+        /// </summary>
         public static bool ValidateMetadata(SASZombieAssaultTD.Engine.Resources.AssetMetadata metadata)
         {
             try
             {
                 if (metadata is null)
                 {
-                    DLogger.Log("Error", "[Assets] Validation failed: metadata is null.");
+                    DLogger.Log(LogSubsystems.Resources, "Error", "[Assets] Validation failed: metadata is null.");
                     return false;
                 }
 
                 //Key must be non-null and non-whitespace
                 if (string.IsNullOrWhiteSpace(metadata.Key))
                 {
-                    DLogger.Log("Error", "[Assets] Validation failed: metadata key is null or empty.");
+                    DLogger.Log(LogSubsystems.Resources, "Error", "[Assets] Validation failed: metadata key is null or empty.");
                     return false;
                 }
 
                 //Path must be non-null and non-whitespace
                 if (string.IsNullOrWhiteSpace(metadata.Path))
                 {
-                    DLogger.Log("Error",
+                    DLogger.Log(LogSubsystems.Resources, "Error",
                     $"[Assets] Validation failed for '{metadata.Key}': path is null or empty.");
                     return false;
                 }
@@ -103,7 +122,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 //Basic rule: metadata.Type must not be Unknown
                 if (metadata.Type == AssetType.Unknown)
                 {
-                    DLogger.Log("Error",
+                    DLogger.Log(LogSubsystems.Resources, "Error",
                     $"[Assets] Validation failed for '{metadata.Key}': asset type is Unknown.");
                     return false;
                 }
@@ -111,7 +130,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 //Type must be a defined enum value
                 if (!Enum.IsDefined(metadata.Type))
                 {
-                    DLogger.Log("Error",
+                    DLogger.Log(LogSubsystems.Resources, "Error",
                     $"[Assets] Validation failed for '{metadata.Key}': asset type '{(int)metadata.Type}' is not a defined AssetType.");
                     return false;
                 }
@@ -119,7 +138,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 //If a format is provided, it must be non-empty
                 if (metadata.Format != null && metadata.Format.Trim().Length == 0)
                 {
-                    DLogger.Log("Error",
+                    DLogger.Log(LogSubsystems.Resources, "Error",
                     $"[Assets] Validation failed for '{metadata.Key}': format is empty or whitespace.");
                     return false;
                 }
@@ -127,7 +146,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 //If a format is provided, it must be compatible with the asset type
                 if (metadata.Format != null && !ValidateExtension(metadata.Type, metadata.Format))
                 {
-                    DLogger.Log("Error",
+                    DLogger.Log(LogSubsystems.Resources, "Error",
                     $"[Assets] Validation failed for '{metadata.Key}': format '{metadata.Format}' is not supported for asset type '{metadata.Type}'.");
                     return false;
                 }
@@ -135,7 +154,7 @@ namespace SASZombieAssaultTD.Engine.Resources
                 //SizeBytes must be non-negative
                 if (metadata.SizeBytes < 0)
                 {
-                    DLogger.Log("Error",
+                    DLogger.Log(LogSubsystems.Resources, "Error",
                     $" [Assets] Validation failed for '{metadata.Key}': size is negative ({metadata.SizeBytes} bytes).");
                     return false;
                 }
@@ -144,15 +163,15 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                DLogger.Log("Error",
+                DLogger.Log(LogSubsystems.Resources, "Error",
                 $"[Assets] Validation failed for '{metadata?.Key ?? "unknown"}': {ex.Message}");
                 return false;
             }
         }
 
-        ///<summary>
-        ///Validates that a file extension matches the expected asset type.
-        ///</summary>
+        /// <summary>
+        /// Validates that a file extension matches the expected asset type.
+        /// </summary>
         public static bool ValidateExtension(AssetType type, string? extension)
         {
             try
@@ -177,12 +196,10 @@ namespace SASZombieAssaultTD.Engine.Resources
             }
             catch (Exception ex)
             {
-                DLogger.Log("Error",
+                DLogger.Log(LogSubsystems.Resources, "Error",
                 $"[Assets] Extension validation failed for type '{type}', extension '{extension}': {ex.Message}");
                 return false;
             }
         }
     }
 }
-
-

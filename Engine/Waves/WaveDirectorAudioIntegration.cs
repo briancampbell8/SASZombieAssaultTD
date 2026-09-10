@@ -17,13 +17,11 @@
 //  - Lightweight static helper intended to be initialized at game startup.
 // ====================================================================================================
 
-using SASZombieAssaultTD.Engine.Audio;
+using SASZombieAssaultTD.Engine.ECS;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Enemies;
-using SASZombieAssaultTD.Engine.VectorMath;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
-
-namespace SASZombieAssaultTD.Engine.Waves
+namespace SASZombieAssaultTD.Engine.Waves.WaveManagement
 {
     ///<summary>
     ///Audio integration for WaveDirector.
@@ -51,7 +49,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             director.OnGameComplete += OnGameComplete;
 
             _isInitialized = true;
-            System.Diagnostics.Debug.WriteLine("WaveDirectorAudioIntegration: Initialized");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "WaveDirectorAudioIntegration: Initialized");
         }
 
         ///<summary>
@@ -71,7 +69,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             director.OnGameComplete -= OnGameComplete;
 
             _isInitialized = false;
-            System.Diagnostics.Debug.WriteLine("WaveDirectorAudioIntegration: Shutdown");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "WaveDirectorAudioIntegration: Shutdown");
         }
 
         private static void OnWaveStarted(int waveNumber)
@@ -79,14 +77,14 @@ namespace SASZombieAssaultTD.Engine.Waves
             WaveAudioIntegration.PlayWaveStart();
             WaveAudioIntegration.PlayWaveAnnouncement(waveNumber);
             WaveAudioIntegration.PlayWaveMusic();
-            System.Diagnostics.Debug.WriteLine($"WaveDirectorAudioIntegration: Wave {waveNumber} started");
+            DLogger.Log($"WaveDirectorAudioIntegration: Wave {waveNumber} started");
         }
 
         private static void OnWaveCompleted(int waveNumber)
         {
             WaveAudioIntegration.PlayWaveComplete();
             WaveAudioIntegration.StopWaveMusic();
-            System.Diagnostics.Debug.WriteLine($"WaveDirectorAudioIntegration: Wave {waveNumber} completed");
+            DLogger.Log($"WaveDirectorAudioIntegration: Wave {waveNumber} completed");
         }
 
         private static void OnEnemySpawned(Enemy enemy)
@@ -100,7 +98,7 @@ namespace SASZombieAssaultTD.Engine.Waves
             {
                 ModernPlaySound.Play("success_level_up", 1.2f);
                 //TODO: Enemy.ChampionLevel doesn't exist - need to add this property or use different approach
-                System.Diagnostics.Debug.WriteLine($"WaveDirectorAudioIntegration: Champion enemy spawned");
+                DLogger.Log($"WaveDirectorAudioIntegration: Champion enemy spawned");
             }
         }
 
@@ -108,14 +106,14 @@ namespace SASZombieAssaultTD.Engine.Waves
         {
             WaveAudioIntegration.StopWaveMusic();
             ModernPlaySound.Play("success_game_complete", 1.0f);
-            System.Diagnostics.Debug.WriteLine("WaveDirectorAudioIntegration: All waves completed");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "WaveDirectorAudioIntegration: All waves completed");
         }
 
         private static void OnGameComplete()
         {
             WaveAudioIntegration.StopWaveMusic();
             ModernPlaySound.Play("success_game_complete", 1.0f);
-            System.Diagnostics.Debug.WriteLine("WaveDirectorAudioIntegration: Game complete");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "WaveDirectorAudioIntegration: Game complete");
         }
     }
 }

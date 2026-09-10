@@ -1,3 +1,22 @@
+// ====================================================================================================
+//  FILE: RSUtils.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSUtils module.
+//
+//  RESPONSIBILITIES:
+//      - Provide NormalizePath() behavior for the Core subsystem.
+//      - Provide TryReadFile() behavior for the Core subsystem.
+//      - Provide GetExtension() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    AssetUtils.cs
 Author:  BDC
@@ -6,10 +25,10 @@ Purpose: Provides helper utilities for asset operations.
 Notes:   Stateless. Used by loaders, validation, and registries.
 */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Assets
 {
@@ -64,5 +83,6 @@ namespace SASZombieAssaultTD.Engine.Assets
         }
     }
 }
+
 
 

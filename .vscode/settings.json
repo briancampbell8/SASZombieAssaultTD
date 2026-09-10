@@ -1,0 +1,27 @@
+{
+    "commentHeaderGenerator.languageMapping": {
+        "javascript": "/",
+        "typescript": "/",
+        "python": "#",
+        "json": "/",
+        "ruby": "#",
+        "bash": "#",
+        "shellscript": "#",
+        "php": [
+            "/",
+            "#"
+        ],
+        "java": "/",
+        "c": "/",
+        "cpp": "/",
+        "csharp": "/",
+        "go": "/",
+        "rust": "/",
+        "sql": "-",
+        "mysql": "-",
+        "plsql": "-",
+        "tsql": "-",
+        "pgsql": "-",
+        "sqlite": "-"
+    }
+}

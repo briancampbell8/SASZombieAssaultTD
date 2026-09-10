@@ -1,8 +1,33 @@
-﻿using System;
+// ====================================================================================================
+//  FILE: ObjectPool.cs
+//  PATH: ./Engine/Memory/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ObjectPool module.
+//
+//  RESPONSIBILITIES:
+//      - Provide RentAsync() behavior for the Core subsystem.
+//      - Provide Rent() behavior for the Core subsystem.
+//      - Provide ReturnAsync() behavior for the Core subsystem.
+//      - Provide Return() behavior for the Core subsystem.
+//      - Provide Clear() behavior for the Core subsystem.
+//      - Provide PreWarm() behavior for the Core subsystem.
+//      - Provide GetStatistics() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.CoreSize;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Memory
@@ -90,7 +115,7 @@ namespace SASZombieAssaultTD.Engine.Memory
             _createFunc = createFunc ?? (() => new T());
             _resetAction = resetAction;
             _disposeAction = disposeAction;
-            DLogger.Log(LogSubsystems.Memory,LogLevel.Info, $"ObjectPool<{typeof(T).Name}>: Initialized with max capacity {_maxCapacity}");
+            DLogger.Log(LogSubsystems.Memory, LogEnums.LogLevel.Info, $"ObjectPool<{typeof(T).Name}>: Initialized with max capacity {_maxCapacity}");
         }
 
         ///<summary>
@@ -122,7 +147,7 @@ namespace SASZombieAssaultTD.Engine.Memory
             _inUse[obj] = true;
             UpdatePeakUsage();
             ObjectRented?.Invoke(this, obj);
-           DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", $"ObjectPool<{typeof(T).Name}>: Rented object (available: {_available.Count}, in use: {_inUse.Count})");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Trace, "TRACE", $"ObjectPool<{typeof(T).Name}>: Rented object (available: {_available.Count}, in use: {_inUse.Count})");
 
             return obj;
         }
@@ -135,7 +160,7 @@ namespace SASZombieAssaultTD.Engine.Memory
         {
             if (obj == null)
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"ObjectPool<{typeof(T).Name}>: Cannot return null object");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", $"ObjectPool<{typeof(T).Name}>: Cannot return null object");
                 return;
             }
 
@@ -150,7 +175,7 @@ namespace SASZombieAssaultTD.Engine.Memory
         {
             if (!_inUse.TryRemove(obj, out _))
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"ObjectPool<{typeof(T).Name}>: Object not found in use set");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", $"ObjectPool<{typeof(T).Name}>: Object not found in use set");
                 return;
             }
 
@@ -166,7 +191,7 @@ namespace SASZombieAssaultTD.Engine.Memory
             }
 
             ObjectReturned?.Invoke(this, obj);
-           DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", $"ObjectPool<{typeof(T).Name}>: Returned object (available: {_available.Count}, in use: {_inUse.Count})");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Trace, "TRACE", $"ObjectPool<{typeof(T).Name}>: Returned object (available: {_available.Count}, in use: {_inUse.Count})");
         }
 
         ///<summary>
@@ -185,7 +210,7 @@ namespace SASZombieAssaultTD.Engine.Memory
             }
 
             _inUse.Clear();
-            DLogger.Log(LogSubsystems.Memory,LogLevel.Info, $"ObjectPool<{typeof(T).Name}>: Cleared pool");
+            DLogger.Log(LogSubsystems.Memory, LogEnums.LogLevel.Info, $"ObjectPool<{typeof(T).Name}>: Cleared pool");
         }
 
         ///<summary>
@@ -204,7 +229,7 @@ namespace SASZombieAssaultTD.Engine.Memory
                 ObjectCreated?.Invoke(this, obj);
             }
 
-            DLogger.Log(LogSubsystems.Memory,LogLevel.Info, $"ObjectPool<{typeof(T).Name}>: Pre-warmed with {count} objects");
+            DLogger.Log(LogSubsystems.Memory, LogEnums.LogLevel.Info, $"ObjectPool<{typeof(T).Name}>: Pre-warmed with {count} objects");
         }
 
         ///<summary>
@@ -269,6 +294,7 @@ namespace SASZombieAssaultTD.Engine.Memory
         }
     }
 }
+
 
 
 

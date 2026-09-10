@@ -1,3 +1,28 @@
+// ====================================================================================================
+//  FILE: ColorOperations.cs
+//  PATH: ./Engine/Core/Colorize/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ColorOperations module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Lerp() behavior for the Core subsystem.
+//      - Provide Multiply() behavior for the Core subsystem.
+//      - Provide Add() behavior for the Core subsystem.
+//      - Provide Subtract() behavior for the Core subsystem.
+//      - Provide WithBrightness() behavior for the Core subsystem.
+//      - Provide WithAlpha() behavior for the Core subsystem.
+//      - Provide ToGrayscale() behavior for the Core subsystem.
+//      - Provide Invert() behavior for the Core subsystem.
+//      - Provide Saturate() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //File:    ColorOperations.cs
 //Purpose: Hot-path color math operations with optimization and SIMD readiness.
 //         Provides aggressively inlined methods for tight rendering loops.
@@ -21,7 +46,7 @@ using System.Runtime.CompilerServices;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
-namespace SASZombieAssaultTD.Engine.Core.Colorize
+namespace SASZombieAssaultTD.Engine.CoreSize.Colorize
 {
     public readonly partial struct Color
     {
@@ -265,3 +290,4 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
         }
     }
 }
+

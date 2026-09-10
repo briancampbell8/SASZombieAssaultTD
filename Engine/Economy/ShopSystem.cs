@@ -1,13 +1,40 @@
-﻿/*
+// ====================================================================================================
+//  FILE: ShopSystem.cs
+//  PATH: ./Engine/Economy/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ShopSystem module.
+//
+//  RESPONSIBILITIES:
+//      - Provide GetFinalCost() behavior for the Core subsystem.
+//      - Provide AddShopItem() behavior for the Core subsystem.
+//      - Provide RemoveShopItem() behavior for the Core subsystem.
+//      - Provide GetShopItem() behavior for the Core subsystem.
+//      - Provide PurchaseItem() behavior for the Core subsystem.
+//      - Provide GetItemsByCategory() behavior for the Core subsystem.
+//      - Provide GetAvailableItems() behavior for the Core subsystem.
+//      - Provide SetGlobalDiscount() behavior for the Core subsystem.
+//      - Provide AddSpecialOffer() behavior for the Core subsystem.
+//      - Provide RemoveSpecialOffer() behavior for the Core subsystem.
+//      - Provide IsSpecialOffer() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+/*
 File:    ShopSystem.cs
 Purpose: Tower and upgrade purchasing system for SAS Zombie Assault TD.
 Features: Tower catalog, pricing, purchase validation, special offers.
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
-using SASZombieAssaultTD.Engine.Core;
+using SASZombieAssaultTD.Engine.CoreSize;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Economy
@@ -51,7 +78,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             _shopItems = new Dictionary<string, ShopItem>();
             _specialOffers = new List<string>();
             InitializeShopItems();
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, "ShopSystem: Initialized with shop catalog");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, "ShopSystem: Initialized with shop catalog");
         }
 
         ///<summary>
@@ -141,7 +168,7 @@ namespace SASZombieAssaultTD.Engine.Economy
                 Category = "Upgrades"
             });
 
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Initialized {_shopItems.Count} shop items");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"ShopSystem: Initialized {_shopItems.Count} shop items");
         }
 
         ///<summary>
@@ -151,13 +178,13 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             if (string.IsNullOrEmpty(item.Id))
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", "ShopSystem: Cannot add shop item without ID");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", "ShopSystem: Cannot add shop item without ID");
                 return;
             }
 
             _shopItems[item.Id] = item;
             OnShopUpdated?.Invoke();
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Added shop item {item.Name} ({item.Id})");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"ShopSystem: Added shop item {item.Name} ({item.Id})");
         }
 
         ///<summary>
@@ -168,11 +195,11 @@ namespace SASZombieAssaultTD.Engine.Economy
             if (_shopItems.Remove(itemId))
             {
                 OnShopUpdated?.Invoke();
-                DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Removed shop item {itemId}");
+                DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"ShopSystem: Removed shop item {itemId}");
                 return true;
             }
 
-            DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"ShopSystem: Shop item {itemId} not found");
+            DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", $"ShopSystem: Shop item {itemId} not found");
             return false;
         }
 
@@ -192,13 +219,13 @@ namespace SASZombieAssaultTD.Engine.Economy
             var item = GetShopItem(itemId);
             if (item == null)
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"ShopSystem: Shop item {itemId} not found");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", $"ShopSystem: Shop item {itemId} not found");
                 return false;
             }
 
             if (!item.IsAvailable)
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"ShopSystem: Shop item {itemId} is not available");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", $"ShopSystem: Shop item {itemId} is not available");
                 return false;
             }
 
@@ -216,7 +243,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             EconomyManager.Spend(finalCost);
 
             EconomyEvents.TriggerPurchaseCompleted(itemId, item.Name, finalCost, true);
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Purchased {item.Name} for {finalCost} cash");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"ShopSystem: Purchased {item.Name} for {finalCost} cash");
             return true;
         }
 
@@ -247,7 +274,7 @@ namespace SASZombieAssaultTD.Engine.Economy
         {
             _globalDiscount = System.Math.Max(0.1f, System.Math.Min(1.0f, discountMultiplier));
             OnShopUpdated?.Invoke();
-            DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Set global discount to {_globalDiscount:F2}");
+            DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"ShopSystem: Set global discount to {_globalDiscount:F2}");
         }
 
         ///<summary>
@@ -259,7 +286,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             {
                 _specialOffers.Add(itemId);
                 OnSpecialOffersChanged?.Invoke(new List<string>(_specialOffers));
-                DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Added special offer {itemId}");
+                DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"ShopSystem: Added special offer {itemId}");
             }
         }
 
@@ -271,7 +298,7 @@ namespace SASZombieAssaultTD.Engine.Economy
             if (_specialOffers.Remove(itemId))
             {
                 OnSpecialOffersChanged?.Invoke(new List<string>(_specialOffers));
-                DLogger.Log(LogSubsystems.Economy,LogLevel.Info, $"ShopSystem: Removed special offer {itemId}");
+                DLogger.Log(LogSubsystems.Economy, LogEnums.LogLevel.Info, $"ShopSystem: Removed special offer {itemId}");
             }
         }
 
@@ -284,3 +311,4 @@ namespace SASZombieAssaultTD.Engine.Economy
         }
     }
 }
+

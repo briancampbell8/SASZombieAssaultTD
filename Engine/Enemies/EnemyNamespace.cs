@@ -1,3 +1,21 @@
+// ====================================================================================================
+//  FILE: EnemyNamespace.cs
+//  PATH: ./Engine/Enemies/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the EnemyNamespace module.
+//
+//  RESPONSIBILITIES:
+//      - Provide CreateEnemy() behavior for the Core subsystem.
+//      - Provide InitializeNamespace() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    EnemyNamespace.cs
 Purpose: Namespace alias to resolve Enemy class visibility issues.
@@ -5,7 +23,7 @@ Features: Provides a centralized namespace reference for Enemy class.
 */
 
 using SASZombieAssaultTD.Engine.ECS;
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Numerics;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -23,9 +41,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
         ///<summary>
         ///Creates a new enemy instance.
         ///</summary>
-        public static Enemy CreateEnemy(Entity entity)
+        public static Enemy CreateEnemy(ECSEntityCore ECSEntityCore)
         {
-            return new Enemy(entity);
+            return new Enemy(ECSEntityCore);
         }
 
         ///<summary>
@@ -44,3 +62,4 @@ namespace SASZombieAssaultTD.Engine.Enemies
         }
     }
 }
+

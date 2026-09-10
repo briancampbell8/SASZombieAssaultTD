@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: AssetBundle_Types.cs
+//  PATH: ./Engine/Resources/Assets/Bundle/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetBundle_Types module.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetBundle_Types.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Bundle\AssetBundle_Types.cs
@@ -35,10 +52,8 @@
 
 
 using System;
-using System.Collections.Generic;
-//
+using System.Collections.Generic;   //
 
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Resources
 {
@@ -171,7 +186,8 @@ namespace SASZombieAssaultTD.Engine.Resources
 
         public AssetLoadException(string message) : base(message) { }
         public AssetLoadException(string message, Exception innerException) : base(message, innerException) { }
-        public AssetLoadException(string assetPath, string message) : base(message) { AssetPath = assetPath; }
-        public AssetLoadException(string assetPath, string message, Exception innerException) : base(message, innerException) { AssetPath = assetPath; }
+        public AssetLoadException(string assetPath, string message) : base(message) => AssetPath = assetPath;
+        public AssetLoadException(string assetPath, string message, Exception innerException) : base(message, innerException) => AssetPath = assetPath;
     }
 }
+

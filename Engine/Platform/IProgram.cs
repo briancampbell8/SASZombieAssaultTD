@@ -1,60 +1,79 @@
-/* ====================================================================================================
- *  FILE: IProgram.cs
- *  PATH: Engine/Platform/IProgram.cs
- *  SUBSYSTEM: Platform Abstraction Layer
- *  ROLE: Defines the deterministic lifecycle contract for any engine-hosted program.
- *
- *  RESPONSIBILITIES:
- *      - Provide a strict, minimal, engine-facing lifecycle interface.
- *      - Enforce a predictable startup → update → render → shutdown sequence.
- *      - Serve as the contract implemented by GameRoot (or any future program host).
- *
- *  NON-RESPONSIBILITIES:
- *      - Containing game logic.
- *      - Containing rendering logic.
- *      - Managing systems, assets, or state machines.
- *
- *  ARCHITECTURAL NOTES:
- *      - The engine owns the main loop and calls these methods deterministically.
- *      - GameRoot implements this interface and delegates to its partial files.
- *      - All engine-hosted programs MUST implement this interface without exception.
- * ==================================================================================================== */
+// =====================================================================================================
+//  FILE: IProgram.cs
+//  PATH: Engine/Platform/IProgram.cs
+//  SUBSYSTEM: Platform Abstraction Layer
+//
+//  ROLE:
+//      Defines the minimal deterministic lifecycle contract for any engine-hosted program. Implemented
+//      by GameRootMain to provide a clean, engine-facing boundary for initialization, execution, update,
+//      render dispatch, ticking, and shutdown.
+//
+//  RESPONSIBILITIES:
+//      - Provide a strict lifecycle surface: Initialize → Run → Update → Render → Shutdown.
+//      - Allow engine hosts (e.g., GameRootMain) to expose deterministic lifecycle entry points.
+//      - Serve as the base contract for any future top-level engine program modules.
+//      - Support both GPU-context rendering and generic object-based render forwarding.
+//
+//  NON-RESPONSIBILITIES:
+//      - Implementing update or render logic internally (delegated to subsystems).
+//      - Managing system registration, asset loading, or state-machine orchestration.
+//      - Handling GPU device creation, swap-chain management, or windowing.
+//
+//  ARCHITECTURAL NOTES:
+//      - This interface replaces legacy partial lifecycle methods.
+//      - GameRootMain implements this interface and delegates lifecycle operations to:
+//          • GameRootInitialization
+//          • GameRootUpdateLoop
+//          • GameRootStateController
+//          • GameRootSystemRegistration
+//      - All engine-hosted programs MUST implement this interface without exception.
+//      - Includes legacy compatibility signatures (Render(object), Tick(object,...)) for transitional
+//        subsystem support, though the GPU-only pipeline uses Render(D3D11Adapter_Core).
+// =====================================================================================================
 
-using System;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
 
 namespace SASZombieAssaultTD.Engine.Platform
 {
-    ///<summary>
-    ///Defines the minimal deterministic lifecycle contract for any engine-hosted program.
-    ///Implemented by <see cref="GameRoot"/> to provide a clean, engine-facing API.
-    ///</summary>
+    /// <summary>
+    /// Defines the minimal deterministic lifecycle contract for any engine-hosted program. Implemented by GameRootMain
+    /// to provide a clean engine-facing host boundary.
+    /// </summary>
     public interface IProgram
     {
-        ///<summary>
-        ///Called exactly once at engine startup.
-        ///Used to initialize all game-level systems and state.
-        ///</summary>
+        void Dispose();
+
+        /// <summary>
+        /// Called exactly once at engine startup. Used to initialize all engine-level systems and sub-delegate modules.
+        /// </summary>
         void Initialize();
 
-        ///<summary>
-        ///Called once per frame by the engine's host loop.
-        ///Used to advance game logic, systems, and state machines.
-        ///</summary>
-        ///<param name="deltaTime">Time elapsed since the previous frame.</param>
-        void Update(TimeSpan deltaTime);
+        void Render(object value);
 
-        ///<summary>
-        ///Called once per frame after <see cref="Update"/>.
-        ///Used to issue all rendering commands through the active render context.
-        ///</summary>
-        void Render();
+        void Render(D3D11Adapter_Core context);
 
-        ///<summary>
-        ///Called exactly once when the engine is shutting down.
-        ///Used to cleanly release resources and stop all systems.
-        ///</summary>
+        /// <summary>
+        /// Enters the authoritative execution context loop. Responsible for driving inner timing loops, clock updates,
+        /// and rendering boundaries continuously until a shutdown state is tripped.
+        /// </summary>
+        void Run();
+
+        /// <summary>
+        /// Called exactly once when the engine program receives a termination request. Cascades destruction signals
+        /// across running subcomponents.
+        /// </summary>
         void Shutdown();
+
+        void Tick(object gameTime, ElapsedGameTime elapsedGameTime);
+
+        void Update(float deltaTime);
+    }
+
+    public class ElapsedGameTime
+    {
+        public float TotalTime;
+        public float Time;
+        public float DeltaTime;
     }
 }

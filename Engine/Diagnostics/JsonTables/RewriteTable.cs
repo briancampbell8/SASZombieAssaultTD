@@ -1,28 +1,27 @@
-﻿/*====================================================================================================
-  FILE:        RewriteTable.cs
-  PATH:        Engine/Diagnostics/JsonTables/RewriteTable.cs
-  PURPOSE:     Loads and manages the JSON rewrite table used by DLogger for incremental modernization.
-  ROLE:
-      - Provides read/write access to rewrite table entries.
-      - Supports call-site lookup by file and line number.
-      - Supplies DLogger with old/new mode state for each legacy log call.
-      - Enables controlled, file-by-file modernization without modifying source code.
-
-  FEATURES:
-      - Loads RewriteTable.json from Diagnostics/JsonTables.
-      - Stores entries keyed by (file, line).
-      - Supports mode switching: "old" → "new".
-      - Provides safe, deterministic lookup for DLogger.
-      - Designed for incremental modernization starting with Scene.cs.
-
-  NOTES:
-      - RewriteTable.json is the authoritative source of truth for modernization.
-      - DLogger uses this table to decide whether to emit legacy or modernized log output.
-      - Table grows automatically as legacy calls are encountered.
-====================================================================================================*/
-
-using System;
-using System.Collections.Generic;
+//====================================================================================================
+// FILE:        RewriteTable.cs
+// PATH:        Engine/Diagnostics/JsonTables/RewriteTable.cs
+// PURPOSE:     Loads and manages the JSON rewrite table used by DLogger for incremental modernization.
+// ROLE:
+//      - Provides read/write access to rewrite table entries.
+//      - Supports call-site lookup by file and line number.
+//      - Supplies DLogger with old/new mode state for each legacy log call.
+//      - Enables controlled, file-by-file modernization without modifying source code.
+//
+//  FEATURES:
+//      - Loads RewriteTable.json from Diagnostics/JsonTables.
+//      - Stores entries keyed by (file, line).
+//      - Supports mode switching: "old" → "new".
+//      - Provides safe, deterministic lookup for DLogger.
+//      - Designed for incremental modernization starting with Scene.cs.
+//
+//  NOTES:
+//      - RewriteTable.json is the authoritative source of truth for modernization.
+//      - DLogger uses this table to decide whether to emit legacy or modernized log output.
+//      - Table grows automatically as legacy calls are encountered.
+//====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Text.Json;
 
@@ -73,10 +72,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics.JsonTables
         //==============================================================================================
         private readonly Dictionary<(string file, int line), Entry> _entries;
 
-        private RewriteTable(Dictionary<(string file, int line), Entry> entries)
-        {
-            _entries = entries;
-        }
+        private RewriteTable(Dictionary<(string file, int line), Entry> entries) => _entries = entries;
 
         //==============================================================================================
         //  LOAD TABLE

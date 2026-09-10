@@ -1,6 +1,34 @@
-﻿using System;
+// ====================================================================================================
+//  FILE: MemoryTracker.cs
+//  PATH: ./Engine/Memory/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the MemoryTracker module.
+//
+//  RESPONSIBILITIES:
+//      - Provide TrackAllocation() behavior for the Core subsystem.
+//      - Provide TrackDeallocation() behavior for the Core subsystem.
+//      - Provide TakeSnapshotAsync() behavior for the Core subsystem.
+//      - Provide ForceGCAsync() behavior for the Core subsystem.
+//      - Provide DetectMemoryLeaks() behavior for the Core subsystem.
+//      - Provide GetSnapshots() behavior for the Core subsystem.
+//      - Provide Reset() behavior for the Core subsystem.
+//      - Provide GetMemorySummary() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -100,7 +128,7 @@ namespace SASZombieAssaultTD.Engine.Memory
             _snapshots = new List<MemorySnapshot>();
             _maxSnapshots = 100;
 
-            DLogger.Log(LogSubsystems.Memory,LogLevel.Info, "MemoryTracker: Initialized");
+            DLogger.Log(LogSubsystems.Memory, LogEnums.LogLevel.Info, "MemoryTracker: Initialized");
         }
 
         ///<summary>
@@ -137,7 +165,7 @@ namespace SASZombieAssaultTD.Engine.Memory
 
                 UpdatePeakMemoryUsage();
 
-               DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", $"MemoryTracker: Tracked allocation {id} ({size} bytes, {type.Name})");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Trace, "TRACE", $"MemoryTracker: Tracked allocation {id} ({size} bytes, {type.Name})");
             }
         }
 
@@ -169,11 +197,11 @@ namespace SASZombieAssaultTD.Engine.Memory
                 }
 
 
-               DLogger.Log(LogSubsystems.Unknown, LogLevel.Trace, "TRACE", $"MemoryTracker: Tracked deallocation {id} ({allocation.Size} bytes)");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Trace, "TRACE", $"MemoryTracker: Tracked deallocation {id} ({allocation.Size} bytes)");
             }
             else
             {
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "WARNING", $"MemoryTracker: Deallocation tracked for unknown allocation {id}");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "WARNING", $"MemoryTracker: Deallocation tracked for unknown allocation {id}");
             }
         }
 
@@ -210,7 +238,7 @@ namespace SASZombieAssaultTD.Engine.Memory
                     }
 
                     SnapshotTaken?.Invoke(this, snapshot);
-                    DLogger.Log(LogSubsystems.Memory,LogLevel.Info, $"MemoryTracker: Took snapshot '{snapshot.Label}' (usage: {snapshot.CurrentUsage:N0} bytes)");
+                    DLogger.Log(LogSubsystems.Memory, LogEnums.LogLevel.Info, $"MemoryTracker: Took snapshot '{snapshot.Label}' (usage: {snapshot.CurrentUsage:N0} bytes)");
                 }
             });
         }
@@ -232,7 +260,7 @@ namespace SASZombieAssaultTD.Engine.Memory
                 stopwatch.Stop();
 
                 _lastGCTime = (float)stopwatch.Elapsed.TotalMilliseconds;
-                DLogger.Log(LogSubsystems.Memory,LogLevel.Info, $"MemoryTracker: Forced GC in {_lastGCTime:F2}ms");
+                DLogger.Log(LogSubsystems.Memory, LogEnums.LogLevel.Info, $"MemoryTracker: Forced GC in {_lastGCTime:F2}ms");
             });
         }
 
@@ -272,7 +300,7 @@ namespace SASZombieAssaultTD.Engine.Memory
                     }
                 }
 
-                DLogger.Log(LogSubsystems.Memory,LogLevel.Info, $"MemoryTracker: Detected {leaks.Count} potential memory leaks");
+                DLogger.Log(LogSubsystems.Memory, LogEnums.LogLevel.Info, $"MemoryTracker: Detected {leaks.Count} potential memory leaks");
                 return leaks;
             }
         }
@@ -318,7 +346,7 @@ namespace SASZombieAssaultTD.Engine.Memory
                 _freeCount = 0;
                 _lastGCTime = 0f;
 
-                DLogger.Log(LogSubsystems.Memory,LogLevel.Info, "MemoryTracker: Reset all tracking data");
+                DLogger.Log(LogSubsystems.Memory, LogEnums.LogLevel.Info, "MemoryTracker: Reset all tracking data");
             }
         }
 
@@ -429,6 +457,7 @@ namespace SASZombieAssaultTD.Engine.Memory
         }
     }
 }
+
 
 
 

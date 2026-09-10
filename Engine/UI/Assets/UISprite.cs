@@ -1,6 +1,26 @@
-using System;
+// ====================================================================================================
+//  FILE: UISprite.cs
+//  PATH: ./Engine/UI/Assets/
+//  MODULE: UI
+//
+//  ROLE:
+//      Provide UI layout, interaction logic, or HUD rendering.
+//
+//  RESPONSIBILITIES:
+//      - Provide MarkAsLoaded() behavior for the UI subsystem.
+//      - Provide MarkAsPreloaded() behavior for the UI subsystem.
+//      - Provide Unload() behavior for the UI subsystem.
+//      - Provide ToString() behavior for the UI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.UI.Assets
 {
@@ -50,10 +70,7 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
         ///<summary>
         ///Initializes a new UISprite
         ///</summary>
-        public UISprite()
-        {
-            System.Diagnostics.Debug.WriteLine("UISprite: Created new sprite");
-        }
+        public UISprite() => DLogger.Log(LogSubsystems.ResourcesPipeline, "UISprite: Created new sprite");
 
         ///<summary>
         ///Initializes a new UISprite with parameters
@@ -71,11 +88,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
                 _size = size;
                 _sourceRect = sourceRect;
 
-                System.Diagnostics.Debug.WriteLine($"UISprite: Created sprite '{name}' with size {size} from path '{path}'");
+                DLogger.Log($"UISprite: Created sprite '{name}' with size {size} from path '{path}'");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UISprite: Error creating sprite - {ex.Message}");
+                DLogger.Log($"UISprite: Error creating sprite - {ex.Message}");
             }
         }
 
@@ -87,11 +104,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             try
             {
                 _isLoaded = true;
-                System.Diagnostics.Debug.WriteLine($"UISprite: Marked sprite '{_name}' as loaded");
+                DLogger.Log($"UISprite: Marked sprite '{_name}' as loaded");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UISprite: Error marking sprite as loaded - {ex.Message}");
+                DLogger.Log($"UISprite: Error marking sprite as loaded - {ex.Message}");
             }
         }
 
@@ -103,11 +120,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             try
             {
                 _isPreloaded = true;
-                System.Diagnostics.Debug.WriteLine($"UISprite: Marked sprite '{_name}' as preloaded");
+                DLogger.Log($"UISprite: Marked sprite '{_name}' as preloaded");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UISprite: Error marking sprite as preloaded - {ex.Message}");
+                DLogger.Log($"UISprite: Error marking sprite as preloaded - {ex.Message}");
             }
         }
 
@@ -121,11 +138,11 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
                 _isLoaded = false;
                 _isPreloaded = false;
 
-                System.Diagnostics.Debug.WriteLine($"UISprite: Unloaded sprite '{_name}'");
+                DLogger.Log($"UISprite: Unloaded sprite '{_name}'");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UISprite: Error unloading sprite - {ex.Message}");
+                DLogger.Log($"UISprite: Error unloading sprite - {ex.Message}");
             }
         }
 
@@ -141,12 +158,13 @@ namespace SASZombieAssaultTD.Engine.UI.Assets
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UISprite: Error creating string representation - {ex.Message}");
+                DLogger.Log($"UISprite: Error creating string representation - {ex.Message}");
                 return "UISprite: Error";
             }
         }
     }
 }
+
 
 
 

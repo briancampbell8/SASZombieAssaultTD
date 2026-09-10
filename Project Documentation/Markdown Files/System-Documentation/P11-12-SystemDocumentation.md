@@ -258,7 +258,7 @@ var debugInfo = ECSDebugInspector.GetWorldDebugInfo(ecsWorld);
 // Validate world integrity
 var validation = ECSDebugInspector.ValidateWorld(ecsWorld);
 if (!validation.IsValid) {
-    DebugLogger.Log("ERROR", validation.GetFullReport());
+    DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", validation.GetFullReport());
 }
 
 // Performance analysis
@@ -269,7 +269,7 @@ var perfReport = ECSDebugInspector.GetPerformanceReport(ecsWorld);
 ```csharp
 // Run comprehensive tests
 var results = ECSTestSuite.RunAllTests();
-DebugLogger.Log("INFO", results.GetSummary());
+DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", results.GetSummary());
 ```
 
 ## Integration with Existing Systems

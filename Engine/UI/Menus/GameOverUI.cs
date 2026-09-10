@@ -1,3 +1,26 @@
+// ====================================================================================================
+//  FILE: GameOverUI.cs
+//  PATH: ./Engine/UI/Menus/
+//  MODULE: UI
+//
+//  ROLE:
+//      Provide UI layout, interaction logic, or HUD rendering.
+//
+//  RESPONSIBILITIES:
+//      - Provide Show() behavior for the UI subsystem.
+//      - Provide Hide() behavior for the UI subsystem.
+//      - Provide Update() behavior for the UI subsystem.
+//      - Provide Render() behavior for the UI subsystem.
+//      - Provide Initialize() behavior for the UI subsystem.
+//      - Provide ShowError() behavior for the UI subsystem.
+//      - Provide ShowHighScores() behavior for the UI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    GameOverUI.cs
 Folder:  Engine/UI/
@@ -6,10 +29,7 @@ Features: Display game over screen, statistics, and navigation options.
 */
 
 using System;
-using SASZombieAssaultTD.Engine.VectorMath;
-using SASZombieAssaultTD.Engine.Rendering;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
@@ -57,10 +77,7 @@ namespace SASZombieAssaultTD.Engine.UI
         ///<summary>
         ///Creates a new GameOverUI instance.
         ///</summary>
-        public GameOverUI()
-        {
-            IsVisible = false;
-        }
+        public GameOverUI() => IsVisible = false;
 
         ///
 
@@ -97,7 +114,7 @@ namespace SASZombieAssaultTD.Engine.UI
         ///Renders the game over UI.
         ///</summary>
         ///<param name="context">Render context.</param>
-        public void Render(IRenderContext context)
+        public void Render(D3D11Adapter_Core context)
         {
             if (!IsVisible) return;
 
@@ -135,3 +152,4 @@ namespace SASZombieAssaultTD.Engine.UI
         ///
     }
 }
+

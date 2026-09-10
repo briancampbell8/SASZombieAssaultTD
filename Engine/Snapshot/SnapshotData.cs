@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: SnapshotData.cs
+//  PATH: ./Engine/Snapshot/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the SnapshotData module.
+//
+//  RESPONSIBILITIES:
+//      - Provide DeepClone() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File: SnapshotData.cs
 //Path: E:\BDC\Projects\SASZombieAssaultTD\Engine\Snapshot\SnapshotData.cs
@@ -16,20 +33,16 @@
 //============================================================================
 
 //
-using SASZombieAssaultTD.Engine.Gameplay;
 //
-using SASZombieAssaultTD.Engine.Player;
 //
-using System;
-//
+using System;   //
 using System.Collections.Generic;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
 namespace SASZombieAssaultTD.Engine.Snapshot
 {
     public sealed class SnapshotData
     {
-        //Identity
+        //IdECSEntityCore
         public string Id { get; }
         public DateTime Timestamp { get; }
         public string GameVersion { get; }
@@ -140,4 +153,5 @@ namespace SASZombieAssaultTD.Engine.Snapshot
         public string CreationContext { get; set; } = "Manual";
     }
 }
+
 

@@ -22,14 +22,16 @@
 //      - Designed as a complete replacement for legacy AudioSystem
 // ====================================================================================================
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
 using SASZombieAssaultTD.Engine.Diagnostics;
+
 using SASZombieAssaultTD.Engine.Resources;
 using SASZombieAssaultTD.Engine.VectorMath;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-namespace SASZombieAssaultTD.Engine.Audio
+namespace SASZombieAssaultTD.Engine.ECS
 {
     public sealed class ModernAudioSubsystem : IDisposable
     {
@@ -52,10 +54,7 @@ namespace SASZombieAssaultTD.Engine.Audio
         // ---------------------------------------------------------------------------------------------
         // Construction
         // ---------------------------------------------------------------------------------------------
-        public ModernAudioSubsystem(ModernResourcePipeline resourcePipeline)
-        {
-            _resourcePipeline = resourcePipeline ?? throw new ArgumentNullException(nameof(resourcePipeline));
-        }
+        public ModernAudioSubsystem(ModernResourcePipeline resourcePipeline) => _resourcePipeline = resourcePipeline ?? throw new ArgumentNullException(nameof(resourcePipeline));
 
         // ---------------------------------------------------------------------------------------------
         // Initialization
@@ -75,7 +74,7 @@ namespace SASZombieAssaultTD.Engine.Audio
 
                 DLogger.Log(
                     LogSubsystems.Audio,
-                    LogLevel.Info,
+                    LogEnums.LogLevel.Info,
                     "Audio",
                     "ModernAudioSubsystem initialized successfully");
             }
@@ -83,7 +82,7 @@ namespace SASZombieAssaultTD.Engine.Audio
             {
                 DLogger.Log(
                     LogSubsystems.Audio,
-                    LogLevel.Error,
+                    LogEnums.LogLevel.Error,
                     "Audio",
                     $"Failed to initialize audio: {ex.Message}");
                 throw;
@@ -134,7 +133,7 @@ namespace SASZombieAssaultTD.Engine.Audio
             {
                 DLogger.Log(
                     LogSubsystems.Audio,
-                    LogLevel.Error,
+                    LogEnums.LogLevel.Error,
                     "Audio",
                     $"Failed to play sound '{soundName}': {ex.Message}");
             }
@@ -174,7 +173,7 @@ namespace SASZombieAssaultTD.Engine.Audio
 
                 DLogger.Log(
                     LogSubsystems.Audio,
-                    LogLevel.Info,
+                    LogEnums.LogLevel.Info,
                     "Audio",
                     $"Playing music: {musicName}");
             }
@@ -182,7 +181,7 @@ namespace SASZombieAssaultTD.Engine.Audio
             {
                 DLogger.Log(
                     LogSubsystems.Audio,
-                    LogLevel.Error,
+                    LogEnums.LogLevel.Error,
                     "Audio",
                     $"Failed to play music '{musicName}': {ex.Message}");
             }
@@ -259,27 +258,13 @@ namespace SASZombieAssaultTD.Engine.Audio
             {
                 DLogger.Log(
                     LogSubsystems.Audio,
-                    LogLevel.Error,
+                    LogEnums.LogLevel.Error,
                     "Audio",
                     $"Audio update failed: {ex.Message}");
             }
         }
 
-        // ---------------------------------------------------------------------------------------------
-        // Diagnostics
-        // ---------------------------------------------------------------------------------------------
-        public AudioStats GetStats()
-        {
-            return new AudioStats
-            {
-                ActiveSources = _activeSources.Count,
-                MaxConcurrentSounds = _maxConcurrentSounds,
-                LoadedSamples = _samples.Count,
-                MasterVolume = _masterVolume,
-                MusicVolume = _musicVolume,
-                SfxVolume = _sfxVolume
-            };
-        }
+
 
         // ---------------------------------------------------------------------------------------------
         // Internal Helpers
@@ -301,7 +286,7 @@ namespace SASZombieAssaultTD.Engine.Audio
 
                     DLogger.Log(
                         LogSubsystems.Audio,
-                        LogLevel.Info,
+                        LogEnums.LogLevel.Info,
                         "Audio",
                         $"Loaded audio sample: {audioName}");
                 }
@@ -312,7 +297,7 @@ namespace SASZombieAssaultTD.Engine.Audio
             {
                 DLogger.Log(
                     LogSubsystems.Audio,
-                    LogLevel.Error,
+                    LogEnums.LogLevel.Error,
                     "Audio",
                     $"Failed to load audio sample '{audioName}': {ex.Message}");
                 return null;
@@ -375,22 +360,9 @@ namespace SASZombieAssaultTD.Engine.Audio
 
             DLogger.Log(
                 LogSubsystems.Audio,
-                LogLevel.Info,
+                LogEnums.LogLevel.Info,
                 "Audio",
                 "ModernAudioSubsystem disposed");
         }
     }
-
-    public sealed class AudioStats
-    {
-        public int ActiveSources { get; set; }
-        public int MaxConcurrentSounds { get; set; }
-        public int LoadedSamples { get; set; }
-        public float MasterVolume { get; set; }
-        public float MusicVolume { get; set; }
-        public float SfxVolume { get; set; }
-    }
-
-    // AudioSample, AudioSource, and AudioMixer are defined in:
-    //   Engine/Audio/AudioSupportingClasses.cs
 }

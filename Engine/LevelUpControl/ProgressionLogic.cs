@@ -42,11 +42,9 @@
  *
  * ==================================================================================================== */
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
-using SASZombieAssaultTD.Engine.Gameplay;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.GameRoot.GamePlay;
 
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
@@ -102,7 +100,7 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
         //CALLS INTO: LevelProgression.InvokeAchievementUnlocked(), InvokeProgressionEvent()
         public static void HandleExperienceGained(LevelProgression progression, int level, int experience)
         {
-            foreach (var achievement in progression._achievements.Values)
+            foreach (var achievement in progression._achievements)
             {
                 if (achievement.IsUnlocked)
                     continue;

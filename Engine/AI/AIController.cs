@@ -15,7 +15,7 @@ Notes:   Duplicate AIContext and IAIBehavior definitions removed.
          All logic in this file is deterministic and context-driven.
 */
 
-using System.Collections.Generic;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 

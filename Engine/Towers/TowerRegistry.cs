@@ -1,14 +1,38 @@
+// ====================================================================================================
+//  FILE: TowerRegistry.cs
+//  PATH: ./Engine/Towers/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the TowerRegistry module.
+//
+//  RESPONSIBILITIES:
+//      - Provide GetTower() behavior for the Core subsystem.
+//      - Provide GetTower() behavior for the Core subsystem.
+//      - Provide AddTower() behavior for the Core subsystem.
+//      - Provide RemoveTower() behavior for the Core subsystem.
+//      - Provide ClearAllTowers() behavior for the Core subsystem.
+//      - Provide GetAllTowers() behavior for the Core subsystem.
+//      - Provide GetTowerCount() behavior for the Core subsystem.
+//      - Provide GetTotalTowerValue() behavior for the Core subsystem.
+//      - Provide GetTowersByType() behavior for the Core subsystem.
+//      - Provide GetTowerType() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    TowerRegistry.cs
 Purpose: Registry for managing all tower instances in the game.
 Features: Tower registration, retrieval, and management.
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using static SASZombieAssaultTD.Engine.Towers.TowerEnums;
 
 namespace SASZombieAssaultTD.Engine.Towers
 {
@@ -27,10 +51,7 @@ namespace SASZombieAssaultTD.Engine.Towers
         private readonly Dictionary<uint, Tower> _towers = new Dictionary<uint, Tower>();
         private readonly Dictionary<string, TowerType> _towerTypes = new Dictionary<string, TowerType>();
 
-        public TowerRegistry()
-        {
-            Instance = this;
-        }
+        public TowerRegistry() => Instance = this;
 
         public Tower GetTower(uint id)
         {
@@ -88,3 +109,4 @@ namespace SASZombieAssaultTD.Engine.Towers
         }
     }
 }
+

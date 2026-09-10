@@ -20,7 +20,7 @@
 
 #### **1. String Interpolation Syntax Error (Line 215)**
 ```csharp
-DebugLogger.Log("INFO", $"AnimationController: Stopped animation{(clipName != null ? $" '{clipName}'" : string.Empty)}");
+DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Stopped animation{(clipName != null ? $" '{clipName}'" : string.Empty)}");
 ```
 **Issue:** Missing closing parenthesis in interpolated string
 **Fix Required:** Add missing parenthesis: `"{clipName}'"` → `"'{clipName}'"`
@@ -208,9 +208,9 @@ if (!string.IsNullOrEmpty(currentState) &&
 1. **Fix String Interpolation Error:**
    ```csharp
    // Line 215 - FIX:
-   DebugLogger.Log("INFO", $"AnimationController: Stopped animation{(clipName != null ? $"'{clipName}'" : string.Empty)}");
+   DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Stopped animation{(clipName != null ? $"'{clipName}'" : string.Empty)}");
    // TO:
-   DebugLogger.Log("INFO", $"AnimationController: Stopped animation{(clipName != null ? $"'{clipName}'" : string.Empty)}");
+   DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Stopped animation{(clipName != null ? $"'{clipName}'" : string.Empty)}");
    ```
 
 2. **Add Missing Using Statement:**

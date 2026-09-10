@@ -1,7 +1,27 @@
+// ====================================================================================================
+//  FILE: EnemyBehaviorModifier.cs
+//  PATH: ./Engine/Enemies/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the EnemyBehaviorModifier module.
+//
+//  RESPONSIBILITIES:
+//      - Provide CreateChampion() behavior for the Core subsystem.
+//      - Provide CreateSpeed() behavior for the Core subsystem.
+//      - Provide CreateHealth() behavior for the Core subsystem.
+//      - Provide CreateArmor() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 using SASZombieAssaultTD.Engine.VectorMath;
-using System.Collections.Generic;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Enemies
 {
@@ -23,15 +43,9 @@ namespace SASZombieAssaultTD.Engine.Enemies
         public float Value { get; set; }
         public Dictionary<string, object> Parameters { get; set; }
 
-        public EnemyBehaviorModifier()
-        {
-            Name = "None";
-        }
+        public EnemyBehaviorModifier() => Name = "None";
 
-        public EnemyBehaviorModifier(string name)
-        {
-            Name = name;
-        }
+        public EnemyBehaviorModifier(string name) => Name = name;
 
         ///<summary>
         ///Creates a champion modifier.
@@ -83,3 +97,4 @@ namespace SASZombieAssaultTD.Engine.Enemies
         }
     }
 }
+

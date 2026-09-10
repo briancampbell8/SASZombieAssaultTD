@@ -20,10 +20,10 @@
 1. **Line 215:** Fixed string interpolation syntax error
    ```csharp
    // BEFORE (BROKEN):
-   DebugLogger.Log("INFO", $"AnimationController: Stopped animation{(clipName != null ? $" '{clipName}'" : string.Empty)}");
+   DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Stopped animation{(clipName != null ? $" '{clipName}'" : string.Empty)}");
    
    // AFTER (FIXED):
-   DebugLogger.Log("INFO",
+   DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO",
        $"AnimationController: Stopped animation{(clipName != null ? $"'{clipName}'" : string.Empty)}");
    ```
 

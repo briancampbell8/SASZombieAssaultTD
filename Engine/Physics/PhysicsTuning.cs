@@ -1,4 +1,23 @@
-using System;
+// ====================================================================================================
+//  FILE: PhysicsTuning.cs
+//  PATH: ./Engine/Physics/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the PhysicsTuning module.
+//
+//  RESPONSIBILITIES:
+//      - Provide UpdateTuning() behavior for the Core subsystem.
+//      - Provide GetMaxSlopeAngleRadians() behavior for the Core subsystem.
+//      - Provide IsSlopeWalkable() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -48,7 +67,7 @@ namespace SASZombieAssaultTD.Engine.Physics
             }
             catch (System.Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"PhysicsTuning: Error initializing - {ex.Message}");
+                DLogger.Log($"PhysicsTuning: Error initializing - {ex.Message}");
 
                 //Fallback to safe defaults
                 GravityStrength = 9.81f;
@@ -63,11 +82,11 @@ namespace SASZombieAssaultTD.Engine.Physics
         ///</summary>
         private static void LogTuningSummary()
         {
-            System.Diagnostics.Debug.WriteLine("PhysicsTuning: Initialized with configuration:");
-            System.Diagnostics.Debug.WriteLine($"  Gravity Strength: {GravityStrength}");
-            System.Diagnostics.Debug.WriteLine($"  Default Friction: {DefaultFriction}");
-            System.Diagnostics.Debug.WriteLine($"  Default Bounciness: {DefaultBounciness}");
-            System.Diagnostics.Debug.WriteLine($"  Max Slope Angle: {MaxSlopeAngleDegrees}°");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "PhysicsTuning: Initialized with configuration:");
+            DLogger.Log($"  Gravity Strength: {GravityStrength}");
+            DLogger.Log($"  Default Friction: {DefaultFriction}");
+            DLogger.Log($"  Default Bounciness: {DefaultBounciness}");
+            DLogger.Log($"  Max Slope Angle: {MaxSlopeAngleDegrees}°");
         }
 
         ///<summary>
@@ -86,12 +105,12 @@ namespace SASZombieAssaultTD.Engine.Physics
                 DefaultBounciness = System.Math.Clamp(defaultBounciness, 0f, 1f);
                 MaxSlopeAngleDegrees = System.Math.Clamp(maxSlopeAngleDegrees, 0f, 90f);
 
-                System.Diagnostics.Debug.WriteLine("PhysicsTuning: Updated configuration:");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "PhysicsTuning: Updated configuration:");
                 LogTuningSummary();
             }
             catch (System.Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"PhysicsTuning: Error updating tuning - {ex.Message}");
+                DLogger.Log($"PhysicsTuning: Error updating tuning - {ex.Message}");
             }
         }
 
@@ -115,6 +134,7 @@ namespace SASZombieAssaultTD.Engine.Physics
         }
     }
 }
+
 
 
 

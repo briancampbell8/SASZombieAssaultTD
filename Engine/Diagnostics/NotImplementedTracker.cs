@@ -1,30 +1,31 @@
-/*
-File:    NotImplementedTracker.cs
-Folder:  Engine/Diagnostics/
-Purpose: Global tracking + interception of ALL NotImplementedException calls.
-Author:  BDC + Copilot
-Date:    P11-Phase-Zero
-
-Role:
-    - Centralized NI tracking system
-    - Logs file, line, member, subsystem
-    - Integrates with DebugLogger + EngineDiagnostics
-    - Provides deterministic forensic visibility
-    - Replaces all "throw new NotImplementedException()" engine-wide
-
-Usage:
-    Replace:
-        throw new NotImplementedException();
-
-    With:
-        NI.Hit();
-
-    For return types:
-        return NI.Hit<T>();
-*/
+//================================================================================
+// File:    NotImplementedTracker.cs
+// Folder:  Engine/Diagnostics/
+// Purpose: Global tracking + interception of ALL NotImplementedException calls.
+// Author:  BDC + Copilot
+// Date:    P11-Phase-Zero
+//
+// Role:
+//     - Centralized NI tracking system
+//    - Logs file, line, member, subsystem
+//    - Integrates with DebugLogger + EngineDiagnostics
+//    - Provides deterministic forensic visibility
+//    - Replaces all "throw new NotImplementedException()" engine-wide
+//
+// Usage:
+//    Replace:
+//        throw new NotImplementedException();
+//
+//    With:
+//        NI.Hit();
+//
+//    For return types:
+//       return NI.Hit<T>();
+//=================================================================================
 
 using System;
 using System.Runtime.CompilerServices;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
@@ -44,7 +45,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             [CallerLineNumber] int line = 0)
         {
             // Log to engine diagnostics
-            DLogger.Log(
+            DLogger.Log(LogSubsystems.Diagnostics,
                 "NOT_IMPLEMENTED",
                 $"❌ NOT IMPLEMENTED → {file}:{line} → {member}"
             );
@@ -63,7 +64,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
             [CallerLineNumber] int line = 0)
         {
             // Log to engine diagnostics
-            DLogger.Log(
+            DLogger.Log(LogSubsystems.Diagnostics,
                 "NOT_IMPLEMENTED",
                 $"❌ NOT IMPLEMENTED → {file}:{line} → {member}"
             );

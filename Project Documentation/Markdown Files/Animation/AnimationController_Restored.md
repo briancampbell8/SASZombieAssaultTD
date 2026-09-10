@@ -263,7 +263,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             _crossfadeTime = 0.0f;
             _previousClip = null;
             
-            DebugLogger.Log("INFO", "AnimationController: Initialized with deterministic state management");
+            DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", "AnimationController: Initialized with deterministic state management");
         }
         
         #endregion
@@ -328,7 +328,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             }
             catch (Exception ex)
             {
-                DebugLogger.Log("ERROR", $"AnimationController: Error in Update: {ex.Message}");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationController: Error in Update: {ex.Message}");
             }
         }
         
@@ -344,7 +344,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             {
                 if (!_clips.ContainsKey(clipName))
                 {
-                    DebugLogger.Log("ERROR", $"AnimationController: Clip '{clipName}' not found");
+                    DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationController: Clip '{clipName}' not found");
                     return;
                 }
                 
@@ -367,7 +367,7 @@ namespace SASZombieAssaultTD.Engine.Animation
                 _isPaused = false;
                 _isLooping = loop;
                 
-                DebugLogger.Log("INFO", $"AnimationController: Playing clip '{clipName}' (loop: {loop})");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Playing clip '{clipName}' (loop: {loop})");
                 
                 if (previousClip != null && previousClip != clipName)
                 {
@@ -378,7 +378,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             }
             catch (Exception ex)
             {
-                DebugLogger.Log("ERROR", $"AnimationController: Error playing clip '{clipName}': {ex.Message}");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationController: Error playing clip '{clipName}': {ex.Message}");
             }
         }
         
@@ -399,7 +399,7 @@ namespace SASZombieAssaultTD.Engine.Animation
                 _crossfadeDuration = 0.0f;
                 _previousClip = null;
                 
-                DebugLogger.Log("INFO", $"AnimationController: Stopped animation{(clipName != null ? $" '{clipName}'" : "")}");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Stopped animation{(clipName != null ? $" '{clipName}'" : "")}");
                 
                 if (clipName != null)
                 {
@@ -408,7 +408,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             }
             catch (Exception ex)
             {
-                DebugLogger.Log("ERROR", $"AnimationController: Error in Stop: {ex.Message}");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationController: Error in Stop: {ex.Message}");
             }
         }
         
@@ -423,7 +423,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             }
             
             _isPaused = true;
-            DebugLogger.Log("INFO", $"AnimationController: Paused animation '{_currentClip?.Name}'");
+            DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Paused animation '{_currentClip?.Name}'");
         }
         
         /// <summary>
@@ -437,7 +437,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             }
             
             _isPaused = false;
-            DebugLogger.Log("INFO", $"AnimationController: Resumed animation '{_currentClip?.Name}'");
+            DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Resumed animation '{_currentClip?.Name}'");
         }
         
         /// <summary>
@@ -447,7 +447,7 @@ namespace SASZombieAssaultTD.Engine.Animation
         public void SetPlaybackSpeed(float speed)
         {
             _playbackSpeed = Math.Max(0.0f, speed);
-            DebugLogger.Log("INFO", $"AnimationController: Set playback speed to {_playbackSpeed}");
+            DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Set playback speed to {_playbackSpeed}");
         }
         
         /// <summary>
@@ -458,12 +458,12 @@ namespace SASZombieAssaultTD.Engine.Animation
         {
             if (clip == null)
             {
-                DebugLogger.Log("ERROR", "AnimationController: Cannot add null clip");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", "AnimationController: Cannot add null clip");
                 return;
             }
             
             _clips[clip.Name] = clip;
-            DebugLogger.Log("INFO", $"AnimationController: Added clip '{clip.Name}'");
+            DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Added clip '{clip.Name}'");
         }
         
         /// <summary>
@@ -474,7 +474,7 @@ namespace SASZombieAssaultTD.Engine.Animation
         {
             if (!_clips.ContainsKey(clipName))
             {
-                DebugLogger.Log("WARNING", $"AnimationController: Clip '{clipName}' not found for removal");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", $"AnimationController: Clip '{clipName}' not found for removal");
                 return;
             }
             
@@ -485,7 +485,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             }
             
             _clips.Remove(clipName);
-            DebugLogger.Log("INFO", $"AnimationController: Removed clip '{clipName}'");
+            DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Removed clip '{clipName}'");
         }
         
         /// <summary>
@@ -497,19 +497,19 @@ namespace SASZombieAssaultTD.Engine.Animation
         {
             if (string.IsNullOrEmpty(stateName))
             {
-                DebugLogger.Log("ERROR", "AnimationController: Cannot set blend tree for null or empty state name");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", "AnimationController: Cannot set blend tree for null or empty state name");
                 return;
             }
             
             if (blendTree == null)
             {
                 _stateToBlendTreeMap.Remove(stateName);
-                DebugLogger.Log("INFO", $"AnimationController: Removed blend tree for state '{stateName}'");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Removed blend tree for state '{stateName}'");
             }
             else
             {
                 _stateToBlendTreeMap[stateName] = blendTree;
-                DebugLogger.Log("INFO", $"AnimationController: Set blend tree for state '{stateName}'");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Set blend tree for state '{stateName}'");
             }
         }
         
@@ -522,13 +522,13 @@ namespace SASZombieAssaultTD.Engine.Animation
         {
             if (string.IsNullOrEmpty(parameterName))
             {
-                DebugLogger.Log("ERROR", "AnimationController: Cannot set parameter with null or empty name");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", "AnimationController: Cannot set parameter with null or empty name");
                 return;
             }
             
             _parameters[parameterName] = value;
             _currentBlendParameters.SetParameter(parameterName, value);
-            DebugLogger.Log("DEBUG", $"AnimationController: Set parameter '{parameterName}' to {value}");
+            DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"AnimationController: Set parameter '{parameterName}' to {value}");
         }
         
         /// <summary>
@@ -557,7 +557,7 @@ namespace SASZombieAssaultTD.Engine.Animation
                 var previousState = _stateMachine.CurrentStateId;
                 _stateMachine.ForceTransition(stateName);
                 
-                DebugLogger.Log("INFO", $"AnimationController: Forced transition from '{previousState}' to '{stateName}'");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Forced transition from '{previousState}' to '{stateName}'");
                 
                 if (previousState != stateName)
                 {
@@ -566,7 +566,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             }
             catch (Exception ex)
             {
-                DebugLogger.Log("ERROR", $"AnimationController: Error forcing transition to '{stateName}': {ex.Message}");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationController: Error forcing transition to '{stateName}': {ex.Message}");
             }
         }
         
@@ -587,7 +587,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             _crossfadeDuration = duration;
             _crossfadeTime = 0.0f;
             
-            DebugLogger.Log("INFO", $"AnimationController: Started crossfade to '{newClip.Name}' over {duration}s");
+            DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Started crossfade to '{newClip.Name}' over {duration}s");
         }
         
         /// <summary>
@@ -600,7 +600,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             _crossfadeTime = 0.0f;
             _crossfadeDuration = 0.0f;
             
-            DebugLogger.Log("INFO", $"AnimationController: Completed crossfade from '{previousClipName}' to '{_currentClip?.Name}'");
+            DebugLogger.Log(LogSubsystems.ResourcesPipeline, "INFO", $"AnimationController: Completed crossfade from '{previousClipName}' to '{_currentClip?.Name}'");
         }
         
         /// <summary>
@@ -624,7 +624,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             }
             catch (Exception ex)
             {
-                DebugLogger.Log("ERROR", $"AnimationController: Error processing animation events: {ex.Message}");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationController: Error processing animation events: {ex.Message}");
             }
         }
         
@@ -656,7 +656,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             }
             catch (Exception ex)
             {
-                DebugLogger.Log("ERROR", $"AnimationController: Error synchronizing state with animation: {ex.Message}");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "ERROR", $"AnimationController: Error synchronizing state with animation: {ex.Message}");
             }
         }
         
@@ -737,7 +737,7 @@ namespace SASZombieAssaultTD.Engine.Animation
             
             if (issues.Count > 0)
             {
-                DebugLogger.Log("WARNING", $"AnimationController validation issues: {string.Join(", ", issues)}");
+                DebugLogger.Log(LogSubsystems.ResourcesPipeline, "WARNING", $"AnimationController validation issues: {string.Join(", ", issues)}");
                 return false;
             }
             

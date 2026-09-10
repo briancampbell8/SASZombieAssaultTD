@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 //  FILE: DLoggerArg1.cs
 //  MODULE: Diagnostics Pattern Library
 //  PARTIAL: DLogger
@@ -32,7 +32,7 @@
 //  VERSION: 1.0 (Pattern Module)
 // ============================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {

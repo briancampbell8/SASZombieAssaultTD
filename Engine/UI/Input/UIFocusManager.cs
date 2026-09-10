@@ -1,85 +1,110 @@
-using System;
-using System.Collections.Generic;
+// ====================================================================================================
+//  FILE: UIFocusManager.cs
+//  PATH: ./Engine/UI/Input/
+//  MODULE: UI
+//
+//  ROLE:
+//      Provide UI layout, interaction logic, or HUD rendering.
+//
+//  RESPONSIBILITIES:
+//      - Provide RegisterFocusableElement() behavior for the UI subsystem.
+//      - Provide UnregisterFocusableElement() behavior for the UI subsystem.
+//      - Provide SetFocus() behavior for the UI subsystem.
+//      - Provide ClearFocus() behavior for the UI subsystem.
+//      - Provide FocusNext() behavior for the UI subsystem.
+//      - Provide FocusPrevious() behavior for the UI subsystem.
+//      - Provide Update() behavior for the UI subsystem.
+//      - Provide ToString() behavior for the UI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.UI.Elements;
 
 namespace SASZombieAssaultTD.Engine.UI.Input
 {
-    ///<summary>
-    ///Focus tracking and focus change logic for UI elements
-    ///P80-05-03: UIFocusManager providing focus tracking and focus change logic for UI elements
-    ///</summary>
+    /// <summary>
+    /// Focus tracking and focus change logic for UI elements P80-05-03: UIFocusManager providing focus tracking and
+    /// focus change logic for UI elements
+    /// </summary>
     public class UIFocusManager
     {
         private UIElement _focusedElement;
         private readonly List<UIElement> _focusableElements;
         private bool _focusChangeRequested = false;
 
-        ///<summary>
-        ///Gets the currently focused element
-        ///</summary>
+        /// <summary>
+        /// Gets the currently focused element
+        /// </summary>
         public UIElement FocusedElement => _focusedElement;
 
-        ///<summary>
-        ///Gets whether a focus change is requested
-        ///</summary>
+        /// <summary>
+        /// Gets whether a focus change is requested
+        /// </summary>
         public bool FocusChangeRequested => _focusChangeRequested;
 
-        ///<summary>
-        ///Initializes a new UIFocusManager
-        ///</summary>
+        /// <summary>
+        /// Initializes a new UIFocusManager
+        /// </summary>
         public UIFocusManager()
         {
             _focusableElements = new List<UIElement>();
-            System.Diagnostics.Debug.WriteLine("UIFocusManager: Initialized");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFocusManager: Initialized");
         }
 
-        ///<summary>
-        ///Adds a focusable element to the manager
-        ///</summary>
-        ///<param name="element">Element to add</param>
+        /// <summary>
+        /// Adds a focusable element to the manager
+        /// </summary>
+        /// <param name="element">Element to add</param>
         public void RegisterFocusableElement(UIElement element)
         {
             try
             {
                 if (element == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Cannot register null element");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFocusManager: Cannot register null element");
                     return;
                 }
 
                 if (_focusableElements.Contains(element))
                 {
-                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Element already registered");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFocusManager: Element already registered");
                     return;
                 }
 
                 _focusableElements.Add(element);
-                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Registered focusable element, total: {_focusableElements.Count}");
+                DLogger.Log($"UIFocusManager: Registered focusable element, total: {_focusableElements.Count}");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error registering element - {ex.Message}");
+                DLogger.Log($"UIFocusManager: Error registering element - {ex.Message}");
             }
         }
 
-        ///<summary>
-        ///Removes a focusable element from the manager
-        ///</summary>
-        ///<param name="element">Element to remove</param>
+        /// <summary>
+        /// Removes a focusable element from the manager
+        /// </summary>
+        /// <param name="element">Element to remove</param>
         public void UnregisterFocusableElement(UIElement element)
         {
             try
             {
                 if (element == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Cannot unregister null element");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFocusManager: Cannot unregister null element");
                     return;
                 }
 
                 if (_focusableElements.Remove(element))
                 {
-                    System.Diagnostics.Debug.WriteLine($"UIFocusManager: Unregistered focusable element, remaining: {_focusableElements.Count}");
+                    DLogger.Log($"UIFocusManager: Unregistered focusable element, remaining: {_focusableElements.Count}");
 
                     //Clear focus if this element was focused
                     if (_focusedElement == element)
@@ -89,81 +114,86 @@ namespace SASZombieAssaultTD.Engine.UI.Input
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Element not found in focusable elements");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFocusManager: Element not found in focusable elements");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error unregistering element - {ex.Message}");
+                DLogger.Log($"UIFocusManager: Error unregistering element - {ex.Message}");
             }
         }
 
-        ///<summary>
-        ///Sets focus to a specific element
-        ///</summary>
-        ///<param name="element">Element to focus</param>
+        /// <summary>
+        /// Sets focus to a specific element
+        /// </summary>
+        /// <param name="element">Element to focus</param>
         public void SetFocus(UIElement element)
         {
             try
             {
                 if (element == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Cannot focus null element");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFocusManager: Cannot focus null element");
                     return;
                 }
 
                 if (!_focusableElements.Contains(element))
                 {
-                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Cannot focus unregistered element");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFocusManager: Cannot focus unregistered element");
                     return;
                 }
 
                 //Call focus lost on currently focused element
                 if (_focusedElement != null && _focusedElement != element)
                 {
-                    _focusedElement.OnFocusLost();
+                    object value = _focusedElement.GetType().GetProperty(
+                        "OnFocusLost").GetValue(_focusedElement);
                 }
 
                 //Set new focused element
                 _focusedElement = element;
-                element.OnFocused();
+                element.OnFocus();
 
-                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Set focus to element at {element.AbsolutePosition}");
+                DLogger.Log($"UIFocusManager: Set focus to element at {element.AbsolutePosition}");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error setting focus - {ex.Message}");
+                DLogger.Log($"UIFocusManager: Error setting focus - {ex.Message}");
             }
         }
 
-        ///<summary>
-        ///Clears focus from the current element
-        ///</summary>
+        /// <summary>
+        /// Clears focus from the current element
+        /// </summary>
         public void ClearFocus()
         {
             try
             {
                 if (_focusedElement != null)
                 {
-                    _focusedElement.OnFocusLost();
+                    //Call focus lost on currently focused element
+                    object value =
+                        _focusedElement.GetType().GetProperty("OnFocusLost").GetValue(_focusedElement);
+
                     _focusedElement = null;
 
-                    System.Diagnostics.Debug.WriteLine("UIFocusManager: Cleared focus");
+
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFocusManager: Cleared focus");
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine("UIFocusManager: No element currently focused");
+                    DLogger.Log(LogSubsystems.ResourcesPipeline, "UIFocusManager: No element currently focused");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error clearing focus - {ex.Message}");
+                DLogger.Log($"UIFocusManager: Error clearing focus - {ex.Message}");
             }
         }
 
-        ///<summary>
-        ///Moves focus to the next element in the focus order
-        ///</summary>
+        /// <summary>
+        /// Moves focus to the next element in the focus order
+        /// </summary>
         public void FocusNext()
         {
             try
@@ -193,13 +223,13 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error focusing next element - {ex.Message}");
+                DLogger.Log($"UIFocusManager: Error focusing next element - {ex.Message}");
             }
         }
 
-        ///<summary>
-        ///Moves focus to the previous element in the focus order
-        ///</summary>
+        /// <summary>
+        /// Moves focus to the previous element in the focus order
+        /// </summary>
         public void FocusPrevious()
         {
             try
@@ -229,13 +259,13 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error focusing previous element - {ex.Message}");
+                DLogger.Log($"UIFocusManager: Error focusing previous element - {ex.Message}");
             }
         }
 
-        ///<summary>
-        ///Updates the focus manager
-        ///</summary>
+        /// <summary>
+        /// Updates the focus manager
+        /// </summary>
         public void Update()
         {
             try
@@ -245,23 +275,23 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error during update - {ex.Message}");
+                DLogger.Log($"UIFocusManager: Error during update - {ex.Message}");
             }
         }
 
-        ///<summary>
-        ///Updates focus animations (placeholder implementation)
-        ///</summary>
+        /// <summary>
+        /// Updates focus animations (placeholder implementation)
+        /// </summary>
         private void UpdateFocusAnimation()
         {
             //Override in derived classes for focus animations
             //Examples: focus ring, pulse effect, color transitions
         }
 
-        ///<summary>
-        ///Gets a string representation of the focus state
-        ///</summary>
-        ///<returns>String representation</returns>
+        /// <summary>
+        /// Gets a string representation of the focus state
+        /// </summary>
+        /// <returns>String representation</returns>
         public override string ToString()
         {
             try
@@ -277,13 +307,9 @@ namespace SASZombieAssaultTD.Engine.UI.Input
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"UIFocusManager: Error creating string representation - {ex.Message}");
+                DLogger.Log($"UIFocusManager: Error creating string representation - {ex.Message}");
                 return "UIFocusManager: Error";
             }
         }
     }
 }
-
-
-
-

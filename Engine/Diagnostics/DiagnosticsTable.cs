@@ -1,10 +1,27 @@
-﻿// -----------------------------------------------------------------------------
+// ====================================================================================================
+//  FILE: DiagnosticsTable.cs
+//  PATH: ./Engine/Diagnostics/
+//  MODULE: Diagnostics
+//
+//  ROLE:
+//      Provide logging, profiling, or diagnostic instrumentation.
+//
+//  RESPONSIBILITIES:
+//      - Provide core functionality for the Diagnostics subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+// -----------------------------------------------------------------------------
 // File: DiagnosticsTable.cs
 // Purpose: Data model for diagnostics table storage
 // -----------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
@@ -19,10 +36,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         /// </summary>
         public List<DiagnosticsEntry> Entries { get; set; }
 
-        public DiagnosticsTable()
-        {
-            Entries = new List<DiagnosticsEntry>();
-        }
+        public DiagnosticsTable() => Entries = new List<DiagnosticsEntry>();
     }
 
     /// <summary>
@@ -44,3 +58,4 @@ namespace SASZombieAssaultTD.Engine.Diagnostics
         }
     }
 }
+

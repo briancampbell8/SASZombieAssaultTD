@@ -1,15 +1,34 @@
-//File: Engine/Systems/EventRouter.cs
+// ====================================================================================================
+//  FILE: ECSRuntimeEvents.cs
+//  PATH: ./Engine/Systems/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ECSRuntimeEvents module.
+//
+//  RESPONSIBILITIES:
+//      - Provide RegisterEvent() behavior for the Core subsystem.
+//      - Provide TriggerEvent() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+//File: Engine/Systems/ECSRuntimeEvents.cs
 //Purpose: Provides an event routing system for managing and triggering events.
 //Features: Supports event registration and triggering with associated data.
 
 using System;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Collections.Generic;
-
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Systems
 {
-    public class EventRouter
+    public class ECSRuntimeEvents
     {
         private readonly Dictionary<string, Action<object>> _eventHandlers = new();
 
@@ -28,6 +47,21 @@ namespace SASZombieAssaultTD.Engine.Systems
                 handler(eventData);
             }
         }
+
+        internal void Subscribe<T>(Action<T> onKillAttributed)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Unsubscribe<T>(Action<T> onKillAttributed)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static implicit operator ECSRuntimeEvents(EventRouting v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public struct Vector3
@@ -42,5 +76,11 @@ namespace SASZombieAssaultTD.Engine.Systems
             Y = y;
             Z = z;
         }
+
+        public static implicit operator System.Numerics.Vector3(Vector3 v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
+

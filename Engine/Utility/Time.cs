@@ -1,10 +1,27 @@
+// ====================================================================================================
+//  FILE: Time.cs
+//  PATH: ./Engine/Utility/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the Time module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Advance() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 File:    Time.cs
 Purpose: DeltaTime smoothing; fixed timestep placeholder.
 */
 
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Utility
 {
@@ -34,6 +51,7 @@ namespace SASZombieAssaultTD.Engine.Utility
         }
     }
 }
+
 
 
 

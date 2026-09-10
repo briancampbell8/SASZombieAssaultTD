@@ -1,3 +1,20 @@
+// ====================================================================================================
+//  FILE: StaticLayoutRenderer.cs
+//  PATH: ./Engine/UI/
+//  MODULE: UI
+//
+//  ROLE:
+//      Provide UI layout, interaction logic, or HUD rendering.
+//
+//  RESPONSIBILITIES:
+//      - Provide Render() behavior for the UI subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 // File Path: Engine/UI/StaticLayoutRenderer.cs
 // File: StaticLayoutRenderer.cs
@@ -13,7 +30,7 @@
 // Responsibilities:
 //     - Iterate through StaticLayout image definitions
 //     - Validate visibility and texture handle availability
-//     - Issue deterministic draw commands via IDrawingContext
+//     - Issue deterministic draw commands via D3D11Adapter_Core
 //     - Emit EngineDiagnostics trace events for all rendering actions
 //
 // Doctrine:
@@ -24,14 +41,16 @@
 //
 // Modernization Notes:
 //     - This class is part of the legacy UI/Rendering subsystem
-//     - Scheduled for migration into unified Engine.Rendering pipeline
+//     - Scheduled for migration into unified Engine.Render pipeline
 //     - Color pipeline will be upgraded to Engine.Core.Color
 //     - StaticLayout + StaticLayoutImage will be replaced by modern UIState
 //============================================================================
 
 using System;
 using System.Collections.Generic;
-using SASZombieAssaultTD.Engine.Rendering;
+using System.Numerics;
+using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
 
 namespace SASZombieAssaultTD.Engine.UI
 {
@@ -46,40 +65,41 @@ namespace SASZombieAssaultTD.Engine.UI
             _loader = loader ?? throw new ArgumentNullException(nameof(loader));
         }
 
-        public void Render(IDrawingContext context)
+        public void Render(D3D11Adapter_Core adapter_Core)
         {
-            System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] Render called, image count: {_layout.Images.Count}");
+            DLogger.Log($"[StaticLayoutRenderer] Render called, image count: {_layout.Images.Count}");
 
             foreach (var image in _layout.Images)
             {
-                System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] Processing image: {image.Id}");
+                DLogger.Log($"[StaticLayoutRenderer] Processing image: {image.Id}");
 
                 if (!image.Visible)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] Image {image.Id} skipped - not visible");
+                    DLogger.Log($"[StaticLayoutRenderer] Image {image.Id} skipped - not visible");
                     continue;
                 }
 
                 var handle = _loader.TryGetHandle(image.Id);
                 if (handle == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] Image {image.Id} skipped - handle is null");
+                    DLogger.Log($"[StaticLayoutRenderer] Image {image.Id} skipped - handle is null");
                     continue;
                 }
 
-                System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] Drawing" +
+                DLogger.Log($"[StaticLayoutRenderer] Drawing" +
                     $" {image.Id} at ({image.X},{image.Y}) size {image.Width}x{image.Height}");
 
-                context.DrawSprite(
+                adapter_Core.DrawSprite(
                     handle,
-                    image.X,
-                    image.Y,
-                    image.Width,
-                    image.Height,
-                    Color.White
+                    new System.Drawing.Rectangle(image.X, image.Y, image.Width, image.Height),
+                    null,
+                    Color.White,
+                    0.0f,
+                    Vector2.Zero,
+                    0.0f
                 );
 
-                System.Diagnostics.Debug.WriteLine($"[StaticLayoutRenderer] DrawSprite completed for {image.Id}");
+                DLogger.Log($"[StaticLayoutRenderer] DrawSprite completed for {image.Id}");
             }
         }
     }
@@ -100,3 +120,4 @@ namespace SASZombieAssaultTD.Engine.UI
         internal bool Visible { get; set; } = true;
     }
 }
+

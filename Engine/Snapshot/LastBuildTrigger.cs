@@ -1,3 +1,23 @@
+// ====================================================================================================
+//  FILE: LastBuildTrigger.cs
+//  PATH: ./Engine/Snapshot/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the LastBuildTrigger module.
+//
+//  RESPONSIBILITIES:
+//      - Provide MarkLastBuild() behavior for the Core subsystem.
+//      - Provide QuickFinalize() behavior for the Core subsystem.
+//      - Provide IsEndOfDay() behavior for the Core subsystem.
+//      - Provide ShowBuildContext() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File: LastBuildTrigger.cs
 //Program: LastBuildTrigger
@@ -15,10 +35,12 @@
 //    - No fallback logic except explicit exception propagation
 //============================================================================
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+
 //
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+
 namespace SASZombieAssaultTD.Engine.Snapshot
 {
     public static class LastBuildTrigger
@@ -29,18 +51,18 @@ namespace SASZombieAssaultTD.Engine.Snapshot
         //MAIN ENTRY POINT
         //=====================================================================
 
-        ///<summary>
-        ///Marks the current build as the last build of the day.
-        ///Finalizes the daily snapshot and optionally cleans up old snapshots.
-        ///</summary>
+        /// <summary>
+        /// Marks the current build as the last build of the day. Finalizes the daily snapshot and optionally cleans up
+        /// old snapshots.
+        /// </summary>
         public static void MarkLastBuild(bool cleanupOldSnapshots = true, int keepCount = 30)
         {
-            DLogger.Log("LastBuildTrigger.MarkLastBuild.Start",
+            DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.MarkLastBuild.Start",
                 $"cleanup={cleanupOldSnapshots}, keep={keepCount}");
 
             try
             {
-                DLogger.Log("LastBuildTrigger.MarkLastBuild.Header",
+                DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.MarkLastBuild.Header",
                     $"Triggered at {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
 
                 //Finalize the daily snapshot
@@ -53,17 +75,17 @@ namespace SASZombieAssaultTD.Engine.Snapshot
                     SnapshotCapture.CleanupOldSnapshots(keepCount);
                 }
 
-                DLogger.Log("LastBuildTrigger.MarkLastBuild.Success",
+                DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.MarkLastBuild.Success",
                     "Daily snapshot finalized successfully");
 
                 //Show final status
                 SnapshotCapture.StatusCommand(null);
 
-                DLogger.Log("LastBuildTrigger.MarkLastBuild.Complete", "OK");
+                DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.MarkLastBuild.Complete", "OK");
             }
             catch (Exception ex)
             {
-                DLogger.Log("LastBuildTrigger.MarkLastBuild.Error", ex.Message);
+                DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.MarkLastBuild.Error", ex.Message);
                 throw;
             }
         }
@@ -72,12 +94,12 @@ namespace SASZombieAssaultTD.Engine.Snapshot
         //QUICK FINALIZE
         //=====================================================================
 
-        ///<summary>
-        ///Finalizes the daily snapshot without cleanup.
-        ///</summary>
+        /// <summary>
+        /// Finalizes the daily snapshot without cleanup.
+        /// </summary>
         public static void QuickFinalize()
         {
-            DLogger.Log("LastBuildTrigger.QuickFinalize.Start", "No cleanup");
+            DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.QuickFinalize.Start", "No cleanup");
             MarkLastBuild(cleanupOldSnapshots: false);
         }
 
@@ -85,15 +107,15 @@ namespace SASZombieAssaultTD.Engine.Snapshot
         //END-OF-DAY HEURISTIC
         //=====================================================================
 
-        ///<summary>
-        ///Returns true if the current time suggests "end of day".
-        ///</summary>
+        /// <summary>
+        /// Returns true if the current time suggests "end of day".
+        /// </summary>
         public static bool IsEndOfDay()
         {
             var now = DateTime.Now;
             bool result = now.Hour >= 18 || now.Hour <= 2;
 
-            DLogger.Log("LastBuildTrigger.IsEndOfDay.Check",
+            DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.IsEndOfDay.Check",
                 $"Hour={now.Hour}, Result={result}");
 
             return result;
@@ -103,34 +125,34 @@ namespace SASZombieAssaultTD.Engine.Snapshot
         //CONTEXT REPORTING
         //=====================================================================
 
-        ///<summary>
-        ///Displays snapshot and build context information.
-        ///</summary>
+        /// <summary>
+        /// Displays snapshot and build context information.
+        /// </summary>
         public static void ShowBuildContext()
         {
             var now = DateTime.Now;
             var snapshotInfo = SnapshotCapture.GetSnapshotInfo();
 
-            DLogger.Log("LastBuildTrigger.Context.Header", "=== BUILD CONTEXT ===");
-            DLogger.Log("LastBuildTrigger.Context.Time", now.ToString("yyyy-MM-dd HH:mm:ss"));
-            DLogger.Log("LastBuildTrigger.Context.DayOfWeek", now.DayOfWeek.ToString());
-            DLogger.Log("LastBuildTrigger.Context.Hour", now.Hour.ToString());
-            DLogger.Log("LastBuildTrigger.Context.EndOfDay", IsEndOfDay().ToString());
+            DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.Context.Header", "=== BUILD CONTEXT ===");
+            DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.Context.Time", now.ToString("yyyy-MM-dd HH:mm:ss"));
+            DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.Context.DayOfWeek", now.DayOfWeek.ToString());
+            DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.Context.Hour", now.Hour.ToString());
+            DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.Context.EndOfDay", IsEndOfDay().ToString());
 
             if (snapshotInfo.Exists)
             {
-                DLogger.Log("LastBuildTrigger.Context.Snapshot.Exists",
+                DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.Context.Snapshot.Exists",
                     $"Size={snapshotInfo.SizeBytes:N0}, Created={snapshotInfo.CreatedTime:HH:mm:ss}, Age={(now - snapshotInfo.CreatedTime).TotalMinutes:F1}m");
             }
             else
             {
-                DLogger.Log("LastBuildTrigger.Context.Snapshot.None", "No current snapshot found");
+                DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.Context.Snapshot.None", "No current snapshot found");
             }
 
             var finalized = SnapshotCapture.ListFinalizedSnapshots();
-            DLogger.Log("LastBuildTrigger.Context.FinalizedCount", finalized.Length.ToString());
+            DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.Context.FinalizedCount", finalized.Length.ToString());
 
-            DLogger.Log("LastBuildTrigger.Context.Footer", "=== END CONTEXT ===");
+            DLogger.Log(LogSubsystems.Snapshot, "LastBuildTrigger.Context.Footer", "=== END CONTEXT ===");
         }
     }
 }

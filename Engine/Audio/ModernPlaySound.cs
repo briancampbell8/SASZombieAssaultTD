@@ -1,17 +1,38 @@
-﻿/*
+// ====================================================================================================
+//  FILE: ModernPlaySound.cs
+//  PATH: ./Engine/Audio/
+//  MODULE: Audio
+//
+//  ROLE:
+//      Manage audio playback, mixing, or spatial sound behavior.
+//
+//  RESPONSIBILITIES:
+//      - Provide Initialize() behavior for the Audio subsystem.
+//      - Provide Play() behavior for the Audio subsystem.
+//      - Provide Play() behavior for the Audio subsystem.
+//      - Provide PlayAtPosition() behavior for the Audio subsystem.
+//      - Provide StopAll() behavior for the Audio subsystem.
+//      - Provide GetRegistry() behavior for the Audio subsystem.
+//      - Provide GetSubsystem() behavior for the Audio subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+/*
 File:    ModernPlaySound.cs
 Folder:  Engine/Audio/
 Purpose:  P90 Modern Audio Subsystem - Modern audio playback helper.
 Features: Integration with ModernAudioSubsystem for actual audio playback.
 */
 
-using System;
 //
-using SASZombieAssaultTD.Engine.Core;
-using SASZombieAssaultTD.Engine.VectorMath;
-
 using SASZombieAssaultTD.Engine.Diagnostics;
-namespace SASZombieAssaultTD.Engine.Audio
+using SASZombieAssaultTD.Engine.VectorMath;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+namespace SASZombieAssaultTD.Engine.ECS
 {
     ///<summary>
     ///Modern audio playback helper for UI and gameplay events.
@@ -30,7 +51,9 @@ namespace SASZombieAssaultTD.Engine.Audio
             _audioSubsystem = audioSubsystem;
             _registry = new AudioRegistry();
             _registry.LoadDefaults();
-            System.Diagnostics.Debug.WriteLine("ModernPlaySound: Initialized with ModernAudioSubsystem");
+            DLogger.Log(
+                LogSubsystems.Audio,
+                "ModernPlaySound: Initialized with ModernAudioSubsystem");
         }
 
         ///<summary>
@@ -40,14 +63,14 @@ namespace SASZombieAssaultTD.Engine.Audio
         {
             if (_audioSubsystem == null)
             {
-                DLogger.Log("WARN", "ModernPlaySound: Audio subsystem not initialized");
+                DLogger.Log(LogSubsystems.Audio, "WARN", "ModernPlaySound: Audio subsystem not initialized");
                 return;
             }
 
             _audioSubsystem.PlaySound(soundName);
-            DLogger.Log(LogSubsystems.Audio,LogLevel.Info, $"ModernPlaySound: Playing sound '{soundName}'");
+            DLogger.Log(LogSubsystems.Audio, LogEnums.LogLevel.Info, $"ModernPlaySound: Playing sound '{soundName}'");
         }
-        
+
         ///<summary>
         ///Plays a sound with volume control.
         ///</summary>
@@ -55,14 +78,14 @@ namespace SASZombieAssaultTD.Engine.Audio
         {
             if (_audioSubsystem == null)
             {
-                DLogger.Log("WARN", "ModernPlaySound: Audio subsystem not initialized");
+                DLogger.Log(LogSubsystems.Audio, "WARN", "ModernPlaySound: Audio subsystem not initialized");
                 return;
             }
 
             _audioSubsystem.PlaySound(soundName, default, volume);
-            DLogger.Log(LogSubsystems.Audio,LogLevel.Info, $"ModernPlaySound: Playing sound '{soundName}' at volume {volume}");
+            DLogger.Log(LogSubsystems.Audio, LogEnums.LogLevel.Info, $"ModernPlaySound: Playing sound '{soundName}' at volume {volume}");
         }
-        
+
         ///<summary>
         ///Plays a sound at a specific position.
         ///</summary>
@@ -70,14 +93,14 @@ namespace SASZombieAssaultTD.Engine.Audio
         {
             if (_audioSubsystem == null)
             {
-                DLogger.Log("WARN", "ModernPlaySound: Audio subsystem not initialized");
+                DLogger.Log(LogSubsystems.Audio, "WARN", "ModernPlaySound: Audio subsystem not initialized");
                 return;
             }
 
             _audioSubsystem.PlaySound(soundName, position, 1.0f);
-            DLogger.Log(LogSubsystems.Audio,LogLevel.Info, $"ModernPlaySound: Playing sound '{soundName}' at position {position}");
+            DLogger.Log(LogSubsystems.Audio, LogEnums.LogLevel.Info, $"ModernPlaySound: Playing sound '{soundName}' at position {position}");
         }
-        
+
         ///<summary>
         ///Stops all currently playing sounds.
         ///</summary>
@@ -85,14 +108,14 @@ namespace SASZombieAssaultTD.Engine.Audio
         {
             if (_audioSubsystem == null)
             {
-                DLogger.Log("WARN", "ModernPlaySound: Audio subsystem not initialized");
+                DLogger.Log(LogSubsystems.Audio, "WARN", "ModernPlaySound: Audio subsystem not initialized");
                 return;
             }
 
             _audioSubsystem.StopAllSounds();
-            DLogger.Log(LogSubsystems.Audio,LogLevel.Info, "ModernPlaySound: Stopped all sounds");
+            DLogger.Log(LogSubsystems.Audio, LogEnums.LogLevel.Info, "ModernPlaySound: Stopped all sounds");
         }
-        
+
         ///<summary>
         ///Gets the audio registry.
         ///</summary>
@@ -110,3 +133,4 @@ namespace SASZombieAssaultTD.Engine.Audio
         }
     }
 }
+

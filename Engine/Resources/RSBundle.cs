@@ -1,3 +1,23 @@
+// ====================================================================================================
+//  FILE: RSBundle.cs
+//  PATH: ./Engine/Resources/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the RSBundle module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Contains() behavior for the Core subsystem.
+//      - Provide TryGetSource() behavior for the Core subsystem.
+//      - Provide TryGetMetadata() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 //============================================================================
 //File:        RSBundle.cs
@@ -19,10 +39,10 @@
 //============================================================================
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Assets
 {
@@ -86,3 +106,4 @@ namespace SASZombieAssaultTD.Engine.Assets
         }
     }
 }
+

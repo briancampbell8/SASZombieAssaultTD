@@ -60,7 +60,7 @@ public static class GlobalLogger
     
     public static void Debug(string message, [CallerMemberName] string caller = "")
     {
-        DebugLogger.Log("DEBUG", $"[{caller}] {message}");
+        DebugLogger.Log(LogSubsystems.ResourcesPipeline, "DEBUG", $"[{caller}] {message}");
     }
 }
 ```

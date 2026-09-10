@@ -12,12 +12,12 @@ Role:     Specific event subtype for state change animations in the animation sy
           Used by AnimationUpdateSystem to dispatch state change events with proper type safety.
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
-namespace SASZombieAssaultTD.Engine.Animation.Events
+namespace SASZombieAssaultTD.Engine.Animation.Core
 {
     ///<summary>
     ///Animation state change event subtype for AnimationEvent system.

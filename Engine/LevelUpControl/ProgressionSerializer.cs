@@ -37,11 +37,9 @@
  *
  * ==================================================================================================== */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.LevelUpControl
 {
@@ -64,20 +62,19 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
                 .Select(m => m.Id)
                 .ToList();
 
-            //Unlocked achievement IDs
-            var unlockedAchievements = progression._achievements.Values
+            // Unlocked achievement IDs
+            var unlockedAchievements = progression._achievements
                 .Where(a => a.IsUnlocked)
                 .Select(a => a.Id)
                 .ToList();
 
-            //Full milestone DTO map
+            // Full milestone DTO map
             var milestoneData = progression._milestones
                 .ToDictionary(m => m.Id, m => ToDTO(m));
 
-            //Full achievement DTO map
+            // Full achievement DTO map
             var achievementData = progression._achievements
-                .ToDictionary(kvp => kvp.Key, kvp => ToDTO(kvp.Value));
-
+                .ToDictionary(a => a.Id, a => ToDTO(a));
             //Event DTO list
             var eventData = progression._events
                 .Select(ToDTO)
@@ -113,11 +110,14 @@ namespace SASZombieAssaultTD.Engine.LevelUpControl
             //Restore achievements
             foreach (var kvp in saveData.AchievementData)
             {
-                if (progression._achievements.TryGetValue(kvp.Key, out var achievement))
+                // Scans the list to find the achievement where the Id matches the incoming key
+                var achievement = progression._achievements.Find(a => a.Id == kvp.Key);
+                if (achievement != null)
                 {
                     FromDTO(kvp.Value, achievement);
                 }
             }
+
 
             //Restore events
             progression._events.Clear();

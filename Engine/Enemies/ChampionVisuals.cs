@@ -1,3 +1,25 @@
+// ====================================================================================================
+//  FILE: ChampionVisuals.cs
+//  PATH: ./Engine/Enemies/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ChampionVisuals module.
+//
+//  RESPONSIBILITIES:
+//      - Provide GenerateForLevel() behavior for the Core subsystem.
+//      - Provide ApplyTo() behavior for the Core subsystem.
+//      - Provide Update() behavior for the Core subsystem.
+//      - Provide GetCurrentAuraIntensity() behavior for the Core subsystem.
+//      - Provide Clone() behavior for the Core subsystem.
+//      - Provide Update() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 /*
 Program Name: SASZombieAssaultTD
 File Path: Engine\Enemies\ChampionVisuals.cs
@@ -5,8 +27,8 @@ Purpose: P100 Wave and Enemy Modernization - Champion visual effects system.
 Features: Champion aura effects, color tinting, particle effects, scale modifications.
 */
 
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.VectorMath;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
@@ -123,7 +145,7 @@ namespace SASZombieAssaultTD.Engine.Enemies
             enemy.SetCustomProperty("ChampionPulseSpeed", PulseSpeed);
             enemy.SetCustomProperty("ChampionHasHalo", HasHalo);
 
-            System.Diagnostics.Debug.WriteLine($"ChampionVisuals: Applied to enemy (Level {enemy.ChampionLevel})");
+            DLogger.Log($"ChampionVisuals: Applied to enemy (Level {enemy.ChampionLevel})");
         }
 
         ///<summary>
@@ -221,3 +243,4 @@ namespace SASZombieAssaultTD.Engine.Enemies
         public bool IsAlive => _age < Lifetime;
     }
 }
+

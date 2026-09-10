@@ -1,141 +1,156 @@
-// =========================================================
+// =====================================================================================================
 //  FILE: PauseScene.cs
-//  PATH: Engine/Platform/BaseScene.cs
-//  SUBSYSTEM: Platform Abstraction Layer
-//  ROLE: Defines the deterministic lifecycle contract
-//  =========================================================
-
-/*
-File:    PauseScene.cs
-Author:  BDC
-Created: 2026-02-07
-Purpose: Pause overlay scene. Handles pause menu initialization, input updates, and rendering.
-Notes:   Inherits from Scene. Provides debug breakpoints and placeholder UI behavior.
-*/
-
+//  PATH: Engine/Scenes/PauseScene.cs
+//  SUBSYSTEM: Scene System / Pause Overlay Scene
 //
-using System.Diagnostics;
-using System.Reflection;
+//  ROLE:
+//      Deterministic pause overlay scene that displays a pause UI and waits for user input to resume.
+//      Lightweight overlay that renders on top of the active gameplay scene.
+//
+//  RESPONSIBILITIES:
+//      - Implement full BaseScene lifecycle deterministically.
+//      - Display pause overlay text.
+//      - Detect resume input (ESC).
+//      - Transition back to the previous scene via SceneManager.
+//
+//  NON-RESPONSIBILITIES:
+//      - Rendering gameplay content.
+//      - Managing HUD or UI overlays.
+//      - Performing GPU resource creation.
+//      - Handling gameplay logic.
+//
+//  ARCHITECTURAL NOTES:
+//      - Permanently coded right and complete as the canonical PauseScene foundation.
+//      - SceneManager invokes OnLoad → OnStart → OnUpdate → OnRender → OnUnload deterministically.
+// =====================================================================================================
+
 using SASZombieAssaultTD.Engine.Diagnostics;
 using SASZombieAssaultTD.Engine.Input;
-using Vector3 = SASZombieAssaultTD.Engine.VectorMath.Vector3;
+using SASZombieAssaultTD.Engine.Render.D3D11.Adapter;
+using SASZombieAssaultTD.Engine.VectorMath;
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+
 namespace SASZombieAssaultTD.Engine.Scenes
 {
     public sealed class PauseScene : BaseScene
     {
         private bool _resumeRequested;
-        private Scene? previousGameScene;
+        private string? _previousSceneName;
 
-        public PauseScene()
+        // -------------------------------------------------------------------------------------------------
+        // CONSTRUCTOR
+        // -------------------------------------------------------------------------------------------------
+
+        public PauseScene(string? previousSceneName = null)
         {
-            DLogger.Log("BREAKPOINT", "Execution reached PauseScene constructor");
-            DLogger.Log("BREAKPOINT", "Reached execution checkpoint");
-            DLogger.Log(
-            "BREAKPOINT",
-            $"Method={nameof(MethodBase.GetCurrentMethod)}, " +
-            $"Line={new StackTrace(true).GetFrame(0)?.GetFileLineNumber()}"
-            );
+            _previousSceneName = previousSceneName;
+
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                "[PauseScene] Constructor: PauseScene created.");
         }
 
-        ///<summary>
-        ///P11-11-02: Called when the pause scene becomes active.
-        ///</summary>
-        public override void OnEnter()
+        // -------------------------------------------------------------------------------------------------
+        // WIRING
+        // -------------------------------------------------------------------------------------------------
+
+        public override void SetSceneManager(SceneManager manager)
         {
-            _resumeRequested = false;
-            DLogger.Log("BREAKPOINT", "PauseScene.OnEnter() completed");
+            base.SetSceneManager(manager);
+
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                "[PauseScene] SceneManager wired.");
         }
 
-        ///<summary>
-        ///P11-11-02: Called when the pause scene becomes inactive.
-        ///</summary>
-        public override void OnExit()
-        {
-            //Cleanup pause resources
-            _resumeRequested = false;
-            DLogger.Log("Info", "[PauseScene] OnExit: Pause scene shutting down.");
-        }
-
-        public override void OnUpdate(float deltaTime)
-        {
-            OnUpdate(deltaTime);
-        }
-
-        ///<summary>
-        ///P11-11-02: Called every frame to update pause menu logic.
-        ///</summary>
-        ///<param name="deltaTime">Time elapsed since last frame.</param>
-        public void OnUpdate(float deltaTime, InputData inputData)
-        {
-            //Handle pause menu input - check if the user has requested to resume.
-            //P11-11-06: Input is now accessible through the Input property
-            if (inputData != null)
-            {
-                //Check for ESC key press to resume game
-                if (SASZombieAssaultTD.Engine.Input.InputSystem.IsKeyPressed(KeyCode.Escape))
-                {
-                    _resumeRequested = true;
-                }
-            }
-
-            if (_resumeRequested)
-            {
-                DLogger.Log("Info", "[PauseScene] Resume requested.");
-                //Queue transition back to previous scene via SceneManager
-                SceneManager?.QueueScene(previousGameScene.Name);
-            }
-        }
-
-        ///<summary>
-        ///P11-11-02: Called every frame to render the pause overlay UI.
-        ///</summary>
-        ///<param name="context">The render context.</param>
-        public override void OnRender(SASZombieAssaultTD.Engine.Rendering.IRenderContext context)
-        {
-            //Render pause overlay UI - draw semi-transparent overlay text.
-            //ClearScreen is intentionally NOT called so the game scene
-            //remains visible beneath the pause overlay.
-            context.DrawText("PAUSED", new Vector3(340, 270, 0), Color.White, 24.0f);
-            context.DrawText("Press ESC to Resume", new Vector3(240, 320, 0), Color.White, 18.0f);
-        }
-
-        //Legacy methods for backward compatibility
-        public override void Initialize()
-        {
-            OnEnter();
-        }
-
-        public override void Update(float deltaTime)
-        {
-            OnUpdate(deltaTime);
-        }
-
-        public override void Render(SASZombieAssaultTD.Engine.Rendering.IRenderContext context)
-        {
-            OnRender(context);
-        }
-
-        ///<summary>
-        ///Signals the pause scene to resume gameplay.
-        ///Called by the input subsystem when ESC is pressed.
-        ///</summary>
-        public void RequestResume()
-        {
-            _resumeRequested = true;
-        }
+        // -------------------------------------------------------------------------------------------------
+        // LIFECYCLE: LOAD / START / UPDATE / RENDER / UNLOAD
+        // -------------------------------------------------------------------------------------------------
 
         internal override void OnLoad()
         {
-            throw new System.NotImplementedException();
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                "[PauseScene] OnLoad ENTRY");
+
+            _resumeRequested = false;
+
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                "[PauseScene] OnLoad EXIT");
         }
 
         internal override void OnStart()
         {
-            throw new System.NotImplementedException();
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                "[PauseScene] OnStart ENTRY");
+
+            _resumeRequested = false;
+
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                "[PauseScene] OnStart EXIT");
+        }
+
+        internal override void OnUpdate(float deltaTime)
+        {
+            if (InputRouter != null &&
+                InputSystem.IsKeyPressed(KeyCode.Escape))
+            {
+                _resumeRequested = true;
+            }
+
+            if (_resumeRequested && _previousSceneName != null)
+            {
+                DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                    "[PauseScene] Resume requested — transitioning back to previous scene.");
+
+                SceneManager?.SetScene(_previousSceneName);
+            }
+        }
+
+        internal override void OnRender(D3D11Adapter_Core context)
+        {
+            if (context == null)
+                return;
+
+            context.DrawRectangle(
+                0, 0,
+                context.ScreenWidth,
+                context.ScreenHeight,
+                Color.FromArgb(128, 0, 0, 0));
+
+            context.DrawText(
+                "PAUSED",
+                new Vector3(context.ScreenWidth / 2 - 80, context.ScreenHeight / 2 - 40, 0),
+                Color.White,
+                32);
+
+            context.DrawText(
+                "Press ESC to Resume",
+                new Vector3(context.ScreenWidth / 2 - 140, context.ScreenHeight / 2 + 10, 0),
+                Color.White,
+                20);
+        }
+
+        internal override void OnUnload()
+        {
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                "[PauseScene] OnUnload ENTRY");
+
+            _resumeRequested = false;
+
+            DLogger.Log(LogSubsystems.Scenes, LogLevel.Info,
+                "[PauseScene] OnUnload EXIT");
+        }
+
+        // -------------------------------------------------------------------------------------------------
+        // PUBLIC API
+        // -------------------------------------------------------------------------------------------------
+
+        public void SetPreviousScene(string sceneName)
+        {
+            _previousSceneName = sceneName;
+        }
+
+        public void RequestResume()
+        {
+            _resumeRequested = true;
         }
     }
 }
-
-
-
-

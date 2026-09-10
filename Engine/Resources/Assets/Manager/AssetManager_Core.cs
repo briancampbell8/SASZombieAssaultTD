@@ -1,3 +1,25 @@
+// ====================================================================================================
+//  FILE: AssetManager_Core.cs
+//  PATH: ./Engine/Resources/Assets/Manager/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AssetManager_Core module.
+//
+//  RESPONSIBILITIES:
+//      - Provide GetAssetPath() behavior for the Core subsystem.
+//      - Provide AssetExists() behavior for the Core subsystem.
+//      - Provide GetMemoryStats() behavior for the Core subsystem.
+//      - Provide Dispose() behavior for the Core subsystem.
+//      - Provide ThrowIfDisposed() behavior for the Core subsystem.
+//      - Provide Release() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File:        AssetManager_Core.cs
 //Path:        E:\BDC\Projects\SASZombieAssaultTD\Engine\Resources\Assets\Manager\AssetManager_Core.cs
@@ -42,11 +64,11 @@
 //    var manager = new AssetManager("Assets/");
 //    var texture = await manager.LoadAsync<Texture2D>("textures/player.png");
 //    var stats = manager.GetMemoryStats();
-//    System.Diagnostics.Debug.WriteLine(stats.TotalMemoryUsage);
+//    DLogger.Log(stats.TotalMemoryUsage);
 //============================================================================
 
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 //
 
@@ -188,7 +210,7 @@ namespace SASZombieAssaultTD.Engine.Resources
             ClearCache();
             ClearRegistry();
 
-            System.Diagnostics.Debug.WriteLine("AssetManager: Disposed");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "AssetManager: Disposed");
         }
 
         ///<summary>
@@ -236,3 +258,4 @@ namespace SASZombieAssaultTD.Engine.Resources
         public long MaxMemoryUsage { get; set; }
     }
 }
+

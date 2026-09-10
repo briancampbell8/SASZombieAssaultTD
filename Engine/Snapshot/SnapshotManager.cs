@@ -1,3 +1,26 @@
+// ====================================================================================================
+//  FILE: SnapshotManager.cs
+//  PATH: ./Engine/Snapshot/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the SnapshotManager module.
+//
+//  RESPONSIBILITIES:
+//      - Provide CreateSnapshot() behavior for the Core subsystem.
+//      - Provide SaveSnapshot() behavior for the Core subsystem.
+//      - Provide LoadSnapshot() behavior for the Core subsystem.
+//      - Provide ApplySnapshot() behavior for the Core subsystem.
+//      - Provide ListSnapshots() behavior for the Core subsystem.
+//      - Provide DeleteSnapshot() behavior for the Core subsystem.
+//      - Provide AddError() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //============================================================================
 //File: SnapshotManager.cs
 //Author: BDC
@@ -8,22 +31,21 @@
 
 //
 
-using SASZombieAssaultTD.Engine.Player;
-using System;
-using System.Collections.Generic;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.Player;
 
 namespace SASZombieAssaultTD.Engine.Snapshot
 {
-    ///<summary>
-    ///Manages snapshot creation, storage, validation, and loading.
-    ///Deterministic, audit-friendly, and drift-proof implementation.
-    ///</summary>
+    /// <summary>
+    /// Manages snapshot creation, storage, validation, and loading. Deterministic, audit-friendly, and drift-proof
+    /// implementation.
+    /// </summary>
     public sealed class SnapshotManager
     {
         private readonly string _snapshotDirectory;
@@ -40,12 +62,12 @@ namespace SASZombieAssaultTD.Engine.Snapshot
             //Ensure snapshot directory exists
             Directory.CreateDirectory(_snapshotDirectory);
 
-            System.Diagnostics.Debug.WriteLine("Info", $"[SNAPSHOT] Initialized with directory: {_snapshotDirectory}");
+            DLogger.Log(LogSubsystems.Snapshot, "Info", $"[SNAPSHOT] Initialized with directory: {_snapshotDirectory}");
         }
 
-        ///<summary>
-        ///Creates a snapshot of the current game state.
-        ///</summary>
+        /// <summary>
+        /// Creates a snapshot of the current game state.
+        /// </summary>
         public SnapshotData CreateSnapshot(
             PlayerState playerState,
             int waveNumber,
@@ -80,28 +102,28 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
                 if (!validationResult.IsValid)
                 {
-                    System.Diagnostics.Debug.WriteLine("Warning",
+                    DLogger.Log(LogSubsystems.Snapshot, "Warning",
                         $"[SNAPSHOT] Validation failed for {snapshotId}: {string.Join(", ", validationResult.Errors)}");
                 }
 
                 //Store in memory cache
                 _loadedSnapshots[snapshotId] = snapshot;
 
-                System.Diagnostics.Debug.WriteLine("Info",
+                DLogger.Log(LogSubsystems.Snapshot, "Info",
                     $"[SNAPSHOT] Created snapshot {snapshotId} at {snapshot.Timestamp:yyyy-MM-dd HH:mm:ss}");
 
                 return snapshot;
             }
         }
 
-        ///<summary>
-        ///Saves a snapshot to disk.
-        ///</summary>
+        /// <summary>
+        /// Saves a snapshot to disk.
+        /// </summary>
         public bool SaveSnapshot(SnapshotData snapshot)
         {
             if (snapshot == null)
             {
-                System.Diagnostics.Debug.WriteLine("Error", "[SNAPSHOT] Cannot save null snapshot");
+                DLogger.Log(LogSubsystems.Snapshot, "Error", "[SNAPSHOT] Cannot save null snapshot");
                 return false;
             }
 
@@ -120,16 +142,16 @@ namespace SASZombieAssaultTD.Engine.Snapshot
                 string json = JsonSerializer.Serialize(snapshot, options);
                 File.WriteAllText(filepath, json);
 
-                System.Diagnostics.Debug.WriteLine("Info",
+                DLogger.Log(LogSubsystems.Snapshot, "Info",
                     $"[SNAPSHOT] Saved snapshot {snapshot.Id} to {filepath}");
 
                 return true;
             }
         }
 
-        ///<summary>
-        ///Loads a snapshot from disk.
-        ///</summary>
+        /// <summary>
+        /// Loads a snapshot from disk.
+        /// </summary>
         public SnapshotData LoadSnapshot(string snapshotId)
         {
             lock (_lockObject)
@@ -145,7 +167,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
                 if (!File.Exists(filepath))
                 {
-                    System.Diagnostics.Debug.WriteLine("Warning",
+                    DLogger.Log(LogSubsystems.Snapshot, "Warning",
                         $"[SNAPSHOT] Snapshot file not found: {filepath}");
                     return null;
                 }
@@ -162,7 +184,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
                 if (snapshot == null)
                 {
-                    System.Diagnostics.Debug.WriteLine("Error",
+                    DLogger.Log(LogSubsystems.Snapshot, "Error",
                         $"[SNAPSHOT] Failed to deserialize snapshot {snapshotId}");
                     return null;
                 }
@@ -174,23 +196,23 @@ namespace SASZombieAssaultTD.Engine.Snapshot
 
                 if (!validationResult.IsValid)
                 {
-                    System.Diagnostics.Debug.WriteLine("Warning",
+                    DLogger.Log(LogSubsystems.Snapshot, "Warning",
                         $"[SNAPSHOT] Loaded snapshot {snapshotId} has validation errors: {string.Join(", ", validationResult.Errors)}");
                 }
 
                 //Cache the loaded snapshot
                 _loadedSnapshots[snapshotId] = snapshot;
 
-                System.Diagnostics.Debug.WriteLine("Info",
+                DLogger.Log(LogSubsystems.Snapshot, "Info",
                     $"[SNAPSHOT] Loaded snapshot {snapshotId} from {filepath}");
 
                 return snapshot.DeepClone();
             }
         }
 
-        ///<summary>
-        ///Applies a snapshot to the current game state.
-        ///</summary>
+        /// <summary>
+        /// Applies a snapshot to the current game state.
+        /// </summary>
         public bool ApplySnapshot(SnapshotData snapshot, out string errorMessage)
         {
             errorMessage = string.Empty;
@@ -214,18 +236,18 @@ namespace SASZombieAssaultTD.Engine.Snapshot
             playerSystem.RestoreCash(playerState.Cash);
             playerSystem.RestoreScore(playerState.Score);
 
-            System.Diagnostics.Debug.WriteLine("Info",
+            DLogger.Log(LogSubsystems.Snapshot, "Info",
                 $"[SNAPSHOT] Applied player state: Cash=${playerState.Cash}, Score={playerState.Score}, Lives={playerState.Lives}, Wave={playerState.WaveNumber}");
 
-            System.Diagnostics.Debug.WriteLine("Info",
+            DLogger.Log(LogSubsystems.Snapshot, "Info",
                 $"[SNAPSHOT] Applied snapshot {snapshot.Id} successfully");
 
             return true;
         }
 
-        ///<summary>
-        ///Lists all available snapshots.
-        ///</summary>
+        /// <summary>
+        /// Lists all available snapshots.
+        /// </summary>
         public List<SnapshotInfo> ListSnapshots()
         {
             var snapshots = new List<SnapshotInfo>();
@@ -288,9 +310,9 @@ namespace SASZombieAssaultTD.Engine.Snapshot
             return snapshots;
         }
 
-        ///<summary>
-        ///Deletes a snapshot.
-        ///</summary>
+        /// <summary>
+        /// Deletes a snapshot.
+        /// </summary>
         public bool DeleteSnapshot(string snapshotId)
         {
             lock (_lockObject)
@@ -303,7 +325,7 @@ namespace SASZombieAssaultTD.Engine.Snapshot
                 if (File.Exists(filepath))
                 {
                     File.Delete(filepath);
-                    System.Diagnostics.Debug.WriteLine("Info",
+                    DLogger.Log(LogSubsystems.Snapshot, "Info",
                         $"[SNAPSHOT] Deleted snapshot {snapshotId} from disk");
                 }
 
@@ -390,9 +412,9 @@ namespace SASZombieAssaultTD.Engine.Snapshot
     //SnapshotInfo
     //============================================================================
 
-    ///<summary>
-    ///Snapshot information for listing and management.
-    ///</summary>
+    /// <summary>
+    /// Snapshot information for listing and management.
+    /// </summary>
     public sealed class SnapshotInfo
     {
         public string Id { get; set; }
@@ -408,9 +430,9 @@ namespace SASZombieAssaultTD.Engine.Snapshot
     //ValidationResult
     //============================================================================
 
-    ///<summary>
-    ///Validation result for snapshots.
-    ///</summary>
+    /// <summary>
+    /// Validation result for snapshots.
+    /// </summary>
     internal sealed class ValidationResult
     {
         public bool IsValid { get; set; }

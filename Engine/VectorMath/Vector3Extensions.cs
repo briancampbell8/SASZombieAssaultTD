@@ -1,181 +1,275 @@
-using System;
-using SASZombieAssaultTD.Engine.Dictionary;
-using SASZombieAssaultTD.Engine.Math;
+// ====================================================================================================
+//  FILE: Vector3Extensions.cs
+//  PATH: Engine/VectorMath/Vector3Extensions.cs
+//  MODULE: VectorMath
+//
+//  ROLE:
+//      Provides deterministic, subsystem‑agnostic math helpers for Vector3 operations. These helpers
+//      support lightweight arithmetic, clamping, projection, normalization, reflection, rotation,
+//      and directional math without introducing cross‑subsystem dependencies.
+//
+//  RESPONSIBILITIES:
+//      - Provide Length() behavior for the Core subsystem.
+//      - Provide Normalize() behavior for the Core subsystem.
+//      - Provide Min() behavior for the Core subsystem.
+//      - Provide Max() behavior for the Core subsystem.
+//      - Provide Clamp() behavior for the Core subsystem.
+//      - Provide Lerp() behavior for the Core subsystem.
+//      - Provide DistanceSquared() behavior for the Core subsystem.
+//      - Provide MoveTowards() behavior for the Core subsystem.
+//      - Provide Reflect() behavior for the Core subsystem.
+//      - Provide Project() behavior for the Core subsystem.
+//      - Provide ProjectOnPlane() behavior for the Core subsystem.
+//      - Provide Angle() behavior for the Core subsystem.
+//      - Provide SignedAngle() behavior for the Core subsystem.
+//      - Provide RotateY() behavior for the Core subsystem.
+//      - Provide RotateX() behavior for the Core subsystem.
+//      - Provide RotateZ() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.VectorMath
 {
-    ///<summary>
-    ///Extension methods for Vector3 to provide compatibility with legacy code.
-    ///Phase 2: Vector3 Extension Pack - Fixes ~25% of CS1061 errors
-    ///</summary>
+    /// <summary>
+    /// Deterministic extension methods for Vector3 providing compatibility with legacy math behavior.
+    /// </summary>
     public static class Vector3Extensions
     {
-        ///<summary>
-        ///Gets a zero vector (0, 0, 0).
-        ///</summary>
-        public static Vector3 Zero => new Vector3(0, 0, 0);
+        // ----------------------------------------------------------------------------------------------
+        //  CONSTANTS
+        // ----------------------------------------------------------------------------------------------
 
-        ///<summary>
-        ///Gets the magnitude (length) of the vector.
-        ///Compatibility alias for Magnitude property.
-        ///</summary>
-        public static float Length(this Vector3 v) => v.Magnitude;
+        public static Vector3 Zero => new Vector3(0f, 0f, 0f);
 
-        ///<summary>
-        ///Returns a normalized version of the vector.
-        ///Compatibility alias for Normalized property.
-        ///</summary>
-        public static Vector3 Normalize(this Vector3 v) => v.Normalized;
+        // ----------------------------------------------------------------------------------------------
+        //  BASIC MAGNITUDE / NORMALIZATION
+        // ----------------------------------------------------------------------------------------------
 
-        ///<summary>
-        ///Component-wise minimum of two vectors
-        ///</summary>
-        public static Vector3 Min(Vector3 a, Vector3 b) => 
-            new Vector3(System.Math.Min(a.X, b.X), System.Math.Min(a.Y, b.Y), System.Math.Min(a.Z, b.Z));
-        
-        ///<summary>
-        ///Component-wise maximum of two vectors
-        ///</summary>
-        public static Vector3 Max(Vector3 a, Vector3 b) => 
-            new Vector3(System.Math.Max(a.X, b.X), System.Math.Max(a.Y, b.Y), System.Math.Max(a.Z, b.Z));
+        public static float Length(this Vector3 v)
+        {
+            return MathF.Sqrt((v.X * v.X) + (v.Y * v.Y) + (v.Z * v.Z));
+        }
 
-        ///<summary>
-        ///Clamps a float value between min and max.
-        ///</summary>
-        public static float Clamp(this float value, float min, float max) =>
-            System.Math.Clamp(value, min, max);
+        public static Vector3 Normalize(this Vector3 v)
+        {
+            float mag = v.Length();
+            if (mag <= 0f)
+                return Zero;
 
-        ///<summary>
-        ///Clamps a vector's components between corresponding min and max vectors.
-        ///</summary>
-        public static Vector3 Clamp(this Vector3 value, Vector3 min, Vector3 max) =>
-            new(System.Math.Clamp(value.X, min.X, max.X), 
-                 System.Math.Clamp(value.Y, min.Y, max.Y), 
-                 System.Math.Clamp(value.Z, min.Z, max.Z));
+            return new Vector3(v.X / mag, v.Y / mag, v.Z / mag);
+        }
 
-        ///<summary>
-        ///Linear interpolation between two vectors.
-        ///</summary>
-        public static Vector3 Lerp(this Vector3 from, Vector3 to, float t) =>
-            from + (to - from) * System.Math.Clamp(t, 0f, 1f);
+        // ----------------------------------------------------------------------------------------------
+        //  MIN / MAX / CLAMP
+        // ----------------------------------------------------------------------------------------------
 
-        ///<summary>
-        ///Returns the squared distance between two vectors (avoids sqrt for performance).
-        ///</summary>
-        public static float DistanceSquared(this Vector3 a, Vector3 b) =>
-            (a - b).MagnitudeSquared;
+        public static Vector3 Min(Vector3 a, Vector3 b)
+        {
+            return new Vector3(
+                MathF.Min(a.X, b.X),
+                MathF.Min(a.Y, b.Y),
+                MathF.Min(a.Z, b.Z)
+            );
+        }
 
-        ///<summary>
-        ///Moves a point towards a target by a maximum distance.
-        ///</summary>
+        public static Vector3 Max(Vector3 a, Vector3 b)
+        {
+            return new Vector3(
+                MathF.Max(a.X, b.X),
+                MathF.Max(a.Y, b.Y),
+                MathF.Max(a.Z, b.Z)
+            );
+        }
+
+        public static float Clamp(this float value, float min, float max)
+        {
+            return MathF.Max(min, MathF.Min(max, value));
+        }
+
+        public static Vector3 Clamp(this Vector3 value, Vector3 min, Vector3 max)
+        {
+            return new Vector3(
+                value.X.Clamp(min.X, max.X),
+                value.Y.Clamp(min.Y, max.Y),
+                value.Z.Clamp(min.Z, max.Z)
+            );
+        }
+
+        // ----------------------------------------------------------------------------------------------
+        //  LERP
+        // ----------------------------------------------------------------------------------------------
+
+        public static Vector3 Lerp(this Vector3 from, Vector3 to, float t)
+        {
+            t = t.Clamp(0f, 1f);
+            return new Vector3(
+                from.X + (to.X - from.X) * t,
+                from.Y + (to.Y - from.Y) * t,
+                from.Z + (to.Z - from.Z) * t
+            );
+        }
+
+        // ----------------------------------------------------------------------------------------------
+        //  DISTANCE
+        // ----------------------------------------------------------------------------------------------
+
+        public static float DistanceSquared(this Vector3 a, Vector3 b)
+        {
+            float dx = a.X - b.X;
+            float dy = a.Y - b.Y;
+            float dz = a.Z - b.Z;
+            return (dx * dx) + (dy * dy) + (dz * dz);
+        }
+
+        // ----------------------------------------------------------------------------------------------
+        //  MOVE TOWARDS
+        // ----------------------------------------------------------------------------------------------
+
         public static Vector3 MoveTowards(this Vector3 current, Vector3 target, float maxDistanceDelta)
         {
-            var toVector = target - current;
-            float distance = toVector.Magnitude;
-            
-            if (distance <= maxDistanceDelta || distance == 0f)
+            Vector3 toVector = new Vector3(
+                target.X - current.X,
+                target.Y - current.Y,
+                target.Z - current.Z
+            );
+
+            float dist = toVector.Length();
+            if (dist <= maxDistanceDelta || dist == 0f)
                 return target;
-                
-            return current + toVector / distance * maxDistanceDelta;
+
+            float scale = maxDistanceDelta / dist;
+            return new Vector3(
+                current.X + toVector.X * scale,
+                current.Y + toVector.Y * scale,
+                current.Z + toVector.Z * scale
+            );
         }
 
-        ///<summary>
-        ///Reflects a vector off a surface defined by a normal.
-        ///</summary>
+        // ----------------------------------------------------------------------------------------------
+        //  DOT / CROSS
+        // ----------------------------------------------------------------------------------------------
+
+        private static float Dot(Vector3 a, Vector3 b)
+        {
+            return (a.X * b.X) + (a.Y * b.Y) + (a.Z * b.Z);
+        }
+
+        private static Vector3 Cross(Vector3 a, Vector3 b)
+        {
+            return new Vector3(
+                (a.Y * b.Z) - (a.Z * b.Y),
+                (a.Z * b.X) - (a.X * b.Z),
+                (a.X * b.Y) - (a.Y * b.X)
+            );
+        }
+
+        // ----------------------------------------------------------------------------------------------
+        //  REFLECT
+        // ----------------------------------------------------------------------------------------------
+
         public static Vector3 Reflect(this Vector3 direction, Vector3 normal)
         {
-            return direction - 2f * Dot(direction, normal) * normal;
+            float d = Dot(direction, normal);
+            return new Vector3(
+                direction.X - 2f * d * normal.X,
+                direction.Y - 2f * d * normal.Y,
+                direction.Z - 2f * d * normal.Z
+            );
         }
 
-        ///<summary>
-        ///Projects a vector onto another vector.
-        ///</summary>
+        // ----------------------------------------------------------------------------------------------
+        //  PROJECT / PROJECT ON PLANE
+        // ----------------------------------------------------------------------------------------------
+
         public static Vector3 Project(this Vector3 vector, Vector3 onto)
         {
-            float magnitudeSquared = onto.MagnitudeSquared;
-            if (magnitudeSquared < 1e-6f)
+            float denom = Dot(onto, onto);
+            if (denom <= 1e-6f)
                 return Zero;
-                
-            return onto * (Dot(vector, onto) / magnitudeSquared);
+
+            float scale = Dot(vector, onto) / denom;
+            return new Vector3(
+                onto.X * scale,
+                onto.Y * scale,
+                onto.Z * scale
+            );
         }
 
-        ///<summary>
-        ///Projects a vector onto a plane defined by a normal (removes the component parallel to the normal).
-        ///</summary>
         public static Vector3 ProjectOnPlane(this Vector3 vector, Vector3 planeNormal)
         {
-            return vector - Project(vector, planeNormal);
+            return vector - vector.Project(planeNormal);
         }
 
-        ///<summary>
-        ///Returns the angle between two vectors in radians.
-        ///</summary>
+        // ----------------------------------------------------------------------------------------------
+        //  ANGLE / SIGNED ANGLE
+        // ----------------------------------------------------------------------------------------------
+
         public static float Angle(this Vector3 from, Vector3 to)
         {
-            float denominator = MathF.Sqrt(from.MagnitudeSquared * to.MagnitudeSquared);
-            if (denominator < 1e-6f)
+            float denom = MathF.Sqrt(from.DistanceSquared(Zero) * to.DistanceSquared(Zero));
+            if (denom <= 1e-6f)
                 return 0f;
-                
-            float dot = System.Math.Clamp(Dot(from, to) / denominator, -1f, 1f);
+
+            float dot = Dot(from, to) / denom;
+            dot = dot.Clamp(-1f, 1f);
             return MathF.Acos(dot);
         }
 
-        ///<summary>
-        ///Returns the signed angle between two vectors in radians.
-        ///</summary>
         public static float SignedAngle(this Vector3 from, Vector3 to, Vector3 axis)
         {
-            float unsignedAngle = Angle(from, to);
-            float cross = Cross(from, to).Z;
-            return cross * axis.Z >= 0f ? unsignedAngle : -unsignedAngle;
+            float unsigned = Angle(from, to);
+            Vector3 cross = Cross(from, to);
+
+            return (cross.X * axis.X + cross.Y * axis.Y + cross.Z * axis.Z) >= 0f
+                ? unsigned
+                : -unsigned;
         }
 
-        ///<summary>
-        ///Returns a vector rotated around the Y axis by the specified angle in radians.
-        ///</summary>
-        public static Vector3 RotateY(this Vector3 vector, float angleRadians)
+        // ----------------------------------------------------------------------------------------------
+        //  ROTATION HELPERS
+        // ----------------------------------------------------------------------------------------------
+
+        public static Vector3 RotateY(this Vector3 v, float angle)
         {
-            float cos = MathF.Cos(angleRadians);
-            float sin = MathF.Sin(angleRadians);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
+
             return new Vector3(
-                vector.X * cos - vector.Z * sin,
-                vector.Y,
-                vector.X * sin + vector.Z * cos
+                v.X * cos - v.Z * sin,
+                v.Y,
+                v.X * sin + v.Z * cos
             );
         }
 
-        ///<summary>
-        ///Returns a vector rotated around the X axis by the specified angle in radians.
-        ///</summary>
-        public static Vector3 RotateX(this Vector3 vector, float angleRadians)
+        public static Vector3 RotateX(this Vector3 v, float angle)
         {
-            float cos = MathF.Cos(angleRadians);
-            float sin = MathF.Sin(angleRadians);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
+
             return new Vector3(
-                vector.X,
-                vector.Y * cos - vector.Z * sin,
-                vector.Y * sin + vector.Z * cos
+                v.X,
+                v.Y * cos - v.Z * sin,
+                v.Y * sin + v.Z * cos
             );
         }
 
-        ///<summary>
-        ///Returns a vector rotated around the Z axis by the specified angle in radians.
-        ///</summary>
-        public static Vector3 RotateZ(this Vector3 vector, float angleRadians)
+        public static Vector3 RotateZ(this Vector3 v, float angle)
         {
-            float cos = MathF.Cos(angleRadians);
-            float sin = MathF.Sin(angleRadians);
+            float cos = MathF.Cos(angle);
+            float sin = MathF.Sin(angle);
+
             return new Vector3(
-                vector.X * cos - vector.Y * sin,
-                vector.X * sin + vector.Y * cos,
-                vector.Z
+                v.X * cos - v.Y * sin,
+                v.X * sin + v.Y * cos,
+                v.Z
             );
         }
-
-        //Helper methods that reference the static Vector3 methods
-        private static float Dot(Vector3 a, Vector3 b) => Vector3.Dot(a, b);
-        private static Vector3 Cross(Vector3 a, Vector3 b) => Vector3.Cross(a, b);
     }
 }

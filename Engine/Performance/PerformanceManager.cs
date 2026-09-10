@@ -1,11 +1,35 @@
-using System;
-using System.Collections.Generic;
+// ====================================================================================================
+//  FILE: PerformanceManager.cs
+//  PATH: ./Engine/Performance/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the PerformanceManager module.
+//
+//  RESPONSIBILITIES:
+//      - Provide Initialize() behavior for the Core subsystem.
+//      - Provide Update() behavior for the Core subsystem.
+//      - Provide GetStats() behavior for the Core subsystem.
+//      - Provide StartMonitoring() behavior for the Core subsystem.
+//      - Provide Update() behavior for the Core subsystem.
+//      - Provide RecordUpdateTime() behavior for the Core subsystem.
+//      - Provide RecordRenderTime() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Diagnostics;
 using SASZombieAssaultTD.Engine.Towers;
 using SASZombieAssaultTD.Engine.Projectiles;
-using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Render;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 namespace SASZombieAssaultTD.Engine.Performance
 {
@@ -50,7 +74,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         {
             if (_isInitialized) return;
 
-            System.Diagnostics.Debug.WriteLine("Initializing Performance Manager");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Initializing Performance Manager");
 
             try
             {
@@ -64,11 +88,11 @@ namespace SASZombieAssaultTD.Engine.Performance
                 SetInitialBudget();
 
                 _isInitialized = true;
-                System.Diagnostics.Debug.WriteLine("Performance Manager initialized successfully");
+                DLogger.Log(LogSubsystems.ResourcesPipeline, "Performance Manager initialized successfully");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to initialize Performance Manager: {ex.Message}");
+                DLogger.Log($"Failed to initialize Performance Manager: {ex.Message}");
                 throw;
             }
         }
@@ -100,7 +124,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error updating Performance Manager: {ex.Message}");
+                DLogger.Log($"Error updating Performance Manager: {ex.Message}");
             }
         }
 
@@ -173,7 +197,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         ///</summary>
         private void InitializeObjectPools()
         {
-            System.Diagnostics.Debug.WriteLine("Initializing object pools");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Initializing object pools");
 
             //Create specialized pools for common game objects
             _pools["Projectile"] = new ProjectilePool();
@@ -185,7 +209,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             _pools["Grenade"] = new ObjectPool<object>();
             _pools["Particle"] = new ObjectPool<object>();
 
-            System.Diagnostics.Debug.WriteLine($"Initialized {_pools.Count} object pools");
+            DLogger.Log($"Initialized {_pools.Count} object pools");
         }
 
 
@@ -224,7 +248,7 @@ namespace SASZombieAssaultTD.Engine.Performance
                 _budget.MaxEffects = 100;
             }
 
-            System.Diagnostics.Debug.WriteLine($"Performance budget set: {_budget}");
+            DLogger.Log($"Performance budget set: {_budget}");
         }
 
         ///<summary>
@@ -232,7 +256,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         ///</summary>
         private void HandlePerformanceIssue()
         {
-            System.Diagnostics.Debug.WriteLine("Performance issue detected, optimizing...");
+            DLogger.Log(LogSubsystems.ResourcesPipeline, "Performance issue detected, optimizing...");
 
             //Reduce pool sizes
             foreach (var kvp in _pools)
@@ -389,3 +413,4 @@ namespace SASZombieAssaultTD.Engine.Performance
         }
     }
 }
+

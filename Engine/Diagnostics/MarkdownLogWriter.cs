@@ -94,7 +94,7 @@ namespace SASZombieAssaultTD.Engine.Diagnostics.Writers
 
                 lock (_lock)
                 {
-                    File.AppendAllText(filePath, block);
+                    //File.AppendAllText(filePath, block);
                 }
             }
             catch

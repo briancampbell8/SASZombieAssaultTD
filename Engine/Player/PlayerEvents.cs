@@ -1,3 +1,21 @@
+// ====================================================================================================
+//  FILE: PlayerEvents.cs
+//  PATH: ./Engine/Player/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the PlayerEvents module.
+//
+//  RESPONSIBILITIES:
+//      - Provide TriggerEnemyKilled() behavior for the Core subsystem.
+//      - Provide TriggerWaveCompleted() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //File:    PlayerEvents.cs
 //Purpose: Central event system for player-related gameplay events.
 //Features: Static events for enemy kills and wave completions.
@@ -8,7 +26,7 @@
 //
 
 using SASZombieAssaultTD.Engine.Enemies;
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
@@ -95,4 +113,5 @@ namespace SASZombieAssaultTD.Engine.Player
         }
     }
 }
+
 

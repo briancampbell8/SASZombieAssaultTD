@@ -1,7 +1,23 @@
-using System;
+// ====================================================================================================
+//  FILE: AchievementDefinition.cs
+//  PATH: ./Engine/Achievements/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the AchievementDefinition module.
+//
+//  RESPONSIBILITIES:
+//      - Provide IsValid() behavior for the Core subsystem.
+//      - Provide MatchesCriteria() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Runtime.Serialization;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
 
 namespace SASZombieAssaultTD.Engine.Achievements
 {
@@ -42,19 +58,19 @@ namespace SASZombieAssaultTD.Engine.Achievements
         ///Checks if this achievement matches the given criteria for progress evaluation.
         ///</summary>
         ///<param name="requirementType">Type of requirement to check.</param>
-        ///<param name="entityType">Optional entity type filter.</param>
+        ///<param name="ECSEntityCoreType">Optional ECSEntityCore type filter.</param>
         ///<param name="deathType">Optional death type filter.</param>
         ///<returns>True if this achievement matches the criteria.</returns>
-        public bool MatchesCriteria(AchievementRequirementType requirementType, string? entityType = null, string? deathType = null)
+        public bool MatchesCriteria(AchievementRequirementType requirementType, string? ECSEntityCoreType = null, string? deathType = null)
         {
             //Now you can safely check for null
-            if (entityType != null)
+            if (ECSEntityCoreType != null)
             {
-                //Do something with entityType
+                //Do something with ECSEntityCoreType
             }
 
             //Or use null-conditional operators
-            var length = entityType?.Length;
+            var length = ECSEntityCoreType?.Length;
 
             return false; //Your actual logic here
         }
@@ -77,6 +93,7 @@ namespace SASZombieAssaultTD.Engine.Achievements
         }
     }
 }
+
 
 
 

@@ -1,21 +1,46 @@
+// ====================================================================================================
+//  FILE: ProjectileFactory.cs
+//  PATH: ./Engine/Projectiles/
+//  MODULE: Core
 //
-using SASZombieAssaultTD.Engine.Performance;
+//  ROLE:
+//      Encapsulate core engine behavior for the ProjectileFactory module.
+//
+//  RESPONSIBILITIES:
+//      - Provide CreateProjectile() behavior for the Core subsystem.
+//      - Provide CreateCustomProjectile() behavior for the Core subsystem.
+//      - Provide CreateProjectileBurst() behavior for the Core subsystem.
+//      - Provide CreateProjectileRing() behavior for the Core subsystem.
+//      - Provide CreateHomingProjectile() behavior for the Core subsystem.
+//      - Provide CreateBouncingProjectile() behavior for the Core subsystem.
+//      - Provide CreatePiercingProjectile() behavior for the Core subsystem.
+//      - Provide RegisterTemplate() behavior for the Core subsystem.
+//      - Provide GetTemplate() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+//
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using SASZombieAssaultTD.Engine.Projectiles;
-using SASZombieAssaultTD.Engine.Rendering;
+using SASZombieAssaultTD.Engine.Render;
+using SASZombieAssaultTD.Engine.Render.Sprites;
 using SASZombieAssaultTD.Engine.Towers;
 using SASZombieAssaultTD.Engine.VectorMath;
-using System;
-using System.Collections.Generic;
-using System.Security.AccessControl;
-
-using SASZombieAssaultTD.Engine.Diagnostics;
+// choose the canonical Color type used by Projectile (adjust namespace if needed)
+using EngineColor = SASZombieAssaultTD.Engine.Color;
 
 namespace SASZombieAssaultTD.Engine.Projectiles
 {
-    ///<summary>
-    ///Factory for creating projectiles in SAS Zombie Assault TD.
-    ///Provides methods for creating different types of projectiles with various configurations.
-    ///</summary>
+    /// <summary>
+    /// Factory for creating projectiles in SAS Zombie Assault TD. Provides methods for creating different types of
+    /// projectiles with various configurations.
+    /// </summary>
     public class ProjectileFactory
     {
         private readonly Dictionary<ProjectileType, ProjectileTemplate> _templates;
@@ -23,9 +48,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
         private object TheType;
         private object TheMember;
 
-        ///<summary>
-        ///Singleton instance.
-        ///</summary>
+        /// <summary>
+        /// Singleton instance.
+        /// </summary>
         public static ProjectileFactory Instance => _instance ??= new ProjectileFactory();
 
         private ProjectileFactory()
@@ -34,20 +59,20 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             InitializeTemplates();
         }
 
-        ///<summary>
-        ///Create a projectile of the specified type.
-        ///</summary>
-        ///<param name="type">Type of projectile to create.</param>
-        ///<param name="position">Position to create projectile at.</param>
-        ///<param name="direction">Direction projectile should travel.</param>
-        ///<param name="source">Source tower.</param>
-        ///<param name="target">Target enemy (optional).</param>
-        ///<returns>Created projectile, or null if failed.</returns>
+        /// <summary>
+        /// Create a projectile of the specified type.
+        /// </summary>
+        /// <param name="type">Type of projectile to create.</param>
+        /// <param name="position">Position to create projectile at.</param>
+        /// <param name="direction">Direction projectile should travel.</param>
+        /// <param name="source">Source tower.</param>
+        /// <param name="target">Target enemy (optional).</param>
+        /// <returns>Created projectile, or null if failed.</returns>
         public Projectile CreateProjectile(ProjectileType type, Vector3 position, Vector3 direction, Tower source = null, Enemy target = null)
         {
             if (!_templates.TryGetValue(type, out var template))
             {
-                System.Diagnostics.Debug.WriteLine($"No template found for projectile type: {type}");
+                DLogger.Log($"No template found for projectile type: {type}");
                 return null;
             }
 
@@ -74,7 +99,7 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error creating projectile: {ex.Message}");
+                DLogger.Log($"Error creating projectile: {ex.Message}");
                 return null;
             }
         }
@@ -86,16 +111,16 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             throw new NotImplementedException();
         }
 
-        ///<summary>
-        ///Create a custom projectile with specified properties.
-        ///</summary>
-        ///<param name="type">Base projectile type.</param>
-        ///<param name="properties">Custom properties to apply.</param>
-        ///<param name="position">Position to create projectile at.</param>
-        ///<param name="direction">Direction projectile should travel.</param>
-        ///<param name="source">Source tower.</param>
-        ///<param name="target">Target enemy (optional).</param>
-        ///<returns>Created projectile, or null if failed.</returns>
+        /// <summary>
+        /// Create a custom projectile with specified properties.
+        /// </summary>
+        /// <param name="type">Base projectile type.</param>
+        /// <param name="properties">Custom properties to apply.</param>
+        /// <param name="position">Position to create projectile at.</param>
+        /// <param name="direction">Direction projectile should travel.</param>
+        /// <param name="source">Source tower.</param>
+        /// <param name="target">Target enemy (optional).</param>
+        /// <returns>Created projectile, or null if failed.</returns>
         public Projectile CreateCustomProjectile(ProjectileType type, ProjectileProperties properties, Vector3 position, Vector3 direction, Tower source = null, Enemy target = null)
         {
             var projectile = CreateProjectile(type, position, direction, source, target);
@@ -108,15 +133,15 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             return projectile;
         }
 
-        ///<summary>
-        ///Create a burst of projectiles.
-        ///</summary>
-        ///<param name="type">Type of projectiles to create.</param>
-        ///<param name="position">Center position.</param>
-        ///<param name="count">Number of projectiles in burst.</param>
-        ///<param name="spreadAngle">Spread angle in degrees.</param>
-        ///<param name="source">Source tower.</param>
-        ///<returns>List of created projectiles.</returns>
+        /// <summary>
+        /// Create a burst of projectiles.
+        /// </summary>
+        /// <param name="type">Type of projectiles to create.</param>
+        /// <param name="position">Center position.</param>
+        /// <param name="count">Number of projectiles in burst.</param>
+        /// <param name="spreadAngle">Spread angle in degrees.</param>
+        /// <param name="source">Source tower.</param>
+        /// <returns>List of created projectiles.</returns>
         public List<Projectile> CreateProjectileBurst(ProjectileType type, Vector3 position, int count, float spreadAngle, Tower source = null)
         {
             var projectiles = new List<Projectile>();
@@ -156,20 +181,20 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error creating projectile burst: {ex.Message}");
+                DLogger.Log($"Error creating projectile burst: {ex.Message}");
                 return projectiles;
             }
         }
 
-        ///<summary>
-        ///Create a ring of projectiles.
-        ///</summary>
-        ///<param name="type">Type of projectiles to create.</param>
-        ///<param name="center">Center position of ring.</param>
-        ///<param name="radius">Radius of ring.</param>
-        ///<param name="count">Number of projectiles in ring.</param>
-        ///<param name="source">Source tower.</param>
-        ///<returns>List of created projectiles.</returns>
+        /// <summary>
+        /// Create a ring of projectiles.
+        /// </summary>
+        /// <param name="type">Type of projectiles to create.</param>
+        /// <param name="center">Center position of ring.</param>
+        /// <param name="radius">Radius of ring.</param>
+        /// <param name="count">Number of projectiles in ring.</param>
+        /// <param name="source">Source tower.</param>
+        /// <returns>List of created projectiles.</returns>
         public List<Projectile> CreateProjectileRing(ProjectileType type, Vector3 center, float radius, int count, Tower source = null)
         {
             var projectiles = new List<Projectile>();
@@ -191,7 +216,11 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                     );
                     var direction = (center - position).Normalized;
 
-                    var projectile = CreateProjectile(type, position, direction, source);
+                    var projectile = CreateProjectile(
+                        type,
+                        position,
+                        direction,
+                        source);
                     if (projectile != null)
                     {
                         projectiles.Add(projectile);
@@ -202,19 +231,19 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error creating projectile ring: {ex.Message}");
+                DLogger.Log($"Error creating projectile ring: {ex.Message}");
                 return projectiles;
             }
         }
 
-        ///<summary>
-        ///Create a homing projectile.
-        ///</summary>
-        ///<param name="type">Base projectile type.</param>
-        ///<param name="position">Starting position.</param>
-        ///<param name="target">Target to home towards.</param>
-        ///<param name="source">Source tower.</param>
-        ///<returns>Created homing projectile, or null if failed.</returns>
+        /// <summary>
+        /// Create a homing projectile.
+        /// </summary>
+        /// <param name="type">Base projectile type.</param>
+        /// <param name="position">Starting position.</param>
+        /// <param name="target">Target to home towards.</param>
+        /// <param name="source">Source tower.</param>
+        /// <returns>Created homing projectile, or null if failed.</returns>
         public Projectile CreateHomingProjectile(ProjectileType type, Vector3 position, Enemy target, Tower source = null)
         {
             if (target == null)
@@ -232,16 +261,21 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             return projectile;
         }
 
-        ///<summary>
-        ///Create a bouncing projectile.
-        ///</summary>
-        ///<param name="type">Base projectile type.</param>
-        ///<param name="position">Starting position.</param>
-        ///<param name="direction">Initial direction.</param>
-        ///<param name="maxBounces">Maximum number of bounces.</param>
-        ///<param name="source">Source tower.</param>
-        ///<returns>Created bouncing projectile, or null if failed.</returns>
-        public Projectile CreateBouncingProjectile(ProjectileType type, Vector3 position, Vector3 direction, int maxBounces, Tower source = null)
+        /// <summary>
+        /// Create a bouncing projectile.
+        /// </summary>
+        /// <param name="type">Base projectile type.</param>
+        /// <param name="position">Starting position.</param>
+        /// <param name="direction">Initial direction.</param>
+        /// <param name="maxBounces">Maximum number of bounces.</param>
+        /// <param name="source">Source tower.</param>
+        /// <returns>Created bouncing projectile, or null if failed.</returns>
+        public Projectile CreateBouncingProjectile(
+            ProjectileType type,
+            Vector3 position,
+            Vector3 direction,
+            int maxBounces,
+            Tower source = null)
         {
             var projectile = CreateProjectile(type, position, direction, source);
             if (projectile == null)
@@ -256,16 +290,21 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             return projectile;
         }
 
-        ///<summary>
-        ///Create a piercing projectile.
-        ///</summary>
-        ///<param name="type">Base projectile type.</param>
-        ///<param name="position">Starting position.</param>
-        ///<param name="direction">Direction to travel.</param>
-        ///<param name="maxPierces">Maximum number of enemies to pierce.</param>
-        ///<param name="source">Source tower.</param>
-        ///<returns>Created piercing projectile, or null if failed.</returns>
-        public Projectile CreatePiercingProjectile(ProjectileType type, Vector3 position, Vector3 direction, int maxPierces, Tower source = null)
+        /// <summary>
+        /// Create a piercing projectile.
+        /// </summary>
+        /// <param name="type">Base projectile type.</param>
+        /// <param name="position">Starting position.</param>
+        /// <param name="direction">Direction to travel.</param>
+        /// <param name="maxPierces">Maximum number of enemies to pierce.</param>
+        /// <param name="source">Source tower.</param>
+        /// <returns>Created piercing projectile, or null if failed.</returns>
+        public Projectile CreatePiercingProjectile(
+            ProjectileType type,
+            Vector3 position,
+            Vector3 direction,
+            int maxPierces,
+            Tower source = null)
         {
             var projectile = CreateProjectile(type, position, direction, source);
             if (projectile == null)
@@ -280,30 +319,30 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             return projectile;
         }
 
-        ///<summary>
-        ///Register a custom projectile template.
-        ///</summary>
-        ///<param name="type">Projectile type.</param>
-        ///<param name="template">Template to register.</param>
+        /// <summary>
+        /// Register a custom projectile template.
+        /// </summary>
+        /// <param name="type">Projectile type.</param>
+        /// <param name="template">Template to register.</param>
         public void RegisterTemplate(ProjectileType type, ProjectileTemplate template)
         {
             _templates[type] = template;
-            System.Diagnostics.Debug.WriteLine($"Registered custom template for projectile type: {type}");
+            DLogger.Log($"Registered custom template for projectile type: {type}");
         }
 
-        ///<summary>
-        ///Get a projectile template.
-        ///</summary>
-        ///<param name="type">Projectile type.</param>
-        ///<returns>Template for the type, or null if not found.</returns>
+        /// <summary>
+        /// Get a projectile template.
+        /// </summary>
+        /// <param name="type">Projectile type.</param>
+        /// <returns>Template for the type, or null if not found.</returns>
         public ProjectileTemplate GetTemplate(ProjectileType type)
         {
             return _templates.TryGetValue(type, out var template) ? template : null;
         }
 
-        ///<summary>
-        ///Initialize default projectile templates.
-        ///</summary>
+        /// <summary>
+        /// Initialize default projectile templates.
+        /// </summary>
         private void InitializeTemplates()
         {
             //Bullet template
@@ -313,7 +352,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                 Speed = 15f,
                 Range = 20f,
                 Size = 0.2f,
-                Color = Color.Yellow,
+                Color = EngineColor.Yellow,
+                //Color = System.Drawing.Color.Yellow,
+
                 HasSplash = false,
                 Element = ElementDamageType.Physical,
                 Lifetime = 3f,
@@ -406,12 +447,12 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                 TrailEffect = new TrailEffect(Color.Magenta, 0.3f)
             };
 
-            System.Diagnostics.Debug.WriteLine($"Initialized {_templates.Count} projectile templates");
+            DLogger.Log($"Initialized {_templates.Count} projectile templates");
         }
 
-        ///<summary>
-        ///Apply template properties to a projectile.
-        ///</summary>
+        /// <summary>
+        /// Apply template properties to a projectile.
+        /// </summary>
         private void ApplyTemplate(Projectile projectile, ProjectileTemplate template)
         {
             projectile.Damage = template.Damage;
@@ -426,9 +467,9 @@ namespace SASZombieAssaultTD.Engine.Projectiles
             projectile.Trail = template.TrailEffect;
         }
 
-        ///<summary>
-        ///Apply custom properties to a projectile.
-        ///</summary>
+        /// <summary>
+        /// Apply custom properties to a projectile.
+        /// </summary>
         private void ApplyCustomProperties(Projectile projectile, ProjectileProperties properties)
         {
             if (properties.Damage.HasValue)
@@ -439,8 +480,8 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                 projectile.Range = properties.Range.Value;
             if (properties.Size.HasValue)
                 projectile.Size = properties.Size.Value;
-            if (properties.Color.HasValue)
-                projectile.Color = properties.Color.Value;
+            if (properties.ProjectileColor.HasValue)
+                projectile.Color = properties.ProjectileColor.Value;
             if (properties.HasSplash.HasValue)
                 projectile.HasSplash = properties.HasSplash.Value;
             if (properties.SplashRadius.HasValue)
@@ -451,20 +492,21 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                 projectile.MaxLifetime = properties.Lifetime.Value;
         }
 
-        ///<summary>
-        ///Get a projectile from the appropriate pool.
-        ///</summary>
-        ///
+        /// <summary>
+        /// Get a projectile from the appropriate pool.
+        /// </summary>
         public class ProjectileSystem
-            
+
         {
             public string Name { get; set; }
             public string Description { get; set; }
             public string Author { get; set; }
             public string Version { get; set; }
             public string Website { get; set; }
+
             public string License { get; set; }
             = string.Empty;
+
             public string[] Tags { get; set; } = Array.Empty<string>();
             public bool IsEnabled { get; set; }
             public string[] Dependencies { get; set; } = Array.Empty<string>();
@@ -486,59 +528,59 @@ namespace SASZombieAssaultTD.Engine.Projectiles
                 DependenciesHidden = Array.Empty<string>();
             }
         }
-      
-           
-
-                 
-        
-        }
     }
+}
 
-    ///<summary>
-    ///Template for projectile properties.
-    ///</summary>
-    public class ProjectileTemplate
+/// <summary>
+/// Template for projectile properties.
+/// </summary>
+public class ProjectileTemplate
+{
+    public int Damage { get; set; }
+    public float Speed { get; set; }
+    public float Range { get; set; }
+    public float Size { get; set; }
+    public bool HasSplash { get; set; }
+    public float SplashRadius { get; set; }
+
+    //Expose element as an auto-property for cheaper access patterns
+    public ElementDamageType Element { get; set; }
+
+    public float Lifetime { get; set; }
+    public TrailEffect TrailEffect { get; set; }
+    public Sprite Sprite { get; set; }
+    public string FireSound { get; set; }
+    public string ImpactSound { get; set; }
+    public EngineColor Color { get; internal set; }
+}
+
+/// <summary>
+/// Custom projectile properties.
+/// </summary>
+public class ProjectileProperties
+{
+    public static EngineColor Convert(SASZombieAssaultTD.Engine.CoreSize.Color c)
     {
-        public int Damage { get; set; }
-        public float Speed { get; set; }
-        public float Range { get; set; }
-        public float Size { get; set; }
-        public Color Color { get; set; }
-        public bool HasSplash { get; set; }
-        public float SplashRadius { get; set; }
-
-        //Expose element as an auto-property for cheaper access patterns
-        public ElementDamageType Element { get; set; }
-
-        public float Lifetime { get; set; }
-        public TrailEffect TrailEffect { get; set; }
-        public Sprite Sprite { get; set; }
-        public string FireSound { get; set; }
-        public string ImpactSound { get; set; }
+        // use public R,G,B,A properties or available factory on the target type
+        return new SASZombieAssaultTD.Engine.Color(c.R, c.G, c.B, c.A);
     }
-
-    ///<summary>
-    ///Custom projectile properties.
-    ///</summary>
-    public class ProjectileProperties
-    {
-        public int? Damage { get; set; }
-        public float? Speed { get; set; }
-        public float? Range { get; set; }
-        public float? Size { get; set; }
-        public Color? Color { get; set; }
-        public bool? HasSplash { get; set; }
-        public float? SplashRadius { get; set; }
-        public ElementDamageType? Element { get; set; }
-        public float? Lifetime { get; set; }
-        public Sprite Sprite { get; set; }
-        public string FireSound { get; set; }
-        public string ImpactSound { get; set; }
-        public bool IsHoming { get; set; }
-        public float HomingStrength { get; set; }
-        public bool IsBouncing { get; set; }
-        public int MaxBounces { get; set; }
-        public bool IsPiercing { get; set; }
-        public int MaxPierces { get; set; }
-    }
+    public int? Damage { get; set; }
+    public float? Speed { get; set; }
+    public float? Range { get; set; }
+    public float? Size { get; set; }
+    public EngineColor? ProjectileColor { get; set; }
+    public bool? HasSplash { get; set; }
+    public float? SplashRadius { get; set; }
+    public ElementDamageType? Element { get; set; }
+    public float? Lifetime { get; set; }
+    public Sprite Sprite { get; set; }
+    public string FireSound { get; set; }
+    public string ImpactSound { get; set; }
+    public bool IsHoming { get; set; }
+    public float HomingStrength { get; set; }
+    public bool IsBouncing { get; set; }
+    public int MaxBounces { get; set; }
+    public bool IsPiercing { get; set; }
+    public int MaxPierces { get; set; }
+}
 

@@ -1,97 +1,111 @@
-using System;
-using System.Collections.Generic;
+// ====================================================================================================
+//  FILE: IAnimationEventReceiver.cs
+//  PATH: ./Engine/Animation/Events/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the IAnimationEventReceiver module.
+//
+//  RESPONSIBILITIES:
+//      - Provide GetDebugInfo() behavior for the Core subsystem.
+//      - Provide Validate() behavior for the Core subsystem.
+//      - Provide ShouldHandleEvent() behavior for the Core subsystem.
+//      - Provide SafeInvokeOnAnimationEvent() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
+using System.Collections.Generic;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Linq;
+using SASZombieAssaultTD.Engine.Animation.Core.Controller;
 using SASZombieAssaultTD.Engine.Diagnostics;
 
-namespace SASZombieAssaultTD.Engine.Animation.Events
+namespace SASZombieAssaultTD.Engine.Animation.Core
 {
-
-    ///<summary>
-    ///P11-19-03: Interface for event receivers including OnAnimationEvent and GetDebugInfo methods.
-    ///Defines the contract for objects that can receive and handle animation events.
-    ///</summary>
+    /// <summary>
+    /// P11-19-03: Interface for event receivers including OnAnimationEvent and GetDebugInfo methods. Defines the
+    /// contract for objects that can receive and handle animation events.
+    /// </summary>
     public interface IAnimationEventReceiver
     {
-        ///<summary>
-        ///Unique identifier for this event receiver.
-        ///Used for registration and deregistration.
-        ///</summary>
+        /// <summary>
+        /// Unique identifier for this event receiver. Used for registration and deregistration.
+        /// </summary>
         string ReceiverId { get; }
 
-        ///<summary>
-        ///Human-readable name for this event receiver.
-        ///Used for debugging and logging purposes.
-        ///</summary>
+        /// <summary>
+        /// Human-readable name for this event receiver. Used for debugging and logging purposes.
+        /// </summary>
         string ReceiverName { get; }
 
-        ///<summary>
-        ///Priority of this receiver for event processing order.
-        ///Lower values receive events earlier in the processing chain.
-        ///</summary>
+        /// <summary>
+        /// Priority of this receiver for event processing order. Lower values receive events earlier in the processing
+        /// chain.
+        /// </summary>
         int Priority { get; }
 
-        ///<summary>
-        ///Whether this receiver is currently enabled.
-        ///Disabled receivers will not receive events.
-        ///</summary>
+        /// <summary>
+        /// Whether this receiver is currently enabled. Disabled receivers will not receive events.
+        /// </summary>
         bool IsEnabled { get; set; }
 
-        ///<summary>
-        ///List of event names this receiver is interested in.
-        ///Empty list means receiver receives all events.
-        ///</summary>
+        /// <summary>
+        /// List of event names this receiver is interested in. Empty list means receiver receives all events.
+        /// </summary>
         IReadOnlyList<string> InterestedEvents { get; }
 
-        ///<summary>
-        ///Called when an animation event is triggered.
-        ///The core method for handling animation events.
-        ///</summary>
-        ///<param name="animationEvent">The animation event that was triggered</param>
-        ///<param name="context">Context information about the event trigger</param>
-        void OnAnimationEvent(AnimationEvent animationEvent, AnimationEventContext context);
+        /// <summary>
+        /// Called when an animation event is triggered. The core method for handling animation events.
+        /// </summary>
+        /// <param name="animationEvent">The animation event that was triggered</param>
+        /// <param name="context">Context information about the event trigger</param>
+      //  void OnAnimationEvent(AnimationEvent animationEvent, AnimationEventContext context);
 
-        ///<summary>
-        ///Gets debug information about this event receiver.
-        ///Provides deterministic debugging information for inspection.
-        ///</summary>
-        ///<returns>Debug information string</returns>
+        /// <summary>
+        /// Gets debug information about this event receiver. Provides deterministic debugging information for
+        /// inspection.
+        /// </summary>
+        /// <returns>Debug information string</returns>
         string GetDebugInfo();
 
-        ///<summary>
-        ///Validates the configuration of this event receiver.
-        ///Performs deterministic validation of receiver properties.
-        ///</summary>
-        ///<returns>Validation result</returns>
+        /// <summary>
+        /// Validates the configuration of this event receiver. Performs deterministic validation of receiver
+        /// properties.
+        /// </summary>
+        /// <returns>Validation result</returns>
         AnimationEventReceiverValidationResult Validate();
     }
 
-    ///<summary>
-    ///P11-19-03: Validation result for animation event receivers.
-    ///Deterministic validation result structure.
-    ///</summary>
+    /// <summary>
+    /// P11-19-03: Validation result for animation event receivers. Deterministic validation result structure.
+    /// </summary>
     public class AnimationEventReceiverValidationResult
     {
-        ///<summary>
-        ///Whether the validation passed.
-        ///</summary>
+        /// <summary>
+        /// Whether the validation passed.
+        /// </summary>
         public bool IsValid { get; }
 
-        ///<summary>
-        ///List of validation errors.
-        ///</summary>
+        /// <summary>
+        /// List of validation errors.
+        /// </summary>
         public IReadOnlyList<string> Errors { get; }
 
-        ///<summary>
-        ///List of validation warnings.
-        ///</summary>
+        /// <summary>
+        /// List of validation warnings.
+        /// </summary>
         public IReadOnlyList<string> Warnings { get; }
 
-        ///<summary>
-        ///Initializes a new validation result.
-        ///</summary>
-        ///<param name="isValid">Whether validation passed</param>
-        ///<param name="errors">List of errors</param>
-        ///<param name="warnings">List of warnings</param>
+        /// <summary>
+        /// Initializes a new validation result.
+        /// </summary>
+        /// <param name="isValid">Whether validation passed</param>
+        /// <param name="errors">List of errors</param>
+        /// <param name="warnings">List of warnings</param>
         public AnimationEventReceiverValidationResult(bool isValid, string[]? errors = null, string[]? warnings = null)
         {
             IsValid = isValid;
@@ -100,43 +114,43 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
         }
     }
 
-    ///<summary>
-    ///P11-19-03: Base implementation for animation event receivers.
-    ///Provides common functionality and default implementations.
-    ///</summary>
+    /// <summary>
+    /// P11-19-03: Base implementation for animation event receivers. Provides common functionality and default
+    /// implementations.
+    /// </summary>
     public abstract class AnimationEventReceiverBase : IAnimationEventReceiver
     {
-        ///<summary>
-        ///Unique identifier for this event receiver.
-        ///</summary>
+        /// <summary>
+        /// Unique identifier for this event receiver.
+        /// </summary>
         public string ReceiverId { get; }
 
-        ///<summary>
-        ///Human-readable name for this event receiver.
-        ///</summary>
+        /// <summary>
+        /// Human-readable name for this event receiver.
+        /// </summary>
         public string ReceiverName { get; }
 
-        ///<summary>
-        ///Priority of this receiver for event processing order.
-        ///</summary>
+        /// <summary>
+        /// Priority of this receiver for event processing order.
+        /// </summary>
         public int Priority { get; }
 
-        ///<summary>
-        ///Whether this receiver is currently enabled.
-        ///</summary>
+        /// <summary>
+        /// Whether this receiver is currently enabled.
+        /// </summary>
         public bool IsEnabled { get; set; } = true;
 
-        ///<summary>
-        ///List of event names this receiver is interested in.
-        ///</summary>
+        /// <summary>
+        /// List of event names this receiver is interested in.
+        /// </summary>
         public virtual IReadOnlyList<string> InterestedEvents => Array.Empty<string>();
 
-        ///<summary>
-        ///Initializes a new animation event receiver base.
-        ///</summary>
-        ///<param name="receiverId">Unique receiver identifier</param>
-        ///<param name="receiverName">Human-readable receiver name</param>
-        ///<param name="priority">Processing priority</param>
+        /// <summary>
+        /// Initializes a new animation event receiver base.
+        /// </summary>
+        /// <param name="receiverId">Unique receiver identifier</param>
+        /// <param name="receiverName">Human-readable receiver name</param>
+        /// <param name="priority">Processing priority</param>
         protected AnimationEventReceiverBase(string receiverId, string receiverName, int priority = 0)
         {
             ReceiverId = receiverId ?? throw new ArgumentNullException(nameof(receiverId));
@@ -144,19 +158,17 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             Priority = priority;
         }
 
-        ///<summary>
-        ///Called when an animation event is triggered.
-        ///Must be implemented by derived classes.
-        ///</summary>
-        ///<param name="animationEvent">The animation event that was triggered</param>
-        ///<param name="context">Context information about the event trigger</param>
+        /// <summary>
+        /// Called when an animation event is triggered. Must be implemented by derived classes.
+        /// </summary>
+        /// <param name="animationEvent">The animation event that was triggered</param>
+        /// <param name="context">Context information about the event trigger</param>
         public abstract void OnAnimationEvent(AnimationEvent animationEvent, AnimationEventContext context);
 
-        ///<summary>
-        ///Gets debug information about this event receiver.
-        ///Default implementation for common debugging information.
-        ///</summary>
-        ///<returns>Debug information string</returns>
+        /// <summary>
+        /// Gets debug information about this event receiver. Default implementation for common debugging information.
+        /// </summary>
+        /// <returns>Debug information string</returns>
         public virtual string GetDebugInfo()
         {
             var info = $"AnimationEventReceiver: {ReceiverName} (ID: {ReceiverId})";
@@ -176,11 +188,10 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             return info;
         }
 
-        ///<summary>
-        ///Validates the configuration of this event receiver.
-        ///Default validation for common receiver properties.
-        ///</summary>
-        ///<returns>Validation result</returns>
+        /// <summary>
+        /// Validates the configuration of this event receiver. Default validation for common receiver properties.
+        /// </summary>
+        /// <returns>Validation result</returns>
         public virtual AnimationEventReceiverValidationResult Validate()
         {
             var errors = new List<string>();
@@ -210,21 +221,21 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             return new AnimationEventReceiverValidationResult(errors.Count == 0, errors.ToArray(), warnings.ToArray());
         }
 
-        ///<summary>
-        ///Checks if this receiver should handle the specified event.
-        ///Default implementation checks against interested events list.
-        ///</summary>
-        ///<param name="eventName">Event name to check</param>
-        ///<returns>True if receiver should handle the event, false otherwise</returns>
+        /// <summary>
+        /// Checks if this receiver should handle the specified event. Default implementation checks against interested
+        /// events list.
+        /// </summary>
+        /// <param name="eventName">Event name to check</param>
+        /// <returns>True if receiver should handle the event, false otherwise</returns>
         protected virtual bool ShouldHandleEvent(string eventName) =>
             InterestedEvents.Count == 0 || InterestedEvents.Contains(eventName);
 
-        ///<summary>
-        ///Safely invokes the OnAnimationEvent method with error handling.
-        ///Provides deterministic error handling for event processing.
-        ///</summary>
-        ///<param name="animationEvent">The animation event that was triggered</param>
-        ///<param name="context">Context information about the event trigger</param>
+        /// <summary>
+        /// Safely invokes the OnAnimationEvent method with error handling. Provides deterministic error handling for
+        /// event processing.
+        /// </summary>
+        /// <param name="animationEvent">The animation event that was triggered</param>
+        /// <param name="context">Context information about the event trigger</param>
         public void SafeInvokeOnAnimationEvent(AnimationEvent animationEvent, AnimationEventContext context)
         {
             if (!IsEnabled || !ShouldHandleEvent(animationEvent.EventName))
@@ -237,12 +248,8 @@ namespace SASZombieAssaultTD.Engine.Animation.Events
             catch (Exception ex)
             {
                 //Log error but don't rethrow to maintain system stability
-                DLogger.Log(LogSubsystems.Animation, LogLevel.Error, $"AnimationEventReceiver: Error in receiver '{ReceiverName}' ({ReceiverId}) processing event '{animationEvent.EventName}': {ex.Message}");
+                DLogger.Log(LogSubsystems.Animation, LogEnums.LogLevel.Error, $"AnimationEventReceiver: Error in receiver '{ReceiverName}' ({ReceiverId}) processing event '{animationEvent.EventName}': {ex.Message}");
             }
         }
     }
 }
-
-
-
-

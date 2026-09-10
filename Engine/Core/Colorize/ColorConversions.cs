@@ -1,3 +1,36 @@
+// ====================================================================================================
+//  FILE: ColorConversions.cs
+//  PATH: ./Engine/Core/Colorize/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the ColorConversions module.
+//
+//  RESPONSIBILITIES:
+//      - Provide ToBgra() behavior for the Core subsystem.
+//      - Provide ToArgb() behavior for the Core subsystem.
+//      - Provide ToRgb() behavior for the Core subsystem.
+//      - Provide FromBgra() behavior for the Core subsystem.
+//      - Provide FromUint() behavior for the Core subsystem.
+//      - Provide FromArgb() behavior for the Core subsystem.
+//      - Provide FromArgb() behavior for the Core subsystem.
+//      - Provide FromArgb() behavior for the Core subsystem.
+//      - Provide FromRgb() behavior for the Core subsystem.
+//      - Provide FromHsv() behavior for the Core subsystem.
+//      - Provide ToSystemDrawingColor() behavior for the Core subsystem.
+//      - Provide ToHex() behavior for the Core subsystem.
+//      - Provide ParseHex() behavior for the Core subsystem.
+//      - Provide ToBgraBatch() behavior for the Core subsystem.
+//      - Provide ToArgbBatch() behavior for the Core subsystem.
+//      - Provide FromBgraBatch() behavior for the Core subsystem.
+//      - Provide UnpackBgra() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
 //File:    ColorConversions.cs
 //Purpose: Format conversion methods for Color with comprehensive format support.
 //         Handles BGRA (framebuffer), ARGB (interop), hex strings, and batch conversions.
@@ -19,19 +52,19 @@
 
 //
 
-using System;
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Runtime.CompilerServices;
 
 using SASZombieAssaultTD.Engine.Diagnostics;
 
-namespace SASZombieAssaultTD.Engine.Core.Colorize
+namespace SASZombieAssaultTD.Engine.CoreSize.Colorize
 {
     public readonly partial struct Color
     {
         //---------------------------------------------------------
         //PACKED FORMAT CONVERSIONS (To/From UInt32)
         //---------------------------------------------------------
-        //Framebuffer uses BGRA (little-endian: 0xAARRGGBB in memory = BGRA bytes)
+        //FramebufferDrawing uses BGRA (little-endian: 0xAARRGGBB in memory = BGRA bytes)
         //System.Drawing uses ARGB (0xAARRGGBB shifted)
         //Understanding byte order is critical for interop performance.
 
@@ -353,3 +386,4 @@ namespace SASZombieAssaultTD.Engine.Core.Colorize
         }
     }
 }
+

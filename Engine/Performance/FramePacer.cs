@@ -1,8 +1,31 @@
-﻿using System;
+// ====================================================================================================
+//  FILE: FramePacer.cs
+//  PATH: ./Engine/Performance/
+//  MODULE: Core
+//
+//  ROLE:
+//      Encapsulate core engine behavior for the FramePacer module.
+//
+//  RESPONSIBILITIES:
+//      - Provide BeginFrame() behavior for the Core subsystem.
+//      - Provide EndFrame() behavior for the Core subsystem.
+//      - Provide GetCurrentFPS() behavior for the Core subsystem.
+//      - Provide Reset() behavior for the Core subsystem.
+//      - Provide GetStatistics() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//      - Provide ToString() behavior for the Core subsystem.
+//
+//  NON-RESPONSIBILITIES:
+//      - Low-level data persistence or file serialization.
+//
+//  NOTES:
+//      Auto-generated structure verified locally via file state scripts.
+// ====================================================================================================
+using System;   using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 using System.Diagnostics;
 using SASZombieAssaultTD.Engine.Core;
 
-using SASZombieAssaultTD.Engine.Diagnostics;
+using SASZombieAssaultTD.Engine.Diagnostics; using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Performance
 //
 {
@@ -106,7 +129,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             _droppedFrames = 0;
 
             _frameTimer.Start();
-            DLogger.Log(LogSubsystems.Performance,LogLevel.Info, $"FramePacer: Initialized with target FPS {_targetFPS} (target frame time: {_targetFrameTime:F2}ms)");
+            DLogger.Log(LogSubsystems.Performance, LogEnums.LogLevel.Info, $"FramePacer: Initialized with target FPS {_targetFPS} (target frame time: {_targetFrameTime:F2}ms)");
         }
 
         ///<summary>
@@ -165,7 +188,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             _minFrameTime = float.MaxValue;
             _droppedFrames = 0;
 
-            DLogger.Log(LogSubsystems.Performance,LogLevel.Info, "FramePacer: Reset statistics");
+            DLogger.Log(LogSubsystems.Performance, LogEnums.LogLevel.Info, "FramePacer: Reset statistics");
         }
 
         ///<summary>
@@ -205,7 +228,7 @@ namespace SASZombieAssaultTD.Engine.Performance
             {
                 _droppedFrames++;
                 OnFrameDropped?.Invoke(_droppedFrames);
-                DLogger.Log(LogSubsystems.Unknown, LogLevel.Info, "DEBUG", $"FramePacer: Frame dropped (time: {_lastFrameTime:F2}ms, target: {_targetFrameTime:F2}ms)");
+                DLogger.Log(LogSubsystems.Unknown, LogEnums.LogLevel.Info, "DEBUG", $"FramePacer: Frame dropped (time: {_lastFrameTime:F2}ms, target: {_targetFrameTime:F2}ms)");
             }
 
             //Update average FPS every 60 frames
@@ -362,6 +385,7 @@ namespace SASZombieAssaultTD.Engine.Performance
         }
     }
 }
+
 
 
 

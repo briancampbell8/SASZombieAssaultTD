@@ -26,28 +26,35 @@
 //      - All production diagnostics must flow through DLogger → Writer.
 //      - DebugLogger should remain minimal and free of side effects outside logging.
 // ====================================================================================================
-
-
+using static SASZombieAssaultTD.Engine.Diagnostics.LogEnums;
 namespace SASZombieAssaultTD.Engine.Diagnostics
 {
     /// <summary>
-    /// Legacy façade for old DebugLogger calls.
-    /// Routes all calls into the modern Logger pipeline.
+    /// Legacy façade for old DebugLogger calls. Routes all calls into the modern Logger pipeline.
     /// </summary>
     public static class DebugLogger
     {
-        public static void Log(LogSubsystems subsystem, LogLevel level, string message)
-            => DLogger.Log(LogSubsystems.Diagnostics, LogLevel.Info, LogCategory.Diagnostics, "level");
+        public static void Log(LogSubsystems subsystem, LogEnums.LogLevel level, string message)
+            => DLogger.Log(LogSubsystems.Diagnostics, LogEnums.LogLevel.Info,
+                LogCategory.Diagnostics, "level");
+
+        public static void Log(LogSubsystems subsystem, string category, string message)
+            => DLogger.Log(LogSubsystems.Diagnostics, LogEnums.LogLevel.Info,
+                LogCategory.Diagnostics, "category");
 
         public static void Log(LogSubsystems subsystem,
-            LogLevel level,
+            LogEnums.LogLevel level,
             string category,
             string message)
-            => DLogger.Log(LogSubsystems.Diagnostics, LogLevel.Info, LogCategory.Diagnostics, "subsystem, level, category, message");
+            => DLogger.Log(LogSubsystems.Diagnostics, LogEnums.LogLevel.Info,
+                LogCategory.Diagnostics, "subsystem, level, category, message");
+
         public static void Log(LogSubsystems subsystem,
-                    LogLevel level,
+                    LogEnums.LogLevel level,
                     LogCategory category,
                     string message)
-                    => DLogger.Log(LogSubsystems.Diagnostics, LogLevel.Info, LogCategory.Diagnostics, "subsystem, level, category.ToString(), message");
+                    => DLogger.Log(LogSubsystems.Diagnostics, LogEnums.LogLevel.Info,
+                        LogCategory.Diagnostics, "subsystem, level, category.ToString(), message");
+
     }
 }
